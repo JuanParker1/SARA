@@ -1,0 +1,3 @@
+<h1 style="font-family: monospace;font-weight: 100;">
+Estamos actualizando la aplicación, volvemos en un momento...
+</h1>

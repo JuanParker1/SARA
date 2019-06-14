@@ -1,0 +1,68 @@
+<md-dialog md-theme="{{Config.Theme}}" aria-label="Cambiar Imagen" id="ImageEditor" layout="column">
+	<md-toolbar class="md-short md-Transparent">
+		<div class="md-toolbar-tools ">
+			<h2>{{Config.Title}}</h2>
+			<span flex></span>
+			<md-button class="md-icon-button" ng-click="Cancel()">
+				<md-icon md-svg-icon="md-close" aria-label="Cerrar Dialogo"></md-icon>
+			</md-button>
+		</div>
+	</md-toolbar>
+
+	<md-dialog-content flex layout="column" layout-align="center center">
+
+		<div class="UploadArea" 
+			ng-show="cropper.sourceImage==null"
+			layout layout-align="center start">
+			<md-button class="md-raised md-accent">
+				<md-icon md-font-icon="fa-picture-o"></md-icon>
+				<label for="fileInput">Seleccionar</label>  
+			</md-button>
+			<input id="fileInput" type="file" img-cropper-fileread image="cropper.sourceImage">
+		</div>
+
+		<div class="CropArea" 
+			layout="column" 
+			layout-align="center center"
+			ng-show="cropper.sourceImage!=null">
+
+			<canvas id="canvas" image-cropper 
+					image="cropper.sourceImage" cropped-image="cropper.croppedImage"
+					width="{{ Config.CanvasWidth }}" 
+					height="{{ Config.CanvasHeight }}" 
+					crop-width="Config.CropWidth" 
+					crop-height="Config.CropHeight" 
+					min-width="Config.MinWidth" 
+					min-height="Config.MinHeight" 
+					keep-aspect="Config.KeepAspect" 
+					touch-radius="10" 
+					crop-area-bounds="bounds"></canvas>
+
+			<div id="Preview" 
+				ng-show="cropper.croppedImage!=null && Config.Preview">
+				<img ng-class="Config.PreviewClass" ng-src="{{cropper.croppedImage}}" />
+			</div>
+		</div>
+
+	</md-dialog-content>
+
+	<md-dialog-actions layout>
+		<md-button class="md-dialog-button-left" ng-click="CancelBtn()">{{ CancelText }}</md-button>
+		<span flex></span>
+
+		<div class="EditTools" ng-show="cropper.sourceImage!=null">
+
+			<md-button ng-click="Rotar(90)" aria-label="Rotar 90">
+				<md-icon md-font-icon="fa-repeat" class="fa-lg"></md-icon>
+			</md-button>
+			
+			
+		</div>
+
+		<span flex></span>
+		
+		<md-button ng-show="cropper.sourceImage!=null" ng-click="SendImage()" class="md-raised md-accent">Guardar</md-button>
+	</md-dialog-actions>
+	</form>
+
+</md-dialog>
