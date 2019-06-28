@@ -703,7 +703,9 @@ angular.module('EntidadesCtrl', [])
 			if(!E) return;
 			if(Ctrl.EntidadSel){ if(Ctrl.EntidadSel.id == E.id) return; }
 			Ctrl.EntidadSel = E;
+			
 			Ctrl.getCampos();
+			Ctrl.getRestricciones();
 			Ctrl.getGrids();
 
 			Ctrl.GridColumnasCRUD.rows = [];
@@ -728,11 +730,13 @@ angular.module('EntidadesCtrl', [])
 
 				//Actualizar los campos
 				Rs.http('/api/Entidades/campos-update', { Campos: Ctrl.CamposCRUD.rows }).then(() => {
-					angular.forEach(Ctrl.CamposCRUD.rows, (C,index) => {
-						C.changed = false;
-					});
-					Rs.showToast('Entidad Actualizada', 'Success');
+					angular.forEach(Ctrl.CamposCRUD.rows, (C,index) => { C.changed = false; });
 
+					//Actualizar las restricciones
+					Rs.http('/api/Entidades/restricciones-update', { Restricciones: Ctrl.RestricCRUD.rows }).then(() => {
+						angular.forEach(Ctrl.RestricCRUD.rows, (R,index) => { R.changed = false; });
+						Rs.showToast('Entidad Actualizada', 'Success');
+					});
 				});
 
 				
@@ -856,6 +860,27 @@ angular.module('EntidadesCtrl', [])
 			});
 		};
 
+		//Restricciones
+		Ctrl.RestricCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/restricciones', add_research: true, add_with:['campo'] });
+		
+		Ctrl.getRestricciones = () => {
+			Ctrl.RestricCRUD.setScope('entidad', Ctrl.EntidadSel.id);
+			Ctrl.RestricCRUD.get();
+		};
+
+		Ctrl.addRestriccion = () => {
+			Ctrl.RestricCRUD.add({
+				entidad_id: Ctrl.EntidadSel.id,
+				campo_id:   Ctrl.newRestriccion,
+				Comparador: '=',
+				Valor:      null
+			});
+			Ctrl.newRestriccion = null;
+		};
+
+		Ctrl.removeRestriccion = (R) => {
+			Ctrl.RestricCRUD.delete(R);
+		};
 
 		//Grids
 		Ctrl.GridsCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/grids', order_by: ['Titulo'] });
@@ -882,7 +907,8 @@ angular.module('EntidadesCtrl', [])
 
 		Ctrl.openGrid = (G) => {
 			Ctrl.GridSel = G;
-			Ctrl.getColumnas();
+			Ctrl.getColumnas().then(() => { Ctrl.getFiltros(); });
+			
 		};
 
 		//Columnas
@@ -890,9 +916,7 @@ angular.module('EntidadesCtrl', [])
 
 		Ctrl.getColumnas = () => {
 			Ctrl.GridColumnasCRUD.setScope('grid', Ctrl.GridSel.id);
-			Ctrl.GridColumnasCRUD.get().then(() => {
-				
-			});
+			return Ctrl.GridColumnasCRUD.get();
 		};
 
 		Ctrl.addColumna = (C, Ruta, Llaves) => {
@@ -906,8 +930,24 @@ angular.module('EntidadesCtrl', [])
 			});
 		};
 
+		Ctrl.editColumna = (C) => {
+			Ctrl.GridColumnasCRUD.dialog(C, { title: 'Editar Columna', only:['Cabecera'], with_delete: false }).then((r) => {
+				var Index = Rs.getIndex(Ctrl.GridColumnasCRUD.rows, r.id);
+				if(r.Cabecera == '') r.Cabecera = null;
+				r.changed = true;
+				Ctrl.GridColumnasCRUD.rows[Index] = r;
+				
+			});
+		};
+
 		Ctrl.removeColumna = (C) => {
 			Ctrl.GridColumnasCRUD.delete(C);
+		};
+
+		Ctrl.removerColumnas = () => {
+			Ctrl.GridColumnasCRUD.deleteMultiple().then(() => {
+				Ctrl.getFiltros();
+			});
 		};
 
 		Ctrl.dragListener2 = {
@@ -921,6 +961,7 @@ angular.module('EntidadesCtrl', [])
 				});
 			}
 		};
+
 
 		Ctrl.verCamposDiag = (entidad_id, Ruta, Llaves) => {
 			if(!entidad_id) return;
@@ -937,18 +978,68 @@ angular.module('EntidadesCtrl', [])
 			}).then((r) => {
 				Ctrl.verCamposDiag(r[0],r[1],r[2]);
 			});
-
 		};
 
+		//Filtros
+		Ctrl.GridFiltrosCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/grids-filtros', query_with:[], order_by: ['Indice'] });
+
+		Ctrl.prepFiltros = () => {
+			angular.forEach(Ctrl.GridFiltrosCRUD.rows, (F) => {
+				var Columna = Ctrl.GridColumnasCRUD.one(F.columna_id);
+				F.columna = Columna;
+				F.campo   = Columna.campo;
+			});
+		};
+
+		Ctrl.getFiltros = () => {
+			Ctrl.GridFiltrosCRUD.setScope('grid', Ctrl.GridSel.id);
+			return Ctrl.GridFiltrosCRUD.get().then(() => {
+				Ctrl.prepFiltros();
+			});
+		};
+
+		Ctrl.addFiltro = (Co) => {
+			var Indice = Ctrl.GridFiltrosCRUD.rows.length;
+			return Ctrl.GridFiltrosCRUD.add({
+				grid_id: Ctrl.GridSel.id,
+				columna_id: Co.id,
+				Indice: Indice,
+			}).then(() => {
+				Ctrl.prepFiltros();
+				Rs.showToast('Filtro Añadido', 'Success');
+			});
+		};
+
+		Ctrl.dragListener3 = {
+			accept: function (sourceItemHandleScope, destSortableScope) { return true; },
+			orderChanged: () => {
+				angular.forEach(Ctrl.GridFiltrosCRUD.rows, (C,index) => {
+					if(C.Indice !== index){
+						C.Indice = index;
+						C.changed = true;
+					};
+				});
+			}
+		};
+		Ctrl.selectedRows = [];
+
+		//Grid
 		Ctrl.updateGrid = () => {
 			Ctrl.GridsCRUD.update(Ctrl.GridSel).then(() => {
 
-				//Actualizar los campos
+				//Actualizar las columnas
 				Rs.http('/api/Entidades/grids-columnas-update', { Columnas: Ctrl.GridColumnasCRUD.rows }).then(() => {
 					angular.forEach(Ctrl.GridColumnasCRUD.rows, (C,index) => {
 						C.changed = false;
 					});
-					Rs.showToast('Grid Actualizada', 'Success');
+					
+					//Actualizar los filtros
+					Rs.http('/api/Entidades/grids-filtros-update', { Filtros: Ctrl.GridFiltrosCRUD.rows }).then(() => {
+						angular.forEach(Ctrl.GridFiltrosCRUD.rows, (C,index) => {
+							C.changed = false;
+						});
+						Rs.showToast('Grid Actualizada', 'Success');
+					});
 				});
 				
 			});
@@ -997,20 +1088,50 @@ angular.module('Entidades_AddColumnsCtrl', [])
 	}
 ]);
 angular.module('Entidades_Grids_TestCtrl', [])
-.controller('Entidades_Grids_TestCtrl', ['$scope', '$rootScope', '$mdDialog', 'grid_id', 
-	function($scope, $rootScope, $mdDialog, grid_id) {
+.controller('Entidades_Grids_TestCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'grid_id', 
+	function($scope, $rootScope, $mdDialog, $filter, grid_id) {
 
 		console.info('Entidades_Grids_TestCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
+		Ctrl.inArray = Rs.inArray;
 
 		Ctrl.Cancel = () => {
 			$mdDialog.cancel();
 		};
 
+		Ctrl.Data = [];
+
+		Ctrl.filterData = () => {
+			Ctrl.Data = [];
+			var d = angular.copy(Ctrl.Grid.data);
+			angular.forEach(Ctrl.Grid.filtros, (F) => {
+				if(d.length > 0 && Ctrl.inArray(F.Comparador, ['lista','radios']) && (F.val !== null)){
+					d = $filter('filter')(d, function (item) {
+						if(angular.isArray(F.val)){
+							return F.val.includes(item[F.columna.header_index]);
+						}
+						return item[F.columna.header_index] === F.val;
+					});
+				};
+			});
+
+			Ctrl.Data = d; delete d;
+		};
+
 		Rs.http('api/Entidades/grids-get-data', { grid_id: grid_id }).then((r) => {
 			Ctrl.Grid = r.Grid;
+			Ctrl.filterData();
 		});
+
+		Ctrl.getSelectedText = (Text) => {
+			if(Text === null) return 'Seleccionar...';
+			if(angular.isArray(Text)){
+				var Len = Text.length;
+				return ( Len == 1 ) ? Text[0] : (Len + ' Seleccionados');
+			}
+			return Text;
+		};
 		
 	}
 ]);
@@ -1053,7 +1174,7 @@ angular.module('Entidades_VerCamposCtrl', [])
 	}
 ]);
 angular.module('CRUD', [])
-.factory('CRUD', [ '$rootScope', '$q', '$mdDialog', 
+.factory('CRUD', [ '$rootScope', '$q', '$mdDialog',
 	function($rootScope, $q, $mdDialog){
 
 		var Rs = $rootScope;
@@ -1078,6 +1199,7 @@ angular.module('CRUD', [])
 				query_with: [],
 				query_call: [],
 				order_by: [],
+				selected:[]
 			};
 			t.columns = [];
 			t.rows = [];
@@ -1145,6 +1267,19 @@ angular.module('CRUD', [])
 				});
 			};
 
+			t.deleteMultiple = function(){
+				t.ops.obj = angular.copy(t.ops.selected);
+				//
+				return Rs.http(t.ops.base_url, { fn: 'deletemultiple', ops: t.ops }).then(function(r) {
+					angular.forEach(t.ops.obj, (Obj) => {
+						var Index = Rs.getIndex(t.rows, Obj[t.ops.primary_key], t.ops.primary_key);
+						t.rows.splice(Index, 1);
+					});
+					t.ops.obj = null;
+					t.ops.selected = [];
+				});
+			};
+
 			t.dialog = function(Obj, diagConfig){
 				var config = {
 					theme: 'default',
@@ -1189,6 +1324,11 @@ angular.module('CRUD', [])
 				};
 			};
 
+			//Obtener un elemento por primary_key
+			t.one = (key) => {
+				var Index = Rs.getIndex(t.rows, key, t.ops.primary_key);
+				return t.rows[Index];
+			};
 
 		};
 
@@ -1705,7 +1845,7 @@ angular.module('appConfig', [])
 			if(typeof date == 'undefined' || date === null || isNaN(date.getTime()) ){
 				return null;
 			}else{
-				return moment(date).format('L');
+				return moment(date).format('Y-MM-DD');
 			}
 		};
 

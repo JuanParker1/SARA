@@ -13,6 +13,7 @@ class EntidadGridColumna extends MyModel
     protected $casts = [
     	'Ruta' => 'array',
     	'Llaves' => 'array',
+    	'Visible' => 'boolean',
     ];
     protected $appends = [];
 
@@ -24,12 +25,13 @@ class EntidadGridColumna extends MyModel
 			[ 'id',					'id',					null, true,  false, null, 100 ],
 			[ 'grid_id',			'grid_id',				null, true,  false, null, 100 ],
 			[ 'Indice',				'Indice',				null, true,  false, null, 100 ],
-			[ 'Cabecera',			'Cabecera',				null, true,  false, null, 100 ],
-			[ 'Tipo',				'Tipo',					null, true,  false, null, 100 ],
-			[ 'Ruta',				'Ruta',					null, true,  false, null, 100 ],
-			[ 'Llaves',				'Llaves',					null, true,  false, null, 100 ],
+			[ 'Cabecera',			'Cabecera',				null, false,  false, null, 100 ],
+			[ 'Tipo',				'Tipo',					null, false,  false, null, 100 ],
+			[ 'Ruta',				'Ruta',					null, false,  false, null, 100 ],
+			[ 'Llaves',				'Llaves',				null, false,  false, null, 100 ],
+			[ 'Visible',			'Visible',				null, false,  false, null, 100 ],
 			[ 'campo_id',			'campo_id',				null, true,  false, null, 100 ],
-			[ 'externalgrid_id',	'externalgrid_id',		null, true,  false, null, 100 ],
+			[ 'externalgrid_id',	'externalgrid_id',		null, false,  false, null, 100 ],
 		];
 	}
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost
--- Tiempo de generación: 15-06-2019 a las 00:38:30
+-- Tiempo de generación: 29-06-2019 a las 00:14:17
 -- Versión del servidor: 10.1.26-MariaDB
 -- Versión de PHP: 7.1.9
 
@@ -134,7 +134,7 @@ CREATE TABLE `sara_entidades` (
 
 INSERT INTO `sara_entidades` (`id`, `bdd_id`, `Nombre`, `Tipo`, `Tabla`, `campo_llaveprim`, `campo_desc1`, `campo_desc2`, `campo_desc3`, `campo_orderby`, `campo_orderbydir`, `max_rows`, `created_at`, `updated_at`) VALUES
 (1, 1, 'Paciente', 'Tabla', 'TBBDBENEFI', 145, 150, 147, NULL, NULL, 'DESC', 100, '2019-05-31 00:00:00', '2019-06-13 18:05:41'),
-(5, 1, 'Cita', 'Tabla', 'TBAGCITAS', 179, NULL, NULL, NULL, 179, 'DESC', 50, '2019-06-06 14:42:51', '2019-06-14 12:06:20'),
+(5, 1, 'Cita', 'Tabla', 'TBAGCITAS', 179, NULL, NULL, NULL, 181, 'DESC', 100, '2019-06-06 14:42:51', '2019-06-28 15:14:46'),
 (6, 1, 'Agenda', 'Tabla', 'TBAGHORARI', 218, NULL, NULL, NULL, NULL, 'DESC', 100, '2019-06-06 14:43:22', '2019-06-13 14:26:31'),
 (7, 1, 'Ingreso Clinica', 'Tabla', '', NULL, NULL, NULL, NULL, NULL, 'DESC', 100, '2019-06-06 14:43:29', '2019-06-13 14:26:42'),
 (8, 1, 'Orden Cx', 'Tabla', '', NULL, NULL, NULL, NULL, NULL, 'DESC', 100, '2019-06-06 14:43:36', '2019-06-13 14:26:50'),
@@ -185,9 +185,9 @@ INSERT INTO `sara_entidades_campos` (`id`, `entidad_id`, `Indice`, `Columna`, `A
 (177, 1, 9, '.BECORREO', 'Correo', 'Texto', NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-06-06 11:59:20', '2019-06-13 11:05:27'),
 (179, 5, 0, '.CICODCITA', 'Código Cita', 'Entero', NULL, 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-07 11:58:25'),
 (180, 5, 1, '.PRCODPROF', 'Profesional', 'Entidad', NULL, 1, 1, 1, 0, 10, NULL, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-13 10:18:20'),
-(181, 5, 2, '.CIFECCITA', 'Fecha', 'Fecha', NULL, 1, 1, 1, 0, NULL, NULL, NULL, 'Ymd', NULL, '2019-06-06 16:02:43', '2019-06-06 18:09:45'),
-(182, 5, 3, '.CIHORINI', 'Inicio', 'Hora', NULL, 1, 1, 1, 0, NULL, NULL, NULL, 'Hi', NULL, '2019-06-06 16:02:43', '2019-06-06 18:09:45'),
-(183, 5, 4, '.CIHORFIN', 'Fin', 'Hora', NULL, 1, 1, 1, 0, NULL, NULL, NULL, 'Hi', NULL, '2019-06-06 16:02:43', '2019-06-06 18:09:45'),
+(181, 5, 2, '.CIFECCITA', 'Fecha', 'Fecha', NULL, 1, 1, 1, 1, NULL, NULL, NULL, 'Ymd', NULL, '2019-06-06 16:02:43', '2019-06-26 17:18:47'),
+(182, 5, 3, '.CIHORINI', 'Inicio', 'Hora', NULL, 1, 1, 1, 1, NULL, NULL, NULL, 'Hi', NULL, '2019-06-06 16:02:43', '2019-06-26 17:18:47'),
+(183, 5, 4, '.CIHORFIN', 'Fin', 'Hora', NULL, 1, 1, 1, 1, NULL, NULL, NULL, 'Hi', NULL, '2019-06-06 16:02:43', '2019-06-26 17:18:47'),
 (184, 5, 5, '.ENCODENTID || .EPCODPLAN', 'Entidad Plan', 'Entidad', NULL, 1, 1, 1, 0, 11, NULL, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-13 11:01:39'),
 (186, 5, 7, '.BECODBENE', 'Paciente', 'Entidad', NULL, 1, 1, 1, 0, 1, NULL, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-06 18:09:45'),
 (187, 5, 8, '.CINUMTELE', 'Teléfono', 'Texto', NULL, 1, 1, 1, 0, NULL, 15, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-13 11:02:03'),
@@ -197,20 +197,13 @@ INSERT INTO `sara_entidades_campos` (`id`, `entidad_id`, `Indice`, `Columna`, `A
 (191, 5, 12, '.TRCODTRAT', NULL, 'Entero', NULL, 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-06 17:26:00'),
 (192, 5, 13, '.ASCODAREA', NULL, 'Entidad', NULL, 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-07 11:24:00'),
 (193, 5, 14, '.TSCODSERV', NULL, 'Entidad', NULL, 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-07 11:24:00'),
-(194, 5, 15, '.CACODCENAT', NULL, 'Entidad', NULL, 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-07 11:24:00'),
+(194, 5, 15, '.CACODCENAT', 'Centro Atención', 'Entidad', NULL, 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-25 17:56:20'),
 (195, 5, 16, '.CIDESOBSE', NULL, 'TextoLargo', NULL, 0, 1, 1, 0, 1000, NULL, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-07 10:39:53'),
 (196, 5, 17, '.MRCODCONS', NULL, 'Entero', NULL, 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-07 10:56:36'),
 (197, 5, 18, '.COCODCTO', NULL, 'Entero', NULL, 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-06 17:26:01'),
 (198, 5, 19, '.HOCODHORA', 'Agenda', 'Entidad', NULL, 1, 1, 1, 0, 6, NULL, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-13 13:42:26'),
 (199, 5, 20, '.MOCODMOTIV', NULL, 'Texto', NULL, 1, 1, 1, 0, NULL, 4, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-06 17:26:01'),
-(200, 5, 21, '.CICODESTAD', NULL, 'Texto', NULL, 1, 1, 1, 0, NULL, 1, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-14 11:48:37'),
-(201, 5, 22, '.CINOMEQUIP', NULL, 'Texto', NULL, 1, 0, 1, 0, NULL, 20, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-07 07:22:29'),
-(202, 5, 23, '.CIDIRIP', NULL, 'Texto', NULL, 1, 0, 1, 0, NULL, 20, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-07 07:22:29'),
-(203, 5, 24, '.USCODUSUAR', NULL, 'Texto', NULL, 1, 0, 1, 0, NULL, 10, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-07 07:22:20'),
-(204, 5, 25, '.CIFECMOD', NULL, 'Fecha', NULL, 1, 0, 1, 0, NULL, NULL, NULL, 'Ymd', NULL, '2019-06-06 16:02:43', '2019-06-07 07:22:20'),
-(205, 5, 26, '.CIHORMOD', NULL, 'Hora', NULL, 1, 0, 1, 0, NULL, NULL, NULL, 'His', NULL, '2019-06-06 16:02:43', '2019-06-07 07:22:20'),
-(206, 5, 27, '.CIFECINAT', NULL, 'Fecha', NULL, 1, 0, 1, 0, NULL, NULL, NULL, 'Ymd', NULL, '2019-06-06 16:02:43', '2019-06-07 07:22:20'),
-(207, 5, 28, '.CIHORINAT', NULL, 'Hora', NULL, 1, 0, 1, 0, NULL, NULL, NULL, 'His', NULL, '2019-06-06 16:02:43', '2019-06-07 07:22:20'),
+(200, 5, 21, '.CICODESTAD', 'Estado', 'Texto', NULL, 1, 1, 1, 0, NULL, 1, NULL, NULL, NULL, '2019-06-06 16:02:43', '2019-06-25 14:37:26'),
 (209, 10, 0, '.PRCODPROF', 'Cod. Profesional', 'Entero', NULL, 1, 1, 0, 0, NULL, NULL, NULL, NULL, NULL, '2019-06-13 10:15:25', '2019-06-13 10:15:25'),
 (210, 10, 1, '.PRNOMPROF', 'Profesional', 'Texto', '', 1, 1, 0, 1, NULL, 50, NULL, NULL, NULL, '2019-06-13 10:15:25', '2019-06-13 10:17:47'),
 (211, 11, 0, '.ID_ENTIDADPLAN', 'Cod. Entidad Plan', 'Texto', '', 1, 1, 0, 0, NULL, 8, NULL, NULL, NULL, '2019-06-13 10:59:46', '2019-06-13 11:01:25'),
@@ -249,7 +242,7 @@ CREATE TABLE `sara_entidades_grids` (
 --
 
 INSERT INTO `sara_entidades_grids` (`id`, `entidad_id`, `Titulo`, `created_at`, `updated_at`) VALUES
-(1, 5, 'Citas Recientes filtradas por Centro', '2019-06-06 17:45:23', '2019-06-14 17:19:50');
+(1, 5, 'Citas Recientes', '2019-06-06 17:45:23', '2019-06-26 15:02:54');
 
 -- --------------------------------------------------------
 
@@ -265,6 +258,7 @@ CREATE TABLE `sara_entidades_grids_columnas` (
   `Tipo` varchar(20) NOT NULL DEFAULT 'Campo',
   `Ruta` text,
   `Llaves` text,
+  `Visible` tinyint(1) NOT NULL DEFAULT '1',
   `campo_id` int(11) DEFAULT NULL,
   `externalgrid_id` int(11) DEFAULT NULL,
   `created_at` datetime NOT NULL,
@@ -275,19 +269,72 @@ CREATE TABLE `sara_entidades_grids_columnas` (
 -- Volcado de datos para la tabla `sara_entidades_grids_columnas`
 --
 
-INSERT INTO `sara_entidades_grids_columnas` (`id`, `grid_id`, `Indice`, `Cabecera`, `Tipo`, `Ruta`, `Llaves`, `campo_id`, `externalgrid_id`, `created_at`, `updated_at`) VALUES
-(37, 1, 0, NULL, 'Campo', '[5]', '[null]', 179, NULL, '2019-06-13 14:32:22', '2019-06-13 18:06:35'),
-(38, 1, 2, NULL, 'Campo', '[5]', '[null]', 182, NULL, '2019-06-13 14:32:23', '2019-06-14 11:15:15'),
-(39, 1, 3, NULL, 'Campo', '[5]', '[null]', 183, NULL, '2019-06-13 14:32:24', '2019-06-14 11:15:16'),
-(40, 1, 1, NULL, 'Campo', '[5]', '[null]', 181, NULL, '2019-06-13 14:32:25', '2019-06-14 11:15:15'),
-(43, 1, 7, NULL, 'Campo', '[5,10]', '[null,180,210]', 210, NULL, '2019-06-13 17:13:37', '2019-06-14 11:35:41'),
-(45, 1, 6, NULL, 'Campo', '[5,1]', '[null,186,150]', 150, NULL, '2019-06-13 18:04:56', '2019-06-14 11:35:41'),
-(46, 1, 5, NULL, 'Campo', '[5,1]', '[null,186,217]', 217, NULL, '2019-06-13 18:06:30', '2019-06-14 11:35:41'),
-(50, 1, 8, NULL, 'Campo', '[5,1]', '[null,186,171]', 171, NULL, '2019-06-14 11:14:35', '2019-06-14 11:35:42'),
-(52, 1, 8, NULL, 'Campo', '[5]', '[null]', 187, NULL, '2019-06-14 11:42:00', '2019-06-14 11:42:00'),
-(53, 1, 9, NULL, 'Campo', '[5]', '[null]', 194, NULL, '2019-06-14 11:42:11', '2019-06-14 11:42:11'),
-(54, 1, 10, NULL, 'Campo', '[5]', '[null]', 195, NULL, '2019-06-14 11:42:12', '2019-06-14 11:42:12'),
-(59, 1, 11, NULL, 'Campo', '[5]', '[null]', 184, NULL, '2019-06-14 14:55:39', '2019-06-14 14:55:39');
+INSERT INTO `sara_entidades_grids_columnas` (`id`, `grid_id`, `Indice`, `Cabecera`, `Tipo`, `Ruta`, `Llaves`, `Visible`, `campo_id`, `externalgrid_id`, `created_at`, `updated_at`) VALUES
+(61, 1, 0, 'Fecha de Cita', 'Campo', '[5]', '[null]', 1, 181, NULL, '2019-06-17 14:19:49', '2019-06-28 15:42:53'),
+(86, 1, 6, NULL, 'Campo', '[5,10]', '[null,180,210]', 1, 210, NULL, '2019-06-27 16:09:46', '2019-06-28 15:42:54'),
+(88, 1, 3, NULL, 'Campo', '[5,1]', '[null,186,217]', 1, 217, NULL, '2019-06-27 16:38:26', '2019-06-28 15:42:54'),
+(89, 1, 4, NULL, 'Campo', '[5,1]', '[null,186,150]', 1, 150, NULL, '2019-06-27 16:38:28', '2019-06-28 15:42:54'),
+(90, 1, 5, NULL, 'Campo', '[5,1]', '[null,186,171]', 1, 171, NULL, '2019-06-27 16:38:34', '2019-06-28 15:42:54'),
+(91, 1, 7, 'Centro', 'Campo', '[5]', '[null]', 1, 194, NULL, '2019-06-28 15:10:49', '2019-06-28 15:10:49'),
+(92, 1, 1, NULL, 'Campo', '[5]', '[null]', 1, 182, NULL, '2019-06-28 15:42:42', '2019-06-28 15:42:54'),
+(93, 1, 2, NULL, 'Campo', '[5]', '[null]', 1, 183, NULL, '2019-06-28 15:42:43', '2019-06-28 15:42:54');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `sara_entidades_grids_filtros`
+--
+
+CREATE TABLE `sara_entidades_grids_filtros` (
+  `id` int(11) NOT NULL,
+  `grid_id` int(11) NOT NULL,
+  `columna_id` int(11) NOT NULL,
+  `Indice` int(11) NOT NULL,
+  `Comparador` varchar(255) NOT NULL,
+  `Valor` varchar(255) DEFAULT NULL,
+  `Op1` varchar(255) NOT NULL,
+  `Op2` varchar(255) NOT NULL,
+  `Op3` int(11) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `sara_entidades_grids_filtros`
+--
+
+INSERT INTO `sara_entidades_grids_filtros` (`id`, `grid_id`, `columna_id`, `Indice`, `Comparador`, `Valor`, `Op1`, `Op2`, `Op3`, `created_at`, `updated_at`) VALUES
+(15, 1, 61, 0, '=', '-2 days', 'rel', '', 0, '2019-06-28 16:01:53', '2019-06-28 16:40:19'),
+(17, 1, 91, 2, 'radios', NULL, '', '', 0, '2019-06-28 16:42:59', '2019-06-28 16:58:36'),
+(18, 1, 86, 1, 'lista', NULL, '', '', 0, '2019-06-28 16:58:29', '2019-06-28 16:58:36');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `sara_entidades_restricciones`
+--
+
+CREATE TABLE `sara_entidades_restricciones` (
+  `id` int(11) NOT NULL,
+  `entidad_id` int(11) NOT NULL,
+  `campo_id` int(11) NOT NULL,
+  `Comparador` varchar(50) NOT NULL,
+  `Valor` varchar(255) DEFAULT NULL,
+  `Op1` varchar(255) NOT NULL,
+  `Op2` varchar(255) NOT NULL,
+  `Op3` int(11) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `sara_entidades_restricciones`
+--
+
+INSERT INTO `sara_entidades_restricciones` (`id`, `entidad_id`, `campo_id`, `Comparador`, `Valor`, `Op1`, `Op2`, `Op3`, `created_at`, `updated_at`) VALUES
+(18, 5, 200, '=', 'A', '', '', 0, '2019-06-26 14:10:52', '2019-06-26 14:10:59'),
+(19, 5, 186, 'no_nulo', NULL, '', '', 0, '2019-06-26 14:33:00', '2019-06-26 14:33:04'),
+(22, 5, 194, 'no_nulo', NULL, '', '', 0, '2019-06-28 17:01:30', '2019-06-28 17:01:33');
 
 -- --------------------------------------------------------
 
@@ -1449,6 +1496,21 @@ ALTER TABLE `sara_entidades_grids`
 -- Indices de la tabla `sara_entidades_grids_columnas`
 --
 ALTER TABLE `sara_entidades_grids_columnas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `grid_id` (`grid_id`);
+
+--
+-- Indices de la tabla `sara_entidades_grids_filtros`
+--
+ALTER TABLE `sara_entidades_grids_filtros`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `columna_id` (`columna_id`),
+  ADD KEY `grid_id` (`grid_id`);
+
+--
+-- Indices de la tabla `sara_entidades_restricciones`
+--
+ALTER TABLE `sara_entidades_restricciones`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1513,7 +1575,19 @@ ALTER TABLE `sara_entidades_grids`
 -- AUTO_INCREMENT de la tabla `sara_entidades_grids_columnas`
 --
 ALTER TABLE `sara_entidades_grids_columnas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
+
+--
+-- AUTO_INCREMENT de la tabla `sara_entidades_grids_filtros`
+--
+ALTER TABLE `sara_entidades_grids_filtros`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
+-- AUTO_INCREMENT de la tabla `sara_entidades_restricciones`
+--
+ALTER TABLE `sara_entidades_restricciones`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `sara_usuarios`
@@ -1526,6 +1600,23 @@ ALTER TABLE `sara_usuarios`
 --
 ALTER TABLE `sara_usuario_apps`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `sara_entidades_grids_columnas`
+--
+ALTER TABLE `sara_entidades_grids_columnas`
+  ADD CONSTRAINT `sara_entidades_grids_columnas_ibfk_1` FOREIGN KEY (`grid_id`) REFERENCES `sara_entidades_grids` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `sara_entidades_grids_filtros`
+--
+ALTER TABLE `sara_entidades_grids_filtros`
+  ADD CONSTRAINT `sara_entidades_grids_filtros_ibfk_1` FOREIGN KEY (`columna_id`) REFERENCES `sara_entidades_grids_columnas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `sara_entidades_grids_filtros_ibfk_2` FOREIGN KEY (`grid_id`) REFERENCES `sara_entidades_grids` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

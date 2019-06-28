@@ -162,5 +162,15 @@ class CRUD
 		$DaModel->delete();
 	}
 
+	public function deletemultiple($Ops)
+	{
+		$primary_key = $this->Model->getKeyName();
+		$primary_keyvals = [];
+		foreach ($Ops['obj'] as $Obj) {
+			$primary_keyvals[] = $Obj[$primary_key];
+		};
+		$this->Model->whereIn($primary_key, $primary_keyvals)->delete();
+	}
+
 
 }

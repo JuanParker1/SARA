@@ -41,6 +41,11 @@ class Entidad extends Model
 		return $this->hasMany('\App\Models\EntidadCampo', 'entidad_id')->orderBy('Indice', 'ASC');
 	}
 
+	public function restricciones()
+	{
+		return $this->hasMany('\App\Models\EntidadRestriccion', 'entidad_id');
+	}
+
 	public function bdd()
 	{
 		return $this->belongsTo('\App\Models\BDD', 'bdd_id');

@@ -15,7 +15,7 @@
 
 		<div class="h30 lh30 padding-left border-bottom relative Pointer" md-ink-ripple layout
 			ng-repeat="G in GridsCRUD.rows" ng-click="openGrid(G)"
-			ng-class="{'bg-lightgrey-5': G.id == GridSel.id}">
+			ng-class="{'bg-lightgrey-5': G.id == GridSel.id}" md-truncate>
 			<md-icon md-font-icon="fa-table"></md-icon>
 			<div flex>{{ G.Titulo }}</div>
 		</div>
@@ -50,31 +50,14 @@
 		
 		<div flex layout=column class="padding overflow-y darkScroll border-radius">
 
-			<div layout class="border-bottom bg-white border-radius margin-bottom padding-but-top padding-top-5">
+			<div layout class="border-bottom bg-white border-radius margin-bottom padding-5">
 				<md-input-container class="no-margin-bottom" flex>
 					<input type="text" ng-model="GridSel.Titulo" placeholder="Titulo">
 				</md-input-container>
 			</div>
 
-			<md-subheader class="no-padding margin-bottom-5 md-no-sticky">Columnas</md-subheader>
-			<div layout=column class="" as-sortable="dragListener2" ng-model="GridColumnasCRUD.rows">
-				<div ng-repeat="Co in GridColumnasCRUD.rows" class="bg-white padding-5 border lh20" layout as-sortable-item
-					ng-class="{ 'bg-yellow': Co.changed }">
-					<md-button class="md-icon-button s20 no-margin margin-right-5 no-padding drag-handle" aria-label="b" as-sortable-item-handle>
-						<md-icon md-font-icon="fa-grip-lines" class="s20"></md-icon>
-					</md-button>
-
-					<div class="text-clear" ng-repeat="E in Co.Ruta track by $index">
-						<span>{{ getEntidad(E).Nombre  }}</span><md-icon md-font-icon="fa-chevron-right" class="s20 fa-fw"></md-icon>
-					</div>
-
-					<md-icon md-svg-icon="{{ TiposCampo[Co.campo.Tipo].Icon }}" class="s20 margin-right-5"></md-icon>
-					<div flex>{{ Co.campo.Alias !== null ? Co.campo.Alias : Co.campo.Columna }}</div>
-					<md-button class="md-icon-button s20 no-margin" aria-label="b" ng-click="removeColumna(Co)">
-						<md-icon md-svg-icon="md-close" class="s20"></md-icon>
-					</md-button>
-				</div>
-			</div>
+			@include('Entidades.Entidades_Grids_Columnas')
+			@include('Entidades.Entidades_Grids_Filtros')
 			
 			<div class="h30"></div>
 		</div>

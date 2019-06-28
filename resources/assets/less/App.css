@@ -276,6 +276,11 @@ md-input-container .md-button:not(.md-datepicker-button) {
   box-sizing: border-box;
   float: left;
 }
+md-datepicker.compact .md-datepicker-input {
+  width: 95px;
+  min-width: 0;
+  padding: 0;
+}
 md-datepicker.no-button .md-datepicker-button {
   display: none;
 }
@@ -754,6 +759,12 @@ button {
 }
 .abs.right {
   right: 10px;
+}
+.inline-block {
+  display: inline-block;
+}
+.block {
+  display: block;
 }
 .right {
   float: right;
@@ -9056,6 +9067,9 @@ md-tooltip {
 }
 .text-10pt {
   font-size: 10pt;
+}
+.text-10px {
+  font-size: 10px;
 }
 .text-12px {
   font-size: 12px;

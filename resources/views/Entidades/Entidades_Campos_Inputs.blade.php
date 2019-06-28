@@ -1,5 +1,5 @@
 <td md-cell class="md-cell-compress ">
-	<md-input-container md-no-float class="no-padding w200">
+	<md-input-container md-no-float class="no-padding w150">
 		<input type="text" placeholder="Columna" ng-model="C.Columna" ng-required="C.id" class="h30" ng-change="markChanged(C)"
 		@if($withSave) enter-stroke="addCampo()" id="newCampo" @endif >
 	</md-input-container>
@@ -68,7 +68,7 @@
 	</div>
 
 	<div ng-if="inArray(C.Tipo, ['Entidad'])">
-		<md-select ng-model="C.Op1" aria-label="s" ng-change="markChanged(C)" style="font-weight: 400;font-size: 16px;">
+		<md-select ng-model="C.Op1" aria-label="s" ng-change="markChanged(C)" class="text-bold">
 		  <md-option ng-value="Op.id" ng-repeat="Op in EntidadesCRUD.rows | filter:{ 'bdd_id':BddSel.id }:true"
 		  	ng-if="Op.id !== EntidadSel.id">{{ Op.Nombre }}</md-option>
 		</md-select>

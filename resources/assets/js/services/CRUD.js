@@ -1,5 +1,5 @@
 angular.module('CRUD', [])
-.factory('CRUD', [ '$rootScope', '$q', '$mdDialog', 
+.factory('CRUD', [ '$rootScope', '$q', '$mdDialog',
 	function($rootScope, $q, $mdDialog){
 
 		var Rs = $rootScope;
@@ -24,6 +24,7 @@ angular.module('CRUD', [])
 				query_with: [],
 				query_call: [],
 				order_by: [],
+				selected:[]
 			};
 			t.columns = [];
 			t.rows = [];
@@ -91,6 +92,19 @@ angular.module('CRUD', [])
 				});
 			};
 
+			t.deleteMultiple = function(){
+				t.ops.obj = angular.copy(t.ops.selected);
+				//
+				return Rs.http(t.ops.base_url, { fn: 'deletemultiple', ops: t.ops }).then(function(r) {
+					angular.forEach(t.ops.obj, (Obj) => {
+						var Index = Rs.getIndex(t.rows, Obj[t.ops.primary_key], t.ops.primary_key);
+						t.rows.splice(Index, 1);
+					});
+					t.ops.obj = null;
+					t.ops.selected = [];
+				});
+			};
+
 			t.dialog = function(Obj, diagConfig){
 				var config = {
 					theme: 'default',
@@ -135,6 +149,11 @@ angular.module('CRUD', [])
 				};
 			};
 
+			//Obtener un elemento por primary_key
+			t.one = (key) => {
+				var Index = Rs.getIndex(t.rows, key, t.ops.primary_key);
+				return t.rows[Index];
+			};
 
 		};
 

@@ -10,6 +10,7 @@ use App\Functions\CRUD;
 
 use App\Models\Entidad;
 use App\Models\EntidadCampo;
+use App\Models\EntidadRestriccion;
 use App\Models\EntidadGrid;
 use App\Models\BDD;
 
@@ -74,6 +75,26 @@ class EntidadesController extends Controller
     }
 
 
+    //Restricciones
+    public function postRestricciones()
+    {
+        $CRUD = new CRUD('App\Models\EntidadRestriccion');
+        return $CRUD->call(request()->fn, request()->ops);
+    }
+
+    public function postRestriccionesUpdate()
+    {
+        $Restricciones = request()->Restricciones;
+        foreach ($Restricciones as $R) {
+            if(!array_key_exists('changed', $R)) continue;
+            if(!$R['changed']) continue;
+            $DaRest = EntidadRestriccion::where('id', $R['id'])->first();
+            $DaRest->fillit($R);
+            $DaRest->save();
+        }
+    }
+
+
 
     //Grids
     public function postGrids()
@@ -102,19 +123,52 @@ class EntidadesController extends Controller
         }
     }
 
+    public function postGridsFiltrosUpdate()
+    {
+        $Filtros = request()->Filtros;
+        foreach ($Filtros as $F) {
+            if(!array_key_exists('changed', $F)) continue;
+            if(!$F['changed']) continue;
+            $DaFilter = \App\Models\EntidadGridFiltro::where('id', $F['id'])->first();
+            $DaFilter->fillit($F);
+            $DaFilter->save();
+        }
+    }
+
+    //Grids - Filtros
+    public function postGridsFiltros()
+    {
+        $CRUD = new CRUD('App\Models\EntidadGridFiltro');
+        return $CRUD->call(request()->fn, request()->ops);
+    }
+
 
     public function postGridsGetData()
     {
-        
         $grid_id = request()->grid_id;
-        $Grid = EntidadGrid::where('id', $grid_id)->with(['columnas', 'entidad'])->first();
+        $Grid = EntidadGrid::where('id', $grid_id)
+                ->with(['columnas', 'filtros','entidad', 'entidad.restricciones'])->first();
 
         $RowsLimit = $Grid->entidad->max_rows ?: 100;
 
         $q = CamposHelper::getBaseQuery($Grid->entidad)->limit($RowsLimit);
+
+        CamposHelper::addRestric($q, $Grid->entidad->restricciones, "t0");
+
         $entidades_ids = [];
         $tablas = [];
         $tablas_consec = 0;
+
+        //Columna Guia
+        $col_guia = new \App\Models\EntidadGridColumna([
+            'grid_id'  => $grid_id,
+            'Indice'   => -1,
+            'Ruta'     => [$Grid->entidad_id],
+            'Llaves'   => [null],
+            'Visible'  => false,
+            'campo_id' => $Grid->entidad->campo_llaveprim,
+        ]);
+        $Grid->columnas->prepend($col_guia);
 
         foreach ($Grid->columnas as $C) {
 
@@ -163,7 +217,7 @@ class EntidadesController extends Controller
                               ,$CampoDestino->getColName("t".$tb['consec']));
         };
         
-        $DaCampos = [];
+        $DaCampos = []; $header_index = 0;
         foreach ($Grid->columnas as $C) {
             $Campo = CamposHelper::getElm($Campos,  $C['campo_id']);
             $Col = $Campo->getColName($C['tabla_consec']);
@@ -172,9 +226,28 @@ class EntidadesController extends Controller
             $q = $q->addSelect([DB::raw("$Col AS \"$Alias\"")]);
             $DaCampos[] = $Campo;
             $C['campo'] = $Campo;
-            $C['header'] = ($Campo->Alias == null) ? $Campo->getColName('') : $Campo->Alias;
+            $C['header'] = $C->Cabecera ?: $Campo->Alias ?: $Campo->getColName('');
             $C['header_numeric'] = in_array($Campo->Tipo, ['Entero','Decimal','Dinero']);
+            $C['header_index'] = $header_index; $header_index++;
         };
+
+        //Filtrar
+        $last_filter = null;
+        foreach ($Grid->filtros as $F) {
+            $Columna = CamposHelper::getElm($Grid->columnas,  $F['columna_id']);
+            $F['columna'] = $Columna;
+            $F['campo'] = $Columna['campo'];
+            $F['filter_header'] = $Columna['header'];
+            $F['filter_comparator'] = CamposHelper::getFilterComp($F, $Columna['campo']);
+            $F['default'] = CamposHelper::getFilterVal($F, $Columna['campo']);
+            $F['val'] = $F['default'];
+            
+            $F['filter_cont'] = ($F['filter_header'] == $last_filter);
+            $last_filter = $F['filter_header'];
+
+
+            CamposHelper::addRestric($q, [$F], $Columna['tabla_consec']);
+        }
 
         //Ordenar
         if(!is_null($Grid->entidad->campo_orderby)){
@@ -182,11 +255,19 @@ class EntidadesController extends Controller
             $q = $q->orderBy($CampoOrder->getColName("t0"), $Grid->entidad->campo_orderbydir);
         };
 
-        $q = $q->where(DB::raw('"t1".BENUMDOCBE'), 'LIKE', '1093217141');
+        
 
-        $Grid->sql = [ 'query' => $q->toSql() ];
-        //return $Grid->sql['query'];
+        $Grid->sql = [ 'query' => $q->toSql(), 'bindings' => $q->getBindings() ];
         $Grid->data = CamposHelper::prepData($DaCampos, $q->get());
+
+        //Prep Filtros
+        foreach ($Grid->filtros as $F) {
+            if(in_array($F->Comparador,['lista','radios'])){
+                $Ops = $Grid->data->pluck($F['columna']['header_index'])->unique()->sort()->values();
+                $F['options'] = $Ops;
+            };
+        }
+
         return compact('Grid');
     }
 

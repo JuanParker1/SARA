@@ -43,4 +43,9 @@ class EntidadGrid extends MyModel
 		return $this->hasMany('\App\Models\EntidadGridColumna', 'grid_id')->orderBy('Indice', 'ASC');
 	}
 
+	public function filtros()
+	{
+		return $this->hasMany('\App\Models\EntidadGridFiltro', 'grid_id')->orderBy('Indice', 'ASC');
+	}
+
 }

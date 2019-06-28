@@ -35,7 +35,9 @@ angular.module('EntidadesCtrl', [])
 			if(!E) return;
 			if(Ctrl.EntidadSel){ if(Ctrl.EntidadSel.id == E.id) return; }
 			Ctrl.EntidadSel = E;
+			
 			Ctrl.getCampos();
+			Ctrl.getRestricciones();
 			Ctrl.getGrids();
 
 			Ctrl.GridColumnasCRUD.rows = [];
@@ -60,11 +62,13 @@ angular.module('EntidadesCtrl', [])
 
 				//Actualizar los campos
 				Rs.http('/api/Entidades/campos-update', { Campos: Ctrl.CamposCRUD.rows }).then(() => {
-					angular.forEach(Ctrl.CamposCRUD.rows, (C,index) => {
-						C.changed = false;
-					});
-					Rs.showToast('Entidad Actualizada', 'Success');
+					angular.forEach(Ctrl.CamposCRUD.rows, (C,index) => { C.changed = false; });
 
+					//Actualizar las restricciones
+					Rs.http('/api/Entidades/restricciones-update', { Restricciones: Ctrl.RestricCRUD.rows }).then(() => {
+						angular.forEach(Ctrl.RestricCRUD.rows, (R,index) => { R.changed = false; });
+						Rs.showToast('Entidad Actualizada', 'Success');
+					});
 				});
 
 				
@@ -188,6 +192,27 @@ angular.module('EntidadesCtrl', [])
 			});
 		};
 
+		//Restricciones
+		Ctrl.RestricCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/restricciones', add_research: true, add_with:['campo'] });
+		
+		Ctrl.getRestricciones = () => {
+			Ctrl.RestricCRUD.setScope('entidad', Ctrl.EntidadSel.id);
+			Ctrl.RestricCRUD.get();
+		};
+
+		Ctrl.addRestriccion = () => {
+			Ctrl.RestricCRUD.add({
+				entidad_id: Ctrl.EntidadSel.id,
+				campo_id:   Ctrl.newRestriccion,
+				Comparador: '=',
+				Valor:      null
+			});
+			Ctrl.newRestriccion = null;
+		};
+
+		Ctrl.removeRestriccion = (R) => {
+			Ctrl.RestricCRUD.delete(R);
+		};
 
 		//Grids
 		Ctrl.GridsCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/grids', order_by: ['Titulo'] });
@@ -214,7 +239,8 @@ angular.module('EntidadesCtrl', [])
 
 		Ctrl.openGrid = (G) => {
 			Ctrl.GridSel = G;
-			Ctrl.getColumnas();
+			Ctrl.getColumnas().then(() => { Ctrl.getFiltros(); });
+			
 		};
 
 		//Columnas
@@ -222,9 +248,7 @@ angular.module('EntidadesCtrl', [])
 
 		Ctrl.getColumnas = () => {
 			Ctrl.GridColumnasCRUD.setScope('grid', Ctrl.GridSel.id);
-			Ctrl.GridColumnasCRUD.get().then(() => {
-				
-			});
+			return Ctrl.GridColumnasCRUD.get();
 		};
 
 		Ctrl.addColumna = (C, Ruta, Llaves) => {
@@ -238,8 +262,24 @@ angular.module('EntidadesCtrl', [])
 			});
 		};
 
+		Ctrl.editColumna = (C) => {
+			Ctrl.GridColumnasCRUD.dialog(C, { title: 'Editar Columna', only:['Cabecera'], with_delete: false }).then((r) => {
+				var Index = Rs.getIndex(Ctrl.GridColumnasCRUD.rows, r.id);
+				if(r.Cabecera == '') r.Cabecera = null;
+				r.changed = true;
+				Ctrl.GridColumnasCRUD.rows[Index] = r;
+				
+			});
+		};
+
 		Ctrl.removeColumna = (C) => {
 			Ctrl.GridColumnasCRUD.delete(C);
+		};
+
+		Ctrl.removerColumnas = () => {
+			Ctrl.GridColumnasCRUD.deleteMultiple().then(() => {
+				Ctrl.getFiltros();
+			});
 		};
 
 		Ctrl.dragListener2 = {
@@ -253,6 +293,7 @@ angular.module('EntidadesCtrl', [])
 				});
 			}
 		};
+
 
 		Ctrl.verCamposDiag = (entidad_id, Ruta, Llaves) => {
 			if(!entidad_id) return;
@@ -269,18 +310,68 @@ angular.module('EntidadesCtrl', [])
 			}).then((r) => {
 				Ctrl.verCamposDiag(r[0],r[1],r[2]);
 			});
-
 		};
 
+		//Filtros
+		Ctrl.GridFiltrosCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/grids-filtros', query_with:[], order_by: ['Indice'] });
+
+		Ctrl.prepFiltros = () => {
+			angular.forEach(Ctrl.GridFiltrosCRUD.rows, (F) => {
+				var Columna = Ctrl.GridColumnasCRUD.one(F.columna_id);
+				F.columna = Columna;
+				F.campo   = Columna.campo;
+			});
+		};
+
+		Ctrl.getFiltros = () => {
+			Ctrl.GridFiltrosCRUD.setScope('grid', Ctrl.GridSel.id);
+			return Ctrl.GridFiltrosCRUD.get().then(() => {
+				Ctrl.prepFiltros();
+			});
+		};
+
+		Ctrl.addFiltro = (Co) => {
+			var Indice = Ctrl.GridFiltrosCRUD.rows.length;
+			return Ctrl.GridFiltrosCRUD.add({
+				grid_id: Ctrl.GridSel.id,
+				columna_id: Co.id,
+				Indice: Indice,
+			}).then(() => {
+				Ctrl.prepFiltros();
+				Rs.showToast('Filtro Añadido', 'Success');
+			});
+		};
+
+		Ctrl.dragListener3 = {
+			accept: function (sourceItemHandleScope, destSortableScope) { return true; },
+			orderChanged: () => {
+				angular.forEach(Ctrl.GridFiltrosCRUD.rows, (C,index) => {
+					if(C.Indice !== index){
+						C.Indice = index;
+						C.changed = true;
+					};
+				});
+			}
+		};
+		Ctrl.selectedRows = [];
+
+		//Grid
 		Ctrl.updateGrid = () => {
 			Ctrl.GridsCRUD.update(Ctrl.GridSel).then(() => {
 
-				//Actualizar los campos
+				//Actualizar las columnas
 				Rs.http('/api/Entidades/grids-columnas-update', { Columnas: Ctrl.GridColumnasCRUD.rows }).then(() => {
 					angular.forEach(Ctrl.GridColumnasCRUD.rows, (C,index) => {
 						C.changed = false;
 					});
-					Rs.showToast('Grid Actualizada', 'Success');
+					
+					//Actualizar los filtros
+					Rs.http('/api/Entidades/grids-filtros-update', { Filtros: Ctrl.GridFiltrosCRUD.rows }).then(() => {
+						angular.forEach(Ctrl.GridFiltrosCRUD.rows, (C,index) => {
+							C.changed = false;
+						});
+						Rs.showToast('Grid Actualizada', 'Success');
+					});
 				});
 				
 			});

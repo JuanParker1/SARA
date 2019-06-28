@@ -1,7 +1,10 @@
 <div class="bg-white border margin-but-top border-radius" layout=column >
-	<md-subheader class="no-padding margin md-no-sticky">Campos</md-subheader>
+	<md-subheader class="no-padding margin md-no-sticky Pointer" ng-click="showCampos = !showCampos">
+		<md-icon md-font-icon="fa-chevron-right fa-fw s20" ng-class="{'fa-rotate-90': showCampos}"></md-icon>
+		Campos
+	</md-subheader>
 	<md-progress-linear md-mode="indeterminate" ng-show="CamposCRUD.ops.loading"></md-progress-linear>
-	<md-table-container flex ng-show="!CamposCRUD.ops.loading">
+	<md-table-container flex ng-show="!CamposCRUD.ops.loading && showCampos">
 	<table md-table class="md-table-short table-col-compress" md-row-select multiple ng-model="camposSel">
 		<thead md-head>
 			<tr md-row>

@@ -60,6 +60,9 @@
 			</md-input-container>
 		</div>
 
+		@include('Entidades.Entidades_Restricciones') 
+		
+
 		<span flex class="mh30"></span>
 
 	</div>

@@ -97,7 +97,7 @@ angular.module('appConfig', [])
 			if(typeof date == 'undefined' || date === null || isNaN(date.getTime()) ){
 				return null;
 			}else{
-				return moment(date).format('L');
+				return moment(date).format('Y-MM-DD');
 			}
 		};
 
