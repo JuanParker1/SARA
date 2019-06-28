@@ -17,13 +17,17 @@ angular.module('Entidades_Grids_TestCtrl', [])
 			Ctrl.Data = [];
 			var d = angular.copy(Ctrl.Grid.data);
 			angular.forEach(Ctrl.Grid.filtros, (F) => {
-				if(d.length > 0 && Ctrl.inArray(F.Comparador, ['lista','radios']) && (F.val !== null)){
-					d = $filter('filter')(d, function (item) {
-						if(angular.isArray(F.val)){
-							return F.val.includes(item[F.columna.header_index]);
-						}
-						return item[F.columna.header_index] === F.val;
-					});
+				if(d.length > 0 && Ctrl.inArray(F.Comparador, ['lista','radios'])){
+
+					if(angular.isArray(F.val)){ if(F.val.length == 0) F.val = null }
+					if(F.val !== null){
+						d = $filter('filter')(d, function (item) {
+							if(angular.isArray(F.val)){
+								return F.val.includes(item[F.columna.header_index]);
+							}
+							return item[F.columna.header_index] === F.val;
+						});
+					}
 				};
 			});
 
