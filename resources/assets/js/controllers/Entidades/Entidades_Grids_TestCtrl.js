@@ -14,7 +14,7 @@ angular.module('Entidades_Grids_TestCtrl', [])
 		Ctrl.Data = [];
 
 		Ctrl.filterData = () => {
-			Ctrl.Data = [];
+			/*Ctrl.Data = [];
 			var d = angular.copy(Ctrl.Grid.data);
 			angular.forEach(Ctrl.Grid.filtros, (F) => {
 				if(d.length > 0 && Ctrl.inArray(F.Comparador, ['lista','radios'])){
@@ -31,19 +31,24 @@ angular.module('Entidades_Grids_TestCtrl', [])
 				};
 			});
 
-			Ctrl.Data = d; delete d;
+			Ctrl.Data = d; delete d;*/
+			Rs.http('api/Entidades/grids-reload-data', { Grid: Ctrl.Grid }).then((r) => {
+				Ctrl.Grid.sql  = r.sql;
+				Ctrl.Grid.data = r.data;
+			});
 		};
 
 		Rs.http('api/Entidades/grids-get-data', { grid_id: grid_id }).then((r) => {
 			Ctrl.Grid = r.Grid;
-			Ctrl.filterData();
+			//Ctrl.filterData();
 		});
 
 		Ctrl.getSelectedText = (Text) => {
 			if(Text === null) return 'Seleccionar...';
 			if(angular.isArray(Text)){
-				var Len = Text.length;
-				return ( Len == 1 ) ? Text[0] : (Len + ' Seleccionados');
+				return JoinedText = Text.join(', ');
+				//var Len = JoinedText.length;
+				//return ( Len < 1000 ) ? JoinedText : (Text.length + ' Seleccionados');
 			}
 			return Text;
 		};

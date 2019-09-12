@@ -13,16 +13,20 @@ angular.module('appRoutes', [])
 						templateUrl: '/Home',
 						controller: 'MainCtrl',
 						resolve: {
-							promiseObj:  function($rootScope, $localStorage, $http, $location, $q){
+							promiseObj:  function($rootScope, $localStorage, $http){
 
 								var Rs = $rootScope;
 								Rs.Storage = $localStorage;
 
 								return $http.post('api/Usuario/check-token', { token: Rs.Storage.token });
 							},
-							controller: function($rootScope, $localStorage, promiseObj){
+							promiseObj2:  function($http){
+								return $http.post('api/Entidades/tipos-campo', {});
+							},
+							controller: function($rootScope, $localStorage, promiseObj,promiseObj2){
 								var Rs = $rootScope;
-								Rs.Usuario = promiseObj.data;
+								Rs.Usuario 		= promiseObj.data;
+								Rs.TiposCampo 	= promiseObj2.data;
 								$localStorage.token = Rs.Usuario.token;
 							}
 						},

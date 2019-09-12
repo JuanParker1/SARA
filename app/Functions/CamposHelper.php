@@ -19,6 +19,7 @@ class CamposHelper
 			'Decimal'     => [ 'Icon' => 'my-decimal', 			'Divide' => false, 	'Defaults' => [  null, null,    1,             null, null] ],
 			'Dinero'      => [ 'Icon' => 'md-money', 			'Divide' => true, 	'Defaults' => [  null, null,    1,             null, null] ],
 			'Booleano'    => [ 'Icon' => 'md-toggle-on', 		'Divide' => true, 	'Defaults' => [  null, null, null,             'Si', 'No'] ],
+            'Periodo'     => [ 'Icon' => 'md-calendar',         'Divide' => false,  'Defaults' => [  null, null, null,             null, null] ],
 			'Fecha'       => [ 'Icon' => 'md-calendar-event', 	'Divide' => false, 	'Defaults' => [  null, null, null,          'Y-m-d', null] ],
 			'Hora'        => [ 'Icon' => 'md-time', 			'Divide' => false, 	'Defaults' => [  null, null, null,          'H:i:s', null] ],
 			'FechaHora'   => [ 'Icon' => 'md-timer', 			'Divide' => true, 	'Defaults' => [  null, null, null,    'Y-m-d H:i:s', null] ],
@@ -184,27 +185,29 @@ class CamposHelper
     {
         if($Campo['Tipo'] == 'Fecha'){
             $Date  = Carbon::parse($Valor);
-            $Valor = $Date->format($Campo->Op4);
+            $Valor = $Date->format($Campo['Op4']);
         };
         return $Valor;
     }
 
-    public static function addRestric($q, $restricciones, $t)
+    public static function addRestric($q, $restricciones, $t = false)
     {
         foreach ($restricciones as $R) {
-            $Campo = $R->campo->getColName($t);
-            $DefValue = self::getFilterVal($R,$R->campo,true);
-            $Valor = self::prepFilterVal($DefValue, $R->campo);
-
-            if($R->Comparador == 'nulo'){                          $q = $q->whereNull($Campo);                      continue; }
-            if($R->Comparador == 'no_nulo'){                       $q = $q->whereNotNull($Campo);                   continue; }
-            if(in_array($R->Comparador, ['=','<=','<','>','>='])){ $q = $q->where($Campo,$R->Comparador,$Valor);    continue; }
-            if($R->Comparador == 'like'){                          $q = $q->where($Campo, 'like', "%$Valor%");      continue; }
-            if($R->Comparador == 'like_'){                         $q = $q->where($Campo, 'like', "$Valor%");       continue; }
-            if($R->Comparador == '_like'){                         $q = $q->where($Campo, 'like', "%$Valor");       continue; }
-
-            //$q = $q->where("$t.BECODBENE", $R['Valor']);
+            if($t) $R['columna_name'] = $R->campo->getColName($t);
+            $Valor = self::prepFilterVal($R['val'], $R['campo']);
+            self::addRestricRun($q, $R['columna_name'], $R['Comparador'], $Valor);
         }
+    }
+
+    public static function addRestricRun($q, $columna_name, $Comparador, $Valor)
+    {
+        if($Comparador == 'nulo'){                          $q = $q->whereNull($columna_name);                 };
+        if($Comparador == 'no_nulo'){                       $q = $q->whereNotNull($columna_name);              };
+        if(in_array($Comparador, ['=','<=','<','>','>='])){ $q = $q->where($columna_name,$Comparador,$Valor);  };
+        if($Comparador == 'like'){                          $q = $q->where($columna_name, 'like', "%$Valor%"); };
+        if($Comparador == 'like_'){                         $q = $q->where($columna_name, 'like', "$Valor%");  };
+        if($Comparador == '_like'){                         $q = $q->where($columna_name, 'like', "%$Valor");  };
+        if($Comparador == 'lista' AND !empty($Valor)){      $q = $q->whereIn($columna_name, $Valor);           };
     }
 
 

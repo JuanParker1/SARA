@@ -27,7 +27,7 @@
 			class="darkScroll border-right">
 
 			<md-list class="Navigation no-padding">
-				<md-list-item ng-click="navTo('Home')" class="" ng-class="{ 'itemsel' : (State.route.length < 3 ) }">
+				<md-list-item ng-click="navTo('Home')" class="mh45 h45" ng-class="{ 'itemsel' : (State.route.length < 3 ) }">
 						<md-icon class="fa-fw fa-lg" md-font-icon="fa-home"></md-icon>
 						<span flex class="SectionsNav_Text" ng-hide="(mainSidenavLabels || !gtsm)">Inicio</span>
 						
@@ -35,7 +35,7 @@
 	        	<md-list-item ng-click="navTo('Home.Section', { section: S.id })" 
 	                ng-repeat="S in Usuario.Secciones"
 	                ng-class="{ 'itemsel' : (S.id == State.route[2] ) }"
-	                class="transition " layout>
+	                class="transition mh45 h45" layout>
 	        			<md-icon class="fa-fw fa-lg" md-font-icon="{{ S.Icono }}"></md-icon>
 	        			<span flex class="SectionsNav_Text margin-right-5" ng-hide="(mainSidenavLabels || !gtsm)">{{ S.Seccion }}</span>
 	        	</md-list-item>

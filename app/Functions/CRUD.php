@@ -134,6 +134,14 @@ class CRUD
 		return $New;
 	}
 
+	public function addmultiple($Ops)
+	{
+		foreach ($Ops['obj'] as $Obj) {
+			$Filler = $this->cleanModel($Obj, $Ops);
+			$this->Model->create($Filler);
+		};
+	}
+
 	public function update($Ops)
 	{
 		$data = $this->data($Ops);

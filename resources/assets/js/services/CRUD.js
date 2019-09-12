@@ -74,6 +74,15 @@ angular.module('CRUD', [])
 				});
 			};
 
+			t.addMultiple = function(Objs){
+				t.ops.obj = Objs;
+				return Rs.http(t.ops.base_url, { fn: 'addmultiple', ops: t.ops }).then(function(r) {
+					t.ops.obj = null;
+					t.get();
+					return r;
+				});
+			};
+
 			t.update = function(Obj){
 				t.ops.obj = Obj;
 				return Rs.http(t.ops.base_url, { fn: 'update', ops: t.ops }).then(function(r) {

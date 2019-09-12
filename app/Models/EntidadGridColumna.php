@@ -15,7 +15,8 @@ class EntidadGridColumna extends MyModel
     	'Llaves' => 'array',
     	'Visible' => 'boolean',
     ];
-    protected $appends = [];
+    protected $with = ['campo'];
+    protected $appends = ['column_title', 'tipo_campo'];
 
 
     public function columns()
@@ -53,5 +54,17 @@ class EntidadGridColumna extends MyModel
 		$this->ruta_entidades = \App\Models\Entidad::whereIn('id', $this->Ruta)->get();
 	}
 
+
+	public function getColumnTitleAttribute()
+	{
+		if(is_null($this->campo)) return $this->Cabecera;
+		return $this->Cabecera ?: $this->campo->Alias ?: $this->campo->Columna;
+	}
+
+	public function getTipoCampoAttribute()
+	{
+		if(is_null($this->campo)) return null;
+		return $this->campo->Tipo;
+	}
 
 }

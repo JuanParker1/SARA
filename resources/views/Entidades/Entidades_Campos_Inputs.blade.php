@@ -18,8 +18,7 @@
 	<md-input-container class="no-padding w100p">
 		<md-select ng-model="C.Tipo" class="w100p" aria-label="T" ng-change="setTipoDefaults(C)">
 			<md-option ng-repeat="(kT,Tipo) in TiposCampo" ng-value="kT" ng-class="{'border-bottom':Tipo.Divide}">
-				<md-icon md-svg-icon="{{ Tipo.Icon }}" class="margin-right-5"></md-icon>
-				{{ kT }}
+				<md-icon md-svg-icon="{{ Tipo.Icon }}" class="margin-right-5"></md-icon>{{ kT }}
 			</md-option>
 		</md-select>
 	</md-input-container>

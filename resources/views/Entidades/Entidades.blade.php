@@ -38,16 +38,12 @@
 		
 		<md-tabs flex class="md-tabs-fullheight" md-center-tabs>
 
-			
-			
-			
+			<md-tab label="General">
+				<md-content class="no-padding no-border border-top well" layout=column>@include('Entidades.Entidades_General')</md-content>
+			</md-tab>
 
 			<md-tab label="Grids">
 				<md-content class="no-padding no-border border-top well" layout=column>@include('Entidades.Entidades_Grids')</md-content>
-			</md-tab>
-
-			<md-tab label="General">
-				<md-content class="no-padding no-border border-top well" layout=column>@include('Entidades.Entidades_General')</md-content>
 			</md-tab>
 
 			<!--<md-tab label="Formularios">

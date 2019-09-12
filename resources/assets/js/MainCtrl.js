@@ -38,5 +38,31 @@ angular.module('MainCtrl', [])
 			Rs.Storage.mainSidenavLabels = !Rs.Storage.mainSidenavLabels;
 			Rs.OpenSidebar('SectionsNav');
 		};
+
+		Rs.AnioActual = new Date().getFullYear();
+		Rs.Meses = [
+			['01','Ene'],
+			['02','Feb'],
+			['03','Mar'],
+			['04','Abr'],
+			['05','May'],
+			['06','Jun'],
+			['07','Jul'],
+			['08','Ago'],
+			['09','Sep'],
+			['10','Oct'],
+			['11','Nov'],
+			['12','Dic'],
+		];
+
+		Rs.getVariableData = (Variables) => {
+			$mdDialog.show({
+				controller: 'VariablesGetDataDiagCtrl',
+				templateUrl: '/Frag/Variables.VariablesGetDataDiag',
+				locals: { Variables : Variables },
+				clickOutsideToClose: false, fullscreen: true, multiple: true,
+			});
+		};
 	}
 ]);
+

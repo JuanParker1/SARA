@@ -12,6 +12,7 @@ class EntidadRestriccion extends MyModel
 	protected $primaryKey = 'id';
     protected $casts = [];
     protected $with = ['campo'];
+    protected $appends = ['val'];
 
     public function columns()
 	{
@@ -22,9 +23,9 @@ class EntidadRestriccion extends MyModel
 			[ 'campo_id',	'campo_id',		null, true,  	false, null, 100 ],
 			[ 'Comparador',	'Comparador',	null, true,  	false, null, 100 ],
 			[ 'Valor',		'Valor',		null, false,  	false, null, 100 ],
-			[ 'Op1',		'Op1',		null, false,  	false, null, 100 ],
-			[ 'Op2',		'Op2',		null, false,  	false, null, 100 ],
-			[ 'Op3',		'Op3',		null, false,  	false, null, 100 ],
+			[ 'Op1',		'Op1',			null, false,  	false, null, 100 ],
+			[ 'Op2',		'Op2',			null, false,  	false, null, 100 ],
+			[ 'Op3',		'Op3',			null, false,  	false, null, 100 ],
 		];
 	}
 
@@ -43,5 +44,12 @@ class EntidadRestriccion extends MyModel
 	public function scopeEntidad($query,$id)
 	{
 		return $query->where('entidad_id', $id);
+	}
+
+
+
+	public function getValAttribute()
+	{
+		return $this->Valor;
 	}
 }

@@ -1,4 +1,4 @@
-<div ng-if="inArray(R.campo.Tipo, ['Texto','TextoLargo','Entidad'])">
+<div ng-if="inArray(R.campo.Tipo, ['Texto','TextoLargo','Entidad'])" layout>
 
 	<md-input-container class="no-padding no-margin">
 		<md-select ng-model="R.Comparador" class="" aria-label="s" ng-change="markChanged(R)">
@@ -7,6 +7,10 @@
 			<md-option value="radios">Radios (Selección única)</md-option>
 		</md-select>
 	</md-input-container>
+
+	<div ng-if="inArray(R.Comparador, ['lista'])">
+		<md-chips ng-model="R.val" class="h30" placeholder="Valores por defecto" ng-change="markChanged(R)"></md-chips>
+	</div>
 
 </div>
 

@@ -429,6 +429,22 @@ md-select.md-no-underline .md-select-value, .md-no-underline input {
     border-bottom-color: transparent !important;
 }
 
+md-select-header{
+	input{
+		border: none;
+	    outline: none;
+	    height: 29px;
+	    width: ~"calc(100% - 15px)";
+	    padding: 0 0 0 12px;
+	    border-bottom: 1px solid #0000001f;
+	    font-size: 1.2em;
+	}
+}
+
+
+    
+
+
 md-option{
 	md-icon.fa-fw{
 		width: 24px;
@@ -554,6 +570,9 @@ md-sidenav{
 	}
 }
 
+.md-tab{
+	outline: none;
+}
 
 /**
  *  Md Datatable
@@ -744,6 +763,41 @@ md-menu-content .md-menu>.md-button:after {
     border-radius: 100px;
     margin: 0px -3px 0 5px;
 }
+
+
+md-chips.h30{
+	md-chips-wrap{
+		padding: 0 3px;
+	}
+
+	md-chip{
+		height: 24px;
+		line-height: 24px;
+		margin: 3px 5px 0 0;
+		font-size: 0.8em;
+		
+		button.md-chip-remove{
+			height: 24px;
+			width: 24px;
+
+			md-icon{
+				min-height: 18px;
+				min-width: 18px;
+			}
+		}
+	}
+
+	.md-chip-input-container, .md-chip-input-container input{
+		height: 30px;
+		line-height: 30px;
+		margin-top: 0 !important;
+		font-size: 0.9em;
+	}
+
+
+}
+
+
 
 .md-list-tickets{
 	md-list-item{

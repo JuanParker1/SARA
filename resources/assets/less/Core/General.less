@@ -107,7 +107,7 @@ button{
 .generate-s(1000);
 .generate-s(@n, @i: 0) when (@i =< @n) {
   .s@{i} { min-width: @i*1px !important; width: @i*1px !important; min-height: @i*1px !important; height: @i*1px !important; line-height: @i*1px !important; }
-  .generate-s(@n, (@i + 10));
+  .generate-s(@n, (@i + 5));
 }
 
 .vh10, .h10vh{ min-height: 10vh !important; }
@@ -120,6 +120,10 @@ button{
 .vh80, .h80vh{ min-height: 80vh !important; }
 .vh90, .h90vh{ min-height: 90vh !important; }
 .vh95, .h95vh{ min-height: 95vh !important; }
+.vh96, .h96vh{ min-height: 96vh !important; }
+.vh97, .h97vh{ min-height: 97vh !important; }
+.vh98, .h98vh{ min-height: 98vh !important; }
+.vh99, .h99vh{ min-height: 99vh !important; }
 .vh100, .h100vh{ min-height: 100vh !important; }
 
 .w100vh{ width: 100vh; }
@@ -316,6 +320,8 @@ md-tooltip{
 .text-10px{ font-size: 10px; }
 .text-12px{ font-size: 12px; }
 .text-13px{ font-size: 13px; }
+.text-14px{ font-size: 14px; }
+.text-15px{ font-size: 15px; }
 .text-16px{ font-size: 16px; }
 .text-18px{ font-size: 18px; }
 .text-20px{ font-size: 20px; line-height: 25px; }
@@ -508,6 +514,17 @@ md-select, md-select-menu{
 	}
 }
 
+
+.md-select-nowrap{
+	.md-select-value > span{
+		white-space: normal;
+    	overflow: inherit;
+    	height: auto;
+    	line-height: 1.5em;
+	}
+}
+
+
 /**
  *  ngMessages
  */
@@ -577,6 +594,15 @@ md-select, md-select-menu{
 	} 
 }
 
+.md-cell.md-cell-hover{
+	background-color: transparent;
+	transition: background-color 0.3s;
+
+	&:hover{
+		background-color: rgba(117, 117, 117, 0.17);
+	}
+}
+
 .table-nowrap tbody td{ white-space: nowrap; }
 
 /**
@@ -616,6 +642,9 @@ md-select, md-select-menu{
 .padding-bottom-20{ padding-bottom: 20px !important; }
 .padding-top-20{ padding-top: 20px !important; }
 .padding-top-5{ padding-top: 5px !important; }
+.padding-right-5{ padding-right: 5px !important; }
+.padding-left-5{ padding-left: 5px !important; }
+.padding-bottom-5{ padding-bottom: 5px !important; }
 
 .padding-but-top{ padding: 0 10px 10px 10px !important; }
 .padding-but-right{ padding: 10px 0px 10px 10px !important; }

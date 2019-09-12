@@ -31,6 +31,7 @@
 		</div>
 
 		<div flex class="overflow-y darkScroll padding-5">
+			<div class="bg-white border-radius border Pointer text-13px padding-5 text-center margin-bottom relative" md-ink-ripple ng-click="addAllColumnas(CamposCRUD.rows, [EntidadSel.id], [null])">Agregar Todos >></div>
 			<div ng-repeat="C in CamposCRUD.rows | filter:{ Visible: true } | filter:filterCamposDisponibles" layout class="bg-white border-radius border Pointer text-13px" >
 				<div layout flex class="relative padding-5" md-ink-ripple ng-click="addColumna(C, [EntidadSel.id], [null])">
 					<md-icon md-svg-icon="{{ TiposCampo[C.Tipo].Icon }}" class="s20 margin-right-5"></md-icon>

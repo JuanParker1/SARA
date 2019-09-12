@@ -12,7 +12,7 @@ angular.module('EntidadesCtrl', [])
 			Rs.http('api/Bdds/all', {}, Ctrl, 'Bdds').then(() => {
 				if(Ctrl.Bdds.length > 0){
 					Ctrl.BddSel = Ctrl.Bdds[0];
-					//return Ctrl.testGrid(1); //QUITAR
+					//Ctrl.testGrid(1); //QUITAR
 					Ctrl.getEntidades();
 				}
 			});
@@ -221,7 +221,7 @@ angular.module('EntidadesCtrl', [])
 			Ctrl.GridsCRUD.setScope('entidad', Ctrl.EntidadSel.id);
 			Ctrl.GridsCRUD.get().then(() => {
 				if(Ctrl.GridsCRUD.rows.length == 0) return;
-				Ctrl.openGrid(Ctrl.GridsCRUD.rows[0]);
+				//Ctrl.openGrid(Ctrl.GridsCRUD.rows[0]);
 			});
 		};
 
@@ -259,6 +259,23 @@ angular.module('EntidadesCtrl', [])
 				Indice: Indice,
 			}).then(() => {
 				Rs.showToast('Columna Añadida', 'Success');
+			});
+		};
+
+		Ctrl.addAllColumnas = (Cols, Ruta, Llaves) => {
+			var Indice = Ctrl.GridColumnasCRUD.rows.length;
+			var Rows = [];
+			angular.forEach(Cols, (C) => {
+				Rows.push({
+					grid_id: Ctrl.GridSel.id,
+					Tipo: 'Campo', Ruta: Ruta, Llaves: Llaves, campo_id: C.id,
+					Indice: Indice,
+				});
+				Indice++;
+			});
+
+			return Ctrl.GridColumnasCRUD.addMultiple(Rows).then(() => {
+				Rs.showToast('Columnas Añadidas', 'Success');
 			});
 		};
 
@@ -317,9 +334,9 @@ angular.module('EntidadesCtrl', [])
 
 		Ctrl.prepFiltros = () => {
 			angular.forEach(Ctrl.GridFiltrosCRUD.rows, (F) => {
-				var Columna = Ctrl.GridColumnasCRUD.one(F.columna_id);
-				F.columna = Columna;
-				F.campo   = Columna.campo;
+				//var Columna = Ctrl.GridColumnasCRUD.one(F.columna_id);
+				//F.columna = Columna;
+				//F.campo   = Columna.campo;
 			});
 		};
 
@@ -390,7 +407,7 @@ angular.module('EntidadesCtrl', [])
 
 
 		//Start Up
-		Rs.http('api/Entidades/tipos-campo', {}, Ctrl, 'TiposCampo').then(Ctrl.getBdds);
+		Ctrl.getBdds();
         
 		
 	}

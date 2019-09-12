@@ -46,6 +46,10 @@ angular.module('appFunctions', [])
 			array[I] = newelm;
 		};
 
+		Rs.removeArrayElm = (array, index) => {
+			array.splice(index,1);
+		};
+
 		Rs.http = function(url, data, scp, prop, method){
 			var method = Rs.def(method, 'POST');
 			var data = Rs.def(data, {});
@@ -289,6 +293,64 @@ angular.module('appFunctions', [])
 			return Elm[Prop];
 		};
 
+
+
+		Rs.FsGet = (arr, ruta, filename, defaultOpen) => {
+			var arr = arr.sort((a, b) => {
+				var ar = (a[ruta]+'\\'+a[filename]).toLowerCase();
+				var br = (b[ruta]+'\\'+b[filename]).toLowerCase();
+				return ar > br ? 1 : -1;
+			});
+			var fs = [];
+	    	var routes = [];
+	    	var defaultOpen = defaultOpen || false;
+
+	    	angular.forEach(arr, (e) => {
+	    		var r = e[ruta];
+
+    			rex = r.split('\\');
+    			for (var i = 0; i < rex.length; i++) {
+    				for (var n = 0; n <= i; n++) {
+    					
+    					var subroute = rex.slice(0,n+1).join('\\');
+    					if(subroute != "" && !routes.includes(subroute)){
+    						routes.push(subroute);
+    						var show = defaultOpen || (n == 0);
+    						fs.push({ i: fs.length, type: 'folder', name: rex[n], depth: n, open: defaultOpen, show: show, route: subroute });
+    					};
+	    				
+    				};
+    			};
+    			var depth = (r == "") ? 0 : (rex.length);
+    			var show = defaultOpen || (depth == 0);
+    			fs.push({ i: fs.length, type: 'file', depth: depth, show: show, route: subroute, file: e });
+	    	});
+
+	    	return fs;
+		};
+
+		Rs.FsOpenFolder = (arr,folder) => {
+			folder.open = !folder.open;
+			var cont = true;
+			angular.forEach(arr, e => {
+				if(cont){
+					if(e.i > folder.i){
+						if(e.depth == folder.depth + 1) e.show = folder.open;
+						if(e.depth >  folder.depth + 1) e.show = false;
+						if(e.type == 'folder' && e.depth >= folder.depth + 1) e.open = false;
+						if(e.type == 'folder' && e.depth == folder.depth) cont = false;
+					};
+				};
+			});
+		};
+
+		Rs.FsCalcRoute = (route, newfolder) => {
+			//newfolder = newfolder.trim().split('\\').join('');
+			if(newfolder == "" || (newfolder.toLowerCase() == route.toLowerCase()) ) return route;
+			if(route == "") return newfolder;
+
+			return route + "\\" + newfolder;
+		};
 
 
 

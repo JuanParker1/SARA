@@ -25,19 +25,23 @@ angular.module('Filters', [])
 			}
 			return null;
 		 };
+	}).filter('include', function() {
+		return function(input, include, prop) {
+			if (!angular.isArray(input)) return input;
+			if (!angular.isArray(include)) include = [];
+			return input.filter(function byInclude(item) {
+				return include.indexOf(prop ? item[prop] : item) != -1;
+			});
+		};
 	}).filter('exclude', function() {
 		return function(input, exclude, prop) {
-			if (!angular.isArray(input))
-				return input;
-
-			if (!angular.isArray(exclude))
-				exclude = [];
-
+			if (!angular.isArray(input)) return input;
+			if (!angular.isArray(exclude)) exclude = [];
 			if (prop) {
 				exclude = exclude.map(function byProp(item) {
 					return item[prop];
 				});
-			}
+			};
 
 			return input.filter(function byExclude(item) {
 				return exclude.indexOf(prop ? item[prop] : item) === -1;

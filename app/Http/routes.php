@@ -27,6 +27,7 @@ Route::controller('/api/Usuario',       'UsuarioController');
 Route::controller('/api/App',       	'AppsController');
 Route::controller('/api/Bdds',     		'BddsController');
 Route::controller('/api/Entidades',     'EntidadesController');
+Route::controller('/api/Variables',     'VariablesController');
 
 
 

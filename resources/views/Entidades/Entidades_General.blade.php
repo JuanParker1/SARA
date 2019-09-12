@@ -1,8 +1,7 @@
 <div layout=column flex>
 	
 	<div flex layout=column class="overflow-y darkScroll">
-
-		
+	<!--<div flex layout=column class="wu800">-->
 
 		<div class="padding bg-white border margin border-radius">
 			<div layout>
@@ -65,6 +64,7 @@
 
 		<span flex class="mh30"></span>
 
+	<!--</div>-->
 	</div>
 
 	<div layout=column layout-gt-xs=row class="border-top seam-top bg-white">

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Core\MyModel;
+use Carbon\Carbon;
 
 class EntidadGridFiltro extends MyModel
 {
@@ -12,6 +13,7 @@ class EntidadGridFiltro extends MyModel
 	protected $primaryKey = 'id';
     protected $casts = [];
     protected $with = [];
+    protected $appends = ['campo','default','val'];
 
     public function columns()
 	{
@@ -36,5 +38,48 @@ class EntidadGridFiltro extends MyModel
 		return $query->where('grid_id', $id);
 	}
 
+
+	//Relations
+	public function columna()
+	{
+		return $this->belongsTo('\App\Models\EntidadGridColumna', 'columna_id');
+	}
+
+	public function getCampoAttribute()
+	{
+		return \App\Models\EntidadCampo::where('id', $this->columna->campo_id)->first();
+	}
+
+
+	//Accesor
+	public function getDefaultAttribute()
+	{
+		$Valor = $this->Valor;
+
+        if($this->campo->Tipo == 'Fecha'){
+            $Date  = Carbon::parse($Valor)->startOfDay();
+            $Valor = $Date->format('c');
+        };
+
+        if($this->Comparador == 'lista'){
+        	$Valor = is_null($Valor) ? null : json_decode($Valor, true);
+        };
+
+        return $Valor;
+	}
+
+	public function getValAttribute(){ return $this->default; }
+
+	//Eventos
+	public function prepSave($F)
+	{
+		if($this->Comparador == 'lista') {
+    		if(is_array($F['val']) AND !empty($F['val'])){
+    			$this->Valor = json_encode($F['val']);
+    		}else{
+    			$this->Valor = null;
+    		};
+    	};
+	}
 
 }

@@ -328,6 +328,15 @@ md-select.md-no-underline .md-select-value,
 .md-no-underline input {
   border-bottom-color: transparent !important;
 }
+md-select-header input {
+  border: none;
+  outline: none;
+  height: 29px;
+  width: calc(100% - 15px);
+  padding: 0 0 0 12px;
+  border-bottom: 1px solid #0000001f;
+  font-size: 1.2em;
+}
 md-option md-icon.fa-fw {
   width: 24px;
   line-height: 24px !important;
@@ -441,6 +450,9 @@ md-sidenav {
   bottom: 0;
   right: 0;
   overflow-x: hidden;
+}
+.md-tab {
+  outline: none;
 }
 /**
  *  Md Datatable
@@ -608,6 +620,30 @@ md-menu-content .md-menu > .md-button:after {
   padding: 0 10px;
   border-radius: 100px;
   margin: 0px -3px 0 5px;
+}
+md-chips.h30 md-chips-wrap {
+  padding: 0 3px;
+}
+md-chips.h30 md-chip {
+  height: 24px;
+  line-height: 24px;
+  margin: 3px 5px 0 0;
+  font-size: 0.8em;
+}
+md-chips.h30 md-chip button.md-chip-remove {
+  height: 24px;
+  width: 24px;
+}
+md-chips.h30 md-chip button.md-chip-remove md-icon {
+  min-height: 18px;
+  min-width: 18px;
+}
+md-chips.h30 .md-chip-input-container,
+md-chips.h30 .md-chip-input-container input {
+  height: 30px;
+  line-height: 30px;
+  margin-top: 0 !important;
+  font-size: 0.9em;
 }
 .md-list-tickets md-list-item {
   background-color: #EFEFEF;
@@ -8063,12 +8099,26 @@ button {
   height: 0px !important;
   line-height: 0px !important;
 }
+.s5 {
+  min-width: 5px !important;
+  width: 5px !important;
+  min-height: 5px !important;
+  height: 5px !important;
+  line-height: 5px !important;
+}
 .s10 {
   min-width: 10px !important;
   width: 10px !important;
   min-height: 10px !important;
   height: 10px !important;
   line-height: 10px !important;
+}
+.s15 {
+  min-width: 15px !important;
+  width: 15px !important;
+  min-height: 15px !important;
+  height: 15px !important;
+  line-height: 15px !important;
 }
 .s20 {
   min-width: 20px !important;
@@ -8077,12 +8127,26 @@ button {
   height: 20px !important;
   line-height: 20px !important;
 }
+.s25 {
+  min-width: 25px !important;
+  width: 25px !important;
+  min-height: 25px !important;
+  height: 25px !important;
+  line-height: 25px !important;
+}
 .s30 {
   min-width: 30px !important;
   width: 30px !important;
   min-height: 30px !important;
   height: 30px !important;
   line-height: 30px !important;
+}
+.s35 {
+  min-width: 35px !important;
+  width: 35px !important;
+  min-height: 35px !important;
+  height: 35px !important;
+  line-height: 35px !important;
 }
 .s40 {
   min-width: 40px !important;
@@ -8091,12 +8155,26 @@ button {
   height: 40px !important;
   line-height: 40px !important;
 }
+.s45 {
+  min-width: 45px !important;
+  width: 45px !important;
+  min-height: 45px !important;
+  height: 45px !important;
+  line-height: 45px !important;
+}
 .s50 {
   min-width: 50px !important;
   width: 50px !important;
   min-height: 50px !important;
   height: 50px !important;
   line-height: 50px !important;
+}
+.s55 {
+  min-width: 55px !important;
+  width: 55px !important;
+  min-height: 55px !important;
+  height: 55px !important;
+  line-height: 55px !important;
 }
 .s60 {
   min-width: 60px !important;
@@ -8105,12 +8183,26 @@ button {
   height: 60px !important;
   line-height: 60px !important;
 }
+.s65 {
+  min-width: 65px !important;
+  width: 65px !important;
+  min-height: 65px !important;
+  height: 65px !important;
+  line-height: 65px !important;
+}
 .s70 {
   min-width: 70px !important;
   width: 70px !important;
   min-height: 70px !important;
   height: 70px !important;
   line-height: 70px !important;
+}
+.s75 {
+  min-width: 75px !important;
+  width: 75px !important;
+  min-height: 75px !important;
+  height: 75px !important;
+  line-height: 75px !important;
 }
 .s80 {
   min-width: 80px !important;
@@ -8119,12 +8211,26 @@ button {
   height: 80px !important;
   line-height: 80px !important;
 }
+.s85 {
+  min-width: 85px !important;
+  width: 85px !important;
+  min-height: 85px !important;
+  height: 85px !important;
+  line-height: 85px !important;
+}
 .s90 {
   min-width: 90px !important;
   width: 90px !important;
   min-height: 90px !important;
   height: 90px !important;
   line-height: 90px !important;
+}
+.s95 {
+  min-width: 95px !important;
+  width: 95px !important;
+  min-height: 95px !important;
+  height: 95px !important;
+  line-height: 95px !important;
 }
 .s100 {
   min-width: 100px !important;
@@ -8133,12 +8239,26 @@ button {
   height: 100px !important;
   line-height: 100px !important;
 }
+.s105 {
+  min-width: 105px !important;
+  width: 105px !important;
+  min-height: 105px !important;
+  height: 105px !important;
+  line-height: 105px !important;
+}
 .s110 {
   min-width: 110px !important;
   width: 110px !important;
   min-height: 110px !important;
   height: 110px !important;
   line-height: 110px !important;
+}
+.s115 {
+  min-width: 115px !important;
+  width: 115px !important;
+  min-height: 115px !important;
+  height: 115px !important;
+  line-height: 115px !important;
 }
 .s120 {
   min-width: 120px !important;
@@ -8147,12 +8267,26 @@ button {
   height: 120px !important;
   line-height: 120px !important;
 }
+.s125 {
+  min-width: 125px !important;
+  width: 125px !important;
+  min-height: 125px !important;
+  height: 125px !important;
+  line-height: 125px !important;
+}
 .s130 {
   min-width: 130px !important;
   width: 130px !important;
   min-height: 130px !important;
   height: 130px !important;
   line-height: 130px !important;
+}
+.s135 {
+  min-width: 135px !important;
+  width: 135px !important;
+  min-height: 135px !important;
+  height: 135px !important;
+  line-height: 135px !important;
 }
 .s140 {
   min-width: 140px !important;
@@ -8161,12 +8295,26 @@ button {
   height: 140px !important;
   line-height: 140px !important;
 }
+.s145 {
+  min-width: 145px !important;
+  width: 145px !important;
+  min-height: 145px !important;
+  height: 145px !important;
+  line-height: 145px !important;
+}
 .s150 {
   min-width: 150px !important;
   width: 150px !important;
   min-height: 150px !important;
   height: 150px !important;
   line-height: 150px !important;
+}
+.s155 {
+  min-width: 155px !important;
+  width: 155px !important;
+  min-height: 155px !important;
+  height: 155px !important;
+  line-height: 155px !important;
 }
 .s160 {
   min-width: 160px !important;
@@ -8175,12 +8323,26 @@ button {
   height: 160px !important;
   line-height: 160px !important;
 }
+.s165 {
+  min-width: 165px !important;
+  width: 165px !important;
+  min-height: 165px !important;
+  height: 165px !important;
+  line-height: 165px !important;
+}
 .s170 {
   min-width: 170px !important;
   width: 170px !important;
   min-height: 170px !important;
   height: 170px !important;
   line-height: 170px !important;
+}
+.s175 {
+  min-width: 175px !important;
+  width: 175px !important;
+  min-height: 175px !important;
+  height: 175px !important;
+  line-height: 175px !important;
 }
 .s180 {
   min-width: 180px !important;
@@ -8189,12 +8351,26 @@ button {
   height: 180px !important;
   line-height: 180px !important;
 }
+.s185 {
+  min-width: 185px !important;
+  width: 185px !important;
+  min-height: 185px !important;
+  height: 185px !important;
+  line-height: 185px !important;
+}
 .s190 {
   min-width: 190px !important;
   width: 190px !important;
   min-height: 190px !important;
   height: 190px !important;
   line-height: 190px !important;
+}
+.s195 {
+  min-width: 195px !important;
+  width: 195px !important;
+  min-height: 195px !important;
+  height: 195px !important;
+  line-height: 195px !important;
 }
 .s200 {
   min-width: 200px !important;
@@ -8203,12 +8379,26 @@ button {
   height: 200px !important;
   line-height: 200px !important;
 }
+.s205 {
+  min-width: 205px !important;
+  width: 205px !important;
+  min-height: 205px !important;
+  height: 205px !important;
+  line-height: 205px !important;
+}
 .s210 {
   min-width: 210px !important;
   width: 210px !important;
   min-height: 210px !important;
   height: 210px !important;
   line-height: 210px !important;
+}
+.s215 {
+  min-width: 215px !important;
+  width: 215px !important;
+  min-height: 215px !important;
+  height: 215px !important;
+  line-height: 215px !important;
 }
 .s220 {
   min-width: 220px !important;
@@ -8217,12 +8407,26 @@ button {
   height: 220px !important;
   line-height: 220px !important;
 }
+.s225 {
+  min-width: 225px !important;
+  width: 225px !important;
+  min-height: 225px !important;
+  height: 225px !important;
+  line-height: 225px !important;
+}
 .s230 {
   min-width: 230px !important;
   width: 230px !important;
   min-height: 230px !important;
   height: 230px !important;
   line-height: 230px !important;
+}
+.s235 {
+  min-width: 235px !important;
+  width: 235px !important;
+  min-height: 235px !important;
+  height: 235px !important;
+  line-height: 235px !important;
 }
 .s240 {
   min-width: 240px !important;
@@ -8231,12 +8435,26 @@ button {
   height: 240px !important;
   line-height: 240px !important;
 }
+.s245 {
+  min-width: 245px !important;
+  width: 245px !important;
+  min-height: 245px !important;
+  height: 245px !important;
+  line-height: 245px !important;
+}
 .s250 {
   min-width: 250px !important;
   width: 250px !important;
   min-height: 250px !important;
   height: 250px !important;
   line-height: 250px !important;
+}
+.s255 {
+  min-width: 255px !important;
+  width: 255px !important;
+  min-height: 255px !important;
+  height: 255px !important;
+  line-height: 255px !important;
 }
 .s260 {
   min-width: 260px !important;
@@ -8245,12 +8463,26 @@ button {
   height: 260px !important;
   line-height: 260px !important;
 }
+.s265 {
+  min-width: 265px !important;
+  width: 265px !important;
+  min-height: 265px !important;
+  height: 265px !important;
+  line-height: 265px !important;
+}
 .s270 {
   min-width: 270px !important;
   width: 270px !important;
   min-height: 270px !important;
   height: 270px !important;
   line-height: 270px !important;
+}
+.s275 {
+  min-width: 275px !important;
+  width: 275px !important;
+  min-height: 275px !important;
+  height: 275px !important;
+  line-height: 275px !important;
 }
 .s280 {
   min-width: 280px !important;
@@ -8259,12 +8491,26 @@ button {
   height: 280px !important;
   line-height: 280px !important;
 }
+.s285 {
+  min-width: 285px !important;
+  width: 285px !important;
+  min-height: 285px !important;
+  height: 285px !important;
+  line-height: 285px !important;
+}
 .s290 {
   min-width: 290px !important;
   width: 290px !important;
   min-height: 290px !important;
   height: 290px !important;
   line-height: 290px !important;
+}
+.s295 {
+  min-width: 295px !important;
+  width: 295px !important;
+  min-height: 295px !important;
+  height: 295px !important;
+  line-height: 295px !important;
 }
 .s300 {
   min-width: 300px !important;
@@ -8273,12 +8519,26 @@ button {
   height: 300px !important;
   line-height: 300px !important;
 }
+.s305 {
+  min-width: 305px !important;
+  width: 305px !important;
+  min-height: 305px !important;
+  height: 305px !important;
+  line-height: 305px !important;
+}
 .s310 {
   min-width: 310px !important;
   width: 310px !important;
   min-height: 310px !important;
   height: 310px !important;
   line-height: 310px !important;
+}
+.s315 {
+  min-width: 315px !important;
+  width: 315px !important;
+  min-height: 315px !important;
+  height: 315px !important;
+  line-height: 315px !important;
 }
 .s320 {
   min-width: 320px !important;
@@ -8287,12 +8547,26 @@ button {
   height: 320px !important;
   line-height: 320px !important;
 }
+.s325 {
+  min-width: 325px !important;
+  width: 325px !important;
+  min-height: 325px !important;
+  height: 325px !important;
+  line-height: 325px !important;
+}
 .s330 {
   min-width: 330px !important;
   width: 330px !important;
   min-height: 330px !important;
   height: 330px !important;
   line-height: 330px !important;
+}
+.s335 {
+  min-width: 335px !important;
+  width: 335px !important;
+  min-height: 335px !important;
+  height: 335px !important;
+  line-height: 335px !important;
 }
 .s340 {
   min-width: 340px !important;
@@ -8301,12 +8575,26 @@ button {
   height: 340px !important;
   line-height: 340px !important;
 }
+.s345 {
+  min-width: 345px !important;
+  width: 345px !important;
+  min-height: 345px !important;
+  height: 345px !important;
+  line-height: 345px !important;
+}
 .s350 {
   min-width: 350px !important;
   width: 350px !important;
   min-height: 350px !important;
   height: 350px !important;
   line-height: 350px !important;
+}
+.s355 {
+  min-width: 355px !important;
+  width: 355px !important;
+  min-height: 355px !important;
+  height: 355px !important;
+  line-height: 355px !important;
 }
 .s360 {
   min-width: 360px !important;
@@ -8315,12 +8603,26 @@ button {
   height: 360px !important;
   line-height: 360px !important;
 }
+.s365 {
+  min-width: 365px !important;
+  width: 365px !important;
+  min-height: 365px !important;
+  height: 365px !important;
+  line-height: 365px !important;
+}
 .s370 {
   min-width: 370px !important;
   width: 370px !important;
   min-height: 370px !important;
   height: 370px !important;
   line-height: 370px !important;
+}
+.s375 {
+  min-width: 375px !important;
+  width: 375px !important;
+  min-height: 375px !important;
+  height: 375px !important;
+  line-height: 375px !important;
 }
 .s380 {
   min-width: 380px !important;
@@ -8329,12 +8631,26 @@ button {
   height: 380px !important;
   line-height: 380px !important;
 }
+.s385 {
+  min-width: 385px !important;
+  width: 385px !important;
+  min-height: 385px !important;
+  height: 385px !important;
+  line-height: 385px !important;
+}
 .s390 {
   min-width: 390px !important;
   width: 390px !important;
   min-height: 390px !important;
   height: 390px !important;
   line-height: 390px !important;
+}
+.s395 {
+  min-width: 395px !important;
+  width: 395px !important;
+  min-height: 395px !important;
+  height: 395px !important;
+  line-height: 395px !important;
 }
 .s400 {
   min-width: 400px !important;
@@ -8343,12 +8659,26 @@ button {
   height: 400px !important;
   line-height: 400px !important;
 }
+.s405 {
+  min-width: 405px !important;
+  width: 405px !important;
+  min-height: 405px !important;
+  height: 405px !important;
+  line-height: 405px !important;
+}
 .s410 {
   min-width: 410px !important;
   width: 410px !important;
   min-height: 410px !important;
   height: 410px !important;
   line-height: 410px !important;
+}
+.s415 {
+  min-width: 415px !important;
+  width: 415px !important;
+  min-height: 415px !important;
+  height: 415px !important;
+  line-height: 415px !important;
 }
 .s420 {
   min-width: 420px !important;
@@ -8357,12 +8687,26 @@ button {
   height: 420px !important;
   line-height: 420px !important;
 }
+.s425 {
+  min-width: 425px !important;
+  width: 425px !important;
+  min-height: 425px !important;
+  height: 425px !important;
+  line-height: 425px !important;
+}
 .s430 {
   min-width: 430px !important;
   width: 430px !important;
   min-height: 430px !important;
   height: 430px !important;
   line-height: 430px !important;
+}
+.s435 {
+  min-width: 435px !important;
+  width: 435px !important;
+  min-height: 435px !important;
+  height: 435px !important;
+  line-height: 435px !important;
 }
 .s440 {
   min-width: 440px !important;
@@ -8371,12 +8715,26 @@ button {
   height: 440px !important;
   line-height: 440px !important;
 }
+.s445 {
+  min-width: 445px !important;
+  width: 445px !important;
+  min-height: 445px !important;
+  height: 445px !important;
+  line-height: 445px !important;
+}
 .s450 {
   min-width: 450px !important;
   width: 450px !important;
   min-height: 450px !important;
   height: 450px !important;
   line-height: 450px !important;
+}
+.s455 {
+  min-width: 455px !important;
+  width: 455px !important;
+  min-height: 455px !important;
+  height: 455px !important;
+  line-height: 455px !important;
 }
 .s460 {
   min-width: 460px !important;
@@ -8385,12 +8743,26 @@ button {
   height: 460px !important;
   line-height: 460px !important;
 }
+.s465 {
+  min-width: 465px !important;
+  width: 465px !important;
+  min-height: 465px !important;
+  height: 465px !important;
+  line-height: 465px !important;
+}
 .s470 {
   min-width: 470px !important;
   width: 470px !important;
   min-height: 470px !important;
   height: 470px !important;
   line-height: 470px !important;
+}
+.s475 {
+  min-width: 475px !important;
+  width: 475px !important;
+  min-height: 475px !important;
+  height: 475px !important;
+  line-height: 475px !important;
 }
 .s480 {
   min-width: 480px !important;
@@ -8399,12 +8771,26 @@ button {
   height: 480px !important;
   line-height: 480px !important;
 }
+.s485 {
+  min-width: 485px !important;
+  width: 485px !important;
+  min-height: 485px !important;
+  height: 485px !important;
+  line-height: 485px !important;
+}
 .s490 {
   min-width: 490px !important;
   width: 490px !important;
   min-height: 490px !important;
   height: 490px !important;
   line-height: 490px !important;
+}
+.s495 {
+  min-width: 495px !important;
+  width: 495px !important;
+  min-height: 495px !important;
+  height: 495px !important;
+  line-height: 495px !important;
 }
 .s500 {
   min-width: 500px !important;
@@ -8413,12 +8799,26 @@ button {
   height: 500px !important;
   line-height: 500px !important;
 }
+.s505 {
+  min-width: 505px !important;
+  width: 505px !important;
+  min-height: 505px !important;
+  height: 505px !important;
+  line-height: 505px !important;
+}
 .s510 {
   min-width: 510px !important;
   width: 510px !important;
   min-height: 510px !important;
   height: 510px !important;
   line-height: 510px !important;
+}
+.s515 {
+  min-width: 515px !important;
+  width: 515px !important;
+  min-height: 515px !important;
+  height: 515px !important;
+  line-height: 515px !important;
 }
 .s520 {
   min-width: 520px !important;
@@ -8427,12 +8827,26 @@ button {
   height: 520px !important;
   line-height: 520px !important;
 }
+.s525 {
+  min-width: 525px !important;
+  width: 525px !important;
+  min-height: 525px !important;
+  height: 525px !important;
+  line-height: 525px !important;
+}
 .s530 {
   min-width: 530px !important;
   width: 530px !important;
   min-height: 530px !important;
   height: 530px !important;
   line-height: 530px !important;
+}
+.s535 {
+  min-width: 535px !important;
+  width: 535px !important;
+  min-height: 535px !important;
+  height: 535px !important;
+  line-height: 535px !important;
 }
 .s540 {
   min-width: 540px !important;
@@ -8441,12 +8855,26 @@ button {
   height: 540px !important;
   line-height: 540px !important;
 }
+.s545 {
+  min-width: 545px !important;
+  width: 545px !important;
+  min-height: 545px !important;
+  height: 545px !important;
+  line-height: 545px !important;
+}
 .s550 {
   min-width: 550px !important;
   width: 550px !important;
   min-height: 550px !important;
   height: 550px !important;
   line-height: 550px !important;
+}
+.s555 {
+  min-width: 555px !important;
+  width: 555px !important;
+  min-height: 555px !important;
+  height: 555px !important;
+  line-height: 555px !important;
 }
 .s560 {
   min-width: 560px !important;
@@ -8455,12 +8883,26 @@ button {
   height: 560px !important;
   line-height: 560px !important;
 }
+.s565 {
+  min-width: 565px !important;
+  width: 565px !important;
+  min-height: 565px !important;
+  height: 565px !important;
+  line-height: 565px !important;
+}
 .s570 {
   min-width: 570px !important;
   width: 570px !important;
   min-height: 570px !important;
   height: 570px !important;
   line-height: 570px !important;
+}
+.s575 {
+  min-width: 575px !important;
+  width: 575px !important;
+  min-height: 575px !important;
+  height: 575px !important;
+  line-height: 575px !important;
 }
 .s580 {
   min-width: 580px !important;
@@ -8469,12 +8911,26 @@ button {
   height: 580px !important;
   line-height: 580px !important;
 }
+.s585 {
+  min-width: 585px !important;
+  width: 585px !important;
+  min-height: 585px !important;
+  height: 585px !important;
+  line-height: 585px !important;
+}
 .s590 {
   min-width: 590px !important;
   width: 590px !important;
   min-height: 590px !important;
   height: 590px !important;
   line-height: 590px !important;
+}
+.s595 {
+  min-width: 595px !important;
+  width: 595px !important;
+  min-height: 595px !important;
+  height: 595px !important;
+  line-height: 595px !important;
 }
 .s600 {
   min-width: 600px !important;
@@ -8483,12 +8939,26 @@ button {
   height: 600px !important;
   line-height: 600px !important;
 }
+.s605 {
+  min-width: 605px !important;
+  width: 605px !important;
+  min-height: 605px !important;
+  height: 605px !important;
+  line-height: 605px !important;
+}
 .s610 {
   min-width: 610px !important;
   width: 610px !important;
   min-height: 610px !important;
   height: 610px !important;
   line-height: 610px !important;
+}
+.s615 {
+  min-width: 615px !important;
+  width: 615px !important;
+  min-height: 615px !important;
+  height: 615px !important;
+  line-height: 615px !important;
 }
 .s620 {
   min-width: 620px !important;
@@ -8497,12 +8967,26 @@ button {
   height: 620px !important;
   line-height: 620px !important;
 }
+.s625 {
+  min-width: 625px !important;
+  width: 625px !important;
+  min-height: 625px !important;
+  height: 625px !important;
+  line-height: 625px !important;
+}
 .s630 {
   min-width: 630px !important;
   width: 630px !important;
   min-height: 630px !important;
   height: 630px !important;
   line-height: 630px !important;
+}
+.s635 {
+  min-width: 635px !important;
+  width: 635px !important;
+  min-height: 635px !important;
+  height: 635px !important;
+  line-height: 635px !important;
 }
 .s640 {
   min-width: 640px !important;
@@ -8511,12 +8995,26 @@ button {
   height: 640px !important;
   line-height: 640px !important;
 }
+.s645 {
+  min-width: 645px !important;
+  width: 645px !important;
+  min-height: 645px !important;
+  height: 645px !important;
+  line-height: 645px !important;
+}
 .s650 {
   min-width: 650px !important;
   width: 650px !important;
   min-height: 650px !important;
   height: 650px !important;
   line-height: 650px !important;
+}
+.s655 {
+  min-width: 655px !important;
+  width: 655px !important;
+  min-height: 655px !important;
+  height: 655px !important;
+  line-height: 655px !important;
 }
 .s660 {
   min-width: 660px !important;
@@ -8525,12 +9023,26 @@ button {
   height: 660px !important;
   line-height: 660px !important;
 }
+.s665 {
+  min-width: 665px !important;
+  width: 665px !important;
+  min-height: 665px !important;
+  height: 665px !important;
+  line-height: 665px !important;
+}
 .s670 {
   min-width: 670px !important;
   width: 670px !important;
   min-height: 670px !important;
   height: 670px !important;
   line-height: 670px !important;
+}
+.s675 {
+  min-width: 675px !important;
+  width: 675px !important;
+  min-height: 675px !important;
+  height: 675px !important;
+  line-height: 675px !important;
 }
 .s680 {
   min-width: 680px !important;
@@ -8539,12 +9051,26 @@ button {
   height: 680px !important;
   line-height: 680px !important;
 }
+.s685 {
+  min-width: 685px !important;
+  width: 685px !important;
+  min-height: 685px !important;
+  height: 685px !important;
+  line-height: 685px !important;
+}
 .s690 {
   min-width: 690px !important;
   width: 690px !important;
   min-height: 690px !important;
   height: 690px !important;
   line-height: 690px !important;
+}
+.s695 {
+  min-width: 695px !important;
+  width: 695px !important;
+  min-height: 695px !important;
+  height: 695px !important;
+  line-height: 695px !important;
 }
 .s700 {
   min-width: 700px !important;
@@ -8553,12 +9079,26 @@ button {
   height: 700px !important;
   line-height: 700px !important;
 }
+.s705 {
+  min-width: 705px !important;
+  width: 705px !important;
+  min-height: 705px !important;
+  height: 705px !important;
+  line-height: 705px !important;
+}
 .s710 {
   min-width: 710px !important;
   width: 710px !important;
   min-height: 710px !important;
   height: 710px !important;
   line-height: 710px !important;
+}
+.s715 {
+  min-width: 715px !important;
+  width: 715px !important;
+  min-height: 715px !important;
+  height: 715px !important;
+  line-height: 715px !important;
 }
 .s720 {
   min-width: 720px !important;
@@ -8567,12 +9107,26 @@ button {
   height: 720px !important;
   line-height: 720px !important;
 }
+.s725 {
+  min-width: 725px !important;
+  width: 725px !important;
+  min-height: 725px !important;
+  height: 725px !important;
+  line-height: 725px !important;
+}
 .s730 {
   min-width: 730px !important;
   width: 730px !important;
   min-height: 730px !important;
   height: 730px !important;
   line-height: 730px !important;
+}
+.s735 {
+  min-width: 735px !important;
+  width: 735px !important;
+  min-height: 735px !important;
+  height: 735px !important;
+  line-height: 735px !important;
 }
 .s740 {
   min-width: 740px !important;
@@ -8581,12 +9135,26 @@ button {
   height: 740px !important;
   line-height: 740px !important;
 }
+.s745 {
+  min-width: 745px !important;
+  width: 745px !important;
+  min-height: 745px !important;
+  height: 745px !important;
+  line-height: 745px !important;
+}
 .s750 {
   min-width: 750px !important;
   width: 750px !important;
   min-height: 750px !important;
   height: 750px !important;
   line-height: 750px !important;
+}
+.s755 {
+  min-width: 755px !important;
+  width: 755px !important;
+  min-height: 755px !important;
+  height: 755px !important;
+  line-height: 755px !important;
 }
 .s760 {
   min-width: 760px !important;
@@ -8595,12 +9163,26 @@ button {
   height: 760px !important;
   line-height: 760px !important;
 }
+.s765 {
+  min-width: 765px !important;
+  width: 765px !important;
+  min-height: 765px !important;
+  height: 765px !important;
+  line-height: 765px !important;
+}
 .s770 {
   min-width: 770px !important;
   width: 770px !important;
   min-height: 770px !important;
   height: 770px !important;
   line-height: 770px !important;
+}
+.s775 {
+  min-width: 775px !important;
+  width: 775px !important;
+  min-height: 775px !important;
+  height: 775px !important;
+  line-height: 775px !important;
 }
 .s780 {
   min-width: 780px !important;
@@ -8609,12 +9191,26 @@ button {
   height: 780px !important;
   line-height: 780px !important;
 }
+.s785 {
+  min-width: 785px !important;
+  width: 785px !important;
+  min-height: 785px !important;
+  height: 785px !important;
+  line-height: 785px !important;
+}
 .s790 {
   min-width: 790px !important;
   width: 790px !important;
   min-height: 790px !important;
   height: 790px !important;
   line-height: 790px !important;
+}
+.s795 {
+  min-width: 795px !important;
+  width: 795px !important;
+  min-height: 795px !important;
+  height: 795px !important;
+  line-height: 795px !important;
 }
 .s800 {
   min-width: 800px !important;
@@ -8623,12 +9219,26 @@ button {
   height: 800px !important;
   line-height: 800px !important;
 }
+.s805 {
+  min-width: 805px !important;
+  width: 805px !important;
+  min-height: 805px !important;
+  height: 805px !important;
+  line-height: 805px !important;
+}
 .s810 {
   min-width: 810px !important;
   width: 810px !important;
   min-height: 810px !important;
   height: 810px !important;
   line-height: 810px !important;
+}
+.s815 {
+  min-width: 815px !important;
+  width: 815px !important;
+  min-height: 815px !important;
+  height: 815px !important;
+  line-height: 815px !important;
 }
 .s820 {
   min-width: 820px !important;
@@ -8637,12 +9247,26 @@ button {
   height: 820px !important;
   line-height: 820px !important;
 }
+.s825 {
+  min-width: 825px !important;
+  width: 825px !important;
+  min-height: 825px !important;
+  height: 825px !important;
+  line-height: 825px !important;
+}
 .s830 {
   min-width: 830px !important;
   width: 830px !important;
   min-height: 830px !important;
   height: 830px !important;
   line-height: 830px !important;
+}
+.s835 {
+  min-width: 835px !important;
+  width: 835px !important;
+  min-height: 835px !important;
+  height: 835px !important;
+  line-height: 835px !important;
 }
 .s840 {
   min-width: 840px !important;
@@ -8651,12 +9275,26 @@ button {
   height: 840px !important;
   line-height: 840px !important;
 }
+.s845 {
+  min-width: 845px !important;
+  width: 845px !important;
+  min-height: 845px !important;
+  height: 845px !important;
+  line-height: 845px !important;
+}
 .s850 {
   min-width: 850px !important;
   width: 850px !important;
   min-height: 850px !important;
   height: 850px !important;
   line-height: 850px !important;
+}
+.s855 {
+  min-width: 855px !important;
+  width: 855px !important;
+  min-height: 855px !important;
+  height: 855px !important;
+  line-height: 855px !important;
 }
 .s860 {
   min-width: 860px !important;
@@ -8665,12 +9303,26 @@ button {
   height: 860px !important;
   line-height: 860px !important;
 }
+.s865 {
+  min-width: 865px !important;
+  width: 865px !important;
+  min-height: 865px !important;
+  height: 865px !important;
+  line-height: 865px !important;
+}
 .s870 {
   min-width: 870px !important;
   width: 870px !important;
   min-height: 870px !important;
   height: 870px !important;
   line-height: 870px !important;
+}
+.s875 {
+  min-width: 875px !important;
+  width: 875px !important;
+  min-height: 875px !important;
+  height: 875px !important;
+  line-height: 875px !important;
 }
 .s880 {
   min-width: 880px !important;
@@ -8679,12 +9331,26 @@ button {
   height: 880px !important;
   line-height: 880px !important;
 }
+.s885 {
+  min-width: 885px !important;
+  width: 885px !important;
+  min-height: 885px !important;
+  height: 885px !important;
+  line-height: 885px !important;
+}
 .s890 {
   min-width: 890px !important;
   width: 890px !important;
   min-height: 890px !important;
   height: 890px !important;
   line-height: 890px !important;
+}
+.s895 {
+  min-width: 895px !important;
+  width: 895px !important;
+  min-height: 895px !important;
+  height: 895px !important;
+  line-height: 895px !important;
 }
 .s900 {
   min-width: 900px !important;
@@ -8693,12 +9359,26 @@ button {
   height: 900px !important;
   line-height: 900px !important;
 }
+.s905 {
+  min-width: 905px !important;
+  width: 905px !important;
+  min-height: 905px !important;
+  height: 905px !important;
+  line-height: 905px !important;
+}
 .s910 {
   min-width: 910px !important;
   width: 910px !important;
   min-height: 910px !important;
   height: 910px !important;
   line-height: 910px !important;
+}
+.s915 {
+  min-width: 915px !important;
+  width: 915px !important;
+  min-height: 915px !important;
+  height: 915px !important;
+  line-height: 915px !important;
 }
 .s920 {
   min-width: 920px !important;
@@ -8707,12 +9387,26 @@ button {
   height: 920px !important;
   line-height: 920px !important;
 }
+.s925 {
+  min-width: 925px !important;
+  width: 925px !important;
+  min-height: 925px !important;
+  height: 925px !important;
+  line-height: 925px !important;
+}
 .s930 {
   min-width: 930px !important;
   width: 930px !important;
   min-height: 930px !important;
   height: 930px !important;
   line-height: 930px !important;
+}
+.s935 {
+  min-width: 935px !important;
+  width: 935px !important;
+  min-height: 935px !important;
+  height: 935px !important;
+  line-height: 935px !important;
 }
 .s940 {
   min-width: 940px !important;
@@ -8721,12 +9415,26 @@ button {
   height: 940px !important;
   line-height: 940px !important;
 }
+.s945 {
+  min-width: 945px !important;
+  width: 945px !important;
+  min-height: 945px !important;
+  height: 945px !important;
+  line-height: 945px !important;
+}
 .s950 {
   min-width: 950px !important;
   width: 950px !important;
   min-height: 950px !important;
   height: 950px !important;
   line-height: 950px !important;
+}
+.s955 {
+  min-width: 955px !important;
+  width: 955px !important;
+  min-height: 955px !important;
+  height: 955px !important;
+  line-height: 955px !important;
 }
 .s960 {
   min-width: 960px !important;
@@ -8735,12 +9443,26 @@ button {
   height: 960px !important;
   line-height: 960px !important;
 }
+.s965 {
+  min-width: 965px !important;
+  width: 965px !important;
+  min-height: 965px !important;
+  height: 965px !important;
+  line-height: 965px !important;
+}
 .s970 {
   min-width: 970px !important;
   width: 970px !important;
   min-height: 970px !important;
   height: 970px !important;
   line-height: 970px !important;
+}
+.s975 {
+  min-width: 975px !important;
+  width: 975px !important;
+  min-height: 975px !important;
+  height: 975px !important;
+  line-height: 975px !important;
 }
 .s980 {
   min-width: 980px !important;
@@ -8749,12 +9471,26 @@ button {
   height: 980px !important;
   line-height: 980px !important;
 }
+.s985 {
+  min-width: 985px !important;
+  width: 985px !important;
+  min-height: 985px !important;
+  height: 985px !important;
+  line-height: 985px !important;
+}
 .s990 {
   min-width: 990px !important;
   width: 990px !important;
   min-height: 990px !important;
   height: 990px !important;
   line-height: 990px !important;
+}
+.s995 {
+  min-width: 995px !important;
+  width: 995px !important;
+  min-height: 995px !important;
+  height: 995px !important;
+  line-height: 995px !important;
 }
 .s1000 {
   min-width: 1000px !important;
@@ -8802,6 +9538,22 @@ button {
 .vh95,
 .h95vh {
   min-height: 95vh !important;
+}
+.vh96,
+.h96vh {
+  min-height: 96vh !important;
+}
+.vh97,
+.h97vh {
+  min-height: 97vh !important;
+}
+.vh98,
+.h98vh {
+  min-height: 98vh !important;
+}
+.vh99,
+.h99vh {
+  min-height: 99vh !important;
 }
 .vh100,
 .h100vh {
@@ -9077,6 +9829,12 @@ md-tooltip {
 .text-13px {
   font-size: 13px;
 }
+.text-14px {
+  font-size: 14px;
+}
+.text-15px {
+  font-size: 15px;
+}
 .text-16px {
   font-size: 16px;
 }
@@ -9273,6 +10031,12 @@ md-select-menu .opt-img {
   margin-right: 5px;
   margin-bottom: 3px;
 }
+.md-select-nowrap .md-select-value > span {
+  white-space: normal;
+  overflow: inherit;
+  height: auto;
+  line-height: 1.5em;
+}
 /**
  *  ngMessages
  */
@@ -9328,6 +10092,13 @@ md-select-menu .opt-img {
   transition: background-color 0.3s;
 }
 .md-row.md-row-hover:hover {
+  background-color: rgba(117, 117, 117, 0.17);
+}
+.md-cell.md-cell-hover {
+  background-color: transparent;
+  transition: background-color 0.3s;
+}
+.md-cell.md-cell-hover:hover {
   background-color: rgba(117, 117, 117, 0.17);
 }
 .table-nowrap tbody td {
@@ -9435,6 +10206,15 @@ md-select-menu .opt-img {
 }
 .padding-top-5 {
   padding-top: 5px !important;
+}
+.padding-right-5 {
+  padding-right: 5px !important;
+}
+.padding-left-5 {
+  padding-left: 5px !important;
+}
+.padding-bottom-5 {
+  padding-bottom: 5px !important;
 }
 .padding-but-top {
   padding: 0 10px 10px 10px !important;

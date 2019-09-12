@@ -38,8 +38,35 @@ angular.module('MainCtrl', [])
 			Rs.Storage.mainSidenavLabels = !Rs.Storage.mainSidenavLabels;
 			Rs.OpenSidebar('SectionsNav');
 		};
+
+		Rs.AnioActual = new Date().getFullYear();
+		Rs.Meses = [
+			['01','Ene'],
+			['02','Feb'],
+			['03','Mar'],
+			['04','Abr'],
+			['05','May'],
+			['06','Jun'],
+			['07','Jul'],
+			['08','Ago'],
+			['09','Sep'],
+			['10','Oct'],
+			['11','Nov'],
+			['12','Dic'],
+		];
+
+		Rs.getVariableData = (Variables) => {
+			$mdDialog.show({
+				controller: 'VariablesGetDataDiagCtrl',
+				templateUrl: '/Frag/Variables.VariablesGetDataDiag',
+				locals: { Variables : Variables },
+				clickOutsideToClose: false, fullscreen: true, multiple: true,
+			});
+		};
 	}
 ]);
+
+
 angular.module('InicioCtrl', [])
 .controller('InicioCtrl', ['$scope', '$rootScope', 
 	function($scope, $rootScope) {
@@ -89,6 +116,142 @@ angular.module('LoginCtrl', [])
 				Ctrl.Pass = '';
 			});
 		};
+	}
+]);
+angular.module('BDDCtrl', [])
+.controller('BDDCtrl', ['$scope', '$rootScope', '$injector',
+	function($scope, $rootScope, $injector) {
+
+		console.info('BDDCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.BDDSidenav = true;
+		Ctrl.BDDFavSidenav = false;
+
+		Ctrl.BDDsCRUD = $injector.get('CRUD').config({ base_url: '/api/Bdds' });
+
+		Ctrl.BDDsCRUD.get().then(() => {
+			if(Ctrl.BDDsCRUD.rows.length > 0){
+				Ctrl.openBDD(Ctrl.BDDsCRUD.rows[0]);
+			};
+		});
+
+		Ctrl.openBDD = (B) => {
+			Ctrl.BDDSel = B;
+			Ctrl.getFavoritos();
+			//Ctrl.executeQuery(); //REmove
+		};
+
+		Ctrl.TiposBDD = {
+			ODBC_DB2:     { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			ODBC_MySQL:   { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			MySQL:  	  { Op1: false, Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			SQLite: 	  { Op1: false, Op2: 'Ruta al Archivo', Op3: 'Base de Datos', Op4: false, Op5: false },
+		};
+
+		Ctrl.addBDD = () => {
+			Rs.BasicDialog({
+				Title: 'Crear Conexión a Base de Datos'
+			}).then((r) => {
+				var Nombre = r.Fields[0].Value.trim();
+				if(Rs.found(Nombre, Ctrl.BDDsCRUD.rows, 'Nombre')) return;
+
+				Ctrl.BDDsCRUD.add({
+					Nombre: Nombre,
+					Tipo: 'ODBC'
+				});
+			});
+		};
+
+		Ctrl.updateBDD = () => {
+			Ctrl.BDDsCRUD.update(Ctrl.BDDSel).then(() => {
+				Rs.showToast('Actualizado', 'Success', 5000, 'bottom right');
+			});
+		};
+
+		Ctrl.removeBDD = () => {
+			Rs.confirmDelete({
+				Title: '¿Borrar la Conexión a la Base de Datos "'+Ctrl.BDDSel.Nombre+'"?'
+			}).then((del) => {
+				if(!del) return;
+				Ctrl.BDDsCRUD.delete(Ctrl.BDDSel).then(() => {
+					Ctrl.BDDSel = null;
+				});
+			});
+		};
+
+		Ctrl.testBDD = () => {
+			Rs.http('/api/Bdds/probar', { BDD: Ctrl.BDDSel }).then((r) => {
+				Rs.showToast('Conexión Exitosa', 'Success', 5000, 'bottom right');
+			});
+		};
+
+		//Panel de Consultas SQL
+		Ctrl.SQLQuery = "";
+		Ctrl.executingQuery = false;
+		Ctrl.QueryRows = null;
+		Ctrl.executeQuery = () => {
+			if(Ctrl.SQLQuery == "" || Ctrl.executingQuery) return;
+			Ctrl.executingQuery = true;
+
+			Rs.http('/api/Bdds/query', { BDD: Ctrl.BDDSel, Query: Ctrl.SQLQuery }).then((r) => {
+				Ctrl.QueryRows = r;
+			}).finally(() => {
+				Ctrl.executingQuery = false;
+			});
+		};
+
+
+
+		//Panel de Favoritos
+		Ctrl.FavsCRUD = $injector.get('CRUD').config({ 
+			base_url: '/api/Bdds/favoritos',
+			query_scopes: [
+				[ 'mine', true ]
+			]
+		});
+
+		Ctrl.getFavoritos = () => {
+			Ctrl.FavsCRUD.setScope('bddid', Ctrl.BDDSel.id);
+			Ctrl.FavsCRUD.get();
+		};
+
+		Ctrl.useFav = (F) => {
+			if(Ctrl.executingQuery) return;
+
+			Ctrl.SQLQuery = F.Consulta;
+
+			if(F.EjecutarAutom == 'S'){
+				Ctrl.executeQuery();
+			};
+		};
+
+		Ctrl.addFav = () => {
+			Ctrl.FavsCRUD.dialog({
+				Consulta: angular.copy(Ctrl.SQLQuery),
+				EjecutarAutom: 'N',
+				bdd_id: Ctrl.BDDSel.id,
+				usuario_id: Rs.Usuario.id
+			}, {
+				title: 'Crear Favorito',
+				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
+			}).then((R) => {
+				if(!R) return;
+				Ctrl.FavsCRUD.add(R);
+			});
+		};
+
+		Ctrl.editFav = (F) => {
+			Ctrl.FavsCRUD.dialog(angular.copy(F), {
+				title: 'Favorito: ' + F.Nombre,
+				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
+			}).then((R) => {
+				if(!R) return;
+				if(R == 'DELETE') return Ctrl.FavsCRUD.delete(F);
+				Ctrl.FavsCRUD.update(R);
+			});
+		};
+
 	}
 ]);
 angular.module('BasicDialogCtrl', [])
@@ -519,142 +682,6 @@ angular.module('ListSelectorCtrl', [])
 
 	}
 ]);
-angular.module('BDDCtrl', [])
-.controller('BDDCtrl', ['$scope', '$rootScope', '$injector',
-	function($scope, $rootScope, $injector) {
-
-		console.info('BDDCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.BDDSidenav = true;
-		Ctrl.BDDFavSidenav = false;
-
-		Ctrl.BDDsCRUD = $injector.get('CRUD').config({ base_url: '/api/Bdds' });
-
-		Ctrl.BDDsCRUD.get().then(() => {
-			if(Ctrl.BDDsCRUD.rows.length > 0){
-				Ctrl.openBDD(Ctrl.BDDsCRUD.rows[0]);
-			};
-		});
-
-		Ctrl.openBDD = (B) => {
-			Ctrl.BDDSel = B;
-			Ctrl.getFavoritos();
-			//Ctrl.executeQuery(); //REmove
-		};
-
-		Ctrl.TiposBDD = {
-			ODBC_DB2:     { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			ODBC_MySQL:   { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			MySQL:  	  { Op1: false, Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			SQLite: 	  { Op1: false, Op2: 'Ruta al Archivo', Op3: 'Base de Datos', Op4: false, Op5: false },
-		};
-
-		Ctrl.addBDD = () => {
-			Rs.BasicDialog({
-				Title: 'Crear Conexión a Base de Datos'
-			}).then((r) => {
-				var Nombre = r.Fields[0].Value.trim();
-				if(Rs.found(Nombre, Ctrl.BDDsCRUD.rows, 'Nombre')) return;
-
-				Ctrl.BDDsCRUD.add({
-					Nombre: Nombre,
-					Tipo: 'ODBC'
-				});
-			});
-		};
-
-		Ctrl.updateBDD = () => {
-			Ctrl.BDDsCRUD.update(Ctrl.BDDSel).then(() => {
-				Rs.showToast('Actualizado', 'Success', 5000, 'bottom right');
-			});
-		};
-
-		Ctrl.removeBDD = () => {
-			Rs.confirmDelete({
-				Title: '¿Borrar la Conexión a la Base de Datos "'+Ctrl.BDDSel.Nombre+'"?'
-			}).then((del) => {
-				if(!del) return;
-				Ctrl.BDDsCRUD.delete(Ctrl.BDDSel).then(() => {
-					Ctrl.BDDSel = null;
-				});
-			});
-		};
-
-		Ctrl.testBDD = () => {
-			Rs.http('/api/Bdds/probar', { BDD: Ctrl.BDDSel }).then((r) => {
-				Rs.showToast('Conexión Exitosa', 'Success', 5000, 'bottom right');
-			});
-		};
-
-		//Panel de Consultas SQL
-		Ctrl.SQLQuery = "";
-		Ctrl.executingQuery = false;
-		Ctrl.QueryRows = null;
-		Ctrl.executeQuery = () => {
-			if(Ctrl.SQLQuery == "" || Ctrl.executingQuery) return;
-			Ctrl.executingQuery = true;
-
-			Rs.http('/api/Bdds/query', { BDD: Ctrl.BDDSel, Query: Ctrl.SQLQuery }).then((r) => {
-				Ctrl.QueryRows = r;
-			}).finally(() => {
-				Ctrl.executingQuery = false;
-			});
-		};
-
-
-
-		//Panel de Favoritos
-		Ctrl.FavsCRUD = $injector.get('CRUD').config({ 
-			base_url: '/api/Bdds/favoritos',
-			query_scopes: [
-				[ 'mine', true ]
-			]
-		});
-
-		Ctrl.getFavoritos = () => {
-			Ctrl.FavsCRUD.setScope('bddid', Ctrl.BDDSel.id);
-			Ctrl.FavsCRUD.get();
-		};
-
-		Ctrl.useFav = (F) => {
-			if(Ctrl.executingQuery) return;
-
-			Ctrl.SQLQuery = F.Consulta;
-
-			if(F.EjecutarAutom == 'S'){
-				Ctrl.executeQuery();
-			};
-		};
-
-		Ctrl.addFav = () => {
-			Ctrl.FavsCRUD.dialog({
-				Consulta: angular.copy(Ctrl.SQLQuery),
-				EjecutarAutom: 'N',
-				bdd_id: Ctrl.BDDSel.id,
-				usuario_id: Rs.Usuario.id
-			}, {
-				title: 'Crear Favorito',
-				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
-			}).then((R) => {
-				if(!R) return;
-				Ctrl.FavsCRUD.add(R);
-			});
-		};
-
-		Ctrl.editFav = (F) => {
-			Ctrl.FavsCRUD.dialog(angular.copy(F), {
-				title: 'Favorito: ' + F.Nombre,
-				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
-			}).then((R) => {
-				if(!R) return;
-				if(R == 'DELETE') return Ctrl.FavsCRUD.delete(F);
-				Ctrl.FavsCRUD.update(R);
-			});
-		};
-
-	}
-]);
 angular.module('EntidadesCamposCtrl', [])
 .controller('EntidadesCamposCtrl', ['$scope', '$rootScope', 
 	function($scope, $rootScope) {
@@ -680,7 +707,7 @@ angular.module('EntidadesCtrl', [])
 			Rs.http('api/Bdds/all', {}, Ctrl, 'Bdds').then(() => {
 				if(Ctrl.Bdds.length > 0){
 					Ctrl.BddSel = Ctrl.Bdds[0];
-					//return Ctrl.testGrid(1); //QUITAR
+					//Ctrl.testGrid(1); //QUITAR
 					Ctrl.getEntidades();
 				}
 			});
@@ -889,7 +916,7 @@ angular.module('EntidadesCtrl', [])
 			Ctrl.GridsCRUD.setScope('entidad', Ctrl.EntidadSel.id);
 			Ctrl.GridsCRUD.get().then(() => {
 				if(Ctrl.GridsCRUD.rows.length == 0) return;
-				Ctrl.openGrid(Ctrl.GridsCRUD.rows[0]);
+				//Ctrl.openGrid(Ctrl.GridsCRUD.rows[0]);
 			});
 		};
 
@@ -927,6 +954,23 @@ angular.module('EntidadesCtrl', [])
 				Indice: Indice,
 			}).then(() => {
 				Rs.showToast('Columna Añadida', 'Success');
+			});
+		};
+
+		Ctrl.addAllColumnas = (Cols, Ruta, Llaves) => {
+			var Indice = Ctrl.GridColumnasCRUD.rows.length;
+			var Rows = [];
+			angular.forEach(Cols, (C) => {
+				Rows.push({
+					grid_id: Ctrl.GridSel.id,
+					Tipo: 'Campo', Ruta: Ruta, Llaves: Llaves, campo_id: C.id,
+					Indice: Indice,
+				});
+				Indice++;
+			});
+
+			return Ctrl.GridColumnasCRUD.addMultiple(Rows).then(() => {
+				Rs.showToast('Columnas Añadidas', 'Success');
 			});
 		};
 
@@ -985,9 +1029,9 @@ angular.module('EntidadesCtrl', [])
 
 		Ctrl.prepFiltros = () => {
 			angular.forEach(Ctrl.GridFiltrosCRUD.rows, (F) => {
-				var Columna = Ctrl.GridColumnasCRUD.one(F.columna_id);
-				F.columna = Columna;
-				F.campo   = Columna.campo;
+				//var Columna = Ctrl.GridColumnasCRUD.one(F.columna_id);
+				//F.columna = Columna;
+				//F.campo   = Columna.campo;
 			});
 		};
 
@@ -1058,7 +1102,7 @@ angular.module('EntidadesCtrl', [])
 
 
 		//Start Up
-		Rs.http('api/Entidades/tipos-campo', {}, Ctrl, 'TiposCampo').then(Ctrl.getBdds);
+		Ctrl.getBdds();
         
 		
 	}
@@ -1103,7 +1147,7 @@ angular.module('Entidades_Grids_TestCtrl', [])
 		Ctrl.Data = [];
 
 		Ctrl.filterData = () => {
-			Ctrl.Data = [];
+			/*Ctrl.Data = [];
 			var d = angular.copy(Ctrl.Grid.data);
 			angular.forEach(Ctrl.Grid.filtros, (F) => {
 				if(d.length > 0 && Ctrl.inArray(F.Comparador, ['lista','radios'])){
@@ -1120,19 +1164,24 @@ angular.module('Entidades_Grids_TestCtrl', [])
 				};
 			});
 
-			Ctrl.Data = d; delete d;
+			Ctrl.Data = d; delete d;*/
+			Rs.http('api/Entidades/grids-reload-data', { Grid: Ctrl.Grid }).then((r) => {
+				Ctrl.Grid.sql  = r.sql;
+				Ctrl.Grid.data = r.data;
+			});
 		};
 
 		Rs.http('api/Entidades/grids-get-data', { grid_id: grid_id }).then((r) => {
 			Ctrl.Grid = r.Grid;
-			Ctrl.filterData();
+			//Ctrl.filterData();
 		});
 
 		Ctrl.getSelectedText = (Text) => {
 			if(Text === null) return 'Seleccionar...';
 			if(angular.isArray(Text)){
-				var Len = Text.length;
-				return ( Len == 1 ) ? Text[0] : (Len + ' Seleccionados');
+				return JoinedText = Text.join(', ');
+				//var Len = JoinedText.length;
+				//return ( Len < 1000 ) ? JoinedText : (Text.length + ' Seleccionados');
 			}
 			return Text;
 		};
@@ -1177,6 +1226,262 @@ angular.module('Entidades_VerCamposCtrl', [])
 		};
 	}
 ]);
+angular.module('VariablesCtrl', [])
+.controller('VariablesCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('VariablesCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.VarSel = null;
+		Ctrl.VariablesNav = true;
+
+		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Variables' });
+		Ctrl.Grids = Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
+
+		Ctrl.tiposDatoVar = ['Numero','Porcentaje','Moneda'];
+
+		Ctrl.agregators = [
+			{ id: 'count', 			Nombre: 'Contar' },
+			{ id: 'countdistinct',  Nombre: 'Contar Distintos' },
+			{ id: 'sum',  			Nombre: 'Suma' },
+			{ id: 'avg',  			Nombre: 'Promedio' },
+			{ id: 'min',  			Nombre: 'Mínimo' },
+			{ id: 'max',  			Nombre: 'Máximo' },
+		];
+
+		Ctrl.getVariables = () => {
+			Ctrl.VariablesCRUD.get().then(() => {
+				Ctrl.openVariable(Ctrl.VariablesCRUD.rows[2]);
+				Ctrl.getFs();
+			});
+		};
+
+		Ctrl.getFs = () => {
+			Ctrl.filterVariables == "";
+			Ctrl.VariablesFS = Rs.FsGet(Ctrl.VariablesCRUD.rows,'Ruta','Variable');
+		};
+
+		Ctrl.getFolderVarData = (F) => {
+			
+			var Vars = Ctrl.VariablesCRUD.rows.filter((v) => {
+				return v.Ruta.startsWith(F.route);
+			}).map(v => v.id);
+			Rs.getVariableData(Vars);
+		};
+
+		Ctrl.searchVariable = () => {
+			if(Ctrl.filterVariables == ""){
+				Ctrl.getFs();
+			}else{
+				Ctrl.VariablesFS = Rs.FsGet($filter('filter')(Ctrl.VariablesCRUD.rows, Ctrl.filterVariables),'Ruta','Variable',true);
+			};
+		};
+
+		Ctrl.addVariable = () => {
+			Ctrl.getFs();
+			Rs.BasicDialog({
+				Title: 'Crear Variable', Flex: 50,
+				Fields: [
+					{ Nombre: 'Nombre',  Value: '', Required: true },
+					{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.VariablesFS },
+					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
+				],
+			}).then((r) => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				Ctrl.VariablesCRUD.add({
+					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
+					Variable: f.Nombre,
+					Filtros: []
+				}).then(() => {
+					Ctrl.getFs();
+				});
+			});
+		};
+
+		Ctrl.openVariable = (V) => {
+			Rs.http('/api/Variables/get', { id: V.id }, Ctrl, 'VarSel').then(() => {
+				//Rs.getVariableData([Ctrl.VarSel.id]);
+			});
+			//Ctrl.VarSel = V;
+		};
+
+		Ctrl.updateVariable = () => {
+			Ctrl.VariablesCRUD.update(Ctrl.VarSel).then(() => {
+				Rs.showToast('Variable Actualizada', 'Success');
+				Ctrl.openVariable(Ctrl.VarSel);
+			});
+		};
+
+		Ctrl.addFiltro = () => {
+			var col = angular.copy(Ctrl.newFiltro);
+			Ctrl.VarSel.Filtros.push({
+				column_id: col.id,
+				column_title: col.column_title,
+				tipo_campo: col.tipo_campo,
+				campo: col.campo,
+				obs: '',
+				Comparador: '=', Valor: null, Op1: null, Op2: null, Op3: null
+			});
+			Ctrl.newFiltro = null;
+		};
+
+		Ctrl.editValor = (Periodo) => {
+			var Valor = angular.isDefined(Ctrl.VarSel.valores[Periodo]) ? Ctrl.VarSel.valores[Periodo].Valor : null;
+			Rs.BasicDialog({
+				Title: 'Cambiar valor '+Periodo,
+				Confirm: { Text: 'Cambiar' }, Flex: 20,
+				Fields: [
+					{ Nombre: 'Valor',  Value: Valor, Required: false, Regex: "\\d+" }
+				], //          ^[0-9]+([.][0-9]{1,4})?$
+			}).then((r) => {
+				if(!r) return;
+				newValor = (r.Fields[0].Value != "") ? r.Fields[0].Value : null;
+				if(newValor == Valor) return;
+				Rs.http('/api/Variables/update-valor', { variable_id: Ctrl.VarSel.id, Periodo: Periodo, Valor: newValor }).then(() => {
+					Ctrl.openVariable(Ctrl.VarSel);
+				});
+			});
+		};
+
+		Ctrl.copyVar = () => {
+			Rs.BasicDialog({
+				Title: 'Copiar Variable', Flex: 50, clickOutsideToClose: false,
+				Confirm: { Text: 'Crear' },
+				Fields: [
+					{ Nombre: 'Nombre',  	Value: Ctrl.VarSel.Variable + ' (copia)', Required: true },
+					{ Nombre: 'Descripcion',  	Value: Ctrl.VarSel.Descripcion, Required: true },
+					{ Nombre: 'Ruta',       Value: Ctrl.VarSel.Ruta, flex: 70, Type: 'fsroute', List: Ctrl.VariablesFS },
+					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
+				]
+			}).then((r) => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				Ctrl.VariablesCRUD.add({
+					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
+					Variable: f.Nombre,
+					Descripcion: f.Descripcion,
+					Filtros: Ctrl.VarSel.Filtros,
+				}).then(() => { Ctrl.getFs(); });
+			});
+		};
+
+		Ctrl.getVariables();
+	}
+]);
+angular.module('VariablesGetDataDiagCtrl', [])
+.controller('VariablesGetDataDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', 'Variables',
+	function($scope, $rootScope, $mdDialog, $filter, $timeout, Variables) {
+
+		console.info('VariablesGetDataDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.Cancel = () => { $mdDialog.cancel(); }
+
+		Ctrl.Meses = Rs.Meses;
+		Ctrl.inArray = Rs.inArray;
+		Ctrl.Anio  = angular.copy(Rs.AnioActual);
+		Ctrl.PeriodoIni = moment().subtract(1, 'months').toDate();
+		Ctrl.PeriodoFin = moment().subtract(1, 'months').toDate();
+		Ctrl.Anios = [3,2,1,0].map((n) => { return Ctrl.Anio-n})
+
+		Ctrl.selectedRows = angular.copy(Variables);
+		Ctrl.overwriteValues = false;
+
+		Ctrl.periodDateLocale = {
+			formatDate: (date) => {
+				if(typeof date == 'undefined' || date === null || isNaN(date.getTime()) ){ return null; }else{
+					return moment(date).format('YMM');
+				}
+			}
+		};
+		
+		Rs.http('api/Variables/get-variables', { ids: Variables }, Ctrl, 'Variables');
+
+		Ctrl.calcPeriodos = () =>{
+			var periodoAct = parseInt(moment(Ctrl.PeriodoIni).format('YMM'));
+			var periodoLim = parseInt(moment(Ctrl.PeriodoFin).format('YMM'));
+			Ctrl.Periodos = [ periodoAct ];
+			while (periodoAct < periodoLim){
+				var y = parseInt(periodoAct/100);
+				var m = periodoAct - (y*100);
+
+				if(m < 12){
+					periodoAct = (y*100) + (m+1);
+				}else{
+					periodoAct = ((y+1)*100) + 1;
+				}
+
+				Ctrl.Periodos.push(periodoAct);
+			};
+		};
+
+		Ctrl.cellSelected = (V,M) => {
+			if(V){
+				var Selected = Rs.inArray(V.id, Ctrl.selectedRows);
+				if(!Selected) return false;
+			};
+			var PeriodoCell = Ctrl.Anio*100 + parseInt(M[0]);
+			return Rs.inArray(PeriodoCell, Ctrl.Periodos);
+		};
+
+		Ctrl.eraseData = () => {
+			angular.forEach(Ctrl.Variables, (v) => {
+				if(Rs.inArray(v.id, Ctrl.selectedRows)){
+					if(!angular.isDefined(v.newValores)) v.newValores = {};
+					angular.forEach(Ctrl.Periodos, (P) => {
+						v.valores[P]    = { val: null, Valor: null };
+						v.newValores[P] = { val: null, Valor: null };
+					});
+				};
+			});
+		};
+
+		Ctrl.startDownload = () => {
+			Ctrl.VarIndex = 0;
+			Ctrl.stepDownload();
+		};
+
+		Ctrl.stepDownload = () => {
+			
+			var Var = Ctrl.Variables[Ctrl.VarIndex];
+			if(!angular.isDefined(Var)) return;
+			console.log(Ctrl.VarIndex, Rs.inArray(Var.id, Ctrl.selectedRows));
+			if(!Rs.inArray(Var.id, Ctrl.selectedRows)){
+				Ctrl.VarIndex++; 
+				return Ctrl.stepDownload();
+			}else{
+				Rs.http('api/Variables/calc-valores', { Var: Var, Periodos: Ctrl.Periodos }).then((r) => {
+					Var.newValores = r;
+					Ctrl.VarIndex++;
+					Ctrl.stepDownload();
+				});
+			}
+
+			
+		};
+
+		Ctrl.storeVars = () => {
+			var Variables = Ctrl.Variables.filter((e) => {
+				return Rs.inArray(e.id, Ctrl.selectedRows);
+			});
+
+			Rs.http('api/Variables/store-valores', { Variables: Variables, Periodos: Ctrl.Periodos, overwriteValues: Ctrl.overwriteValues }).then((r) => {
+				angular.forEach(r, (v) => {
+					var i = Rs.getIndex(Ctrl.Variables, v.id);
+					Ctrl.Variables[i] = v;
+				});
+				//Var.newValores = r;
+			});
+		};
+
+		Ctrl.calcPeriodos();
+	}
+]);
+
+
 angular.module('CRUD', [])
 .factory('CRUD', [ '$rootScope', '$q', '$mdDialog',
 	function($rootScope, $q, $mdDialog){
@@ -1249,6 +1554,15 @@ angular.module('CRUD', [])
 					if(t.ops.add_append == 'end'){ t.rows.push(r); }
 					else if(t.ops.add_append == 'start'){ t.rows.unshift(r); }
 					else if(t.ops.add_append == 'refresh'){ t.get(); };
+					return r;
+				});
+			};
+
+			t.addMultiple = function(Objs){
+				t.ops.obj = Objs;
+				return Rs.http(t.ops.base_url, { fn: 'addmultiple', ops: t.ops }).then(function(r) {
+					t.ops.obj = null;
+					t.get();
 					return r;
 				});
 			};
@@ -1372,19 +1686,23 @@ angular.module('Filters', [])
 			}
 			return null;
 		 };
+	}).filter('include', function() {
+		return function(input, include, prop) {
+			if (!angular.isArray(input)) return input;
+			if (!angular.isArray(include)) include = [];
+			return input.filter(function byInclude(item) {
+				return include.indexOf(prop ? item[prop] : item) != -1;
+			});
+		};
 	}).filter('exclude', function() {
 		return function(input, exclude, prop) {
-			if (!angular.isArray(input))
-				return input;
-
-			if (!angular.isArray(exclude))
-				exclude = [];
-
+			if (!angular.isArray(input)) return input;
+			if (!angular.isArray(exclude)) exclude = [];
 			if (prop) {
 				exclude = exclude.map(function byProp(item) {
 					return item[prop];
 				});
-			}
+			};
 
 			return input.filter(function byExclude(item) {
 				return exclude.indexOf(prop ? item[prop] : item) === -1;
@@ -1744,11 +2062,13 @@ angular.module('SARA', [
 
 	'BDDCtrl',
 
-	
 	'EntidadesCtrl',
 		'Entidades_AddColumnsCtrl',
 		'Entidades_VerCamposCtrl',
 		'Entidades_Grids_TestCtrl',
+
+	'VariablesCtrl',
+		'VariablesGetDataDiagCtrl',
 ]);
 
 angular.module('appConfig', [])
@@ -1959,6 +2279,10 @@ angular.module('appFunctions', [])
 			var keyval = newelm[key];
 			var I = Rs.getIndex(array, keyval, key);
 			array[I] = newelm;
+		};
+
+		Rs.removeArrayElm = (array, index) => {
+			array.splice(index,1);
 		};
 
 		Rs.http = function(url, data, scp, prop, method){
@@ -2206,6 +2530,64 @@ angular.module('appFunctions', [])
 
 
 
+		Rs.FsGet = (arr, ruta, filename, defaultOpen) => {
+			var arr = arr.sort((a, b) => {
+				var ar = (a[ruta]+'\\'+a[filename]).toLowerCase();
+				var br = (b[ruta]+'\\'+b[filename]).toLowerCase();
+				return ar > br ? 1 : -1;
+			});
+			var fs = [];
+	    	var routes = [];
+	    	var defaultOpen = defaultOpen || false;
+
+	    	angular.forEach(arr, (e) => {
+	    		var r = e[ruta];
+
+    			rex = r.split('\\');
+    			for (var i = 0; i < rex.length; i++) {
+    				for (var n = 0; n <= i; n++) {
+    					
+    					var subroute = rex.slice(0,n+1).join('\\');
+    					if(subroute != "" && !routes.includes(subroute)){
+    						routes.push(subroute);
+    						var show = defaultOpen || (n == 0);
+    						fs.push({ i: fs.length, type: 'folder', name: rex[n], depth: n, open: defaultOpen, show: show, route: subroute });
+    					};
+	    				
+    				};
+    			};
+    			var depth = (r == "") ? 0 : (rex.length);
+    			var show = defaultOpen || (depth == 0);
+    			fs.push({ i: fs.length, type: 'file', depth: depth, show: show, route: subroute, file: e });
+	    	});
+
+	    	return fs;
+		};
+
+		Rs.FsOpenFolder = (arr,folder) => {
+			folder.open = !folder.open;
+			var cont = true;
+			angular.forEach(arr, e => {
+				if(cont){
+					if(e.i > folder.i){
+						if(e.depth == folder.depth + 1) e.show = folder.open;
+						if(e.depth >  folder.depth + 1) e.show = false;
+						if(e.type == 'folder' && e.depth >= folder.depth + 1) e.open = false;
+						if(e.type == 'folder' && e.depth == folder.depth) cont = false;
+					};
+				};
+			});
+		};
+
+		Rs.FsCalcRoute = (route, newfolder) => {
+			//newfolder = newfolder.trim().split('\\').join('');
+			if(newfolder == "" || (newfolder.toLowerCase() == route.toLowerCase()) ) return route;
+			if(route == "") return newfolder;
+
+			return route + "\\" + newfolder;
+		};
+
+
 
 		return {};
   }
@@ -2225,16 +2607,20 @@ angular.module('appRoutes', [])
 						templateUrl: '/Home',
 						controller: 'MainCtrl',
 						resolve: {
-							promiseObj:  function($rootScope, $localStorage, $http, $location, $q){
+							promiseObj:  function($rootScope, $localStorage, $http){
 
 								var Rs = $rootScope;
 								Rs.Storage = $localStorage;
 
 								return $http.post('api/Usuario/check-token', { token: Rs.Storage.token });
 							},
-							controller: function($rootScope, $localStorage, promiseObj){
+							promiseObj2:  function($http){
+								return $http.post('api/Entidades/tipos-campo', {});
+							},
+							controller: function($rootScope, $localStorage, promiseObj,promiseObj2){
 								var Rs = $rootScope;
-								Rs.Usuario = promiseObj.data;
+								Rs.Usuario 		= promiseObj.data;
+								Rs.TiposCampo 	= promiseObj2.data;
 								$localStorage.token = Rs.Usuario.token;
 							}
 						},
