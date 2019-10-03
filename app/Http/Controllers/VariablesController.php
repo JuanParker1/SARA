@@ -10,6 +10,9 @@ use App\Functions\CRUD;
 use App\Models\Variable;
 use App\Models\VariableValor;
 
+use App\Functions\Helper AS H;
+use App\Functions\GridHelper;
+
 class VariablesController extends Controller
 {
     //Variables
@@ -27,10 +30,28 @@ class VariablesController extends Controller
         });
     }
 
+    public function postGetVariable()
+    {
+        $Variable = Variable::where('id', request('id'))->with(['grid','grid.columnas'])->first();
+        $Variable->valores = $this->getValores($Variable);
+        return $Variable;
+    }
+
     public function postGet()
     {
-    	$Variable = Variable::where('id', request('id'))->with(['grid','grid.columnas'])->first();
+    	$Variable = Variable::where('id', request('id'))->with([])->first();
         $Variable->valores = $this->getValores($Variable);
+
+        $VariablesRelacionadas = [];
+        if($Variable->Tipo == 'Calculado de Entidad'){
+            $VariablesRelacionadas = Variable::where('id', '<>', $Variable->id)->where('grid_id', $Variable->grid_id)->get();
+            foreach ($VariablesRelacionadas as $V) {
+                $V->valores = $this->getValores($V);
+            }
+        };
+
+        $Variable->related_variables = $VariablesRelacionadas;
+
         return $Variable;
     }
 
@@ -64,6 +85,29 @@ class VariablesController extends Controller
                     $Valores[$P] = [ 'val' => $ult_valor->val, 'Valor' => $ult_valor->Valor ];
                 }
             }
+        }else if($Var['Tipo'] == 'Calculado de Entidad'){
+            
+            $Grid = GridHelper::getGrid($Var['grid_id']);
+            $q    = GridHelper::getQ($Grid->entidad);
+            
+            GridHelper::calcJoins($Grid);
+            GridHelper::addJoins($Grid, $q);
+            GridHelper::addFilters($Var['Filtros'], $Grid, $q);
+
+            $ColPeriodo = H::getElm($Grid->columnas, $Var['ColPeriodo']);
+            $ColPeriodoName = $ColPeriodo->campo->getColName($ColPeriodo['tabla_consec']);
+            $ColCalculo = H::getElm($Grid->columnas, $Var['Col']);
+            $ColCalculoName = $ColCalculo->campo->getColName($ColCalculo['tabla_consec']);
+
+            $q->whereIn($ColPeriodoName, $Periodos);
+            GridHelper::getGroupedData($Grid, $q, [$ColPeriodoName], [ [ $ColCalculoName, $Var['Agrupador'] ] ]);
+            GridHelper::getData($Grid, $q, false, false);
+
+            foreach ($Grid->data as $d) {
+                $VarVal = new VariableValor([ 'Valor' => $d[1] ]);
+                $VarVal->formatVal($Var['TipoDato'], $Var['Decimales']);
+                $Valores[$d[0]] = [ 'val' => $VarVal->val, 'Valor' => $VarVal->Valor ];
+            };
         }
 
         return $Valores;

@@ -21,6 +21,29 @@ md-tabs.md-Snow_White-theme .md-tab.md-focused,
 md-tabs.md-Snow_White-theme .md-tab.md-focused md-icon {
   color: #000000 !important;
 }
+.md-Black-theme {
+  fill: #bbbbbb;
+}
+.md-Black-theme .border,
+.md-Black-theme .border-top,
+.md-Black-theme .border-bottom {
+  border-color: #3c3c3c !important;
+}
+.md-Black-theme .nv-legend-text {
+  fill: inherit !important;
+}
+.md-Black-theme .nvd3 .nv-axis path {
+  stroke: #5a5a5a;
+}
+.dashed path {
+  stroke-dasharray: 5,5;
+}
+.no-gridlines .tick:not(.zero) line {
+  opacity: 0 !important;
+}
+.dim-gridlines .tick:not(.zero) line {
+  opacity: 0.3 !important;
+}
 /*
 |--------------------------------------------------------------------------
 | Datatables
@@ -81,6 +104,15 @@ table.dataTable.no-footer {
 .table-col-compress td.md-cell:last-child,
 .table-col-compress th.md-column:last-child {
   padding: 0 10px 0 0 !important;
+}
+.md-Black-theme table.md-table th.md-column {
+  color: rgba(255, 255, 255, 0.54);
+  font-weight: inherit;
+}
+.md-Black-theme table.md-table td.md-cell {
+  color: inherit !important;
+  font-size: inherit !important;
+  border-top: 1px rgba(162, 162, 162, 0.12) solid;
 }
 thead md-icon {
   min-height: 20px;
@@ -649,6 +681,10 @@ md-chips.h30 .md-chip-input-container input {
   background-color: #EFEFEF;
   border: 1px solid #DEDEDE;
   margin-top: -1px;
+}
+md-list-item {
+  border: 0px solid transparent;
+  border-width: 1px 0;
 }
 md-list-item .md-list-item-inner p {
   line-height: 20px;
@@ -9646,6 +9682,10 @@ button {
   background-color: #2d2d2d !important;
   color: white !important;
 }
+.bg-black-3 {
+  background-color: #3a3a3a !important;
+  color: white !important;
+}
 .bg-warmblue {
   background-color: #006bac !important;
   color: white !important;
@@ -9695,6 +9735,7 @@ span.highlight {
   opacity: 0;
   cursor: pointer;
   transition: all 0.3s;
+  transition: all 0.3s linear;
 }
 .has-hidden-close:hover .btn-close-red {
   opacity: 0.5;
@@ -9905,6 +9946,7 @@ md-progress-circular.md-state-ok path {
   padding: 0;
   margin: 0;
   transition: all 0.3s;
+  transition: all 0.3s linear;
   /*
 	.md-icon-button {
 		margin: 0;
@@ -10418,6 +10460,10 @@ md-select-menu .opt-img {
   width: 100%;
   max-width: 600px;
 }
+.wu700 {
+  width: 100%;
+  max-width: 700px;
+}
 .wu800 {
   width: 100%;
   max-width: 800px;
@@ -10448,6 +10494,12 @@ md-select-menu .opt-img {
     padding-left: 10px !important;
   }
   .wu600 {
+    width: 100% !important;
+    max-width: auto !important;
+  }
+}
+@media (max-width: 699px) {
+  .wu700 {
     width: 100% !important;
     max-width: auto !important;
   }
@@ -10748,6 +10800,10 @@ body {
 }
 #SectionsNav md-icon {
   margin: 0px 10px 0 0 !important;
+  font-size: 1.2em !important;
+}
+#SectionsNav .md-button {
+  padding: 0 12px !important;
 }
 .treeFiles {
   border-top: 1px solid rgba(0, 0, 0, 0.1);
@@ -10812,6 +10868,162 @@ body {
   top: 5px;
   left: 5px;
   font-size: 0.8em;
+}
+@keyframes In_Fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes Out_Fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes In_Scale {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes In_FadeScale {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes In_Scale_Down {
+  from {
+    transform: scale(1.1);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes Out_Scale {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(0);
+  }
+}
+@keyframes In_Down {
+  from {
+    transform: translateY(-50px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes Out_Up {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50px);
+  }
+}
+@keyframes In_FadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes In_FadeLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes In_FadeRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes Out_FadeDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+}
+@keyframes Out_FadeLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+}
+.Animation_In_Scale {
+  animation: In_Scale 1s;
+}
+/**
+ *  Angular Animate
+ */
+.slide-animate.ng-enter,
+.slide-animate.ng-leave {
+  transition: all cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.5s;
+  /*position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  display:block;
+  padding:10px;*/
+}
+.slide-animate.ng-enter {
+  top: -5000000px;
+  opacity: 0;
+}
+.slide-animate.ng-enter.ng-enter-active {
+  top: 0;
+}
+.slide-animate.ng-leave {
+  top: 0;
+}
+.slide-animate.ng-leave.ng-leave-active {
+  top: 50000px;
+}
+/**
+ * On Hover
+ */
+.on-hover .fade-in-this {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.on-hover:hover .fade-in-this {
+  opacity: 1;
 }
 #ImageEditor md-dialog-content {
   min-width: 500px;

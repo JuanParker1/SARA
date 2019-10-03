@@ -1,8 +1,8 @@
-<div flex layout>
+<div flex layout ng-controller="Entidades_GridsCtrl">
 	
 	<div layout=column class="border-right w200 bg-white">
 
-		<div layout class="border-bottom h40" layout-align="center center">
+		<div layout class="border-bottom" layout-align="center center" style="height: 41px">
 			<div class="md-toolbar-searchbar" flex layout>
 				<md-icon md-font-icon="fa-search" class="fa-fw" style="margin: 8px 4px 0 8px;"></md-icon>
 				<input flex type="search" placeholder="Grids" ng-model="filterGrids" class="no-padding">
@@ -16,8 +16,8 @@
 		<div class="h30 lh30 padding-left border-bottom relative Pointer" md-ink-ripple layout
 			ng-repeat="G in GridsCRUD.rows" ng-click="openGrid(G)"
 			ng-class="{'bg-lightgrey-5': G.id == GridSel.id}" md-truncate>
-			<md-icon md-font-icon="fa-table"></md-icon>
-			<div flex>{{ G.Titulo }}</div>
+			<md-icon hide md-font-icon="fa-table"></md-icon>
+			<div flex class="text-12px">{{ G.Titulo }}</div>
 		</div>
 
 	</div>
@@ -51,8 +51,8 @@
 		
 		<div flex layout=column class="padding overflow-y darkScroll border-radius">
 
-			<div layout class="border-bottom bg-white border-radius margin-bottom padding-5">
-				<md-input-container class="no-margin-bottom" flex>
+			<div layout class="margin-bottom">
+				<md-input-container class="no-margin" flex md-no-float>
 					<input type="text" ng-model="GridSel.Titulo" placeholder="Titulo">
 				</md-input-container>
 			</div>

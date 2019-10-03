@@ -18,14 +18,11 @@ class VariableValor extends Model
     public function formatVal($formato = 'Numero', $decimales = 0)
     {
     	$val = $this->Valor;
-        if(!is_null($val)){
-            switch ($formato) {
-                case 'Numero':                  $val = number_format($val,$decimales,',','.'); break;
-                case 'Porcentaje':              $val = number_format(($val*100),$decimales,',','.')."%"; break;
-                case 'Moneda':                  $val = "$ ".number_format($val,$decimales,',','.'); break;
-            }
-        }
-    	
-    	$this->val = $val;
+        $this->val = \App\Functions\Helper::formatVal($this->Valor,$formato,$decimales);
+    }
+
+    public function scopeYear($query,$year,$mesIni = 1, $mesFin = 12)
+    {
+        return $query->where('Periodo', '>=', ($year*100)+$mesIni)->where('Periodo', '<=', ($year*100)+$mesFin);
     }
 }

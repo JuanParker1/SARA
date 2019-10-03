@@ -34,6 +34,7 @@ class Usuario extends Model
     	if($this->isGod){
             $query = "SELECT se.*, 100 AS Level
                         FROM sara_secciones se 
+                        WHERE se.Estado = 'A' 
                         ORDER BY se.Orden";
         }else{
             $query = "SELECT se.*, s.Level

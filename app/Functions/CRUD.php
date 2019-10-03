@@ -151,6 +151,7 @@ class CRUD
 
 		$DaModel = $this->Model->where($primary_key, $Ops['obj'][$primary_key])->first();
 		$DaModel->fill($Filler);
+
 		$DaModel->save();
 
 		if($Ops['add_with']){
@@ -160,6 +161,33 @@ class CRUD
 		};
 
 		return $DaModel;
+	}
+
+	public function updatemultiple($Ops)
+	{
+		$data = $this->data($Ops);
+		$primary_key = $data['primary_key'];
+
+		$DaModels = [];
+		foreach ($Ops['obj'] as $Obj) {
+			$Filler = $this->cleanModel($Obj, $Ops);
+			$DaModel = $this->Model->where($primary_key, $Obj[$primary_key])->first();
+			$DaModel->fill($Filler);
+			$DaModel->save();
+
+			if($Ops['add_with']){
+				$ElmQuery = $this->Model->where($primary_key, $Obj[$primary_key]);
+				foreach ($Ops['query_with'] as $wt) { $ElmQuery = $ElmQuery->with($wt); }
+				$DaModel = $ElmQuery->first();
+			};
+			$DaModels[] = $DaModel;
+		};
+
+		return $DaModels;
+
+        
+
+		
 	}
 
 	public function delete($Ops)

@@ -1,7 +1,7 @@
 <div class="bg-white border margin-but-top border-radius" layout=column >
 	<md-subheader class="no-padding margin md-no-sticky Pointer" ng-click="showCampos = !showCampos">
 		<md-icon md-font-icon="fa-chevron-right fa-fw s20" ng-class="{'fa-rotate-90': showCampos}"></md-icon>
-		Campos
+		Campos ({{ CamposCRUD.rows.length }})
 	</md-subheader>
 	<md-progress-linear md-mode="indeterminate" ng-show="CamposCRUD.ops.loading"></md-progress-linear>
 	<md-table-container flex ng-show="!CamposCRUD.ops.loading && showCampos">

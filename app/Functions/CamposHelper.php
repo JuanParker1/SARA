@@ -7,6 +7,8 @@ use App\Functions\ConnHelper;
 use App\Functions\DB2Helper;
 use App\Functions\MySQLHelper;
 
+use App\Functions\GridHelper;
+
 class CamposHelper
 {
 	public static function getTipos()
@@ -69,22 +71,11 @@ class CamposHelper
 		return $TC;
 	}
 
-	public static function getTableSchema($Tabla, $SchemaDef)
-    {
-        if (strpos($Tabla, '.') !== false) {
-            $ST = explode('.', $Tabla);
-            $SchemaDef = $ST[0];
-            $Tabla = $ST[1];
-        }
-        return [ $SchemaDef, $Tabla, "$SchemaDef.$Tabla" ];
-
-	}
-
 	public static function autoget($Bdd, $Entidad, $Campos)
 	{
 
         $Conn = ConnHelper::getConn($Bdd);
-        $SchemaTabla = self::getTableSchema($Entidad['Tabla'], $Bdd->Op3);
+        $SchemaTabla = GridHelper::getTableName($Entidad['Tabla'], $Bdd->Op3);
 
         try {
             if(in_array($Bdd->Tipo, ['ODBC_DB2'])){
@@ -101,38 +92,6 @@ class CamposHelper
             return response()->json([ 'Msg' => $ex->getMessage(), 'e' => $ex ], 512);
         };
 	}
-
-	
-
-    public static function getBaseQuery($Entidad)
-    {
-    	$Bdd = \App\Models\BDD::where('id', $Entidad['bdd_id'])->first();
-    	$Conn = ConnHelper::getConn($Bdd);
-        $Conn->setFetchMode(\PDO::FETCH_NUM);
-        $SchemaTabla = self::getTableSchema($Entidad['Tabla'], $Bdd->Op3);
-
-        return $Conn->table($SchemaTabla[2]." AS t0");
-    }
-
-
-
-    public static function getUniqueTable($Ruta, $Llaves)
-    {
-    	$tabla_id = "t";
-        foreach ($Ruta as $k => $t) {
-            if($k>0) $tabla_id .= "k".$Llaves[$k]."j";
-            $tabla_id .= $t;
-        };
-        return $tabla_id;
-    }
-
-
-    public static function getElm($Collection, $Value, $Key = 'id')
-    {
-        return collect($Collection)->filter(function ($elm) use ($Key, $Value){
-            return $elm[$Key] == $Value;
-        })->first();
-    }
 
     public static function prepDato($Campo, $D)
     {
@@ -153,11 +112,11 @@ class CamposHelper
         return $D;
     }
 
-    public static function prepData($Campos, $Datos)
+    public static function prepData($Columnas, $Datos)
     {
-        $Datos = collect($Datos)->transform(function($row) use ($Campos){
-            return collect($row)->transform(function($c,$i) use ($Campos){
-                return self::prepDato($Campos[$i], $c);
+        $Datos = collect($Datos)->transform(function($row) use ($Columnas){
+            return collect($row)->transform(function($c,$i) use ($Columnas){
+                return self::prepDato($Columnas[$i]['campo'], $c);
             });
         });
 
@@ -190,25 +149,11 @@ class CamposHelper
         return $Valor;
     }
 
-    public static function addRestric($q, $restricciones, $t = false)
-    {
-        foreach ($restricciones as $R) {
-            if($t) $R['columna_name'] = $R->campo->getColName($t);
-            $Valor = self::prepFilterVal($R['val'], $R['campo']);
-            self::addRestricRun($q, $R['columna_name'], $R['Comparador'], $Valor);
-        }
-    }
 
-    public static function addRestricRun($q, $columna_name, $Comparador, $Valor)
+    public static function getColName($base, $Columna)
     {
-        if($Comparador == 'nulo'){                          $q = $q->whereNull($columna_name);                 };
-        if($Comparador == 'no_nulo'){                       $q = $q->whereNotNull($columna_name);              };
-        if(in_array($Comparador, ['=','<=','<','>','>='])){ $q = $q->where($columna_name,$Comparador,$Valor);  };
-        if($Comparador == 'like'){                          $q = $q->where($columna_name, 'like', "%$Valor%"); };
-        if($Comparador == 'like_'){                         $q = $q->where($columna_name, 'like', "$Valor%");  };
-        if($Comparador == '_like'){                         $q = $q->where($columna_name, 'like', "%$Valor");  };
-        if($Comparador == 'lista' AND !empty($Valor)){      $q = $q->whereIn($columna_name, $Valor);           };
+        $base = ($base == "") ? "" : "$base.";
+        return str_replace('.', $base, $Columna);
     }
-
 
 }

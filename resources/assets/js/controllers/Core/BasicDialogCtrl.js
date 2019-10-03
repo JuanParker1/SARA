@@ -5,6 +5,13 @@ angular.module('BasicDialogCtrl', [])
 		var Ctrl = $scope;
 
 		Ctrl.Config = Config;
+		Ctrl.periodDateLocale = {
+			formatDate: (date) => {
+				if(typeof date == 'undefined' || date === null || isNaN(date.getTime()) ){ return null; }else{
+					return moment(date).format('YMM');
+				}
+			}
+		};
 
 		Ctrl.Cancel = function(){
 			$mdDialog.hide();

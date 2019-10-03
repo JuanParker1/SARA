@@ -22,6 +22,7 @@ class Entidad extends Model
 		return [
 			[ 'id',						'id',					null, true, false, null, 100 ],
 			[ 'bdd_id',					'bdd_id',				null, true, false, null, 100 ],
+			[ 'Ruta',					'Ruta',					null, true, true, null, 100 ],
 			[ 'Nombre',					'Nombre',				null, true, true, null, 100 ],
 			[ 'Tipo',					'Tipo',					null, true, false, null, 100 ],
 			[ 'Tabla',					'Tabla',				null, true, false, null, 100 ],
@@ -55,6 +56,6 @@ class Entidad extends Model
 	public function getTableName()
 	{
 		$Bdd = $this->bdd()->first();
-		return \App\Functions\CamposHelper::getTableSchema($this->Tabla, $Bdd->Op3);
+		return \App\Functions\GridHelper::getTableName($this->Tabla, $Bdd->Op3);
 	}
 }

@@ -4,6 +4,7 @@ angular.module('SARA', [
 	'ngStorage',
 	'ngMaterial',
 	'ngSanitize',
+	'ngAnimate',
 
 	'md.data.table',
 	'ngFileUpload',
@@ -47,8 +48,18 @@ angular.module('SARA', [
 	'EntidadesCtrl',
 		'Entidades_AddColumnsCtrl',
 		'Entidades_VerCamposCtrl',
+		'Entidades_GridsCtrl',
 		'Entidades_Grids_TestCtrl',
 
+		'Entidades_EditoresCtrl',
+		
 	'VariablesCtrl',
 		'VariablesGetDataDiagCtrl',
+		'Variables_VariableDiagCtrl',
+
+	'IndicadoresCtrl',
+		'Indicadores_IndicadorDiagCtrl',
+
+	'ScorecardsCtrl',
+		'Scorecards_ScorecardDiagCtrl',
 ]);

@@ -3,7 +3,7 @@
 	<div flex layout=column class="overflow-y darkScroll">
 	<!--<div flex layout=column class="wu800">-->
 
-		<div class="padding bg-white border margin border-radius">
+		<div class="margin">
 			<div layout>
 					
 				<md-input-container flex class="margin-bottom-5">
@@ -17,7 +17,7 @@
 					</md-select>
 				</md-input-container>
 
-				<md-input-container flex class="margin-bottom-5">
+				<md-input-container flex=20 class="margin-bottom-5">
 					<label>{{ EntidadSel.Tipo }}</label>
 					<input type="text" ng-model="EntidadSel.Tabla" required>
 				</md-input-container>
@@ -41,19 +41,19 @@
 					<md-option ng-repeat="C in CamposCRUD.rows" ng-value="C.id">{{  C.Alias !== null ? C.Alias : C.Columna }}</md-option>
 				</md-select>
 			</md-input-container>
-			<md-input-container class="" flex=15>
+			<md-input-container class="no-margin-bottom" flex=15>
 				<label>Ordenar Por</label>
 				<md-select ng-model="EntidadSel.campo_orderby" aria-label="s">
 					<md-option ng-repeat="C in CamposCRUD.rows" ng-value="C.id">{{  C.Alias !== null ? C.Alias : C.Columna }}</md-option>
 				</md-select>
 			</md-input-container>
-			<md-input-container class="" flex=10>
+			<md-input-container class="no-margin-bottom" flex=10>
 				<md-select ng-model="EntidadSel.campo_orderbydir" aria-label="s" class="w100p">
 					<md-option ng-value="'ASC'"> <md-icon class="s20" md-font-icon="fa-fw fa-arrow-up">  </md-icon></md-option>
 					<md-option ng-value="'DESC'"><md-icon class="s20" md-font-icon="fa-fw fa-arrow-down"></md-icon></md-option>
 				</md-select>
 			</md-input-container>
-			<md-input-container class="" flex=25>
+			<md-input-container class="no-margin-bottom" flex=25>
 				<label>Máximo de Filas</label>
 				<input type="number" min="1" ng-model="EntidadSel.max_rows" aria-label=s>
 			</md-input-container>

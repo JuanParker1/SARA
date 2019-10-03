@@ -82,6 +82,10 @@ angular.module('Filters', [])
 			});
 			return res;
 		};
+	}).filter('switch', function() {
+	    return function(input, boolean) {
+	    	return (boolean) ? input : [];
+	    }
 	}).filter('search', function() {
 		return function(input, search) {
 			if (!input) return input;
@@ -131,5 +135,14 @@ angular.module('Filters', [])
 	}).filter('percentage', ['$filter', function ($filter) {
 		return function (input, decimals) {
 		return $filter('number')(input * 100, decimals) + '%';
+		};
+	}]).filter('numberformat', ['$filter', function ($filter) {
+		return function (input, tipodato, decimales) {
+			if(!input) return input;
+			if(tipodato == 'Porcentaje') input = input * 100;
+			var number = $filter('number')(input, decimales);
+			if(tipodato == 'Porcentaje') return number + "%";
+			if(tipodato == 'Moneda') return "$ " + number;
+			return number;
 		};
 	}]);

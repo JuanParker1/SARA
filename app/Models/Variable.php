@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use App\Models\EntidadCampo;
+
 class Variable extends Model
 {
     protected $table = 'sara_variables';
@@ -14,7 +16,7 @@ class Variable extends Model
     protected $casts = [
     	'Filtros' => 'array'
     ];
-    protected $appends = [];
+    protected $appends = ['Filtros'];
 
     use SoftDeletes;
 
@@ -23,18 +25,18 @@ class Variable extends Model
 
 		//Name, Desc, Type, Required, Unique, Default, Width, Options
 		return [
-			[ 'id',						'id',					null, true, false, null, 100 ],
+			[ 'id',						'id',				null, true, false, null, 100 ],
 			[ 'Ruta',					'Ruta',				null, true, false, null, 100 ],
-			[ 'Variable',				'Variable',				null, true, false, null, 100 ],
-			[ 'Descripcion',			'Descripcion',				null, true, false, null, 100 ],
-			[ 'TipoDato',				'TipoDato',				null, true, false, null, 100 ],
-			[ 'Decimales',				'Decimales',				null, true, false, null, 100 ],
+			[ 'Variable',				'Variable',			null, true, false, null, 100 ],
+			[ 'Descripcion',			'Descripcion',		null, true, false, null, 100 ],
+			[ 'TipoDato',				'TipoDato',			null, true, false, null, 100 ],
+			[ 'Decimales',				'Decimales',		null, true, false, null, 100 ],
 			[ 'Tipo',					'Tipo',				null, true, false, null, 100 ],
-			[ 'grid_id',				'grid_id',				null, true, false, null, 100 ],
-			[ 'ColPeriodo',				'ColPeriodo',				null, true, false, null, 100 ],
-			[ 'Agrupador',				'Agrupador',				null, true, false, null, 100 ],
+			[ 'grid_id',				'grid_id',			null, true, false, null, 100 ],
+			[ 'ColPeriodo',				'ColPeriodo',		null, true, false, null, 100 ],
+			[ 'Agrupador',				'Agrupador',		null, true, false, null, 100 ],
 			[ 'Col',					'Col',				null, true, false, null, 100 ],
-			[ 'Filtros',				'Filtros',				null, true, false, null, 100 ],
+			[ 'Filtros',				'Filtros',			null, true, false, null, 100 ],
 		];
 	}
 
@@ -47,4 +49,22 @@ class Variable extends Model
 	{
 		return $this->hasMany('\App\Models\VariableValor', 'variable_id')->orderBy('Periodo');
 	}
+
+	public function getFiltrosAttribute($a)
+	{
+		$Filtros = json_decode($this->attributes['Filtros'], true);
+		foreach ($Filtros as &$F) { 
+			$F['campo'] = EntidadCampo::find($F['campo_id']);
+			$F['val']   = $F['Valor'];
+		};
+		return $Filtros;
+	}
+	
+	public function setFiltrosAttribute($Filtros)
+	{
+
+		foreach ($Filtros as &$F) { unset($F['campo']); };
+		$this->attributes['Filtros'] = json_encode($Filtros);
+	}
+
 }

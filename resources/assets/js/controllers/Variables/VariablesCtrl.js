@@ -24,18 +24,17 @@ angular.module('VariablesCtrl', [])
 
 		Ctrl.getVariables = () => {
 			Ctrl.VariablesCRUD.get().then(() => {
-				Ctrl.openVariable(Ctrl.VariablesCRUD.rows[2]);
+				Ctrl.openVariable(Ctrl.VariablesCRUD.rows[0]);
 				Ctrl.getFs();
 			});
 		};
 
 		Ctrl.getFs = () => {
-			Ctrl.filterVariables == "";
+			Ctrl.filterVariables = "";
 			Ctrl.VariablesFS = Rs.FsGet(Ctrl.VariablesCRUD.rows,'Ruta','Variable');
 		};
 
 		Ctrl.getFolderVarData = (F) => {
-			
 			var Vars = Ctrl.VariablesCRUD.rows.filter((v) => {
 				return v.Ruta.startsWith(F.route);
 			}).map(v => v.id);
@@ -73,7 +72,8 @@ angular.module('VariablesCtrl', [])
 		};
 
 		Ctrl.openVariable = (V) => {
-			Rs.http('/api/Variables/get', { id: V.id }, Ctrl, 'VarSel').then(() => {
+			//Rs.viewVariableDiag(V.id);
+			Rs.http('/api/Variables/get-variable', { id: V.id }, Ctrl, 'VarSel').then(() => {
 				//Rs.getVariableData([Ctrl.VarSel.id]);
 			});
 			//Ctrl.VarSel = V;
@@ -89,9 +89,10 @@ angular.module('VariablesCtrl', [])
 		Ctrl.addFiltro = () => {
 			var col = angular.copy(Ctrl.newFiltro);
 			Ctrl.VarSel.Filtros.push({
-				column_id: col.id,
+				columna_id: col.id,
 				column_title: col.column_title,
 				tipo_campo: col.tipo_campo,
+				campo_id: col.campo.id,
 				campo: col.campo,
 				obs: '',
 				Comparador: '=', Valor: null, Op1: null, Op2: null, Op3: null

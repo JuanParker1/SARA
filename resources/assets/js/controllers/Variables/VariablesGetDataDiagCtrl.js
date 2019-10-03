@@ -13,18 +13,13 @@ angular.module('VariablesGetDataDiagCtrl', [])
 		Ctrl.Anio  = angular.copy(Rs.AnioActual);
 		Ctrl.PeriodoIni = moment().subtract(1, 'months').toDate();
 		Ctrl.PeriodoFin = moment().subtract(1, 'months').toDate();
-		Ctrl.Anios = [3,2,1,0].map((n) => { return Ctrl.Anio-n})
+		Ctrl.Anios = [3,2,1,0].map((n) => { return Ctrl.Anio-n});
 
 		Ctrl.selectedRows = angular.copy(Variables);
 		Ctrl.overwriteValues = false;
 
-		Ctrl.periodDateLocale = {
-			formatDate: (date) => {
-				if(typeof date == 'undefined' || date === null || isNaN(date.getTime()) ){ return null; }else{
-					return moment(date).format('YMM');
-				}
-			}
-		};
+		Ctrl.periodDateLocale = Rs.periodDateLocale;
+		
 		
 		Rs.http('api/Variables/get-variables', { ids: Variables }, Ctrl, 'Variables');
 

@@ -20,7 +20,6 @@ Route::get('/Home/{section}', 				'MainController@getSection');
 Route::get('/Home/{section}/{subsection}',  'MainController@getSubsection');
 Route::get('/Frag/{fragment}',  			'MainController@getFragment');
 Route::post('/file',  						'MainController@getFile');
-Route::post('/phpinfo',  					function(){ echo phpinfo(); });
 
 Route::controller('/api/Main',       	'MainController');
 Route::controller('/api/Usuario',       'UsuarioController');
@@ -28,12 +27,11 @@ Route::controller('/api/App',       	'AppsController');
 Route::controller('/api/Bdds',     		'BddsController');
 Route::controller('/api/Entidades',     'EntidadesController');
 Route::controller('/api/Variables',     'VariablesController');
+Route::controller('/api/Indicadores',   'IndicadoresController');
 
 
 
-Route::get('/phpinfo', function(){
-	phpinfo();
-});
+Route::get('/phpinfo', function(){ phpinfo(); });
 
 
 

@@ -40,26 +40,74 @@ angular.module('MainCtrl', [])
 		};
 
 		Rs.AnioActual = new Date().getFullYear();
+		Rs.MesActual  = parseInt(moment().subtract(5,'d').format('MM'));
 		Rs.Meses = [
-			['01','Ene'],
-			['02','Feb'],
-			['03','Mar'],
-			['04','Abr'],
-			['05','May'],
-			['06','Jun'],
-			['07','Jul'],
-			['08','Ago'],
-			['09','Sep'],
-			['10','Oct'],
-			['11','Nov'],
-			['12','Dic'],
+			['01','Ene','Enero'],
+			['02','Feb','Febrero'],
+			['03','Mar','Marzo'],
+			['04','Abr','Abril'],
+			['05','May','Mayo'],
+			['06','Jun','Junio'],
+			['07','Jul','Julio'],
+			['08','Ago','Agosto'],
+			['09','Sep','Septiembre'],
+			['10','Oct','Octubre'],
+			['11','Nov','Noviembre'],
+			['12','Dic','Diciembre'],
 		];
+
+		Rs.periodDateLocale = {
+			formatDate: (date) => {
+				if(typeof date == 'undefined' || date === null || isNaN(date.getTime()) ){ return null; }else{
+					return moment(date).format('YMM');
+				}
+			}
+		};
+
+		Rs.formatVal = (d, TipoDato, Decimales) => {
+			if(TipoDato == 'Porcentaje') return d3.format('.'+Decimales+'%')(d);
+            if(TipoDato == 'Moneda')     return d3.format('$,.'+Decimales)(d);
+            return d3.format(',.'+Decimales)(d);
+		};
 
 		Rs.getVariableData = (Variables) => {
 			$mdDialog.show({
 				controller: 'VariablesGetDataDiagCtrl',
 				templateUrl: '/Frag/Variables.VariablesGetDataDiag',
 				locals: { Variables : Variables },
+				clickOutsideToClose: false, fullscreen: true, multiple: true,
+			});
+		};
+
+		Rs.viewVariableDiag = (variable_id) => {
+			$mdDialog.show({
+				controller: 'Variables_VariableDiagCtrl',
+				templateUrl: '/Frag/Variables.VariableDiag',
+				locals: { variable_id : variable_id },
+				clickOutsideToClose: false, fullscreen: true, multiple: true,
+			});
+		};
+
+		Rs.viewIndicadorDiag = (indicador_id) => {
+			$mdDialog.show({
+				controller: 'Indicadores_IndicadorDiagCtrl',
+				templateUrl: '/Frag/Indicadores.IndicadorDiag',
+				locals: { indicador_id : indicador_id },
+				clickOutsideToClose: false, fullscreen: true, multiple: true,
+			});
+		};
+
+		Rs.Sentidos = {
+			ASC: { desc: 'Mayor Mejor', icon: 'fa-arrow-circle-up' },
+			RAN: { desc: 'Mantener en Rango', icon: 'fa-arrow-circle-right' },
+			DES: { desc: 'Menor Mejor', icon: 'fa-arrow-circle-down' },
+		};
+
+		Rs.viewScorecardDiag = (scorecard_id) => {
+			$mdDialog.show({
+				controller: 'Scorecards_ScorecardDiagCtrl',
+				templateUrl: '/Frag/Scorecards.ScorecardDiag',
+				locals: { scorecard_id : scorecard_id },
 				clickOutsideToClose: false, fullscreen: true, multiple: true,
 			});
 		};
@@ -261,6 +309,13 @@ angular.module('BasicDialogCtrl', [])
 		var Ctrl = $scope;
 
 		Ctrl.Config = Config;
+		Ctrl.periodDateLocale = {
+			formatDate: (date) => {
+				if(typeof date == 'undefined' || date === null || isNaN(date.getTime()) ){ return null; }else{
+					return moment(date).format('YMM');
+				}
+			}
+		};
 
 		Ctrl.Cancel = function(){
 			$mdDialog.hide();
@@ -682,6 +737,811 @@ angular.module('ListSelectorCtrl', [])
 
 	}
 ]);
+angular.module('IndicadoresCtrl', [])
+.controller('IndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('IndicadoresCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.IndSel = null;
+		Ctrl.IndicadoresNav = true;
+
+		Ctrl.tiposDatoInd = ['Numero','Porcentaje','Moneda'];
+		Ctrl.OpsUsar = [
+			{id: 'Cump', desc: 'Cumplimiento (1/0)'},
+			{id: 'PorcCump', desc: '% de Cumplimiento'},
+			{id: 'Valor', desc: 'Valor del Indicador'},
+		];
+
+		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Variables' });
+		Ctrl.IndicadoresCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores' });
+		Ctrl.IndicadoresVarsCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores/variables' });
+		Ctrl.MetasCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores/metas' });
+
+
+		Ctrl.getIndicadores = () => {
+			Ctrl.IndicadoresCRUD.get().then(() => {
+				Ctrl.openIndicador(Ctrl.IndicadoresCRUD.rows[0]);
+				Ctrl.getFs();
+			});
+		};
+
+		Ctrl.getFs = () => {
+			Ctrl.filterIndicadores = "";
+			Ctrl.IndicadoresFS = Rs.FsGet(Ctrl.IndicadoresCRUD.rows,'Ruta','Indicador');
+		};
+
+		Ctrl.getFolderVarData = (F) => {
+			var Vars = Ctrl.IndicadoresCRUD.rows.filter((v) => {
+				return v.Ruta.startsWith(F.route);
+			}).map(v => v.id);
+			Rs.getIndicadorData(Vars);
+		};
+
+		Ctrl.searchIndicador = () => {
+			if(Ctrl.filterIndicadores == ""){
+				Ctrl.getFs();
+			}else{
+				Ctrl.IndicadoresFS = Rs.FsGet($filter('filter')(Ctrl.IndicadoresCRUD.rows, Ctrl.filterIndicadores),'Ruta','Indicador',true);
+			};
+		};
+
+		Ctrl.addIndicador = () => {
+			Ctrl.getFs();
+			Rs.BasicDialog({
+				Title: 'Crear Indicador', Flex: 50,
+				Fields: [
+					{ Nombre: 'Nombre',  Value: '', Required: true },
+					{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.IndicadoresFS },
+					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
+				],
+			}).then((r) => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				Ctrl.IndicadoresCRUD.add({
+					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
+					Indicador: f.Nombre,
+					Filtros: []
+				}).then(() => {
+					Ctrl.getFs();
+				});
+			});
+		};
+
+		Ctrl.openIndicador = (V) => {
+			Ctrl.IndSel = V;
+			Ctrl.IndicadoresVarsCRUD.setScope('indicador', Ctrl.IndSel.id).get();
+			Ctrl.MetasCRUD.setScope('indicador', Ctrl.IndSel.id).get();
+
+			//Rs.viewIndicadorDiag(Ctrl.IndSel.id); //FIX
+		};
+
+		Ctrl.updateIndicador = () => {
+			Ctrl.IndicadoresCRUD.update(Ctrl.IndSel).then(() => {
+				Rs.showToast('Indicador Actualizada', 'Success');
+				Ctrl.saveVariables();
+				//Ctrl.openIndicador(Ctrl.IndSel);
+			});
+		};
+
+		Ctrl.VariablesCRUD.get().then(() => {
+			Ctrl.getIndicadores();
+		});
+
+
+		Ctrl.addVariable = () => {
+			Rs.BasicDialog({
+				Title: 'Agregar Componente', Flex: 50,
+				Fields: [
+					{ Nombre: 'Variable',    Value: '', Type: 'list', List: Ctrl.VariablesCRUD.rows, Item_Val: 'id', Item_Show: 'Variable' },
+				],
+			}).then((r) => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				Ctrl.IndicadoresVarsCRUD.add({
+					indicador_id: Ctrl.IndSel.id,
+					Letra: String.fromCharCode(97 + Ctrl.IndicadoresVarsCRUD.rows.length),
+					Tipo: 'Variable', variable_id: f.Variable
+				});
+			});
+		};
+
+		Ctrl.delVariable = (Var) => {
+			Ctrl.IndicadoresVarsCRUD.delete(Var).then(() => {
+				angular.forEach(Ctrl.IndicadoresVarsCRUD.rows, (V,i) => {
+					var Letra = String.fromCharCode(97 + i);
+					if(Letra !== V.Letra){
+						V.Letra = Letra;
+						V.changed = true;
+					};
+				});
+				Ctrl.saveVariables();
+			});
+		};
+
+		Ctrl.saveVariables = () => {
+			var Updatees = $filter('filter')(Ctrl.IndicadoresVarsCRUD.rows, { changed: true });
+			if(Updatees.length == 0) return;
+			Ctrl.IndicadoresVarsCRUD.updateMultiple(Updatees);
+			angular.forEach(Ctrl.IndicadoresVarsCRUD.rows, IV => {
+				IV.changed = false;
+			});
+		};
+
+
+
+		//Metas
+		Ctrl.addMeta = () => {
+			var PeriodoDef = Rs.AnioActual+'-01-15';
+			var f = [
+				{ Nombre: 'Periodo',  Type: 'period', Value: PeriodoDef, Required: true, flex: 50 }
+			];
+			if(Ctrl.IndSel.Sentido == 'RAN'){
+				f.push({Nombre: 'Límite Inferior',  Value: '', Type: 'string', Required: true, flex: 100 });
+				f.push({Nombre: 'Límite Superior',  Value: '', Type: 'string', Required: true, flex: 100 });
+			}else{
+				f.push({Nombre: 'Meta',  			Value: '', Type: 'string', Required: true, flex: 50 });
+			};
+			Rs.BasicDialog({
+				Title: 'Crear Meta',
+				Fields: f
+			}).then(f => {
+				if(!f) return;
+				var m = {
+					indicador_id: Ctrl.IndSel.id,
+					PeriodoDesde: moment(f.Fields[0].Value).format('YYYYMM'),
+					Meta: f.Fields[1].Value,
+					Meta2: ((Ctrl.IndSel.Sentido == 'RAN') ? f.Fields[2].Value : null),
+				};
+
+				if($filter('filter')(Ctrl.MetasCRUD.rows, { PeriodoDesde: m.PeriodoDesde }).length > 0) return Rs.showToast('Periodo ya existe', 'Error');
+				
+				Ctrl.MetasCRUD.add(m);
+			});
+		};
+
+		Ctrl.delMeta = (Meta) => {
+			Ctrl.MetasCRUD.delete(Meta);
+		};
+
+		
+	}
+]);
+angular.module('Indicadores_IndicadorDiagCtrl', [])
+.controller('Indicadores_IndicadorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'indicador_id', '$timeout',
+	function($scope, $rootScope, $mdDialog, $filter, indicador_id, $timeout) {
+
+		console.info('Indicadores_IndicadorDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.Cancel = () => { $mdDialog.cancel(); }
+
+		Ctrl.Meses = Rs.Meses;
+		Ctrl.inArray = Rs.inArray;
+		Ctrl.Anio  = angular.copy(Rs.AnioActual);
+		Ctrl.anioAdd = (num) => { Ctrl.Anio += num; Ctrl.getIndicadores(); };
+		Ctrl.Sentidos = Rs.Sentidos;
+
+        Ctrl.modoComparativo = false;
+
+		Ctrl.getIndicadores = () => {
+
+			Rs.http('api/Indicadores/get', { id: indicador_id, Anio: Ctrl.Anio }, Ctrl, 'Ind').then(() => {
+
+				angular.forEach(Ctrl.Ind.valores, (m,k) => {
+					var i = parseInt(m.mes);
+					Ctrl.graphData[0].values[i-1] = { x: i, y: m.Valor, 	  val: m.val,         series: 0, key: 'Valor', color: m.color };
+                    Ctrl.graphData[1].values[i-1] = { x: i, y: m.meta_Valor,  val: m.meta_val,    series: 1, key: 'Meta'     };
+                    Ctrl.graphData[2].values[i-1] = { x: i, y: m.meta2_Valor, val: m.meta_val,    series: 2, key: 'Meta2'    };
+					Ctrl.graphData[3].values[i-1] = { x: i, y: m.anioAnt,     val: m.anioAnt_val, series: 3, key: 'AnioAnt', color: m.anioAnt_color  };
+				});
+
+                Ctrl.updateChart();
+
+			});
+
+		};
+
+        Ctrl.updateChart = () => {
+            Ctrl.graphData[2].disabled = !(Ctrl.Ind.Sentido == 'RAN');
+            Ctrl.graphData[3].disabled = !Ctrl.modoComparativo;
+            d3.selectAll('.nvtooltip').style('opacity', 0);
+            Ctrl.graphApi.update();
+        }
+		
+
+
+
+
+
+
+
+ 		Ctrl.grapOptions = {
+            chart: {
+                type: 'multiChart',
+                margin: {
+                	top:10, right:20, bottom:0, left:100
+                },
+                height: 150,
+                y: function(d,i) { return d.y; },
+                x: function(d,i) { return d.x; },
+                showLegend: false,
+                xAxis: {
+                	showMaxMin: false,
+                    ticks: 0,
+                    tickFormat: function(d){
+                        return Rs.Meses[d-1][1];
+                    },
+                },
+                yAxis1: {
+                    tickFormat: function(d){
+                        return Rs.formatVal(d,Ctrl.Ind.TipoDato,Ctrl.Ind.Decimales);
+                    },
+                },
+                bars1: {
+                },
+                lines1: {
+                	padData: true,
+                },
+                padData: true,
+                //yDomain1: [0,0.1],
+                useInteractiveGuideline: true,
+                interactiveLayer:{
+                	showGuideLine: false,
+                    tooltip: {
+                        contentGenerator: (obj) => {
+                            var Periodo = `${Rs.Meses[obj.index][1]} ${Ctrl.Anio}`;
+                            var Resultado = obj.series[0].data.val;
+                            var Meta      = obj.series[1].data.val;
+                            var Color     = obj.series[0].data.color;
+                            return `<table><thead><tr><td class=x-value colspan=3><div class='md-title'>${Periodo}</div></td></tr></thead><tbody>
+                            <tr style='color:${Color}'><td class=key>Resultado</td><td class='value'>${Resultado}</td></tr>
+                            <tr><td class=key>Meta:</td><td class=value>${Meta}</td></tr>
+                            </tbody></table>`;
+                        }
+                    }
+                    
+                }
+            }
+        };
+
+        Ctrl.graphData = [
+        	{ key: 'Valor',    yAxis: 1, type: 'bar',  values: [] },
+            { key: 'Meta',     yAxis: 1, type: 'line', values: [], classed: 'dashed', color: 'white' },
+            { key: 'Meta2',    yAxis: 1, type: 'line', values: [], classed: 'dashed', color: 'white' },
+        	{ key: 'AnioAnt',  yAxis: 1, type: 'bar',  values: [] },
+        ];
+
+        Ctrl.getIndicadores();
+
+        Ctrl.viewCompDiag = (comp) => {
+            if(comp.Tipo == 'Variable')  return Rs.viewVariableDiag(comp.variable_id);
+            if(comp.Tipo == 'Indicador') return Rs.viewIndicadorDiag(comp.variable_id);
+        };
+	}
+]);
+
+angular.module('ScorecardsCtrl', [])
+.controller('ScorecardsCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('ScorecardsCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.ScoSel = null;
+		Ctrl.ScorecardsNav = true;
+
+		Ctrl.ScorecardsCRUD  = $injector.get('CRUD').config({ base_url: '/api/Indicadores/scorecards' });
+		Ctrl.CardsCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Indicadores/scorecards-cards' });
+		Ctrl.IndicadoresCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores' });
+		Ctrl.VariablesCRUD 	 = $injector.get('CRUD').config({ base_url: '/api/Variables' });
+
+		Ctrl.getScorecards = () => {
+			Ctrl.ScorecardsCRUD.get().then(() => {
+				Ctrl.openScorecard(Ctrl.ScorecardsCRUD.rows[0]);
+				Ctrl.getFs();
+			});
+		};
+
+		Ctrl.getFs = () => {
+			Ctrl.filterScorecards = "";
+			Ctrl.ScorecardsFS = Rs.FsGet(Ctrl.ScorecardsCRUD.rows,'Ruta','Titulo');
+		};
+
+		Ctrl.getFolderVarData = (F) => {
+			var Vars = Ctrl.ScorecardsCRUD.rows.filter((v) => {
+				return v.Ruta.startsWith(F.route);
+			}).map(v => v.id);
+			Rs.getScorecardData(Vars);
+		};
+
+		Ctrl.searchScorecard = () => {
+			if(Ctrl.filterScorecards == ""){
+				Ctrl.getFs();
+			}else{
+				Ctrl.ScorecardsFS = Rs.FsGet($filter('filter')(Ctrl.ScorecardsCRUD.rows, Ctrl.filterScorecards),'Ruta','Scorecard',true);
+			};
+		};
+
+		Ctrl.addScorecard = () => {
+			Ctrl.getFs();
+			Rs.BasicDialog({
+				Title: 'Crear Scorecard', Flex: 50,
+				Fields: [
+					{ Nombre: 'Titulo',  Value: '', Required: true },
+					{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.ScorecardsFS },
+					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
+				],
+			}).then((r) => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				Ctrl.ScorecardsCRUD.add({
+					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
+					Titulo: f.Titulo,
+					Secciones: []
+				}).then(() => {
+					Ctrl.getFs();
+				});
+			});
+		};
+
+		Ctrl.openScorecard = (V) => {
+			Ctrl.ScoSel = V;
+			Ctrl.CardsCRUD.setScope('scorecard', Ctrl.ScoSel.id).get();
+			//Rs.viewScorecardDiag(V.id);
+		};
+
+		Ctrl.updateScorecard = () => {
+			Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel).then(() => {
+				Rs.showToast('Scorecard Actualizada', 'Success');
+				Ctrl.saveCards();
+			});
+		};
+
+
+		//Cards
+		Ctrl.addCard = () => {
+			Rs.BasicDialog({
+				Title: 'Agregar Tarjeta', Flex: 50,
+				Fields: [
+					{ Nombre: 'Indicador', Value: null, Type: 'list', List: Ctrl.IndicadoresCRUD.rows, Item_Val: 'id', Item_Show: 'Indicador' },
+				],
+			}).then((r) => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				var Indice = Ctrl.CardsCRUD.rows.length;
+				var seccion_id = (Indice == 0) ? null : Ctrl.CardsCRUD.rows[Indice-1].seccion_id;
+				Ctrl.CardsCRUD.add({
+					Indice: Indice,
+					scorecard_id: Ctrl.ScoSel.id,
+					seccion_id: seccion_id,
+					tipo: 'Indicador', elemento_id: f.Indicador
+				});
+			});
+		};
+
+		Ctrl.saveCards = () => {
+			var Updatees = $filter('filter')(Ctrl.CardsCRUD.rows, { changed: true });
+			if(Updatees.length == 0) return;
+			Ctrl.CardsCRUD.updateMultiple(Updatees);
+			angular.forEach(Ctrl.CardsCRUD.rows, C => {
+				C.changed = false;
+			});
+		};
+
+		Ctrl.delCard = (C) => {
+			Ctrl.CardsCRUD.delete(C);
+		};
+
+
+
+
+
+		Promise.all([Ctrl.IndicadoresCRUD.get(), Ctrl.VariablesCRUD.get()]).then(values => { 
+			Ctrl.getScorecards();
+		});
+		
+
+		
+	}
+]);
+angular.module('Scorecards_ScorecardDiagCtrl', [])
+.controller('Scorecards_ScorecardDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'scorecard_id', '$timeout',
+	function($scope, $rootScope, $mdDialog, $filter, scorecard_id, $timeout) {
+
+		console.info('Scorecards_ScorecardDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.Cancel = () => { $mdDialog.cancel(); }
+
+		Ctrl.Meses = Rs.Meses;
+		Ctrl.inArray = Rs.inArray;
+        Ctrl.viewVariableDiag = Rs.viewVariableDiag;
+        Ctrl.viewIndicadorDiag = Rs.viewIndicadorDiag;
+        Ctrl.Sentidos = Rs.Sentidos;
+        Ctrl.periodDateLocale = Rs.periodDateLocale;
+
+		Ctrl.Anio  = angular.copy(Rs.AnioActual);
+		Ctrl.Mes   = angular.copy(Rs.MesActual);
+		Ctrl.Modo  = 'Mes';
+
+		Ctrl.periodoAdd = (num) => {
+			var m = angular.copy(Ctrl.Mes) + num;
+			if(m == 0) { m = 12; Ctrl.anioAdd(-1); }
+			if(m == 13){ m =  1; Ctrl.anioAdd( 1); }
+			Ctrl.Mes = m;
+		};
+
+		Ctrl.anioAdd = (num) => {
+			Ctrl.Anio += num;
+			Ctrl.getScorecard();
+		};
+
+        Ctrl.Secciones = [];
+
+        Ctrl.Periodo = moment().toDate();
+
+		Ctrl.getScorecard = () => {
+            Rs.http('api/Indicadores/scorecard-get', { id: scorecard_id, Anio: Ctrl.Anio }, Ctrl, 'Sco').then(() => {
+                Ctrl.Secciones = [{ Seccion: null, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: null }).length }]
+                angular.forEach(Ctrl.Sco.Secciones, (s) => {
+                	Ctrl.Secciones.push({ Seccion: s, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: s }).length }); 
+                });
+            });
+		};
+
+        Ctrl.getScorecard();
+	}
+]);
+
+angular.module('VariablesCtrl', [])
+.controller('VariablesCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('VariablesCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.VarSel = null;
+		Ctrl.VariablesNav = true;
+
+		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Variables' });
+		Ctrl.Grids = Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
+
+		Ctrl.tiposDatoVar = ['Numero','Porcentaje','Moneda'];
+
+		Ctrl.agregators = [
+			{ id: 'count', 			Nombre: 'Contar' },
+			{ id: 'countdistinct',  Nombre: 'Contar Distintos' },
+			{ id: 'sum',  			Nombre: 'Suma' },
+			{ id: 'avg',  			Nombre: 'Promedio' },
+			{ id: 'min',  			Nombre: 'Mínimo' },
+			{ id: 'max',  			Nombre: 'Máximo' },
+		];
+
+		Ctrl.getVariables = () => {
+			Ctrl.VariablesCRUD.get().then(() => {
+				Ctrl.openVariable(Ctrl.VariablesCRUD.rows[0]);
+				Ctrl.getFs();
+			});
+		};
+
+		Ctrl.getFs = () => {
+			Ctrl.filterVariables = "";
+			Ctrl.VariablesFS = Rs.FsGet(Ctrl.VariablesCRUD.rows,'Ruta','Variable');
+		};
+
+		Ctrl.getFolderVarData = (F) => {
+			var Vars = Ctrl.VariablesCRUD.rows.filter((v) => {
+				return v.Ruta.startsWith(F.route);
+			}).map(v => v.id);
+			Rs.getVariableData(Vars);
+		};
+
+		Ctrl.searchVariable = () => {
+			if(Ctrl.filterVariables == ""){
+				Ctrl.getFs();
+			}else{
+				Ctrl.VariablesFS = Rs.FsGet($filter('filter')(Ctrl.VariablesCRUD.rows, Ctrl.filterVariables),'Ruta','Variable',true);
+			};
+		};
+
+		Ctrl.addVariable = () => {
+			Ctrl.getFs();
+			Rs.BasicDialog({
+				Title: 'Crear Variable', Flex: 50,
+				Fields: [
+					{ Nombre: 'Nombre',  Value: '', Required: true },
+					{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.VariablesFS },
+					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
+				],
+			}).then((r) => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				Ctrl.VariablesCRUD.add({
+					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
+					Variable: f.Nombre,
+					Filtros: []
+				}).then(() => {
+					Ctrl.getFs();
+				});
+			});
+		};
+
+		Ctrl.openVariable = (V) => {
+			//Rs.viewVariableDiag(V.id);
+			Rs.http('/api/Variables/get-variable', { id: V.id }, Ctrl, 'VarSel').then(() => {
+				//Rs.getVariableData([Ctrl.VarSel.id]);
+			});
+			//Ctrl.VarSel = V;
+		};
+
+		Ctrl.updateVariable = () => {
+			Ctrl.VariablesCRUD.update(Ctrl.VarSel).then(() => {
+				Rs.showToast('Variable Actualizada', 'Success');
+				Ctrl.openVariable(Ctrl.VarSel);
+			});
+		};
+
+		Ctrl.addFiltro = () => {
+			var col = angular.copy(Ctrl.newFiltro);
+			Ctrl.VarSel.Filtros.push({
+				columna_id: col.id,
+				column_title: col.column_title,
+				tipo_campo: col.tipo_campo,
+				campo_id: col.campo.id,
+				campo: col.campo,
+				obs: '',
+				Comparador: '=', Valor: null, Op1: null, Op2: null, Op3: null
+			});
+			Ctrl.newFiltro = null;
+		};
+
+		Ctrl.editValor = (Periodo) => {
+			var Valor = angular.isDefined(Ctrl.VarSel.valores[Periodo]) ? Ctrl.VarSel.valores[Periodo].Valor : null;
+			Rs.BasicDialog({
+				Title: 'Cambiar valor '+Periodo,
+				Confirm: { Text: 'Cambiar' }, Flex: 20,
+				Fields: [
+					{ Nombre: 'Valor',  Value: Valor, Required: false, Regex: "\\d+" }
+				], //          ^[0-9]+([.][0-9]{1,4})?$
+			}).then((r) => {
+				if(!r) return;
+				newValor = (r.Fields[0].Value != "") ? r.Fields[0].Value : null;
+				if(newValor == Valor) return;
+				Rs.http('/api/Variables/update-valor', { variable_id: Ctrl.VarSel.id, Periodo: Periodo, Valor: newValor }).then(() => {
+					Ctrl.openVariable(Ctrl.VarSel);
+				});
+			});
+		};
+
+		Ctrl.copyVar = () => {
+			Rs.BasicDialog({
+				Title: 'Copiar Variable', Flex: 50, clickOutsideToClose: false,
+				Confirm: { Text: 'Crear' },
+				Fields: [
+					{ Nombre: 'Nombre',  	Value: Ctrl.VarSel.Variable + ' (copia)', Required: true },
+					{ Nombre: 'Descripcion',  	Value: Ctrl.VarSel.Descripcion, Required: true },
+					{ Nombre: 'Ruta',       Value: Ctrl.VarSel.Ruta, flex: 70, Type: 'fsroute', List: Ctrl.VariablesFS },
+					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
+				]
+			}).then((r) => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				Ctrl.VariablesCRUD.add({
+					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
+					Variable: f.Nombre,
+					Descripcion: f.Descripcion,
+					Filtros: Ctrl.VarSel.Filtros,
+				}).then(() => { Ctrl.getFs(); });
+			});
+		};
+
+		Ctrl.getVariables();
+	}
+]);
+angular.module('VariablesGetDataDiagCtrl', [])
+.controller('VariablesGetDataDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', 'Variables',
+	function($scope, $rootScope, $mdDialog, $filter, $timeout, Variables) {
+
+		console.info('VariablesGetDataDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.Cancel = () => { $mdDialog.cancel(); }
+
+		Ctrl.Meses = Rs.Meses;
+		Ctrl.inArray = Rs.inArray;
+		Ctrl.Anio  = angular.copy(Rs.AnioActual);
+		Ctrl.PeriodoIni = moment().subtract(1, 'months').toDate();
+		Ctrl.PeriodoFin = moment().subtract(1, 'months').toDate();
+		Ctrl.Anios = [3,2,1,0].map((n) => { return Ctrl.Anio-n});
+
+		Ctrl.selectedRows = angular.copy(Variables);
+		Ctrl.overwriteValues = false;
+
+		Ctrl.periodDateLocale = Rs.periodDateLocale;
+		
+		
+		Rs.http('api/Variables/get-variables', { ids: Variables }, Ctrl, 'Variables');
+
+		Ctrl.calcPeriodos = () =>{
+			var periodoAct = parseInt(moment(Ctrl.PeriodoIni).format('YMM'));
+			var periodoLim = parseInt(moment(Ctrl.PeriodoFin).format('YMM'));
+			Ctrl.Periodos = [ periodoAct ];
+			while (periodoAct < periodoLim){
+				var y = parseInt(periodoAct/100);
+				var m = periodoAct - (y*100);
+
+				if(m < 12){
+					periodoAct = (y*100) + (m+1);
+				}else{
+					periodoAct = ((y+1)*100) + 1;
+				}
+
+				Ctrl.Periodos.push(periodoAct);
+			};
+		};
+
+		Ctrl.cellSelected = (V,M) => {
+			if(V){
+				var Selected = Rs.inArray(V.id, Ctrl.selectedRows);
+				if(!Selected) return false;
+			};
+			var PeriodoCell = Ctrl.Anio*100 + parseInt(M[0]);
+			return Rs.inArray(PeriodoCell, Ctrl.Periodos);
+		};
+
+		Ctrl.eraseData = () => {
+			angular.forEach(Ctrl.Variables, (v) => {
+				if(Rs.inArray(v.id, Ctrl.selectedRows)){
+					if(!angular.isDefined(v.newValores)) v.newValores = {};
+					angular.forEach(Ctrl.Periodos, (P) => {
+						v.valores[P]    = { val: null, Valor: null };
+						v.newValores[P] = { val: null, Valor: null };
+					});
+				};
+			});
+		};
+
+		Ctrl.startDownload = () => {
+			Ctrl.VarIndex = 0;
+			Ctrl.stepDownload();
+		};
+
+		Ctrl.stepDownload = () => {
+			
+			var Var = Ctrl.Variables[Ctrl.VarIndex];
+			if(!angular.isDefined(Var)) return;
+			console.log(Ctrl.VarIndex, Rs.inArray(Var.id, Ctrl.selectedRows));
+			if(!Rs.inArray(Var.id, Ctrl.selectedRows)){
+				Ctrl.VarIndex++; 
+				return Ctrl.stepDownload();
+			}else{
+				Rs.http('api/Variables/calc-valores', { Var: Var, Periodos: Ctrl.Periodos }).then((r) => {
+					Var.newValores = r;
+					Ctrl.VarIndex++;
+					Ctrl.stepDownload();
+				});
+			}
+
+			
+		};
+
+		Ctrl.storeVars = () => {
+			var Variables = Ctrl.Variables.filter((e) => {
+				return Rs.inArray(e.id, Ctrl.selectedRows);
+			});
+
+			Rs.http('api/Variables/store-valores', { Variables: Variables, Periodos: Ctrl.Periodos, overwriteValues: Ctrl.overwriteValues }).then((r) => {
+				angular.forEach(r, (v) => {
+					var i = Rs.getIndex(Ctrl.Variables, v.id);
+					Ctrl.Variables[i] = v;
+				});
+				//Var.newValores = r;
+			});
+		};
+
+		Ctrl.calcPeriodos();
+	}
+]);
+
+
+angular.module('Variables_VariableDiagCtrl', [])
+.controller('Variables_VariableDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'variable_id', '$timeout',
+	function($scope, $rootScope, $mdDialog, $filter, variable_id, $timeout) {
+
+		console.info('Variables_VariableDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.Cancel = () => { $mdDialog.cancel(); }
+
+		Ctrl.Meses = Rs.Meses;
+		Ctrl.inArray = Rs.inArray;
+        Ctrl.viewVariableDiag = Rs.viewVariableDiag;
+		Ctrl.Anio  = angular.copy(Rs.AnioActual);
+		Ctrl.anioAdd = (num) => { Ctrl.Anio += num; Ctrl.getVariables(); };
+        
+        Ctrl.viewRelatedVariables = false;
+
+		Ctrl.getVariables = () => {
+
+            Rs.http('api/Variables/get', { id: variable_id, Anio: Ctrl.Anio }, Ctrl, 'Var').then(() => {
+                Ctrl.Anios = [(Ctrl.Anio - 1), Ctrl.Anio];
+                angular.forEach(Ctrl.Anios, (Anio, kA) => {
+                    angular.forEach(Rs.Meses, (Mes, kM) => {
+                        
+                        var i = parseInt(kM);
+                        var VarVal = Ctrl.Var.valores[(Anio*100)+(i+1)];
+                        var Valor = (VarVal == null) ? null : VarVal.Valor;
+                        Ctrl.graphData[kA].values[i] = { x: i, y: Valor };
+                    });
+                });
+
+                Ctrl.updateChart();
+
+            });
+		};
+
+        Ctrl.updateChart = () => {
+            d3.selectAll('.nvtooltip').style('opacity', 0);
+            Ctrl.graphApi.update();
+        }
+
+ 		Ctrl.grapOptions = {
+            chart: {
+                type: 'multiChart',
+                margin: {
+                	top:5, right:0, bottom:5, left:80
+                },
+                height: 150,
+                y: function(d,i) { return d.y; },
+                x: function(d,i) { return d.x; },
+                showLegend: false,
+                xAxis: {
+                	showMaxMin: false,
+                    ticks: 0,
+                    tickFormat: function(d){
+                        //return d;
+                        return Rs.Meses[d][1];
+                    },
+                },
+                yAxis1: {
+                    tickFormat: function(d){
+                        return Rs.formatVal(d,Ctrl.Var.TipoDato,Ctrl.Var.Decimales);
+                    },
+                },
+                bars1: {
+                },
+                lines1: {
+                	padData: true,
+                },
+                padData: true,
+                //forceY:[0],
+                //yDomain1: [0,0.1],
+                useInteractiveGuideline: true,
+                interactiveLayer:{
+                	showGuideLine: false,
+                },
+                legend: {
+                    //margin: { right: 10 }
+                },
+
+            }
+        };
+
+        Ctrl.graphData = [
+            { key: (Ctrl.Anio-1), yAxis: 1, type: 'line', values: [], color: '#ababab',  },
+            { key: Ctrl.Anio,     yAxis: 1, type: 'line', values: [], color: '#6ab8ff', strokeWidth: 4 },
+        ];
+
+        Ctrl.getVariables();
+	}
+]);
+
 angular.module('EntidadesCamposCtrl', [])
 .controller('EntidadesCamposCtrl', ['$scope', '$rootScope', 
 	function($scope, $rootScope) {
@@ -702,23 +1562,46 @@ angular.module('EntidadesCtrl', [])
 		var Rs = $rootScope;
 
 		Ctrl.EntidadSidenav = true;
+		Ctrl.loadingEntidad = false;
+
+		Ctrl.EntidadesCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades', 				order_by: ['Nombre'] });
+		Ctrl.CamposCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/campos', 		order_by: ['Indice'] });
+		Ctrl.RestricCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/restricciones', 	add_research: true, add_with:['campo'] });
+		Ctrl.GridsCRUD 			= $injector.get('CRUD').config({ base_url: '/api/Entidades/grids', 			order_by: ['Titulo'] });
+		Ctrl.GridColumnasCRUD 	= $injector.get('CRUD').config({ base_url: '/api/Entidades/grids-columnas', query_with:['campo'], add_append:'refresh', order_by: ['Indice'] });
+		Ctrl.GridFiltrosCRUD 	= $injector.get('CRUD').config({ base_url: '/api/Entidades/grids-filtros', 	query_with:[], order_by: ['Indice'] });
+		Ctrl.EditoresCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/editores', 		query_with:[], order_by: ['Titulo'] });
+		
+		Ctrl.navToSubsection = (subsection) => { Rs.navTo('Home.Section.Subsection', { section: 'Entidades', subsection: subsection }); };
 
 		Ctrl.getBdds = () => {
 			Rs.http('api/Bdds/all', {}, Ctrl, 'Bdds').then(() => {
 				if(Ctrl.Bdds.length > 0){
 					Ctrl.BddSel = Ctrl.Bdds[0];
-					//Ctrl.testGrid(1); //QUITAR
 					Ctrl.getEntidades();
 				}
 			});
 		};
 
-		Ctrl.EntidadesCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades', order_by: ['Nombre'] });
-
 		Ctrl.getEntidades = () => {
 			Ctrl.EntidadesCRUD.get().then(() => {
+				Ctrl.getFsEntidades();
 				Ctrl.openEntidad(Ctrl.EntidadesCRUD.rows[1]); //QUITAR
+				Ctrl.navToSubsection('Editores');
 			});
+		};
+
+		Ctrl.getFsEntidades = () => {
+			Ctrl.filterEntidades = "";
+			Ctrl.FsEntidades = Rs.FsGet(Ctrl.EntidadesCRUD.rows,'Ruta','Entidad');
+		};
+
+		Ctrl.searchEntidades = () => {
+			if(Ctrl.filterEntidades == ""){
+				Ctrl.getFsEntidades();
+			}else{
+				Ctrl.FsEntidades = Rs.FsGet($filter('filter')(Ctrl.EntidadesCRUD.rows, Ctrl.filterEntidades),'Ruta','Entidad',true);
+			};
 		};
 
 		Ctrl.getEntidad = (id) => {
@@ -726,29 +1609,35 @@ angular.module('EntidadesCtrl', [])
 		};
 
 		Ctrl.openEntidad = (E) => {
-			//return Ctrl.verCamposDiag(1,[5]); //QUITAR
 			if(!E) return;
 			if(Ctrl.EntidadSel){ if(Ctrl.EntidadSel.id == E.id) return; }
+			Ctrl.loadingEntidad = true;
 			Ctrl.EntidadSel = E;
-			
 			Ctrl.getCampos();
 			Ctrl.getRestricciones();
-			Ctrl.getGrids();
-
-			Ctrl.GridColumnasCRUD.rows = [];
-			Ctrl.GridSel = null;
 		}
 
 		Ctrl.addEntidad = () => {
-			Ctrl.EntidadesCRUD.dialog({
-				bdd_id: Ctrl.BddSel.id,
-				Tipo: 'Tabla',
-			}, {
-				title: 'Crear Entidad',
-				only: ['Nombre']
-			}).then((R) => {
-				if(!R) return;
-				Ctrl.EntidadesCRUD.add(R);
+
+			Ctrl.getFsEntidades();
+			Rs.BasicDialog({
+				Title: 'Crear Entidad', Flex: 50,
+				Fields: [
+					{ Nombre: 'Nombre',  Value: '', Required: true, flex: 50 },
+					{ Nombre: 'Tabla',   Value: '', Required: true, flex: 50 },
+					{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.FsEntidades },
+					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
+				],
+			}).then((r) => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				Ctrl.EntidadesCRUD.add({
+					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
+					Nombre: f.Nombre, Tabla: f.Tabla,
+					bdd_id: Ctrl.BddSel.id, Tipo: 'Tabla'
+				}).then(() => {
+					Ctrl.getFsEntidades();
+				});
 			});
 		};
 
@@ -772,12 +1661,12 @@ angular.module('EntidadesCtrl', [])
 
 
 		//Campos
-		Ctrl.CamposCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/campos', order_by: ['Indice'] });
-
 		Ctrl.getCampos = () => {
 	
 			Ctrl.CamposCRUD.setScope('entidad', Ctrl.EntidadSel.id);
-			Ctrl.CamposCRUD.get();
+			Ctrl.CamposCRUD.get().then(() => {
+				Ctrl.loadingEntidad = false;
+			});
 
 			Ctrl.newCampo = angular.copy(newCampoDef);
 			Ctrl.setTipoDefaults(Ctrl.newCampo);
@@ -805,20 +1694,15 @@ angular.module('EntidadesCtrl', [])
 			Tipo: 'Texto'
 		};
 		
-
 		Ctrl.addCampo = () => {
 			Ctrl.newCampo.Columna = Ctrl.newCampo.Columna.trim();
-
 			if(Ctrl.newCampo.Columna == '') return Rs.showToast('Falta Columna', 'Error');
 			if(Rs.found(Ctrl.newCampo.Columna, Ctrl.CamposCRUD.rows, 'Columna')) return;
-
 			Ctrl.newCampo.entidad_id = Ctrl.EntidadSel.id;
 			Ctrl.newCampo.Indice = Ctrl.CamposCRUD.rows.length;
-
 			Ctrl.CamposCRUD.add(Ctrl.newCampo).then(() => {
 				Ctrl.newCampo = angular.copy(newCampoDef);
 				Ctrl.setTipoDefaults(Ctrl.newCampo);
-
 				setTimeout(function(){ $("#newCampo").focus(); }, 500);
 			});
 		};
@@ -888,8 +1772,6 @@ angular.module('EntidadesCtrl', [])
 		};
 
 		//Restricciones
-		Ctrl.RestricCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/restricciones', add_research: true, add_with:['campo'] });
-		
 		Ctrl.getRestricciones = () => {
 			Ctrl.RestricCRUD.setScope('entidad', Ctrl.EntidadSel.id);
 			Ctrl.RestricCRUD.get();
@@ -909,14 +1791,95 @@ angular.module('EntidadesCtrl', [])
 			Ctrl.RestricCRUD.delete(R);
 		};
 
-		//Grids
-		Ctrl.GridsCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/grids', order_by: ['Titulo'] });
+		//Start Up
+		Rs.navTo('Home.Section', { section: 'Entidades' });
+		Ctrl.getBdds();
+	}
+]);
+angular.module('Entidades_AddColumnsCtrl', [])
+.controller('Entidades_AddColumnsCtrl', ['$scope', '$mdDialog', 'ParentCtrl', 'newCampos',
+	function($scope, $mdDialog, ParentCtrl, newCampos) {
 
+		console.info('Entidades_AddColumnsCtrl');
+		var Ctrl = $scope;
+
+		Ctrl.CancelDiag = () => {
+			$mdDialog.cancel();
+		};
+
+		Ctrl.EntidadSel = ParentCtrl.EntidadSel;
+		Ctrl.newCampos = newCampos;
+		Ctrl.newCamposSel = [];
+		Ctrl.TiposCampo 	 = ParentCtrl.TiposCampo;
+		Ctrl.markChanged 	 = ParentCtrl.markChanged;
+		Ctrl.setTipoDefaults = ParentCtrl.setTipoDefaults;
+		Ctrl.inArray         = ParentCtrl.inArray;
+
+		Ctrl.addNewColumns = () => {
+			$mdDialog.hide(Ctrl.newCamposSel);
+		};
+	}
+]);
+angular.module('Entidades_EditoresCtrl', [])
+.controller('Entidades_EditoresCtrl', ['$scope', '$rootScope', '$timeout',
+	function($scope, $rootScope, $timeout) {
+
+		console.info('Entidades_EditoresCtrl');
+		var Ctrl = $scope.$parent;
+		var Rs = $rootScope;
+
+		//Editores
+		Ctrl.getEditores = () => {
+			if(!Ctrl.EntidadSel) return;
+			Ctrl.EditoresCRUD.setScope('entidad', Ctrl.EntidadSel.id);
+			Ctrl.EditoresCRUD.get().then(() => {
+				if(Ctrl.EditoresCRUD.rows.length == 0) return;
+				Ctrl.openEditor(Ctrl.EditoresCRUD.rows[0]);
+			});
+		};
+
+		Ctrl.addEditor = () => {
+			Ctrl.EditoresCRUD.dialog({
+				entidad_id: Ctrl.EntidadSel.id,
+				Titulo: 'General'
+			}, {
+				title: 'Crear Editor',
+				only: ['Titulo']
+			}).then((R) => {
+				if(!R) return; Ctrl.EditoresCRUD.add(R);
+			});
+		};
+
+		Ctrl.openEditor = (G) => {
+			Ctrl.EditorSel = G;
+			//Ctrl.getColumnas().then(() => { Ctrl.getFiltros(); });
+		};
+
+		Ctrl.updateEditor = () => {
+			Ctrl.EditoresCRUD.update(Ctrl.EditorSel).then(() => {
+				Rs.showToast('Editor Actualizado', 'Success');
+			});
+		};
+
+
+		Ctrl.getEditores();
+		
+	}
+]);
+angular.module('Entidades_GridsCtrl', [])
+.controller('Entidades_GridsCtrl', ['$scope', '$rootScope', '$injector', '$mdDialog',
+	function($scope, $rootScope, $injector, $mdDialog) {
+
+		var Ctrl = $scope.$parent;
+		var Rs = $rootScope;
+
+		//Grids
 		Ctrl.getGrids = () => {
+			if(!Ctrl.EntidadSel) return;
 			Ctrl.GridsCRUD.setScope('entidad', Ctrl.EntidadSel.id);
 			Ctrl.GridsCRUD.get().then(() => {
 				if(Ctrl.GridsCRUD.rows.length == 0) return;
-				//Ctrl.openGrid(Ctrl.GridsCRUD.rows[0]);
+				Ctrl.openGrid(Ctrl.GridsCRUD.rows[0]);
 			});
 		};
 
@@ -927,20 +1890,16 @@ angular.module('EntidadesCtrl', [])
 				title: 'Crear Grid',
 				only: ['Titulo']
 			}).then((R) => {
-				if(!R) return;
-				Ctrl.GridsCRUD.add(R);
+				if(!R) return; Ctrl.GridsCRUD.add(R);
 			});
 		};
 
 		Ctrl.openGrid = (G) => {
 			Ctrl.GridSel = G;
 			Ctrl.getColumnas().then(() => { Ctrl.getFiltros(); });
-			
 		};
 
 		//Columnas
-		Ctrl.GridColumnasCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/grids-columnas', query_with:['campo'], add_append:'refresh', order_by: ['Indice'] });
-
 		Ctrl.getColumnas = () => {
 			Ctrl.GridColumnasCRUD.setScope('grid', Ctrl.GridSel.id);
 			return Ctrl.GridColumnasCRUD.get();
@@ -1025,21 +1984,9 @@ angular.module('EntidadesCtrl', [])
 		};
 
 		//Filtros
-		Ctrl.GridFiltrosCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/grids-filtros', query_with:[], order_by: ['Indice'] });
-
-		Ctrl.prepFiltros = () => {
-			angular.forEach(Ctrl.GridFiltrosCRUD.rows, (F) => {
-				//var Columna = Ctrl.GridColumnasCRUD.one(F.columna_id);
-				//F.columna = Columna;
-				//F.campo   = Columna.campo;
-			});
-		};
-
 		Ctrl.getFiltros = () => {
 			Ctrl.GridFiltrosCRUD.setScope('grid', Ctrl.GridSel.id);
-			return Ctrl.GridFiltrosCRUD.get().then(() => {
-				Ctrl.prepFiltros();
-			});
+			return Ctrl.GridFiltrosCRUD.get();
 		};
 
 		Ctrl.addFiltro = (Co) => {
@@ -1100,35 +2047,8 @@ angular.module('EntidadesCtrl', [])
 			})
 		};
 
+		Ctrl.getGrids();
 
-		//Start Up
-		Ctrl.getBdds();
-        
-		
-	}
-]);
-angular.module('Entidades_AddColumnsCtrl', [])
-.controller('Entidades_AddColumnsCtrl', ['$scope', '$mdDialog', 'ParentCtrl', 'newCampos',
-	function($scope, $mdDialog, ParentCtrl, newCampos) {
-
-		console.info('Entidades_AddColumnsCtrl');
-		var Ctrl = $scope;
-
-		Ctrl.CancelDiag = () => {
-			$mdDialog.cancel();
-		};
-
-		Ctrl.EntidadSel = ParentCtrl.EntidadSel;
-		Ctrl.newCampos = newCampos;
-		Ctrl.newCamposSel = [];
-		Ctrl.TiposCampo 	 = ParentCtrl.TiposCampo;
-		Ctrl.markChanged 	 = ParentCtrl.markChanged;
-		Ctrl.setTipoDefaults = ParentCtrl.setTipoDefaults;
-		Ctrl.inArray         = ParentCtrl.inArray;
-
-		Ctrl.addNewColumns = () => {
-			$mdDialog.hide(Ctrl.newCamposSel);
-		};
 	}
 ]);
 angular.module('Entidades_Grids_TestCtrl', [])
@@ -1226,262 +2146,6 @@ angular.module('Entidades_VerCamposCtrl', [])
 		};
 	}
 ]);
-angular.module('VariablesCtrl', [])
-.controller('VariablesCtrl', ['$scope', '$rootScope', '$injector', '$filter',
-	function($scope, $rootScope, $injector, $filter) {
-
-		console.info('VariablesCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.VarSel = null;
-		Ctrl.VariablesNav = true;
-
-		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Variables' });
-		Ctrl.Grids = Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
-
-		Ctrl.tiposDatoVar = ['Numero','Porcentaje','Moneda'];
-
-		Ctrl.agregators = [
-			{ id: 'count', 			Nombre: 'Contar' },
-			{ id: 'countdistinct',  Nombre: 'Contar Distintos' },
-			{ id: 'sum',  			Nombre: 'Suma' },
-			{ id: 'avg',  			Nombre: 'Promedio' },
-			{ id: 'min',  			Nombre: 'Mínimo' },
-			{ id: 'max',  			Nombre: 'Máximo' },
-		];
-
-		Ctrl.getVariables = () => {
-			Ctrl.VariablesCRUD.get().then(() => {
-				Ctrl.openVariable(Ctrl.VariablesCRUD.rows[2]);
-				Ctrl.getFs();
-			});
-		};
-
-		Ctrl.getFs = () => {
-			Ctrl.filterVariables == "";
-			Ctrl.VariablesFS = Rs.FsGet(Ctrl.VariablesCRUD.rows,'Ruta','Variable');
-		};
-
-		Ctrl.getFolderVarData = (F) => {
-			
-			var Vars = Ctrl.VariablesCRUD.rows.filter((v) => {
-				return v.Ruta.startsWith(F.route);
-			}).map(v => v.id);
-			Rs.getVariableData(Vars);
-		};
-
-		Ctrl.searchVariable = () => {
-			if(Ctrl.filterVariables == ""){
-				Ctrl.getFs();
-			}else{
-				Ctrl.VariablesFS = Rs.FsGet($filter('filter')(Ctrl.VariablesCRUD.rows, Ctrl.filterVariables),'Ruta','Variable',true);
-			};
-		};
-
-		Ctrl.addVariable = () => {
-			Ctrl.getFs();
-			Rs.BasicDialog({
-				Title: 'Crear Variable', Flex: 50,
-				Fields: [
-					{ Nombre: 'Nombre',  Value: '', Required: true },
-					{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.VariablesFS },
-					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
-				],
-			}).then((r) => {
-				if(!r) return;
-				var f = Rs.prepFields(r.Fields);
-				Ctrl.VariablesCRUD.add({
-					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
-					Variable: f.Nombre,
-					Filtros: []
-				}).then(() => {
-					Ctrl.getFs();
-				});
-			});
-		};
-
-		Ctrl.openVariable = (V) => {
-			Rs.http('/api/Variables/get', { id: V.id }, Ctrl, 'VarSel').then(() => {
-				//Rs.getVariableData([Ctrl.VarSel.id]);
-			});
-			//Ctrl.VarSel = V;
-		};
-
-		Ctrl.updateVariable = () => {
-			Ctrl.VariablesCRUD.update(Ctrl.VarSel).then(() => {
-				Rs.showToast('Variable Actualizada', 'Success');
-				Ctrl.openVariable(Ctrl.VarSel);
-			});
-		};
-
-		Ctrl.addFiltro = () => {
-			var col = angular.copy(Ctrl.newFiltro);
-			Ctrl.VarSel.Filtros.push({
-				column_id: col.id,
-				column_title: col.column_title,
-				tipo_campo: col.tipo_campo,
-				campo: col.campo,
-				obs: '',
-				Comparador: '=', Valor: null, Op1: null, Op2: null, Op3: null
-			});
-			Ctrl.newFiltro = null;
-		};
-
-		Ctrl.editValor = (Periodo) => {
-			var Valor = angular.isDefined(Ctrl.VarSel.valores[Periodo]) ? Ctrl.VarSel.valores[Periodo].Valor : null;
-			Rs.BasicDialog({
-				Title: 'Cambiar valor '+Periodo,
-				Confirm: { Text: 'Cambiar' }, Flex: 20,
-				Fields: [
-					{ Nombre: 'Valor',  Value: Valor, Required: false, Regex: "\\d+" }
-				], //          ^[0-9]+([.][0-9]{1,4})?$
-			}).then((r) => {
-				if(!r) return;
-				newValor = (r.Fields[0].Value != "") ? r.Fields[0].Value : null;
-				if(newValor == Valor) return;
-				Rs.http('/api/Variables/update-valor', { variable_id: Ctrl.VarSel.id, Periodo: Periodo, Valor: newValor }).then(() => {
-					Ctrl.openVariable(Ctrl.VarSel);
-				});
-			});
-		};
-
-		Ctrl.copyVar = () => {
-			Rs.BasicDialog({
-				Title: 'Copiar Variable', Flex: 50, clickOutsideToClose: false,
-				Confirm: { Text: 'Crear' },
-				Fields: [
-					{ Nombre: 'Nombre',  	Value: Ctrl.VarSel.Variable + ' (copia)', Required: true },
-					{ Nombre: 'Descripcion',  	Value: Ctrl.VarSel.Descripcion, Required: true },
-					{ Nombre: 'Ruta',       Value: Ctrl.VarSel.Ruta, flex: 70, Type: 'fsroute', List: Ctrl.VariablesFS },
-					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
-				]
-			}).then((r) => {
-				if(!r) return;
-				var f = Rs.prepFields(r.Fields);
-				Ctrl.VariablesCRUD.add({
-					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
-					Variable: f.Nombre,
-					Descripcion: f.Descripcion,
-					Filtros: Ctrl.VarSel.Filtros,
-				}).then(() => { Ctrl.getFs(); });
-			});
-		};
-
-		Ctrl.getVariables();
-	}
-]);
-angular.module('VariablesGetDataDiagCtrl', [])
-.controller('VariablesGetDataDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', 'Variables',
-	function($scope, $rootScope, $mdDialog, $filter, $timeout, Variables) {
-
-		console.info('VariablesGetDataDiagCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		Ctrl.Cancel = () => { $mdDialog.cancel(); }
-
-		Ctrl.Meses = Rs.Meses;
-		Ctrl.inArray = Rs.inArray;
-		Ctrl.Anio  = angular.copy(Rs.AnioActual);
-		Ctrl.PeriodoIni = moment().subtract(1, 'months').toDate();
-		Ctrl.PeriodoFin = moment().subtract(1, 'months').toDate();
-		Ctrl.Anios = [3,2,1,0].map((n) => { return Ctrl.Anio-n})
-
-		Ctrl.selectedRows = angular.copy(Variables);
-		Ctrl.overwriteValues = false;
-
-		Ctrl.periodDateLocale = {
-			formatDate: (date) => {
-				if(typeof date == 'undefined' || date === null || isNaN(date.getTime()) ){ return null; }else{
-					return moment(date).format('YMM');
-				}
-			}
-		};
-		
-		Rs.http('api/Variables/get-variables', { ids: Variables }, Ctrl, 'Variables');
-
-		Ctrl.calcPeriodos = () =>{
-			var periodoAct = parseInt(moment(Ctrl.PeriodoIni).format('YMM'));
-			var periodoLim = parseInt(moment(Ctrl.PeriodoFin).format('YMM'));
-			Ctrl.Periodos = [ periodoAct ];
-			while (periodoAct < periodoLim){
-				var y = parseInt(periodoAct/100);
-				var m = periodoAct - (y*100);
-
-				if(m < 12){
-					periodoAct = (y*100) + (m+1);
-				}else{
-					periodoAct = ((y+1)*100) + 1;
-				}
-
-				Ctrl.Periodos.push(periodoAct);
-			};
-		};
-
-		Ctrl.cellSelected = (V,M) => {
-			if(V){
-				var Selected = Rs.inArray(V.id, Ctrl.selectedRows);
-				if(!Selected) return false;
-			};
-			var PeriodoCell = Ctrl.Anio*100 + parseInt(M[0]);
-			return Rs.inArray(PeriodoCell, Ctrl.Periodos);
-		};
-
-		Ctrl.eraseData = () => {
-			angular.forEach(Ctrl.Variables, (v) => {
-				if(Rs.inArray(v.id, Ctrl.selectedRows)){
-					if(!angular.isDefined(v.newValores)) v.newValores = {};
-					angular.forEach(Ctrl.Periodos, (P) => {
-						v.valores[P]    = { val: null, Valor: null };
-						v.newValores[P] = { val: null, Valor: null };
-					});
-				};
-			});
-		};
-
-		Ctrl.startDownload = () => {
-			Ctrl.VarIndex = 0;
-			Ctrl.stepDownload();
-		};
-
-		Ctrl.stepDownload = () => {
-			
-			var Var = Ctrl.Variables[Ctrl.VarIndex];
-			if(!angular.isDefined(Var)) return;
-			console.log(Ctrl.VarIndex, Rs.inArray(Var.id, Ctrl.selectedRows));
-			if(!Rs.inArray(Var.id, Ctrl.selectedRows)){
-				Ctrl.VarIndex++; 
-				return Ctrl.stepDownload();
-			}else{
-				Rs.http('api/Variables/calc-valores', { Var: Var, Periodos: Ctrl.Periodos }).then((r) => {
-					Var.newValores = r;
-					Ctrl.VarIndex++;
-					Ctrl.stepDownload();
-				});
-			}
-
-			
-		};
-
-		Ctrl.storeVars = () => {
-			var Variables = Ctrl.Variables.filter((e) => {
-				return Rs.inArray(e.id, Ctrl.selectedRows);
-			});
-
-			Rs.http('api/Variables/store-valores', { Variables: Variables, Periodos: Ctrl.Periodos, overwriteValues: Ctrl.overwriteValues }).then((r) => {
-				angular.forEach(r, (v) => {
-					var i = Rs.getIndex(Ctrl.Variables, v.id);
-					Ctrl.Variables[i] = v;
-				});
-				//Var.newValores = r;
-			});
-		};
-
-		Ctrl.calcPeriodos();
-	}
-]);
-
-
 angular.module('CRUD', [])
 .factory('CRUD', [ '$rootScope', '$q', '$mdDialog',
 	function($rootScope, $q, $mdDialog){
@@ -1576,6 +2240,17 @@ angular.module('CRUD', [])
 				});
 			};
 
+			t.updateMultiple = function(Objs){
+				t.ops.obj = Objs || angular.copy(t.ops.selected);
+				return Rs.http(t.ops.base_url, { fn: 'updatemultiple', ops: t.ops }).then(function(rs) {
+					angular.forEach(rs, (r) => {
+						Rs.updateArray(t.rows, r, t.ops.primary_key);
+					});
+					t.ops.obj = null;
+					t.ops.selected = [];
+				});
+			};
+
 			t.delete = function(Obj){
 				t.ops.obj = Obj;
 				var Index = Rs.getIndex(t.rows, Obj[t.ops.primary_key], t.ops.primary_key);
@@ -1587,7 +2262,6 @@ angular.module('CRUD', [])
 
 			t.deleteMultiple = function(){
 				t.ops.obj = angular.copy(t.ops.selected);
-				//
 				return Rs.http(t.ops.base_url, { fn: 'deletemultiple', ops: t.ops }).then(function(r) {
 					angular.forEach(t.ops.obj, (Obj) => {
 						var Index = Rs.getIndex(t.rows, Obj[t.ops.primary_key], t.ops.primary_key);
@@ -1640,6 +2314,7 @@ angular.module('CRUD', [])
 				}else{
 					t.ops.query_scopes[Index] = [ Scope, Params ];
 				};
+				return t;
 			};
 
 			//Obtener un elemento por primary_key
@@ -1743,6 +2418,10 @@ angular.module('Filters', [])
 			});
 			return res;
 		};
+	}).filter('switch', function() {
+	    return function(input, boolean) {
+	    	return (boolean) ? input : [];
+	    }
 	}).filter('search', function() {
 		return function(input, search) {
 			if (!input) return input;
@@ -1792,6 +2471,15 @@ angular.module('Filters', [])
 	}).filter('percentage', ['$filter', function ($filter) {
 		return function (input, decimals) {
 		return $filter('number')(input * 100, decimals) + '%';
+		};
+	}]).filter('numberformat', ['$filter', function ($filter) {
+		return function (input, tipodato, decimales) {
+			if(!input) return input;
+			if(tipodato == 'Porcentaje') input = input * 100;
+			var number = $filter('number')(input, decimales);
+			if(tipodato == 'Porcentaje') return number + "%";
+			if(tipodato == 'Moneda') return "$ " + number;
+			return number;
 		};
 	}]);
 // Reacts upon enter key press.
@@ -2022,6 +2710,7 @@ angular.module('SARA', [
 	'ngStorage',
 	'ngMaterial',
 	'ngSanitize',
+	'ngAnimate',
 
 	'md.data.table',
 	'ngFileUpload',
@@ -2065,10 +2754,20 @@ angular.module('SARA', [
 	'EntidadesCtrl',
 		'Entidades_AddColumnsCtrl',
 		'Entidades_VerCamposCtrl',
+		'Entidades_GridsCtrl',
 		'Entidades_Grids_TestCtrl',
 
+		'Entidades_EditoresCtrl',
+		
 	'VariablesCtrl',
 		'VariablesGetDataDiagCtrl',
+		'Variables_VariableDiagCtrl',
+
+	'IndicadoresCtrl',
+		'Indicadores_IndicadorDiagCtrl',
+
+	'ScorecardsCtrl',
+		'Scorecards_ScorecardDiagCtrl',
 ]);
 
 angular.module('appConfig', [])

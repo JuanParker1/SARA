@@ -49,7 +49,7 @@
 					<thead md-head md-order="Grid.order">
 						<tr md-row>
 							<th md-column ng-repeat="C in Grid.columnas | filter:{Visible:true}" md-numeric="C.header_numeric" 
-								md-order-by="{{C.header_index}}">{{ C.header }}</th>
+								md-order-by="{{C.header_index}}">{{ C.column_title }}</th>
 						</tr>
 					</thead>
 

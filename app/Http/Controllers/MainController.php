@@ -56,7 +56,8 @@ class MainController extends Controller
 
 	public function GetSubsection($section, $subsection)
 	{
-		$vista = implode('.', [$section, $subsection]);
+		$vista = $section.".".$section."_".$subsection;
+		//implode('.', [$section, $subsection]);
 		return $this->openView($vista, compact('section', 'subsection'));	
 	}
 

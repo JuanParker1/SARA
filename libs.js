@@ -16,7 +16,11 @@ elixir(function (mix) {
 
       'libs/jquery_plugins/**/*.js',
 
+      'libs/nvd3/d3.js',
+      'libs/nvd3/nv.d3.js',
+
       'libs/angular_modules/**/*.js',
+      
       'libs/other/**/*.js',
 
     ], 'public/js/libs.min.js');

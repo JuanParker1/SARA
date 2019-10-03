@@ -14,6 +14,8 @@ use App\Models\EntidadRestriccion;
 use App\Models\EntidadGrid;
 use App\Models\BDD;
 
+use App\Functions\Helper as H;
+use App\Functions\GridHelper;
 use App\Functions\CamposHelper;
 use DB;
 use Carbon\Carbon;
@@ -157,130 +159,20 @@ class EntidadesController extends Controller
         return $CRUD->call(request()->fn, request()->ops);
     }
 
-    public function getBaseQuery($grid_id)
-    {
-        $Grid = EntidadGrid::where('id', $grid_id)
-                ->with(['columnas', 'filtros','entidad', 'entidad.restricciones'])->first();
-
-        $Grid->rowsLimit = $Grid->entidad->max_rows ?: 100;
-        $q = CamposHelper::getBaseQuery($Grid->entidad)->limit($Grid->rowsLimit);
-
-        CamposHelper::addRestric($q, $Grid->entidad->restricciones, "t0");
-        return [$Grid, $q];
-    }
+    
 
     public function postGridsGetData()
     {
         $grid_id = request()->grid_id;
-        list($Grid, $q) = $this->getBaseQuery($grid_id);
+        $Grid    = GridHelper::getGrid($grid_id);
+        $q       = GridHelper::getQ($Grid->entidad);
 
-        $entidades_ids = [];
-        $tablas = [];
-        $tablas_consec = 0;
-
-        //Columna Guia
-        $col_guia = new \App\Models\EntidadGridColumna([
-            'grid_id'  => $grid_id,
-            'Indice'   => -1,
-            'Ruta'     => [$Grid->entidad_id],
-            'Llaves'   => [null],
-            'Visible'  => false,
-            'campo_id' => $Grid->entidad->campo_llaveprim,
-        ]);
-        $Grid->columnas->prepend($col_guia);
-
-        foreach ($Grid->columnas as $C) {
-
-            //Registrar tablas de la ruta
-            for ($i=0; $i < count($C->Ruta); $i++) { 
-                $tabla_ruta = array_slice($C->Ruta,0,($i+1));
-                $tabla_id = CamposHelper::getUniqueTable($tabla_ruta, $C->Llaves);
-
-
-                if(!array_key_exists($tabla_id, $tablas)){
-                    $entidad_destino = array_slice($tabla_ruta,-1,1)[0];
-                    $entidades_ids[] = $entidad_destino;
-
-                    $tablas[$tabla_id] = [
-                        'id'              => $tabla_id,
-                        'origen_id'       => CamposHelper::getUniqueTable(array_slice($C->Ruta,0,($i)), $C->Llaves),
-                        'nivel'           => count($tabla_ruta),
-                        'entidad_origen'  => array_slice($tabla_ruta,-2,1)[0],
-                        'llave_id'        => $C->Llaves[$i],
-                        'entidad_destino' => $entidad_destino,
-                        'consec'          => $tablas_consec++,
-                    ];
-                }
-            };
-
-            $C['tabla_consec'] = "\"t".$tablas[CamposHelper::getUniqueTable($C->Ruta, $C->Llaves)]['consec']."\"";
-        };
-
-        $entidades_ids = array_unique($entidades_ids);
-        $Entidades = Entidad::whereIn('id',              $entidades_ids)->get();
-        $Campos    = EntidadCampo::whereIn('entidad_id', $entidades_ids)->get();
-
-        $joins = [];
-        foreach ($tablas as $tb) {
-            if($tb['nivel'] == 1) continue;
-
-            $EntidadOrigen  = CamposHelper::getElm($Entidades, $tb['entidad_origen']);
-            $EntidadDestino = CamposHelper::getElm($Entidades, $tb['entidad_destino']);
-
-            $CampoOrigen  = CamposHelper::getElm($Campos,  $tb['llave_id']);
-            $CampoDestino = CamposHelper::getElm($Campos, $EntidadDestino->campo_llaveprim);
-
-            if(is_null($CampoDestino)) dd("Error de configuración, entidad '{$EntidadDestino->Nombre}' sin llave primaria.");
-            
-            $join = [$EntidadDestino->getTableName()[2]." AS t".$tb['consec'],$CampoOrigen->getColName("t".$tablas[$tb['origen_id']]['consec']), '=', $CampoDestino->getColName("t".$tb['consec'])];
-            $q = $q->leftJoin($join[0],$join[1],$join[2],$join[3]);
-            $joins[] = $join; 
-        };
-        
-        $DaCampos = []; $header_index = 0;
-        foreach ($Grid->columnas as $C) {
-            $Campo = CamposHelper::getElm($Campos,  $C['campo_id']);
-            $Col = $Campo->getColName($C['tabla_consec']);
-            $Alias = $Campo->Alias ?: $Campo->getColName('');
-
-            $C['select'] = "$Col AS \"$Alias\"";
-            $q = $q->addSelect([DB::raw($C['select'])]);
-            $DaCampos[] = $Campo;
-            $C['campo'] = $Campo;
-            $C['header'] = $C->Cabecera ?: $Campo->Alias ?: $Campo->getColName('');
-            $C['header_numeric'] = in_array($Campo->Tipo, ['Entero','Decimal','Dinero']);
-            $C['header_index'] = $header_index; $header_index++;
-
-        };
-
-        //Filtrar
-        foreach ($Grid->filtros as $F) {
-            $Columna = CamposHelper::getElm($Grid->columnas,  $F['columna_id']);
-            $F['columna'] = $Columna;
-            $F['filter_header'] = $Columna['header'];
-            $F['filter_comparator'] = CamposHelper::getFilterComp($F, $Columna['campo']);
-
-            CamposHelper::addRestric($q, [$F], $Columna['tabla_consec']);
-        }
-
-        //Ordenar
-        if(!is_null($Grid->entidad->campo_orderby)){
-            $CampoOrder = CamposHelper::getElm($Campos, $Grid->entidad->campo_orderby);
-            $q = $q->orderBy($CampoOrder->getColName("t0"), $Grid->entidad->campo_orderbydir);
-        };
-
-        
-        $Grid->sql = [ 'query' => $q->toSql(), 'bindings' => $q->getBindings(), 'joins' => $joins ];
-        //return  $Grid->sql;
-        $Grid->data = CamposHelper::prepData($DaCampos, $q->get());
-
-        //Prep Filtros
-        foreach ($Grid->filtros as $F) {
-            if(in_array($F->Comparador,['lista','radios'])){
-                $Ops = $Grid->data->pluck($F['columna']['header_index'])->unique()->sort()->values();
-                $F['options'] = $Ops;
-            };
-        }
+        GridHelper::calcJoins($Grid);
+        GridHelper::addJoins($Grid, $q);
+        GridHelper::addCols($Grid, $q);
+        GridHelper::addFilters($Grid->filtros, $Grid, $q);
+        GridHelper::addOrders($Grid, $q);
+        GridHelper::getData($Grid, $q);
 
         return compact('Grid');
     }
@@ -288,27 +180,14 @@ class EntidadesController extends Controller
     public function postGridsReloadData()
     {
         $DaGrid = request('Grid');
-        list($Grid, $q) = $this->getBaseQuery($DaGrid['id']);
+        $Grid    = GridHelper::getGrid($DaGrid['id']);
+        $q       = GridHelper::getQ($Grid->entidad);
 
-        //Selects
-        $DaCampos = [];
-        foreach ($DaGrid['columnas'] as $C) {
-            $DaCampos[] = $C['campo'];
-            $q = $q->addSelect([DB::raw($C['select'])]);
-        };
-        //return $DaCampos;
+        foreach ($DaGrid['columnas'] as $C) { $q->addSelect([DB::raw($C['select'])]); };
+        foreach ($DaGrid['uniones']  as $U) { $q->leftJoin($U[0],$U[1],$U[2],$U[3]); };
+        GridHelper::addRestric($q, $DaGrid['filtros']);
 
-        //Joins
-        foreach ($DaGrid['sql']['joins'] as $join) {
-            $q = $q->leftJoin($join[0],$join[1],$join[2],$join[3]);
-        };
-
-        //Filtros
-        foreach ($DaGrid['filtros'] as $F) {
-            CamposHelper::addRestric($q, [$F]);
-        };
-        $Grid['sql']  = [ 'query' => $q->toSql(), 'bindings' => $q->getBindings(), 'joins' => $DaGrid['sql']['joins'] ];
-        $Grid['data'] = CamposHelper::prepData($DaCampos, $q->get());
+        GridHelper::getData($Grid, $q, true);
         return $Grid;
     }
 
@@ -316,5 +195,17 @@ class EntidadesController extends Controller
     {
         return $this->postGridsGetData();
     }
+
+
+
+    //Editores
+    public function postEditores()
+    {
+        $CRUD = new CRUD('App\Models\EntidadEditor');
+        return $CRUD->call(request()->fn, request()->ops);
+    }
+
+
+
 
 }

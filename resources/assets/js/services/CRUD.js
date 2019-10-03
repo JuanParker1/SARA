@@ -92,6 +92,17 @@ angular.module('CRUD', [])
 				});
 			};
 
+			t.updateMultiple = function(Objs){
+				t.ops.obj = Objs || angular.copy(t.ops.selected);
+				return Rs.http(t.ops.base_url, { fn: 'updatemultiple', ops: t.ops }).then(function(rs) {
+					angular.forEach(rs, (r) => {
+						Rs.updateArray(t.rows, r, t.ops.primary_key);
+					});
+					t.ops.obj = null;
+					t.ops.selected = [];
+				});
+			};
+
 			t.delete = function(Obj){
 				t.ops.obj = Obj;
 				var Index = Rs.getIndex(t.rows, Obj[t.ops.primary_key], t.ops.primary_key);
@@ -103,7 +114,6 @@ angular.module('CRUD', [])
 
 			t.deleteMultiple = function(){
 				t.ops.obj = angular.copy(t.ops.selected);
-				//
 				return Rs.http(t.ops.base_url, { fn: 'deletemultiple', ops: t.ops }).then(function(r) {
 					angular.forEach(t.ops.obj, (Obj) => {
 						var Index = Rs.getIndex(t.rows, Obj[t.ops.primary_key], t.ops.primary_key);
@@ -156,6 +166,7 @@ angular.module('CRUD', [])
 				}else{
 					t.ops.query_scopes[Index] = [ Scope, Params ];
 				};
+				return t;
 			};
 
 			//Obtener un elemento por primary_key

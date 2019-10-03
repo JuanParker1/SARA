@@ -57,9 +57,7 @@ class EntidadCampo extends MyModel
 	//Funciones
 	public function getColName($base)
 	{
-		$base = ($base == "") ? "" : "$base.";
-		return str_replace('.', $base, $this->Columna);
-		//return \App\Functions\CamposHelper::getTableSchema($this->Tabla, $Bdd->Op3);
+		return \App\Functions\CamposHelper::getColName($base, $this->Columna);
 	}
 
 
