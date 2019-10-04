@@ -113,10 +113,10 @@
 
 	</div>
 
-	<div layout=column class="padding-5" ng-show="EditorSel">
+	<div layout=column class="padding" ng-show="EditorSel">
 		
 		<md-card class="no-margin" ng-style="{ width: EditorSel.Ancho }">
-			<div class="md-subhead padding-5 text-bold text-clear" layout>Prueba</div>
+			<div class="padding text-bold text-clear" layout>{{ EditorSel.Titulo }}</div>
 			<div layout=column class="">
 				
 				<div layout class="padding-0-10" layout-wrap>
@@ -144,8 +144,8 @@
 				</div>
 
 			</div>
-			<div class="border-top" layout><span flex></span>
-				<md-button class="md-button md-raised md-primary" aria-label="b">Guardar</md-button>
+			<div class="padding" layout><span flex></span>
+				<md-button class="no-margin md-button md-raised md-primary" aria-label="b" disabled=true>Guardar</md-button>
 			</div>
 		</md-card>
 
