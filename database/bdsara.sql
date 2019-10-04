@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost
--- Tiempo de generación: 29-06-2019 a las 00:14:17
+-- Tiempo de generación: 05-10-2019 a las 00:54:41
 -- Versión del servidor: 10.1.26-MariaDB
 -- Versión de PHP: 7.1.9
 
@@ -114,6 +114,7 @@ INSERT INTO `sara_bdds_favoritos` (`id`, `bdd_id`, `usuario_id`, `Carpeta`, `Nom
 CREATE TABLE `sara_entidades` (
   `id` int(11) NOT NULL,
   `bdd_id` int(11) NOT NULL,
+  `Ruta` varchar(1000) NOT NULL,
   `Nombre` varchar(255) NOT NULL,
   `Tipo` enum('Tabla','Vista') NOT NULL DEFAULT 'Tabla',
   `Tabla` varchar(255) NOT NULL,
@@ -132,15 +133,17 @@ CREATE TABLE `sara_entidades` (
 -- Volcado de datos para la tabla `sara_entidades`
 --
 
-INSERT INTO `sara_entidades` (`id`, `bdd_id`, `Nombre`, `Tipo`, `Tabla`, `campo_llaveprim`, `campo_desc1`, `campo_desc2`, `campo_desc3`, `campo_orderby`, `campo_orderbydir`, `max_rows`, `created_at`, `updated_at`) VALUES
-(1, 1, 'Paciente', 'Tabla', 'TBBDBENEFI', 145, 150, 147, NULL, NULL, 'DESC', 100, '2019-05-31 00:00:00', '2019-06-13 18:05:41'),
-(5, 1, 'Cita', 'Tabla', 'TBAGCITAS', 179, NULL, NULL, NULL, 181, 'DESC', 100, '2019-06-06 14:42:51', '2019-06-28 15:14:46'),
-(6, 1, 'Agenda', 'Tabla', 'TBAGHORARI', 218, NULL, NULL, NULL, NULL, 'DESC', 100, '2019-06-06 14:43:22', '2019-06-13 14:26:31'),
-(7, 1, 'Ingreso Clinica', 'Tabla', '', NULL, NULL, NULL, NULL, NULL, 'DESC', 100, '2019-06-06 14:43:29', '2019-06-13 14:26:42'),
-(8, 1, 'Orden Cx', 'Tabla', '', NULL, NULL, NULL, NULL, NULL, 'DESC', 100, '2019-06-06 14:43:36', '2019-06-13 14:26:50'),
-(9, 1, 'Egreso Clinica', 'Tabla', '', NULL, NULL, NULL, NULL, NULL, 'DESC', 100, '2019-06-06 14:43:44', '2019-06-13 14:26:37'),
-(10, 1, 'Profesional', 'Tabla', 'TBBDPROFE', 209, 210, NULL, NULL, NULL, 'DESC', 100, '2019-06-13 10:14:24', '2019-06-13 14:26:56'),
-(11, 1, 'Entidad Plan', 'Vista', 'ZZVISTASAL.VTENTPLA', 211, 213, 215, NULL, NULL, 'DESC', 100, '2019-06-13 10:59:06', '2019-06-13 11:01:25');
+INSERT INTO `sara_entidades` (`id`, `bdd_id`, `Ruta`, `Nombre`, `Tipo`, `Tabla`, `campo_llaveprim`, `campo_desc1`, `campo_desc2`, `campo_desc3`, `campo_orderby`, `campo_orderbydir`, `max_rows`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Salud\\General', 'Pacientes', 'Tabla', 'TBBDBENEFI', 145, 150, 147, NULL, NULL, 'DESC', 100, '2019-05-31 00:00:00', '2019-06-13 18:05:41'),
+(5, 1, 'Salud\\Ambulatoria', 'Citas (Producción)', 'Tabla', 'TBAGCITAS', 179, NULL, NULL, NULL, 181, 'DESC', 100, '2019-06-06 14:42:51', '2019-09-06 15:30:06'),
+(6, 1, 'Salud\\Ambulatoria', 'Agendas', 'Tabla', 'TBAGHORARI', 218, NULL, NULL, NULL, NULL, 'DESC', 100, '2019-06-06 14:43:22', '2019-09-18 10:59:49'),
+(10, 1, 'Salud\\General', 'Profesionales', 'Tabla', 'TBBDPROFE', 209, 210, NULL, NULL, NULL, 'DESC', 100, '2019-06-13 10:14:24', '2019-06-13 14:26:56'),
+(11, 1, 'Salud\\General', 'Entidades Planes', 'Vista', 'ZZVISTASAL.VTENTPLA', 211, 213, 215, NULL, NULL, 'DESC', 100, '2019-06-13 10:59:06', '2019-06-13 11:01:25'),
+(12, 1, 'Salud\\Ambulatoria', 'Citas', 'Tabla', 'ZZVISTASAL.VMBDCITAS', 308, 310, NULL, NULL, 308, 'DESC', 100, '2019-09-06 15:30:20', '2019-09-06 16:43:06'),
+(13, 1, 'Financiera', 'Maestro Cuentas', 'Tabla', 'BDFINAN.VTCUENTAS', 344, NULL, NULL, NULL, 344, 'DESC', 100, '2019-09-18 16:16:00', '2019-09-18 16:39:23'),
+(15, 1, 'Salud\\Actividades', 'Relación: Actividades - Servicios', 'Tabla', 'BDSALUD.TBSRACTSER', 360, NULL, NULL, NULL, 360, 'DESC', 100, '2019-10-02 11:47:27', '2019-10-02 11:51:04'),
+(16, 1, 'Salud\\General', 'Tipos Servicio', 'Tabla', 'BDSALUD.TBBDTIPSER', 362, 363, NULL, NULL, NULL, 'DESC', 10000, '2019-10-02 11:52:52', '2019-10-02 11:54:57'),
+(17, 1, 'Salud\\Actividades', 'Actividades', 'Tabla', 'BDSALUD.TBFAACTIVI', 366, 367, NULL, NULL, NULL, 'DESC', 100, '2019-10-02 11:57:26', '2019-10-02 11:58:56');
 
 -- --------------------------------------------------------
 
@@ -221,7 +224,142 @@ INSERT INTO `sara_entidades_campos` (`id`, `entidad_id`, `Indice`, `Columna`, `A
 (223, 6, 5, '.COCODCONS', 'Cod. Consultorio', 'Texto', '', 1, 1, 1, 0, NULL, 5, NULL, NULL, NULL, '2019-06-13 13:18:12', '2019-06-13 13:22:15'),
 (224, 6, 6, '.HOPORDISPO', 'Disponibilidad', 'Texto', NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-06-13 13:18:12', '2019-06-13 13:22:15'),
 (225, 6, 7, '.MOCODMOTIV', 'Motivo', 'Entero', NULL, 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-06-13 13:18:12', '2019-06-13 13:22:15'),
-(226, 6, 8, '.HOCODESTAD', 'Estado', 'Entero', NULL, 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-06-13 13:18:12', '2019-06-13 13:22:15');
+(226, 6, 8, '.HOCODESTAD', 'Estado', 'Entero', NULL, 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-06-13 13:18:12', '2019-06-13 13:22:15'),
+(288, 12, 29, '.PRCODPROF', 'Cod. Profesional', 'Entidad', NULL, 1, 1, 1, 0, 10, NULL, NULL, NULL, NULL, '2019-09-06 15:58:24', '2019-09-13 14:03:41'),
+(289, 12, 30, '.PRNOMPROF', 'Profesional', 'Texto', '', 1, 1, 1, 0, NULL, 50, NULL, NULL, NULL, '2019-09-06 15:58:24', '2019-09-06 16:31:35'),
+(290, 12, 31, '.HOCODHORA', 'Cod. Horario', 'Entero', NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:24', '2019-09-06 16:31:35'),
+(291, 12, 32, '.MRCODCONS', 'Cod. Consultorio', 'Entero', NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:24', '2019-09-06 16:31:35'),
+(292, 12, 33, '.MOCODMOTIV', 'Cod. Motivo', 'Texto', '', 1, 1, 1, 0, NULL, 4, NULL, NULL, NULL, '2019-09-06 15:58:24', '2019-09-06 16:31:35'),
+(293, 12, 34, '.MODESMOTIV', 'Motivo', 'Texto', '', 1, 1, 1, 0, NULL, 20, NULL, NULL, NULL, '2019-09-06 15:58:24', '2019-09-06 16:31:35'),
+(294, 12, 35, '.CICODESTAD', 'Estado', 'Texto', '', 1, 1, 1, 0, NULL, 1, NULL, NULL, NULL, '2019-09-06 15:58:24', '2019-09-06 16:31:35'),
+(295, 12, 36, '.CICLACITA', 'Cod. Clase', 'Texto', NULL, 0, 1, 1, 0, NULL, 1, NULL, NULL, NULL, '2019-09-06 15:58:24', '2019-09-06 16:31:35'),
+(296, 12, 37, '.DESCLACITA', 'Clase', 'Texto', NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:24', '2019-09-06 16:31:36'),
+(297, 12, 38, '.NROCITA', 'Nro. Cita', 'Entero', NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:25', '2019-09-06 16:31:36'),
+(298, 12, 13, '.DIAS', 'Días', 'Entero', NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:25', '2019-09-06 16:01:37'),
+(299, 12, 14, '.DIAS_HAB', 'Días Habiles', 'Entero', NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:25', '2019-09-06 16:31:33'),
+(300, 12, 12, '.ASIGNADOR', 'Asignador', 'Texto', NULL, 0, 1, 1, 0, NULL, 30, NULL, NULL, NULL, '2019-09-06 15:58:25', '2019-09-06 16:31:33'),
+(301, 12, 11, '.MEDIO', 'Medio', 'Texto', NULL, 0, 1, 1, 0, NULL, 20, NULL, NULL, NULL, '2019-09-06 15:58:25', '2019-09-06 16:31:33'),
+(302, 12, 55, '.ULTMOD', 'Ultima Modificacion', 'FechaHora', '', 0, 1, 1, 0, NULL, NULL, NULL, 'Y-m-d H:i:s', NULL, '2019-09-06 15:58:25', '2019-09-06 16:31:37'),
+(303, 12, 39, '.DIAG', 'Cod. Diag', 'Texto', NULL, 0, 1, 1, 0, NULL, 5, NULL, NULL, NULL, '2019-09-06 15:58:25', '2019-09-06 16:31:36'),
+(304, 12, 40, '.DIAG_DESC', 'Diagnostico', 'Texto', NULL, 0, 1, 1, 0, NULL, 255, NULL, NULL, NULL, '2019-09-06 15:58:25', '2019-09-06 16:02:44'),
+(305, 12, 41, '.DIAG_EV', 'Diag. Evento', 'Texto', NULL, 0, 1, 1, 0, NULL, 50, NULL, NULL, NULL, '2019-09-06 15:58:25', '2019-09-06 16:31:36'),
+(306, 12, 42, '.DIAG_GRUP', 'Diag. Grupo', 'Texto', NULL, 0, 1, 1, 0, NULL, 50, NULL, NULL, NULL, '2019-09-06 15:58:25', '2019-09-06 16:31:36'),
+(307, 12, 43, '.DIAG_SGRUP', 'Diag. SubGrupo', 'Texto', NULL, 0, 1, 1, 0, NULL, 50, NULL, NULL, NULL, '2019-09-06 15:58:25', '2019-09-06 16:31:36'),
+(308, 12, 0, '.CICODCITA', 'Cod. Cita', 'Entero', NULL, 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:25', '2019-09-06 16:01:36'),
+(309, 12, 1, '.PERIODO', 'Periodo', 'Periodo', NULL, 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:25', '2019-09-06 16:35:25'),
+(310, 12, 5, '.CIFECCITA', 'Fecha', 'Fecha', '', 1, 1, 1, 0, NULL, NULL, NULL, 'Ymd', NULL, '2019-09-06 15:58:25', '2019-09-06 16:31:33'),
+(311, 12, 6, '.CIHORINI', 'Inicio', 'Hora', NULL, 1, 1, 1, 0, NULL, NULL, NULL, 'Hi', NULL, '2019-09-06 15:58:25', '2019-09-06 16:31:33'),
+(312, 12, 7, '.CIHORFIN', 'Fin', 'Hora', NULL, 1, 1, 1, 0, NULL, NULL, NULL, 'Hi', NULL, '2019-09-06 15:58:25', '2019-09-06 16:31:33'),
+(313, 12, 2, '.SEMANA', 'Semana', 'Texto', NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:25', '2019-09-06 16:31:32'),
+(314, 12, 3, '.DIASEMNUM', 'Num. Dia Semana', 'Entero', NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:25', '2019-09-06 16:31:33'),
+(315, 12, 4, '.DIASEM', 'Día Semana', 'Texto', NULL, 0, 1, 1, 0, NULL, 12, NULL, NULL, NULL, '2019-09-06 15:58:25', '2019-09-12 15:05:17'),
+(316, 12, 8, '.HORA', 'Hora', 'Texto', NULL, 0, 1, 1, 0, NULL, 5, NULL, NULL, NULL, '2019-09-06 15:58:25', '2019-09-06 16:31:33'),
+(317, 12, 9, '.MINUTOS', 'Minutos', 'Texto', NULL, 0, 1, 1, 0, NULL, 5, NULL, NULL, NULL, '2019-09-06 15:58:25', '2019-09-06 16:31:33'),
+(318, 12, 10, '.FECHAASIG', 'Fecha Asignacion', 'Fecha', NULL, 0, 1, 1, 0, NULL, NULL, NULL, 'Ymd', NULL, '2019-09-06 15:58:26', '2019-09-06 16:07:06'),
+(319, 12, 15, '.BECODBENE', 'Cod. Paciente', 'Entero', NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:26', '2019-09-06 16:31:34'),
+(320, 12, 16, '(.TDTIPDOC||\':\'||.BENUMDOCBE)', 'Doc. Paciente', 'Texto', NULL, 0, 1, 1, 0, NULL, 2, NULL, NULL, NULL, '2019-09-06 15:58:26', '2019-09-13 14:57:28'),
+(322, 12, 18, '.NOMBRE', 'Paciente', 'Texto', NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:26', '2019-09-06 16:31:34'),
+(323, 12, 19, '.BETIPSEX', 'Sexo', 'Texto', NULL, 0, 1, 1, 0, NULL, 1, NULL, NULL, NULL, '2019-09-06 15:58:26', '2019-09-06 16:31:34'),
+(324, 12, 20, '.BEFECNACI', 'Fecha Nacimiento', 'Fecha', NULL, 0, 1, 1, 0, NULL, NULL, NULL, 'Ymd', NULL, '2019-09-06 15:58:26', '2019-09-06 16:31:34'),
+(325, 12, 21, '.EDAD', 'Edad', 'Entero', NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:26', '2019-09-06 16:31:34'),
+(326, 12, 22, '.TELEFONO', 'Teléfono', 'Texto', NULL, 0, 1, 1, 0, NULL, 31, NULL, NULL, NULL, '2019-09-06 15:58:26', '2019-09-06 16:31:34'),
+(327, 12, 23, '.CORREO', 'Correo', 'Texto', NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:26', '2019-09-06 16:31:34'),
+(328, 12, 24, '.ENCODENTID', 'Cod. Entidad', 'Texto', NULL, 0, 1, 1, 0, NULL, 3, NULL, NULL, NULL, '2019-09-06 15:58:26', '2019-09-06 16:31:34'),
+(329, 12, 25, '.ENDESENTID', 'Entidad', 'Texto', '', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:26', '2019-09-06 16:31:34'),
+(330, 12, 26, '.EPCODPLAN', 'Cod. Plan', 'Texto', NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:26', '2019-09-06 16:31:35'),
+(331, 12, 27, '.EPDESPLAN', 'Plan', 'Texto', '', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:26', '2019-09-06 16:31:35'),
+(332, 12, 44, '.COCODCTO', 'Cod. Contrato', 'Entero', NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:26', '2019-09-06 16:31:36'),
+(333, 12, 28, '.CIESTCAP', 'Capitado', 'Booleano', NULL, 0, 1, 1, 0, NULL, NULL, NULL, 'S', 'N', '2019-09-06 15:58:26', '2019-09-06 16:31:35'),
+(334, 12, 45, '.EMPLEADORN', 'Cod. Empleador', 'Texto', NULL, 0, 1, 1, 0, NULL, 20, NULL, NULL, NULL, '2019-09-06 15:58:27', '2019-09-06 16:31:36'),
+(335, 12, 46, '.EMPLEADOR', 'Empleador', 'Texto', NULL, 0, 1, 1, 0, NULL, 200, NULL, NULL, NULL, '2019-09-06 15:58:27', '2019-09-06 16:31:36'),
+(336, 12, 47, '.ASCODAREA', 'Cod. Area', 'Texto', NULL, 0, 1, 1, 0, NULL, 1, NULL, NULL, NULL, '2019-09-06 15:58:27', '2019-09-06 16:07:07'),
+(337, 12, 48, '.CACODCENAT', 'Cod. Centro Atencion', 'Texto', NULL, 0, 1, 1, 0, NULL, 3, NULL, NULL, NULL, '2019-09-06 15:58:27', '2019-09-06 16:07:07'),
+(338, 12, 49, '.CADESCENAT', 'Centro Atencion', 'Texto', NULL, 0, 1, 1, 0, NULL, 30, NULL, NULL, NULL, '2019-09-06 15:58:27', '2019-09-06 16:07:07'),
+(339, 12, 50, '.TSCODSERV', 'Cod. Servicio', 'Texto', NULL, 0, 1, 1, 0, NULL, 3, NULL, NULL, NULL, '2019-09-06 15:58:27', '2019-09-06 16:31:36'),
+(340, 12, 51, '.TSDESSERV', 'Servicio', 'Texto', NULL, 0, 1, 1, 0, NULL, 30, NULL, NULL, NULL, '2019-09-06 15:58:27', '2019-09-06 16:31:37'),
+(341, 12, 52, '.TCCODTCIT', 'Cod. Tipo Cita', 'Texto', NULL, 0, 1, 1, 0, NULL, 3, NULL, NULL, NULL, '2019-09-06 15:58:27', '2019-09-06 16:31:37'),
+(342, 12, 53, '.TCDESTCIT', 'Tipo Cita', 'Texto', '', 1, 1, 1, 0, NULL, 30, NULL, NULL, NULL, '2019-09-06 15:58:27', '2019-09-06 16:31:37'),
+(343, 12, 54, '.TCDURCITA', 'Duracion Cita', 'Entero', NULL, 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-06 15:58:27', '2019-09-06 16:07:08'),
+(344, 13, 0, '.ID', 'Id', 'Texto', '', 0, 1, 0, 0, NULL, 28, NULL, NULL, NULL, '2019-09-18 16:16:39', '2019-09-18 16:18:17'),
+(345, 13, 1, '.AREA', 'Cod. Área', 'Texto', NULL, 0, 1, 0, 0, NULL, NULL, NULL, NULL, NULL, '2019-09-18 16:16:39', '2019-09-18 16:49:42'),
+(346, 13, 2, '.AREA_DESC', 'Área', 'Texto', '', 0, 1, 0, 0, NULL, 14, NULL, NULL, NULL, '2019-09-18 16:16:39', '2019-09-18 16:18:18'),
+(347, 13, 3, '.CDC', 'Cod. CDC', 'Texto', '', 0, 1, 0, 0, NULL, 12, NULL, NULL, NULL, '2019-09-18 16:16:40', '2019-09-18 16:18:18'),
+(348, 13, 4, '.CDC_DESC', 'CDC', 'Texto', '', 0, 1, 0, 0, NULL, 30, NULL, NULL, NULL, '2019-09-18 16:16:40', '2019-09-18 16:18:18'),
+(349, 13, 5, '.CUENTA1D', 'Cod. Cuenta 1D', 'Texto', '', 0, 1, 0, 0, NULL, 6, NULL, NULL, NULL, '2019-09-18 16:16:40', '2019-09-18 16:18:18'),
+(350, 13, 6, '.CUENTA2D', 'Cod. Cuenta 2D', 'Texto', '', 0, 1, 0, 0, NULL, 6, NULL, NULL, NULL, '2019-09-18 16:16:40', '2019-09-18 16:18:18'),
+(351, 13, 7, '.CUENTA4D', 'Cod. Cuenta 4D', 'Texto', '', 0, 1, 0, 0, NULL, 6, NULL, NULL, NULL, '2019-09-18 16:16:40', '2019-09-18 16:18:18'),
+(352, 13, 8, '.CUENTA6D', 'Cod. Cuenta 6D', 'Texto', '', 0, 1, 0, 0, NULL, 6, NULL, NULL, NULL, '2019-09-18 16:16:40', '2019-09-18 16:18:18'),
+(353, 13, 9, '.SUBCUENTA', 'Subcuenta', 'Texto', '', 0, 1, 0, 0, NULL, 8, NULL, NULL, NULL, '2019-09-18 16:16:40', '2019-09-18 16:18:18'),
+(354, 13, 10, '.CUENTA1D_DESC', 'Cuenta 1D', 'Texto', '', 0, 1, 0, 0, NULL, 30, NULL, NULL, NULL, '2019-09-18 16:16:40', '2019-09-18 16:18:18'),
+(355, 13, 11, '.CUENTA2D_DESC', 'Cuenta 2D', 'Texto', '', 0, 1, 0, 0, NULL, 30, NULL, NULL, NULL, '2019-09-18 16:16:40', '2019-09-18 16:18:18'),
+(356, 13, 12, '.CUENTA4D_DESC', 'Cuenta 4D', 'Texto', '', 0, 1, 0, 0, NULL, 30, NULL, NULL, NULL, '2019-09-18 16:16:40', '2019-09-18 16:18:18'),
+(357, 13, 13, '.CUENTA6D_DESC', 'Cuenta 6D', 'Texto', '', 0, 1, 0, 0, NULL, 30, NULL, NULL, NULL, '2019-09-18 16:16:40', '2019-09-18 16:18:18'),
+(358, 13, 14, '.CUENTA_DETALLE_DESC', 'Cuenta Detalle', 'Texto', '', 0, 1, 0, 0, NULL, 30, NULL, NULL, NULL, '2019-09-18 16:16:40', '2019-09-18 16:18:18'),
+(359, 13, 15, '.AG_PYG_SALUD', 'Agrupador PYG Salud', 'Texto', '', 0, 1, 0, 0, NULL, 255, NULL, NULL, NULL, '2019-09-18 16:16:40', '2019-09-18 16:18:18'),
+(360, 15, 0, '.ACCODACTIV', 'Cod. Actividad', 'Entidad', NULL, 0, 1, 1, 0, 17, NULL, NULL, NULL, NULL, '2019-10-02 11:49:03', '2019-10-02 11:59:08'),
+(361, 15, 1, '.TSCODSERV', 'Cod. Servicio', 'Entidad', NULL, 0, 1, 1, 0, 16, NULL, NULL, NULL, NULL, '2019-10-02 11:49:03', '2019-10-02 11:56:14'),
+(362, 16, 0, '.TSCODSERV', 'Cod. Tipo Servicio', 'Texto', '', 1, 1, 1, 0, NULL, 3, NULL, NULL, NULL, '2019-10-02 11:53:34', '2019-10-02 11:54:13'),
+(363, 16, 1, '.TSDESSERV', 'Tipo Servicio', 'Texto', '', 1, 1, 1, 0, NULL, 30, NULL, NULL, NULL, '2019-10-02 11:53:34', '2019-10-02 11:54:01'),
+(364, 16, 2, '.TSCODEST', 'Estado', 'Texto', '', 1, 1, 1, 0, NULL, 1, NULL, NULL, NULL, '2019-10-02 11:53:34', '2019-10-02 11:54:02'),
+(365, 16, 3, '.MOCODMOTIV', 'Motivo', 'Texto', '', 1, 1, 1, 0, NULL, 4, NULL, NULL, NULL, '2019-10-02 11:53:34', '2019-10-02 11:53:34'),
+(366, 17, 0, '.ACCODACTIV', 'Cod. Actividad', 'Entero', NULL, 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '2019-10-02 11:58:16', '2019-10-02 15:37:01'),
+(367, 17, 1, '.ACDESACTIV', 'Actividad', 'Texto', '', 0, 1, 1, 0, NULL, 250, NULL, NULL, NULL, '2019-10-02 11:58:16', '2019-10-02 11:58:51');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `sara_entidades_editores`
+--
+
+CREATE TABLE `sara_entidades_editores` (
+  `id` int(11) NOT NULL,
+  `entidad_id` int(11) NOT NULL,
+  `Titulo` varchar(255) NOT NULL,
+  `Ancho` int(11) NOT NULL DEFAULT '400',
+  `Secciones` text NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `sara_entidades_editores`
+--
+
+INSERT INTO `sara_entidades_editores` (`id`, `entidad_id`, `Titulo`, `Ancho`, `Secciones`, `created_at`, `updated_at`) VALUES
+(1, 15, 'General', 420, '[]', '2019-10-03 15:49:14', '2019-10-04 17:53:58');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `sara_entidades_editores_campos`
+--
+
+CREATE TABLE `sara_entidades_editores_campos` (
+  `id` int(11) NOT NULL,
+  `editor_id` int(11) NOT NULL,
+  `seccion_id` int(11) DEFAULT NULL,
+  `Indice` int(11) NOT NULL DEFAULT '0',
+  `Etiqueta` varchar(255) DEFAULT NULL,
+  `campo_id` int(11) DEFAULT NULL,
+  `Tipo` varchar(30) DEFAULT NULL,
+  `Ancho` int(11) NOT NULL DEFAULT '100',
+  `Visible` tinyint(1) NOT NULL DEFAULT '1',
+  `Op1` int(100) DEFAULT NULL,
+  `Op2` int(100) DEFAULT NULL,
+  `Op3` varchar(1000) DEFAULT NULL,
+  `Op4` varchar(1000) DEFAULT NULL,
+  `Op5` varchar(1000) DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `sara_entidades_editores_campos`
+--
+
+INSERT INTO `sara_entidades_editores_campos` (`id`, `editor_id`, `seccion_id`, `Indice`, `Etiqueta`, `campo_id`, `Tipo`, `Ancho`, `Visible`, `Op1`, `Op2`, `Op3`, `Op4`, `Op5`, `created_at`, `updated_at`) VALUES
+(1, 1, NULL, 0, 'Actividad', 360, NULL, 100, 1, NULL, NULL, NULL, NULL, NULL, '0000-00-00 00:00:00', '2019-10-04 17:45:12'),
+(7, 1, NULL, 2, 'Servicio', 361, NULL, 100, 1, NULL, NULL, NULL, NULL, NULL, '2019-10-04 17:09:12', '2019-10-04 17:52:00');
 
 -- --------------------------------------------------------
 
@@ -242,7 +380,12 @@ CREATE TABLE `sara_entidades_grids` (
 --
 
 INSERT INTO `sara_entidades_grids` (`id`, `entidad_id`, `Titulo`, `created_at`, `updated_at`) VALUES
-(1, 5, 'Citas Recientes', '2019-06-06 17:45:23', '2019-06-26 15:02:54');
+(1, 5, 'Citas Recientes', '2019-06-06 17:45:23', '2019-06-26 15:02:54'),
+(2, 5, 'Citas Gen', '2019-08-26 16:27:25', '2019-08-26 16:27:25'),
+(3, 12, 'General', '2019-09-06 16:09:34', '2019-09-06 16:09:34'),
+(4, 13, 'General', '2019-09-18 16:18:31', '2019-09-18 16:18:31'),
+(5, 15, 'Relación: Actividades y Servicios', '2019-10-02 11:51:12', '2019-10-02 11:51:51'),
+(6, 16, 'Tipos Servicio', '2019-10-02 11:54:25', '2019-10-02 11:54:25');
 
 -- --------------------------------------------------------
 
@@ -277,7 +420,79 @@ INSERT INTO `sara_entidades_grids_columnas` (`id`, `grid_id`, `Indice`, `Cabecer
 (90, 1, 5, NULL, 'Campo', '[5,1]', '[null,186,171]', 1, 171, NULL, '2019-06-27 16:38:34', '2019-06-28 15:42:54'),
 (91, 1, 7, 'Centro', 'Campo', '[5]', '[null]', 1, 194, NULL, '2019-06-28 15:10:49', '2019-06-28 15:10:49'),
 (92, 1, 1, NULL, 'Campo', '[5]', '[null]', 1, 182, NULL, '2019-06-28 15:42:42', '2019-06-28 15:42:54'),
-(93, 1, 2, NULL, 'Campo', '[5]', '[null]', 1, 183, NULL, '2019-06-28 15:42:43', '2019-06-28 15:42:54');
+(93, 1, 2, NULL, 'Campo', '[5]', '[null]', 1, 183, NULL, '2019-06-28 15:42:43', '2019-06-28 15:42:54'),
+(115, 2, 0, NULL, 'Campo', '[5]', '[null]', 1, 179, NULL, '2019-08-26 17:04:48', '2019-08-26 17:04:48'),
+(116, 2, 1, NULL, 'Campo', '[5]', '[null]', 1, 180, NULL, '2019-08-26 17:04:48', '2019-08-26 17:04:48'),
+(117, 2, 2, NULL, 'Campo', '[5]', '[null]', 1, 181, NULL, '2019-08-26 17:04:48', '2019-08-26 17:04:48'),
+(118, 2, 3, NULL, 'Campo', '[5]', '[null]', 1, 182, NULL, '2019-08-26 17:04:48', '2019-08-26 17:04:48'),
+(119, 2, 4, NULL, 'Campo', '[5]', '[null]', 1, 183, NULL, '2019-08-26 17:04:48', '2019-08-26 17:04:48'),
+(120, 2, 5, NULL, 'Campo', '[5]', '[null]', 1, 184, NULL, '2019-08-26 17:04:48', '2019-08-26 17:04:48'),
+(121, 2, 6, NULL, 'Campo', '[5]', '[null]', 1, 186, NULL, '2019-08-26 17:04:48', '2019-08-26 17:04:48'),
+(122, 2, 7, NULL, 'Campo', '[5]', '[null]', 1, 187, NULL, '2019-08-26 17:04:48', '2019-08-26 17:04:48'),
+(123, 2, 8, NULL, 'Campo', '[5]', '[null]', 1, 188, NULL, '2019-08-26 17:04:49', '2019-08-26 17:04:49'),
+(124, 2, 9, NULL, 'Campo', '[5]', '[null]', 1, 189, NULL, '2019-08-26 17:04:49', '2019-08-26 17:04:49'),
+(125, 2, 10, NULL, 'Campo', '[5]', '[null]', 1, 190, NULL, '2019-08-26 17:04:49', '2019-08-26 17:04:49'),
+(126, 2, 11, NULL, 'Campo', '[5]', '[null]', 1, 191, NULL, '2019-08-26 17:04:49', '2019-08-26 17:04:49'),
+(127, 2, 12, NULL, 'Campo', '[5]', '[null]', 1, 192, NULL, '2019-08-26 17:04:49', '2019-08-26 17:04:49'),
+(128, 2, 13, NULL, 'Campo', '[5]', '[null]', 1, 193, NULL, '2019-08-26 17:04:49', '2019-08-26 17:04:49'),
+(129, 2, 14, NULL, 'Campo', '[5]', '[null]', 1, 194, NULL, '2019-08-26 17:04:49', '2019-08-26 17:04:49'),
+(192, 3, 0, NULL, 'Campo', '[12]', '[null]', 1, 308, NULL, '2019-09-06 16:40:16', '2019-09-06 16:40:16'),
+(193, 3, 1, NULL, 'Campo', '[12]', '[null]', 1, 309, NULL, '2019-09-06 16:40:18', '2019-09-06 16:40:18'),
+(194, 3, 2, NULL, 'Campo', '[12]', '[null]', 1, 315, NULL, '2019-09-06 16:40:20', '2019-09-06 16:40:20'),
+(195, 3, 3, NULL, 'Campo', '[12]', '[null]', 1, 310, NULL, '2019-09-06 16:40:23', '2019-09-06 16:40:23'),
+(196, 3, 4, NULL, 'Campo', '[12]', '[null]', 1, 311, NULL, '2019-09-06 16:40:25', '2019-09-06 16:40:25'),
+(197, 3, 5, NULL, 'Campo', '[12]', '[null]', 1, 312, NULL, '2019-09-06 16:40:26', '2019-09-06 16:40:26'),
+(198, 3, 6, NULL, 'Campo', '[12]', '[null]', 1, 318, NULL, '2019-09-06 16:40:28', '2019-09-06 16:40:28'),
+(199, 3, 7, NULL, 'Campo', '[12]', '[null]', 1, 301, NULL, '2019-09-06 16:40:29', '2019-09-06 16:40:29'),
+(200, 3, 8, NULL, 'Campo', '[12]', '[null]', 1, 300, NULL, '2019-09-06 16:40:31', '2019-09-06 16:40:31'),
+(201, 3, 9, NULL, 'Campo', '[12]', '[null]', 1, 298, NULL, '2019-09-06 16:40:32', '2019-09-06 16:40:32'),
+(202, 3, 10, NULL, 'Campo', '[12]', '[null]', 1, 299, NULL, '2019-09-06 16:40:33', '2019-09-06 16:40:33'),
+(203, 3, 11, NULL, 'Campo', '[12]', '[null]', 1, 319, NULL, '2019-09-06 16:40:35', '2019-09-06 16:40:35'),
+(204, 3, 12, NULL, 'Campo', '[12]', '[null]', 1, 320, NULL, '2019-09-06 16:40:36', '2019-09-06 16:40:36'),
+(205, 3, 13, NULL, 'Campo', '[12]', '[null]', 1, 322, NULL, '2019-09-06 16:40:38', '2019-09-06 16:40:38'),
+(206, 3, 14, NULL, 'Campo', '[12]', '[null]', 1, 323, NULL, '2019-09-06 16:40:41', '2019-09-06 16:40:41'),
+(207, 3, 15, NULL, 'Campo', '[12]', '[null]', 1, 324, NULL, '2019-09-06 16:40:43', '2019-09-06 16:40:43'),
+(208, 3, 16, NULL, 'Campo', '[12]', '[null]', 1, 325, NULL, '2019-09-06 16:40:45', '2019-09-06 16:40:45'),
+(209, 3, 17, NULL, 'Campo', '[12]', '[null]', 1, 326, NULL, '2019-09-06 16:40:46', '2019-09-06 16:40:46'),
+(210, 3, 18, NULL, 'Campo', '[12]', '[null]', 1, 327, NULL, '2019-09-06 16:40:48', '2019-09-06 16:40:48'),
+(211, 3, 19, NULL, 'Campo', '[12]', '[null]', 1, 329, NULL, '2019-09-06 16:40:50', '2019-09-06 16:40:50'),
+(212, 3, 20, NULL, 'Campo', '[12]', '[null]', 1, 331, NULL, '2019-09-06 16:40:52', '2019-09-06 16:40:52'),
+(213, 3, 21, NULL, 'Campo', '[12]', '[null]', 1, 333, NULL, '2019-09-06 16:40:54', '2019-09-06 16:40:54'),
+(215, 3, 24, NULL, 'Campo', '[12]', '[null]', 1, 293, NULL, '2019-09-06 16:41:00', '2019-09-13 14:04:23'),
+(216, 3, 25, NULL, 'Campo', '[12]', '[null]', 1, 294, NULL, '2019-09-06 16:41:02', '2019-09-13 14:04:24'),
+(217, 3, 26, NULL, 'Campo', '[12]', '[null]', 1, 296, NULL, '2019-09-06 16:41:04', '2019-09-13 14:04:24'),
+(218, 3, 27, NULL, 'Campo', '[12]', '[null]', 1, 297, NULL, '2019-09-06 16:41:06', '2019-09-13 14:04:24'),
+(219, 3, 28, NULL, 'Campo', '[12]', '[null]', 1, 304, NULL, '2019-09-06 16:41:08', '2019-09-13 14:04:24'),
+(220, 3, 29, NULL, 'Campo', '[12]', '[null]', 1, 303, NULL, '2019-09-06 16:41:10', '2019-09-13 14:04:24'),
+(221, 3, 30, NULL, 'Campo', '[12]', '[null]', 1, 335, NULL, '2019-09-06 16:41:17', '2019-09-13 14:04:24'),
+(222, 3, 31, NULL, 'Campo', '[12]', '[null]', 1, 338, NULL, '2019-09-06 16:41:21', '2019-09-13 14:04:24'),
+(223, 3, 32, NULL, 'Campo', '[12]', '[null]', 1, 336, NULL, '2019-09-06 16:41:23', '2019-09-13 14:04:24'),
+(224, 3, 33, NULL, 'Campo', '[12]', '[null]', 1, 340, NULL, '2019-09-06 16:41:26', '2019-09-13 14:04:24'),
+(225, 3, 34, NULL, 'Campo', '[12]', '[null]', 1, 342, NULL, '2019-09-06 16:41:28', '2019-09-13 14:04:24'),
+(226, 3, 35, NULL, 'Campo', '[12]', '[null]', 1, 343, NULL, '2019-09-06 16:41:31', '2019-09-13 14:04:24'),
+(227, 3, 23, NULL, 'Campo', '[12,10]', '[null,288,210]', 1, 210, NULL, '2019-09-13 14:04:08', '2019-09-13 14:04:23'),
+(228, 4, 0, NULL, 'Campo', '[13]', '[null]', 1, 344, NULL, '2019-09-18 16:18:33', '2019-09-18 16:18:33'),
+(229, 4, 1, NULL, 'Campo', '[13]', '[null]', 1, 345, NULL, '2019-09-18 16:18:33', '2019-09-18 16:18:33'),
+(230, 4, 2, NULL, 'Campo', '[13]', '[null]', 1, 346, NULL, '2019-09-18 16:18:33', '2019-09-18 16:18:33'),
+(231, 4, 3, NULL, 'Campo', '[13]', '[null]', 1, 347, NULL, '2019-09-18 16:18:33', '2019-09-18 16:18:33'),
+(232, 4, 4, NULL, 'Campo', '[13]', '[null]', 1, 348, NULL, '2019-09-18 16:18:33', '2019-09-18 16:18:33'),
+(233, 4, 5, NULL, 'Campo', '[13]', '[null]', 1, 349, NULL, '2019-09-18 16:18:33', '2019-09-18 16:18:33'),
+(234, 4, 7, NULL, 'Campo', '[13]', '[null]', 1, 350, NULL, '2019-09-18 16:18:33', '2019-09-18 16:22:15'),
+(235, 4, 9, NULL, 'Campo', '[13]', '[null]', 1, 351, NULL, '2019-09-18 16:18:33', '2019-09-18 16:22:16'),
+(236, 4, 11, NULL, 'Campo', '[13]', '[null]', 1, 352, NULL, '2019-09-18 16:18:33', '2019-09-18 16:22:16'),
+(237, 4, 13, NULL, 'Campo', '[13]', '[null]', 1, 353, NULL, '2019-09-18 16:18:34', '2019-09-18 16:22:16'),
+(238, 4, 6, NULL, 'Campo', '[13]', '[null]', 1, 354, NULL, '2019-09-18 16:18:34', '2019-09-18 16:22:15'),
+(239, 4, 8, NULL, 'Campo', '[13]', '[null]', 1, 355, NULL, '2019-09-18 16:18:34', '2019-09-18 16:22:15'),
+(240, 4, 10, NULL, 'Campo', '[13]', '[null]', 1, 356, NULL, '2019-09-18 16:18:34', '2019-09-18 16:22:16'),
+(241, 4, 12, NULL, 'Campo', '[13]', '[null]', 1, 357, NULL, '2019-09-18 16:18:34', '2019-09-18 16:22:16'),
+(242, 4, 14, NULL, 'Campo', '[13]', '[null]', 1, 358, NULL, '2019-09-18 16:18:34', '2019-09-18 16:18:34'),
+(243, 4, 15, NULL, 'Campo', '[13]', '[null]', 1, 359, NULL, '2019-09-18 16:18:34', '2019-09-18 16:18:34'),
+(247, 6, 0, NULL, 'Campo', '[16]', '[null]', 1, 362, NULL, '2019-10-02 11:54:29', '2019-10-02 11:54:29'),
+(248, 6, 1, NULL, 'Campo', '[16]', '[null]', 1, 363, NULL, '2019-10-02 11:54:30', '2019-10-02 11:54:30'),
+(252, 5, 2, NULL, 'Campo', '[15,16]', '[null,361,362]', 1, 362, NULL, '2019-10-02 11:56:44', '2019-10-02 11:59:33'),
+(253, 5, 3, NULL, 'Campo', '[15,16]', '[null,361,363]', 1, 363, NULL, '2019-10-02 11:56:45', '2019-10-02 11:59:33'),
+(254, 5, 0, NULL, 'Campo', '[15,17]', '[null,360,366]', 1, 366, NULL, '2019-10-02 11:59:19', '2019-10-02 11:59:32'),
+(255, 5, 1, NULL, 'Campo', '[15,17]', '[null,360,367]', 1, 367, NULL, '2019-10-02 11:59:20', '2019-10-02 11:59:32');
 
 -- --------------------------------------------------------
 
@@ -304,9 +519,10 @@ CREATE TABLE `sara_entidades_grids_filtros` (
 --
 
 INSERT INTO `sara_entidades_grids_filtros` (`id`, `grid_id`, `columna_id`, `Indice`, `Comparador`, `Valor`, `Op1`, `Op2`, `Op3`, `created_at`, `updated_at`) VALUES
-(15, 1, 61, 0, '=', '-2 days', 'rel', '', 0, '2019-06-28 16:01:53', '2019-06-28 16:40:19'),
-(17, 1, 91, 2, 'radios', NULL, '', '', 0, '2019-06-28 16:42:59', '2019-06-28 16:58:36'),
-(18, 1, 86, 1, 'lista', NULL, '', '', 0, '2019-06-28 16:58:29', '2019-06-28 16:58:36');
+(15, 1, 61, 0, '=', 'yesterday', 'rel', '', 0, '2019-06-28 16:01:53', '2019-07-03 09:30:24'),
+(18, 1, 86, 2, 'lista', NULL, '', '', 0, '2019-06-28 16:58:29', '2019-08-26 16:18:14'),
+(19, 1, 91, 3, 'lista', NULL, '', '', 0, '2019-07-04 11:22:31', '2019-08-26 16:18:14'),
+(22, 3, 195, 0, '=', '-1 month', 'rel', '', 0, '2019-09-06 16:41:59', '2019-09-06 16:42:14');
 
 -- --------------------------------------------------------
 
@@ -339,6 +555,137 @@ INSERT INTO `sara_entidades_restricciones` (`id`, `entidad_id`, `campo_id`, `Com
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `sara_indicadores`
+--
+
+CREATE TABLE `sara_indicadores` (
+  `id` int(11) NOT NULL,
+  `Ruta` varchar(1000) NOT NULL,
+  `Indicador` varchar(255) NOT NULL,
+  `Definicion` text NOT NULL,
+  `TipoDato` varchar(50) NOT NULL DEFAULT 'Porcentaje',
+  `Decimales` int(2) NOT NULL DEFAULT '0',
+  `Formula` varchar(255) NOT NULL DEFAULT 'a / b',
+  `Sentido` varchar(3) NOT NULL DEFAULT 'ASC',
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `sara_indicadores`
+--
+
+INSERT INTO `sara_indicadores` (`id`, `Ruta`, `Indicador`, `Definicion`, `TipoDato`, `Decimales`, `Formula`, `Sentido`, `created_at`, `updated_at`) VALUES
+(1, 'Salud\\Ambulatoria\\Citas', '% Citas Incumplidas', 'Objetivo: implementar estrategias para generar adherencia a las citas y cancelación oportuna.', 'Porcentaje', 1, 'a / b', 'DES', '2019-09-19 11:36:19', '2019-09-27 11:03:29'),
+(2, 'Salud\\Ambulatoria\\Citas', '% Citas Canceladas', '', 'Porcentaje', 0, 'a / b', 'ASC', '2019-09-19 12:16:00', '2019-09-19 12:16:00');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `sara_indicadores_metas`
+--
+
+CREATE TABLE `sara_indicadores_metas` (
+  `id` int(11) NOT NULL,
+  `indicador_id` int(11) NOT NULL,
+  `PeriodoDesde` int(8) NOT NULL,
+  `Meta` decimal(24,4) NOT NULL DEFAULT '0.0000',
+  `Meta2` decimal(24,4) DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `sara_indicadores_metas`
+--
+
+INSERT INTO `sara_indicadores_metas` (`id`, `indicador_id`, `PeriodoDesde`, `Meta`, `Meta2`, `created_at`, `updated_at`) VALUES
+(16, 1, 201803, '0.0550', NULL, '2019-09-25 14:29:11', '2019-09-25 14:29:11'),
+(20, 1, 201901, '0.0450', NULL, '2019-09-26 11:27:17', '2019-09-26 11:27:17');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `sara_indicadores_variables`
+--
+
+CREATE TABLE `sara_indicadores_variables` (
+  `id` int(11) NOT NULL,
+  `indicador_id` int(11) NOT NULL,
+  `Letra` varchar(1) NOT NULL,
+  `Tipo` varchar(30) NOT NULL DEFAULT 'Variable',
+  `variable_id` int(11) NOT NULL,
+  `Op1` varchar(100) DEFAULT NULL,
+  `Op2` varchar(100) DEFAULT NULL,
+  `Op3` varchar(100) DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `sara_indicadores_variables`
+--
+
+INSERT INTO `sara_indicadores_variables` (`id`, `indicador_id`, `Letra`, `Tipo`, `variable_id`, `Op1`, `Op2`, `Op3`, `created_at`, `updated_at`) VALUES
+(7, 1, 'a', 'Variable', 17, NULL, NULL, NULL, '2019-09-19 16:46:55', '2019-09-20 11:00:18'),
+(15, 1, 'b', 'Variable', 18, NULL, NULL, NULL, '2019-09-20 11:06:58', '2019-09-25 14:28:26');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `sara_scorecards`
+--
+
+CREATE TABLE `sara_scorecards` (
+  `id` int(11) NOT NULL,
+  `Ruta` varchar(1000) NOT NULL,
+  `Titulo` varchar(255) NOT NULL,
+  `Secciones` text NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `sara_scorecards`
+--
+
+INSERT INTO `sara_scorecards` (`id`, `Ruta`, `Titulo`, `Secciones`, `created_at`, `updated_at`) VALUES
+(1, 'Salud\\Citas', 'Scorecard de Citas', '[\"Primera\",\"Segunda\",\"Tercera\"]', '2019-09-27 13:52:18', '2019-10-04 09:38:58');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `sara_scorecards_card`
+--
+
+CREATE TABLE `sara_scorecards_card` (
+  `id` int(11) NOT NULL,
+  `scorecard_id` int(11) NOT NULL,
+  `Indice` int(11) NOT NULL,
+  `seccion_id` int(11) DEFAULT NULL,
+  `tipo` varchar(50) NOT NULL DEFAULT 'Indicador',
+  `elemento_id` int(11) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `sara_scorecards_card`
+--
+
+INSERT INTO `sara_scorecards_card` (`id`, `scorecard_id`, `Indice`, `seccion_id`, `tipo`, `elemento_id`, `created_at`, `updated_at`) VALUES
+(1, 1, 0, NULL, 'Variable', 18, '0000-00-00 00:00:00', '2019-09-27 15:49:36'),
+(3, 1, 1, NULL, 'Variable', 1, '2019-09-27 15:13:10', '2019-10-02 11:38:44'),
+(4, 1, 2, NULL, 'Variable', 17, '2019-09-27 15:13:18', '2019-10-02 11:38:44'),
+(5, 1, 3, NULL, 'Variable', 14, '2019-09-27 15:16:27', '2019-10-02 11:38:44'),
+(6, 1, 4, NULL, 'Variable', 16, '2019-09-27 15:16:33', '2019-10-02 11:38:44'),
+(7, 1, 5, NULL, 'Indicador', 1, '2019-09-27 15:16:38', '2019-10-02 11:38:44'),
+(8, 1, 6, NULL, 'Indicador', 1, '2019-09-27 15:16:49', '2019-10-02 11:38:44'),
+(9, 1, 7, NULL, 'Indicador', 1, '2019-09-27 15:17:06', '2019-10-02 11:38:44');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `sara_secciones`
 --
 
@@ -355,11 +702,15 @@ CREATE TABLE `sara_secciones` (
 --
 
 INSERT INTO `sara_secciones` (`id`, `Seccion`, `Orden`, `Icono`, `Estado`) VALUES
-('Apps', 'Apps', 20, 'fa-cubes', 'A'),
+('Apps', 'Apps', 21, 'fa-cubes', 'A'),
 ('BDD', 'Conexiones', 5, 'fa-database', 'A'),
+('Editores', 'Editores', 12, 'fa-paper-plane', 'I'),
 ('Entidades', 'Entidades', 10, 'fa-chess', 'A'),
+('Indicadores', 'Indicadores', 16, 'fa-chart-line', 'A'),
 ('Roles', 'Roles', 31, 'fa-user-tag', 'A'),
-('Usuarios', 'Usuarios', 30, 'fa-users', 'A');
+('Scorecards', 'Scorecards', 20, 'fa-th-large', 'A'),
+('Usuarios', 'Usuarios', 30, 'fa-users', 'A'),
+('Variables', 'Variables', 15, 'fa-superscript', 'A');
 
 -- --------------------------------------------------------
 
@@ -1443,9 +1794,162 @@ CREATE TABLE `sara_usuario_apps` (
 --
 
 INSERT INTO `sara_usuario_apps` (`id`, `usuario_id`, `app_id`, `favorito`, `created_at`, `updated_at`) VALUES
-(1, 183, 1, 1, '0000-00-00 00:00:00', '2019-05-28 17:34:30'),
-(2, 183, 2, 1, '0000-00-00 00:00:00', '2019-05-31 15:13:11'),
-(3, 183, 3, 0, '0000-00-00 00:00:00', '2019-05-28 17:29:28');
+(1, 183, 1, 1, '0000-00-00 00:00:00', '2019-08-01 14:09:57'),
+(2, 183, 2, 0, '0000-00-00 00:00:00', '2019-09-11 09:29:04'),
+(3, 183, 3, 0, '0000-00-00 00:00:00', '2019-09-11 09:29:04');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `sara_variables`
+--
+
+CREATE TABLE `sara_variables` (
+  `id` int(11) NOT NULL,
+  `Ruta` varchar(1000) NOT NULL,
+  `Variable` varchar(255) NOT NULL,
+  `Descripcion` text NOT NULL,
+  `TipoDato` varchar(50) NOT NULL DEFAULT 'Numero',
+  `Decimales` int(2) NOT NULL DEFAULT '0',
+  `Tipo` varchar(50) NOT NULL DEFAULT 'Valor Fijo',
+  `grid_id` int(11) DEFAULT NULL,
+  `ColPeriodo` int(11) DEFAULT NULL,
+  `Agrupador` varchar(20) NOT NULL DEFAULT 'count',
+  `Col` int(11) DEFAULT NULL,
+  `Filtros` text NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `deleted_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `sara_variables`
+--
+
+INSERT INTO `sara_variables` (`id`, `Ruta`, `Variable`, `Descripcion`, `TipoDato`, `Decimales`, `Tipo`, `grid_id`, `ColPeriodo`, `Agrupador`, `Col`, `Filtros`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 'Salud\\Ambulatoria\\Citas', 'Citas Atendidas', 'Total de Citas atendidas', 'Numero', 0, 'Calculado de Entidad', 3, 193, 'count', 192, '[{\"columna_id\":216,\"column_title\":\"Estado\",\"tipo_campo\":\"Texto\",\"campo_id\":294,\"obs\":\"\",\"Comparador\":\"=\",\"Valor\":\"A\",\"Op1\":null,\"Op2\":null,\"Op3\":null}]', '0000-00-00 00:00:00', '2019-09-17 14:32:28', NULL),
+(14, 'Salud\\Hospitalaria\\Hospitalización', 'Camas Hospitalización (PGP SOS)', 'Registra cuantas camas ofertamos a la entidad SOS en el marco del contrato PGP', 'Numero', 0, 'Valor Fijo', NULL, NULL, 'count', NULL, '[]', '2019-09-02 14:27:22', '2019-09-30 13:57:14', NULL),
+(16, 'Salud\\Hospitalaria\\Hospitalización', 'Camas UCI (PGP SOS)', 'Registra cuantas camas de UCI ofertamos a la entidad SOS en el marco del contrato PGP', 'Numero', 0, 'Valor Fijo', NULL, NULL, 'count', NULL, '[]', '2019-09-05 13:30:36', '2019-09-30 13:57:18', NULL),
+(17, 'Salud\\Ambulatoria\\Citas', 'Citas Incumplidas', 'Citas no asistidas por el usuario (incluye exoneradas)', 'Numero', 0, 'Calculado de Entidad', 3, 193, 'count', 192, '[{\"columna_id\":215,\"column_title\":\"Motivo\",\"tipo_campo\":\"Texto\",\"campo_id\":293,\"obs\":\"\",\"Comparador\":\"like_\",\"Valor\":\"INCUM\",\"Op1\":null,\"Op2\":null,\"Op3\":null,\"val\":\"INCUM\"}]', '2019-09-20 08:21:47', '2019-09-26 13:51:07', NULL),
+(18, 'Salud\\Ambulatoria\\Citas', 'Citas Asignadas', 'Total de Citas asignadas', 'Numero', 0, 'Calculado de Entidad', 3, 193, 'count', 192, '[]', '2019-09-25 14:27:10', '2019-09-25 14:27:39', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `sara_variables_valores`
+--
+
+CREATE TABLE `sara_variables_valores` (
+  `id` int(15) NOT NULL,
+  `variable_id` int(11) NOT NULL,
+  `Periodo` int(8) NOT NULL,
+  `Valor` decimal(24,4) DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `sara_variables_valores`
+--
+
+INSERT INTO `sara_variables_valores` (`id`, `variable_id`, `Periodo`, `Valor`, `created_at`, `updated_at`) VALUES
+(1, 14, 201810, '85.0000', '2019-09-02 14:44:22', '2019-09-05 09:49:14'),
+(2, 1, 201904, '45514.0000', '0000-00-00 00:00:00', '2019-10-01 16:46:18'),
+(3, 1, 201905, '49109.0000', '0000-00-00 00:00:00', '2019-10-01 16:46:18'),
+(6, 14, 201901, '85.0000', '2019-09-03 13:35:59', '2019-09-03 13:36:03'),
+(7, 14, 201801, NULL, '2019-09-03 13:38:02', '2019-09-05 13:58:25'),
+(8, 14, 201802, NULL, '2019-09-03 13:42:54', '2019-09-05 13:58:25'),
+(11, 1, 201903, '46293.0000', '2019-09-04 09:29:50', '2019-10-01 16:46:18'),
+(19, 14, 201902, '85.0000', '2019-09-05 09:46:22', '2019-09-05 09:46:22'),
+(20, 14, 201903, '85.0000', '2019-09-05 09:46:22', '2019-09-05 09:46:22'),
+(21, 14, 201904, '85.0000', '2019-09-05 09:46:22', '2019-09-05 13:58:06'),
+(22, 14, 201905, '85.0000', '2019-09-05 09:46:22', '2019-09-05 13:58:06'),
+(23, 14, 201906, '85.0000', '2019-09-05 09:46:22', '2019-09-05 13:58:06'),
+(24, 14, 201907, '85.0000', '2019-09-05 09:46:22', '2019-09-18 14:16:51'),
+(25, 14, 201908, '85.0000', '2019-09-05 09:46:22', '2019-09-05 13:58:06'),
+(28, 14, 201803, NULL, '2019-09-05 09:49:13', '2019-09-05 13:58:25'),
+(29, 14, 201804, NULL, '2019-09-05 09:49:14', '2019-09-05 13:58:25'),
+(30, 14, 201805, NULL, '2019-09-05 09:49:14', '2019-09-05 13:58:25'),
+(31, 14, 201806, NULL, '2019-09-05 09:49:14', '2019-09-05 13:58:25'),
+(32, 14, 201807, NULL, '2019-09-05 09:49:14', '2019-09-05 13:58:25'),
+(33, 14, 201808, NULL, '2019-09-05 09:49:14', '2019-09-05 13:58:25'),
+(34, 14, 201809, NULL, '2019-09-05 09:49:14', '2019-09-05 15:02:15'),
+(35, 14, 201811, '85.0000', '2019-09-05 09:49:14', '2019-09-05 09:49:14'),
+(36, 14, 201812, '85.0000', '2019-09-05 09:49:14', '2019-09-05 09:49:14'),
+(37, 16, 201810, '6.0000', '2019-09-05 14:00:43', '2019-09-05 14:00:43'),
+(38, 16, 201811, '6.0000', '2019-09-05 14:01:08', '2019-09-05 14:01:08'),
+(39, 16, 201812, '6.0000', '2019-09-05 14:01:08', '2019-09-05 14:01:08'),
+(40, 16, 201901, '5.0000', '2019-09-05 14:01:08', '2019-10-01 16:46:18'),
+(41, 16, 201902, '5.0000', '2019-09-05 14:01:08', '2019-10-01 16:46:18'),
+(42, 16, 201903, '5.0000', '2019-09-05 14:01:08', '2019-10-01 16:46:18'),
+(43, 16, 201904, '5.0000', '2019-09-05 14:01:08', '2019-10-01 16:46:19'),
+(44, 16, 201905, '5.0000', '2019-09-05 14:01:08', '2019-10-01 16:46:19'),
+(45, 16, 201906, '5.0000', '2019-09-05 14:01:19', '2019-09-05 14:01:19'),
+(46, 16, 201907, '5.0000', '2019-09-05 14:01:23', '2019-09-05 14:01:23'),
+(47, 16, 201908, '5.0000', '2019-09-05 14:01:26', '2019-09-05 14:01:26'),
+(48, 1, 201901, '44311.0000', '2019-09-17 16:14:50', '2019-10-01 16:46:18'),
+(49, 1, 201902, '46727.0000', '2019-09-17 16:14:50', '2019-10-01 16:46:18'),
+(50, 1, 201906, '42019.0000', '2019-09-17 16:14:51', '2019-10-01 16:45:56'),
+(51, 1, 201907, '48969.0000', '2019-09-17 16:14:51', '2019-10-01 16:45:56'),
+(52, 1, 201908, '46276.0000', '2019-09-17 16:14:51', '2019-10-01 16:45:41'),
+(53, 1, 201801, '43780.0000', '2019-09-17 16:17:27', '2019-09-17 16:17:27'),
+(54, 1, 201802, '43383.0000', '2019-09-17 16:17:27', '2019-09-17 16:17:27'),
+(55, 1, 201803, '40947.0000', '2019-09-17 16:17:27', '2019-09-17 16:17:27'),
+(56, 1, 201804, '44661.0000', '2019-09-17 16:17:27', '2019-09-17 16:17:27'),
+(57, 1, 201805, '43750.0000', '2019-09-17 16:17:27', '2019-09-17 16:17:27'),
+(58, 1, 201806, '40361.0000', '2019-09-17 16:17:28', '2019-09-17 16:17:28'),
+(59, 1, 201807, '43011.0000', '2019-09-17 16:17:28', '2019-09-17 16:17:28'),
+(60, 1, 201808, '43717.0000', '2019-09-17 16:17:28', '2019-09-17 16:17:28'),
+(61, 1, 201809, '43278.0000', '2019-09-17 16:17:28', '2019-09-17 16:17:28'),
+(62, 1, 201810, '47403.0000', '2019-09-17 16:17:28', '2019-09-17 16:17:28'),
+(63, 1, 201811, '42208.0000', '2019-09-17 16:17:28', '2019-09-17 16:17:28'),
+(64, 1, 201812, '38202.0000', '2019-09-17 16:17:28', '2019-09-17 16:17:28'),
+(65, 17, 201901, '3227.0000', '2019-09-20 08:54:01', '2019-10-01 16:46:19'),
+(66, 17, 201902, '2808.0000', '2019-09-20 08:54:01', '2019-10-01 16:46:19'),
+(67, 17, 201903, '2667.0000', '2019-09-20 08:54:01', '2019-10-01 16:46:19'),
+(68, 17, 201904, '2667.0000', '2019-09-20 08:54:01', '2019-10-01 16:46:19'),
+(69, 17, 201905, '3066.0000', '2019-09-20 08:54:01', '2019-10-01 16:46:19'),
+(70, 17, 201906, '2559.0000', '2019-09-20 08:54:01', '2019-10-01 16:45:56'),
+(71, 17, 201907, '2554.0000', '2019-09-20 08:54:01', '2019-10-01 16:45:56'),
+(72, 17, 201908, '2970.0000', '2019-09-20 08:54:01', '2019-10-01 16:45:42'),
+(73, 17, 201801, '2749.0000', '2019-09-20 08:54:16', '2019-09-20 08:54:16'),
+(74, 17, 201802, '2840.0000', '2019-09-20 08:54:16', '2019-09-20 08:54:16'),
+(75, 17, 201803, '2860.0000', '2019-09-20 08:54:16', '2019-09-20 08:54:16'),
+(76, 17, 201804, '3134.0000', '2019-09-20 08:54:16', '2019-09-20 08:54:16'),
+(77, 17, 201805, '3104.0000', '2019-09-20 08:54:16', '2019-09-20 08:54:16'),
+(78, 17, 201806, '2829.0000', '2019-09-20 08:54:16', '2019-09-20 08:54:16'),
+(79, 17, 201807, '2938.0000', '2019-09-20 08:54:16', '2019-09-20 08:54:16'),
+(80, 17, 201808, '2990.0000', '2019-09-20 08:54:16', '2019-09-20 08:54:16'),
+(81, 17, 201809, '3225.0000', '2019-09-20 08:54:16', '2019-09-20 08:54:16'),
+(82, 17, 201810, '3286.0000', '2019-09-20 08:54:16', '2019-09-20 08:54:16'),
+(83, 17, 201811, '3267.0000', '2019-09-20 08:54:16', '2019-09-20 08:54:16'),
+(84, 17, 201812, '3005.0000', '2019-09-20 08:54:16', '2019-09-20 08:54:16'),
+(85, 18, 201901, '57777.0000', '2019-09-25 14:27:54', '2019-10-01 16:46:20'),
+(86, 18, 201902, '61319.0000', '2019-09-25 14:27:54', '2019-10-01 16:46:20'),
+(87, 18, 201903, '60350.0000', '2019-09-25 14:27:54', '2019-10-01 16:46:20'),
+(88, 18, 201904, '58467.0000', '2019-09-25 14:27:54', '2019-10-01 16:46:20'),
+(89, 18, 201905, '63122.0000', '2019-09-25 14:27:54', '2019-10-01 16:46:20'),
+(90, 18, 201906, '54123.0000', '2019-09-25 14:27:54', '2019-10-01 16:45:56'),
+(91, 18, 201907, '62333.0000', '2019-09-25 14:27:55', '2019-10-01 16:45:56'),
+(92, 18, 201908, '59689.0000', '2019-09-25 14:27:55', '2019-10-01 16:45:42'),
+(93, 18, 201801, '57226.0000', '2019-09-25 14:28:12', '2019-09-25 14:28:12'),
+(94, 18, 201802, '57466.0000', '2019-09-25 14:28:12', '2019-09-25 14:28:12'),
+(95, 18, 201803, '53106.0000', '2019-09-25 14:28:12', '2019-09-25 14:28:12'),
+(96, 18, 201804, '58208.0000', '2019-09-25 14:28:12', '2019-09-25 14:28:12'),
+(97, 18, 201805, '57016.0000', '2019-09-25 14:28:12', '2019-09-25 14:28:12'),
+(98, 18, 201806, '52463.0000', '2019-09-25 14:28:12', '2019-09-25 14:28:12'),
+(99, 18, 201807, '55687.0000', '2019-09-25 14:28:12', '2019-09-25 14:28:12'),
+(100, 18, 201808, '57107.0000', '2019-09-25 14:28:12', '2019-09-25 14:28:12'),
+(101, 18, 201809, '56727.0000', '2019-09-25 14:28:12', '2019-09-25 14:28:12'),
+(102, 18, 201810, '61253.0000', '2019-09-25 14:28:12', '2019-09-25 14:28:12'),
+(103, 18, 201811, '55926.0000', '2019-09-25 14:28:12', '2019-09-25 14:28:12'),
+(104, 18, 201812, '50137.0000', '2019-09-25 14:28:12', '2019-09-25 14:28:12'),
+(105, 1, 201910, NULL, '2019-09-26 09:34:11', '2019-09-26 10:04:58'),
+(106, 1, 201909, '26317.0000', '2019-09-26 09:34:38', '2019-10-01 16:45:41'),
+(107, 14, 201909, '85.0000', '2019-10-01 16:45:42', '2019-10-01 16:45:42'),
+(108, 16, 201909, '5.0000', '2019-10-01 16:45:42', '2019-10-01 16:45:42'),
+(109, 17, 201909, '1695.0000', '2019-10-01 16:45:42', '2019-10-01 16:45:42'),
+(110, 18, 201909, '35084.0000', '2019-10-01 16:45:42', '2019-10-01 16:45:42');
 
 --
 -- Índices para tablas volcadas
@@ -1486,6 +1990,18 @@ ALTER TABLE `sara_entidades_campos`
   ADD KEY `entidad_id` (`entidad_id`);
 
 --
+-- Indices de la tabla `sara_entidades_editores`
+--
+ALTER TABLE `sara_entidades_editores`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `sara_entidades_editores_campos`
+--
+ALTER TABLE `sara_entidades_editores_campos`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `sara_entidades_grids`
 --
 ALTER TABLE `sara_entidades_grids`
@@ -1514,6 +2030,36 @@ ALTER TABLE `sara_entidades_restricciones`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indices de la tabla `sara_indicadores`
+--
+ALTER TABLE `sara_indicadores`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `sara_indicadores_metas`
+--
+ALTER TABLE `sara_indicadores_metas`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `sara_indicadores_variables`
+--
+ALTER TABLE `sara_indicadores_variables`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `sara_scorecards`
+--
+ALTER TABLE `sara_scorecards`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `sara_scorecards_card`
+--
+ALTER TABLE `sara_scorecards_card`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `sara_secciones`
 --
 ALTER TABLE `sara_secciones`
@@ -1530,6 +2076,20 @@ ALTER TABLE `sara_usuarios`
 --
 ALTER TABLE `sara_usuario_apps`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `sara_variables`
+--
+ALTER TABLE `sara_variables`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `sara_variables_valores`
+--
+ALTER TABLE `sara_variables_valores`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `var_periodo` (`variable_id`,`Periodo`),
+  ADD KEY `Periodo` (`Periodo`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -1557,37 +2117,79 @@ ALTER TABLE `sara_bdds_favoritos`
 -- AUTO_INCREMENT de la tabla `sara_entidades`
 --
 ALTER TABLE `sara_entidades`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `sara_entidades_campos`
 --
 ALTER TABLE `sara_entidades_campos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=227;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=369;
+
+--
+-- AUTO_INCREMENT de la tabla `sara_entidades_editores`
+--
+ALTER TABLE `sara_entidades_editores`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `sara_entidades_editores_campos`
+--
+ALTER TABLE `sara_entidades_editores_campos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `sara_entidades_grids`
 --
 ALTER TABLE `sara_entidades_grids`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `sara_entidades_grids_columnas`
 --
 ALTER TABLE `sara_entidades_grids_columnas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=256;
 
 --
 -- AUTO_INCREMENT de la tabla `sara_entidades_grids_filtros`
 --
 ALTER TABLE `sara_entidades_grids_filtros`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `sara_entidades_restricciones`
 --
 ALTER TABLE `sara_entidades_restricciones`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+
+--
+-- AUTO_INCREMENT de la tabla `sara_indicadores`
+--
+ALTER TABLE `sara_indicadores`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `sara_indicadores_metas`
+--
+ALTER TABLE `sara_indicadores_metas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+
+--
+-- AUTO_INCREMENT de la tabla `sara_indicadores_variables`
+--
+ALTER TABLE `sara_indicadores_variables`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT de la tabla `sara_scorecards`
+--
+ALTER TABLE `sara_scorecards`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `sara_scorecards_card`
+--
+ALTER TABLE `sara_scorecards_card`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `sara_usuarios`
@@ -1600,6 +2202,18 @@ ALTER TABLE `sara_usuarios`
 --
 ALTER TABLE `sara_usuario_apps`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `sara_variables`
+--
+ALTER TABLE `sara_variables`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
+-- AUTO_INCREMENT de la tabla `sara_variables_valores`
+--
+ALTER TABLE `sara_variables_valores`
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
 
 --
 -- Restricciones para tablas volcadas

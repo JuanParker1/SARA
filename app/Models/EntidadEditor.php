@@ -11,6 +11,7 @@ class EntidadEditor extends MyModel
 	protected $hidden = [];
 	protected $primaryKey = 'id';
     protected $casts = [
+    	'Secciones' => 'array'
     ];
     protected $appends = [];
 
@@ -23,6 +24,7 @@ class EntidadEditor extends MyModel
 			[ 'entidad_id',	'entidad_id',	null, true,  false, null, 100 ],
 			[ 'Titulo',		'Titulo',		null, true,  false, null, 100 ],
 			[ 'Ancho',		'Ancho',		null, true,  false, null, 100 ],
+			[ 'Secciones',	'Secciones',		null, true,  false, null, 100 ],
 		];
 	}
 

@@ -47,7 +47,7 @@
 				</md-input-container>
 			</div>
 
-			<md-chips ng-model="ScoSel.Secciones" placeholder="Secciones" md-enable-chip-edit></md-chips>
+			<md-chips class="compact" ng-model="ScoSel.Secciones" placeholder="Secciones" md-enable-chip-edit></md-chips>
 
 			<div class="bg-white border border-radius margin-top">
 				<div class="h30" layout layout-align="center center">

@@ -3,7 +3,7 @@
 
 	<md-table-container>
 		<table md-table class="md-table-short">
-			<thead md-head ng-show="RestricCRUD.rows.lenght > 0">
+			<thead md-head ng-show="RestricCRUD.rows.length > 0">
 				<tr md-row>
 					<th md-column>Campo</th>
 					<th md-column>Restricción</th>

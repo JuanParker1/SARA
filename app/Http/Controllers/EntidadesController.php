@@ -205,6 +205,12 @@ class EntidadesController extends Controller
         return $CRUD->call(request()->fn, request()->ops);
     }
 
+    public function postEditoresCampos()
+    {
+        $CRUD = new CRUD('App\Models\EntidadEditorCampo');
+        return $CRUD->call(request()->fn, request()->ops);
+    }
+
 
 
 

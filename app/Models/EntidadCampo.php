@@ -15,7 +15,7 @@ class EntidadCampo extends MyModel
     	'Visible'    => 'boolean',
     	'Editable'   => 'boolean',
     ];
-    protected $appends = [];
+    protected $appends = ['campo_title'];
 
 
     public function columns()
@@ -58,6 +58,11 @@ class EntidadCampo extends MyModel
 	public function getColName($base)
 	{
 		return \App\Functions\CamposHelper::getColName($base, $this->Columna);
+	}
+
+	public function getCampoTitleAttribute()
+	{
+		return $this->Alias ?: $this->campo->Columna;
 	}
 
 

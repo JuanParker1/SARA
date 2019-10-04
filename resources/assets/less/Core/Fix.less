@@ -836,8 +836,43 @@ md-chips.h30{
 		font-size: 0.9em;
 	}
 
-
 }
+
+md-chips.compact{
+	height: 30px;
+
+	& md-chip{
+		font-size: 14px;
+	    height: 26px;
+	    line-height: 25px;
+	    padding-left: 10px;
+	    border: 1px solid #0000000d;
+	    margin: 1px 3px 0 0;
+	}
+
+	& md-chips-wrap{
+		height: 100%;
+		padding: 0;
+	}
+
+	& button.md-chip-remove {
+	    width: 20px;
+	    height: 20px;
+	    margin: 2px 4px 0 0;
+	    opacity: 0.4;
+	    transition: all 0.3s;
+	}
+
+	& button.md-chip-remove:hover { opacity: 1; fill: red; }
+
+	& .md-chip-input-container{
+	    margin: 0px 0px 0 5px !important;
+	    line-height: 30px;
+	    height: 30px;
+	}
+}
+
+
 
 
 

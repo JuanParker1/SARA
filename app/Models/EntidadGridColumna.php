@@ -58,7 +58,7 @@ class EntidadGridColumna extends MyModel
 	public function getColumnTitleAttribute()
 	{
 		if(is_null($this->campo)) return $this->Cabecera;
-		return $this->Cabecera ?: $this->campo->Alias ?: $this->campo->Columna;
+		return $this->Cabecera ?: $this->campo->campo_title;
 	}
 
 	public function getTipoCampoAttribute()
