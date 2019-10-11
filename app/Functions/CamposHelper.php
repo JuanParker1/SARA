@@ -127,7 +127,7 @@ class CamposHelper
     {
         $TC = self::getTipos();
         $Tipo = $TC[$Campo['Tipo']];
-        if(array_key_exists('Comparators', $Tipo)) return $Tipo['Comparators'][$R->Comparador];
+        if(array_key_exists('Comparators', $Tipo)) return $Tipo['Comparators'][$R['Comparador']];
     }
 
     public static function getFilterVal($R, $Campo)

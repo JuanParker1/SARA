@@ -1,0 +1,33 @@
+<md-dialog aria-label=d class="vh95 wu700" layout>
+
+	<div class="w190 well padding-top padding-left" layout=column>
+		<div ng-repeat="C in Categorias " class="h30 lh30 Pointer padding-left-5" ng-click="filterCat(C)"
+			ng-class="{ 'text-bold': C == CatSel }">{{ C }}</div>
+	</div>
+
+	<div flex layout=column>
+		
+		<div layout class="border-bottom">
+			<md-input-container flex class="no-margin md-no-underline h40 no-padding" md-no-float>
+				<input type="search" ng-model="filter" placeholder="Buscar..." class="h40 padding-left" 
+					ng-change="filterIconos()" ng-model-options="{ debounce: 300 }">
+			</md-input-container>
+			<md-button class="md-icon-button no-margin no-padding s40" aria-label="b" ng-click="Cancel()">
+				<md-icon md-svg-icon="md-close"></md-icon>
+			</md-button>
+		</div>
+
+		<div flex layout=column class="padding-left-5 overflow-y darkScroll">
+
+			<div layout layout-wrap>
+				<div ng-repeat="I in Iconos" class="s55 Pointer focus-on-hover " ng-click="selectIcon(I)">
+					<md-icon class="{{ I.IconoFull }} fa-2x fa-fw text-black"></md-icon>
+				</div>
+			</div>
+			
+		</div>
+
+	</div>
+
+
+</md-dialog>

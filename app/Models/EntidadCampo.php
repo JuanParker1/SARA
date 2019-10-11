@@ -13,7 +13,9 @@ class EntidadCampo extends MyModel
     protected $casts = [
     	'Requerido'  => 'boolean',
     	'Visible'    => 'boolean',
+    	'Unico'      => 'boolean',
     	'Editable'   => 'boolean',
+    	'Buscable'   => 'boolean',
     ];
     protected $appends = ['campo_title'];
 
@@ -31,6 +33,7 @@ class EntidadCampo extends MyModel
 			[ 'Defecto',	'Defecto',		null, true,  false, null, 100 ],
 			[ 'Requerido',	'Requerido',	null, true,  false, null, 100 ],
 			[ 'Visible',	'Visible',		null, true,  false, null, 100 ],
+			[ 'Unico',		'Unico',		null, true,  false, null, 100 ],
 			[ 'Editable',	'Editable',		null, true,  false, null, 100 ],
 			[ 'Buscable',	'Buscable',		null, true,  false, null, 100 ],
 			[ 'Op1',		'Op1',			null, false, false, null, 100 ],

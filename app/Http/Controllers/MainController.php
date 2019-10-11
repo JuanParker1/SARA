@@ -89,4 +89,12 @@ class MainController extends Controller
 		return $User;
 	}
 
+	public function getIconos()
+	{
+		$Iconos = \App\Models\Icono::all();
+		$Categorias = $Iconos->unique('Categoria')->pluck('Categoria')->toArray();
+		sort($Categorias);
+		return compact('Iconos','Categorias');
+	}
+
 }

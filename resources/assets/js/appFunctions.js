@@ -287,6 +287,15 @@ angular.module('appFunctions', [])
 			});
 		};
 
+		Rs.selectIconDiag = () => {
+			return $mdDialog.show({
+				controller: 'IconSelectDiagCtrl',
+				templateUrl: '/templates/dialogs/icon-selector.html',
+				clickOutsideToClose: true,
+				multiple: true,
+			});
+		};
+
 		Rs.getItemsVal = (Items, Comparator, Prop) => {
 			var Elm = $filter('filter')(Rs[Items],Comparator)[0];
 			//console.log(Items,Comparator,Elm);
@@ -352,7 +361,24 @@ angular.module('appFunctions', [])
 			return route + "\\" + newfolder;
 		};
 
-
+		Rs.calcTextColor = (base_color) => {
+		    var r, g, b, hsp;
+		    if(base_color.match(/^rgb/)) {
+		        color = base_color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
+		        r = color[1]; g = color[2]; b = color[3];
+		    }else{
+		        color = +("0x" + base_color.slice(1).replace(base_color.length < 5 && /./g, '$&$&'));
+		        r = color >> 16;
+		        g = color >> 8 & 255;
+		        b = color & 255;
+		    };
+		    
+		    // HSP (Highly Sensitive Poo) equation from http://alienryderflex.com/hsp.html
+		    hsp = Math.sqrt( 0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b) );
+		    var textColor = (hsp>127.5) ? 'black' : 'white';
+		    console.log(base_color, hsp, textColor);
+		    return textColor;
+		};
 
 		return {};
   }

@@ -4,7 +4,6 @@ angular.module('SARA', [
 	'ngStorage',
 	'ngMaterial',
 	'ngSanitize',
-	'ngAnimate',
 
 	'md.data.table',
 	'ngFileUpload',
@@ -37,6 +36,7 @@ angular.module('SARA', [
 	'ListSelectorCtrl',
 	'FileDialogCtrl',
 	'ImageEditor_DialogCtrl',
+	'IconSelectDiagCtrl',
 
 	'MainCtrl',
 	'LoginCtrl',
@@ -62,4 +62,6 @@ angular.module('SARA', [
 
 	'ScorecardsCtrl',
 		'Scorecards_ScorecardDiagCtrl',
+
+	'AppsCtrl',
 ]);

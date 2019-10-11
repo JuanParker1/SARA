@@ -125,12 +125,18 @@ angular.module('InicioCtrl', [])
 
 		Ctrl.makeFavorite = (A,make) => {
 			A.favorito = make;
-			Rs.http('api/App/favorito', { usuario_id: Rs.Usuario.id, app_id: A.Id, favorito: make });
+			Rs.http('api/App/favorito', { usuario_id: Rs.Usuario.id, app_id: A.id, favorito: make });
 		};
 
 		Ctrl.openApp = (A) => {
 			console.log(A);
 		};
+
+
+
+		
+
+
 	}
 ]);
 angular.module('LoginCtrl', [])
@@ -164,6 +170,47 @@ angular.module('LoginCtrl', [])
 				Ctrl.Pass = '';
 			});
 		};
+	}
+]);
+angular.module('AppsCtrl', [])
+.controller('AppsCtrl', ['$scope', '$rootScope', '$injector', '$http',
+	function($scope, $rootScope, $injector, $http) {
+
+		console.info('AppsCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.AppsSidenav = true;
+
+		Ctrl.AppsCRUD = $injector.get('CRUD').config({ base_url: '/api/App/apps' });
+
+		Ctrl.AppsCRUD.get().then(() => {
+			if(Ctrl.AppsCRUD.rows.length > 0){
+				Ctrl.openApp(Ctrl.AppsCRUD.rows[0]);
+			};
+		});
+
+		Ctrl.openApp = (A) => {
+			Ctrl.AppSel = A;
+		};
+
+		Ctrl.updateApp = () => {
+			Ctrl.AppsCRUD.update(Ctrl.AppSel);
+		};
+
+		Ctrl.changeIcon = () => {
+			Rs.selectIconDiag().then(I => {
+				if(!I) return;
+				//console.log(I);
+				Ctrl.AppSel.Icono = I;
+			});
+		};
+
+		Ctrl.changeTextColor = () => {
+			Ctrl.AppSel.textcolor = Rs.calcTextColor(Ctrl.AppSel.Color);
+		};
+
+		
+
 	}
 ]);
 angular.module('BDDCtrl', [])
@@ -479,6 +526,37 @@ angular.module('FileDialogCtrl', [])
 		};
 
 	}
+]);
+angular.module('IconSelectDiagCtrl', [])
+.controller(   'IconSelectDiagCtrl', ['$scope',  '$mdDialog', '$http', '$filter',
+	function ($scope, $mdDialog, $http, $filter) {
+
+		var Ctrl = $scope;
+		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
+		Ctrl.filter = ''; Ctrl.CatSel = null;
+
+		$http.get('/api/Main/iconos').then((r) => {
+			Ctrl.Categorias = r.data.Categorias;
+			Ctrl.IconosRaw	= r.data.Iconos;
+		});
+
+		Ctrl.Iconos = [];
+
+		Ctrl.filterCat = (C) => { Ctrl.CatSel = C; Ctrl.filterIconos(); }
+
+		Ctrl.filterIconos = () => {
+			console.log(Ctrl.CatSel, Ctrl.filter);
+			if(Ctrl.CatSel == null && Ctrl.filter == ''){ Ctrl.Iconos = []; }
+			else if(Ctrl.filter !== ''){   Ctrl.Iconos = $filter('filter')(Ctrl.IconosRaw, Ctrl.filter) }
+			else if(Ctrl.CatSel !== null){ Ctrl.Iconos = $filter('filter')(Ctrl.IconosRaw, { Categoria: Ctrl.CatSel }) };
+		};
+
+		Ctrl.selectIcon = (I) => {
+			$mdDialog.hide(I.IconoFull);
+		};
+		
+	}
+
 ]);
 angular.module('ImageEditor_DialogCtrl', [])
 .controller(   'ImageEditor_DialogCtrl', ['$scope', '$rootScope', '$mdDialog', '$mdToast', '$timeout', '$http', 'Upload', 'Config', 
@@ -1027,6 +1105,7 @@ angular.module('Entidades_EditoresCtrl', [])
 		$scope.EditoresSidenav = false;
 		$scope.showEditorCampos = true;
 		$scope.anchosCampo = [10,15,20,25,30,33,35,40,45,50,55,60,65,66,70,75,80,85,90,95,100];
+		$scope.EditoresCamposSel = [];
 
 		//Editores
 		Ctrl.getEditores = () => {
@@ -1093,6 +1172,14 @@ angular.module('Entidades_EditoresCtrl', [])
 			if(Updatees.length == 0) return;
 			Ctrl.EditoresCamposCRUD.updateMultiple(Updatees);
 			angular.forEach(Ctrl.EditoresCamposCRUD.rows, C => {C.changed = false;});
+		};
+
+		Ctrl.removeEditorCampos = () => {
+			if($scope.EditoresCamposSel.length == 0) return;
+			Ctrl.EditoresCamposCRUD.ops.selected = $scope.EditoresCamposSel;
+			Ctrl.EditoresCamposCRUD.deleteMultiple().then(() => {
+				 $scope.EditoresCamposSel = [];
+			});
 		};
 
 		Ctrl.getEditores();
@@ -2748,7 +2835,6 @@ angular.module('SARA', [
 	'ngStorage',
 	'ngMaterial',
 	'ngSanitize',
-	'ngAnimate',
 
 	'md.data.table',
 	'ngFileUpload',
@@ -2781,6 +2867,7 @@ angular.module('SARA', [
 	'ListSelectorCtrl',
 	'FileDialogCtrl',
 	'ImageEditor_DialogCtrl',
+	'IconSelectDiagCtrl',
 
 	'MainCtrl',
 	'LoginCtrl',
@@ -2806,6 +2893,8 @@ angular.module('SARA', [
 
 	'ScorecardsCtrl',
 		'Scorecards_ScorecardDiagCtrl',
+
+	'AppsCtrl',
 ]);
 
 angular.module('appConfig', [])
@@ -3259,6 +3348,15 @@ angular.module('appFunctions', [])
 			});
 		};
 
+		Rs.selectIconDiag = () => {
+			return $mdDialog.show({
+				controller: 'IconSelectDiagCtrl',
+				templateUrl: '/templates/dialogs/icon-selector.html',
+				clickOutsideToClose: true,
+				multiple: true,
+			});
+		};
+
 		Rs.getItemsVal = (Items, Comparator, Prop) => {
 			var Elm = $filter('filter')(Rs[Items],Comparator)[0];
 			//console.log(Items,Comparator,Elm);
@@ -3324,7 +3422,24 @@ angular.module('appFunctions', [])
 			return route + "\\" + newfolder;
 		};
 
-
+		Rs.calcTextColor = (base_color) => {
+		    var r, g, b, hsp;
+		    if(base_color.match(/^rgb/)) {
+		        color = base_color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
+		        r = color[1]; g = color[2]; b = color[3];
+		    }else{
+		        color = +("0x" + base_color.slice(1).replace(base_color.length < 5 && /./g, '$&$&'));
+		        r = color >> 16;
+		        g = color >> 8 & 255;
+		        b = color & 255;
+		    };
+		    
+		    // HSP (Highly Sensitive Poo) equation from http://alienryderflex.com/hsp.html
+		    hsp = Math.sqrt( 0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b) );
+		    var textColor = (hsp>127.5) ? 'black' : 'white';
+		    console.log(base_color, hsp, textColor);
+		    return textColor;
+		};
 
 		return {};
   }
