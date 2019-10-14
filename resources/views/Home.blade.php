@@ -10,12 +10,12 @@
 
 			<span flex></span>
 
-			<div class="md-toolbar-searchbar w120 text-clear text-15px" layout>
+			<div class="md-toolbar-searchbar text-clear text-15px" layout>
 				<md-icon md-font-icon="fa-search" class="fa-fw" style="margin: 8px 4px 0 8px;"></md-icon>
-				<input flex type="search" placeholder="Buscar..." ng-model="a" class="no-padding">
+				<input flex type="search" placeholder="Buscar..." ng-model="a" class="no-padding w100">
 			</div>
 
-			<div class="w35 h35 bg-lightgrey border-rounded margin-right-5 border"
+			<div class="w35 h35 bg-lightgrey border-rounded margin-right-5 border" hide
 				style="background-image: url({{ 'http://sec.comfamiliar.com/images/fotosEmpleados/' + Usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>
 			<h3 class="md-headline" hide-xs>{{ Usuario.Nombres }}</h3>
 			<md-button class="md-icon-button no-margin" aria-label="Button" ng-click="Logout()">
@@ -34,9 +34,8 @@
 
 			<md-list class="Navigation no-padding" style="margin-top: -1px;">
 				<md-list-item ng-click="navTo('Home')" class="mh40 h40 itemselec" ng-class="{ 'itemsel' : (State.route.length < 3 ) }">
-						<md-icon class="fa-fw fa-lg" md-font-icon="fa-home"></md-icon>
-						<span flex class="SectionsNav_Text" ng-hide="(mainSidenavLabels || !gtsm)">Inicio</span>
-						
+					<md-icon class="fa-fw fa-lg" md-font-icon="fa-home"></md-icon>
+					<span flex class="SectionsNav_Text" ng-hide="(mainSidenavLabels || !gtsm)">Inicio</span>
 				</md-list-item>
 	        	<md-list-item ng-click="navTo('Home.Section', { section: S.id })" 
 	                ng-repeat="S in Usuario.Secciones"

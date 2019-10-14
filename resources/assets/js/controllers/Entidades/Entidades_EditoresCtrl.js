@@ -8,6 +8,7 @@ angular.module('Entidades_EditoresCtrl', [])
 		$scope.EditoresSidenav = false;
 		$scope.showEditorCampos = true;
 		$scope.anchosCampo = [10,15,20,25,30,33,35,40,45,50,55,60,65,66,70,75,80,85,90,95,100];
+		$scope.EditoresCamposSel = [];
 
 		//Editores
 		Ctrl.getEditores = () => {
@@ -74,6 +75,14 @@ angular.module('Entidades_EditoresCtrl', [])
 			if(Updatees.length == 0) return;
 			Ctrl.EditoresCamposCRUD.updateMultiple(Updatees);
 			angular.forEach(Ctrl.EditoresCamposCRUD.rows, C => {C.changed = false;});
+		};
+
+		Ctrl.removeEditorCampos = () => {
+			if($scope.EditoresCamposSel.length == 0) return;
+			Ctrl.EditoresCamposCRUD.ops.selected = $scope.EditoresCamposSel;
+			Ctrl.EditoresCamposCRUD.deleteMultiple().then(() => {
+				 $scope.EditoresCamposSel = [];
+			});
 		};
 
 		Ctrl.getEditores();

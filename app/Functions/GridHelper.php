@@ -42,7 +42,7 @@ class GridHelper
     	$Conn = ConnHelper::getConn($Bdd);
         $Conn->setFetchMode(\PDO::FETCH_NUM);
 
-        $q = $Conn->table($SchemaTabla[2]." AS t0");
+        $q = $Conn->table(DB::raw($SchemaTabla[2]." AS t0"));
         if($addRestric) self::addRestric($q, $Entidad->restricciones, "t0");
         return $q;
     }
@@ -67,7 +67,7 @@ class GridHelper
             'Llaves'   => [null],
             'Visible'  => false,
             'campo_id' => $Grid->entidad->campo_llaveprim,
-            'tabla_consec' => "\"t0\"",
+            'tabla_consec' => "t0",
         ]);
         $Grid->columnas->prepend($col_guia);
     }
@@ -113,7 +113,7 @@ class GridHelper
                     ];
                 }
             };
-            $C['tabla_consec'] = "\"t".$tablas[self::getUniqueTable($C->Ruta, $C->Llaves)]['consec']."\"";
+            $C['tabla_consec'] = "t".$tablas[self::getUniqueTable($C->Ruta, $C->Llaves)]['consec'];
         };
 
         $entidades_ids = array_unique($entidades_ids);
@@ -137,9 +137,9 @@ class GridHelper
             $CampoDestino = $Campos[$EntidadDestino->campo_llaveprim];
             
             $union = [
-            	"{$EntidadDestino->getTableName()[2]} AS t{$tb['consec']}",
-            	$CampoOrigen->getColName("t{$Grid->tablas['tablas'][$tb['origen_id']]['consec']}"), '=', 
-            	$CampoDestino->getColName("t{$tb['consec']}")
+            	DB::raw("{$EntidadDestino->getTableName()[2]} AS t{$tb['consec']}"),
+            	DB::raw($CampoOrigen->getColName("t{$Grid->tablas['tablas'][$tb['origen_id']]['consec']}")), '=', 
+            	DB::raw($CampoDestino->getColName("t{$tb['consec']}"))
             ];
             $q->leftJoin($union[0],$union[1],$union[2],$union[3]);
             $uniones[] = $union; 

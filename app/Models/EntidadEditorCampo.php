@@ -11,7 +11,8 @@ class EntidadEditorCampo extends MyModel
 	protected $hidden = [];
 	protected $primaryKey = 'id';
     protected $casts = [
-    	'Visible' => 'bool'
+    	'Visible' => 'bool',
+    	'Editable' => 'bool'
     ];
     protected $appends = [
     ];
@@ -30,6 +31,7 @@ class EntidadEditorCampo extends MyModel
 			['Tipo',		'Tipo',	null, true, false, null, 100 ],
 			['Ancho',		'Ancho',	null, true, false, null, 100 ],
 			['Visible',		'Visible',	null, true, false, null, 100 ],
+			['Editable',	'Editable',	null, true, false, null, 100 ],
 			['Op1',			'Op1',	null, true, false, null, 100 ],
 			['Op2',			'Op2',	null, true, false, null, 100 ],
 			['Op3',			'Op3',	null, true, false, null, 100 ],
