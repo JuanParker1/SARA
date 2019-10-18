@@ -34,7 +34,7 @@ angular.module('EntidadesCtrl', [])
 			Ctrl.EntidadesCRUD.get().then(() => {
 				Ctrl.getFsEntidades();
 				Ctrl.openEntidad(Ctrl.EntidadesCRUD.rows[1]); //QUITAR
-				Ctrl.navToSubsection('Editores');
+				Ctrl.navToSubsection('General');
 			});
 		};
 

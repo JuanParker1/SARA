@@ -216,7 +216,7 @@ angular.module('appFunctions', [])
 				remoteData: {},
 				remoteQuery: false,
 				remoteListName: 'Nombre',
-				remoteListLogo: 'Logo',
+				remoteListLogo: false,
 				searchPlaceholder: 'Buscar',
 			};
 			var Config = angular.extend(DefConfig, Config);

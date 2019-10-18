@@ -57,7 +57,7 @@
 			</md-button>
 			<div class="text-bold lh40 margin-right" hide-xs>{{ EntidadSel.Nombre }}</div>
 			<span flex></span>
-			<md-tabs class="w330">
+			<md-tabs class="w310">
 				<md-tab ng-repeat="S in ['General','Grids','Editores']" ng-click="navToSubsection(S)" label="{{ S }}" md-active="State.route[3] == S"></md-tab>
 		    </md-tabs>
 		</div>

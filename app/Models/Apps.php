@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Core\MyModel;
 
-class Apps extends Model
+class Apps extends MyModel
 {
     protected $table = 'sara_apps';
 	protected $guarded = ['id'];
@@ -23,6 +23,7 @@ class Apps extends Model
             [ 'Desc',                   'Desc',                 null, true, true, null, 100 ],
             [ 'Icono',                 'Icono',               null, true, true, null, 100 ],
             [ 'Color',                 'Color',               null, true, true, null, 100 ],
+            [ 'Navegacion',                 'Navegacion',               null, true, true, null, 100 ],
         ];
     }
 

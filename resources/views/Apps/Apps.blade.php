@@ -26,29 +26,59 @@
 	</div>
 	</md-sidenav>
 
-	<div flex layout=column class="inherit-color">
+	<div flex layout=column class="inherit-color" >
 		
-		<div layout=column ng-style="{ backgroundColor: AppSel.Color, color: AppSel.textcolor }" class="seam-bottom">
+		<div layout=column ng-style="{ backgroundColor: AppSel.Color, color: AppSel.textcolor }" class="border-bottom">
 			<div layout>
 				<md-button class="md-icon-button no-margin no-padding s40" aria-label="b" ng-click="AppsSidenav = !AppsSidenav">
 					<md-icon md-svg-icon="md-bars" class=""></md-icon>
 				</md-button>
-				<md-button class="md-icon-button no-margin no-padding w30" aria-label="b" ng-click="changeIcon()">
+				<md-button class="md-icon-button no-margin no-padding s40" aria-label="b" ng-click="changeIcon()">
 					<md-icon md-font-icon="{{ AppSel.Icono }} fa-fw fa-lg"></md-icon>
 				</md-button>
 				<md-input-container class="no-margin no-padding md-no-underline h40 lh40" flex>
 					<input type="text" ng-model="AppSel.Titulo" aria-label=s class="h40 lh40">
 				</md-input-container>
 				<input type="color" ng-model="AppSel.Color" ng-change="changeTextColor()">
+				
 			</div>
-			<div>A</div>
 		</div>
 
-		<div flex layout></div>
+		<div flex layout class="bg-lightgrey-2">
+			
+			<div class="bg-white w250 border border-radius padding-5" layout=column style="margin: 5px 0 5px 5px">
+				<div class=" md-subheader margin-bottom-5">Parámetros</div>
+				<md-input-container>
+					<label>Navegación</label>
+					<md-select ng-model="AppSel.Navegacion" placeholder="">
+						<md-option ng-value="Op" ng-repeat="Op in ['Superior','Izquierda','Inferior']">{{ Op }}</md-option>
+					</md-select>
+				</md-input-container>
+			</div>
 
-		<div layout class="border-top bg-lightgrey-5">
+			<div class="bg-white w150 border border-radius" layout=column style="margin: 5px 0 5px 5px">
+				<div class="padding-5 md-subheader">Páginas</div>
+				<div flex layout=column class="overflow-y darkScroll">
+					<div class="margin-left-5 padding-5 Pointer h15 lh15 text-15px" 
+						ng-repeat="P in PagesCRUD.rows | orderBy:'Indice'" ng-click="openPage(P)"
+						ng-class="{'text-bold': P.id == PageSel.id}">{{ P.Titulo }}</div>
+				</div>
+			
+				<md-button class="margin-5" aria-label="b" ng-click="addPage()">
+					<md-icon md-font-icon="fa-plus"></md-icon>
+					<md-tooltip md-direction=right>Agregar</md-tooltip>
+				</md-button>
+			</div>
+
+			<div class="padding-5 overflow-y darkScroll" flex layout=column>
+				@include('Apps.Apps_Page') 
+			</div>
+
+		</div>
+
+		<div layout class="bg-white border-top">
 			<span flex></span>
-			<md-button class="md-raised mh30 h30 lh30" ng-click="updateApp()" ng-style="{ backgroundColor: AppSel.Color, color: AppSel.textcolor }">
+			<md-button class="mh30 h30 lh30 margin-5" ng-click="updateApp()" ng-style="{ backgroundColor: AppSel.Color, color: AppSel.textcolor }">
 				<md-icon md-svg-icon="md-save" class="margin-right-5 s20"></md-icon>Guardar
 			</md-button>
 		</div>

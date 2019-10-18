@@ -1,4 +1,4 @@
-<div layout=column flex>
+<div layout=column flex ng-if="EntidadSel">
 	
 	<div flex layout=column class="overflow-y darkScroll">
 	<!--<div flex layout=column class="wu800">-->
@@ -12,7 +12,7 @@
 
 				<md-input-container class="margin-bottom-5">
 					<label>Tipo</label>
-					<md-select ng-model="EntidadSel.Tipo" required>
+					<md-select ng-model="EntidadSel.Tipo" required aria-label=s>
 						<md-option ng-repeat="T in ['Tabla','Vista']" ng-value="T">{{ T }}</md-option>
 					</md-select>
 				</md-input-container>

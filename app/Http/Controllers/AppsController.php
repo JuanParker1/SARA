@@ -24,6 +24,12 @@ class AppsController extends Controller
         return $CRUD->call(request()->fn, request()->ops);
     }
 
+    public function postPages()
+    {
+        $CRUD = new CRUD('App\Models\AppPages');
+        return $CRUD->call(request()->fn, request()->ops);
+    }
+
     public function postFavorito()
     {
     	extract(request()->all()); //$favorito

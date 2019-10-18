@@ -1,9 +1,9 @@
-<div id="Inicio" flex layout=column ng-controller="InicioCtrl" class="padding">
+<div id="Inicio" flex layout=column ng-controller="InicioCtrl" class="padding overflow-y darkScroll">
 
 	<div layout class="margin-bottom-5 border-radius">
 		<div class="md-toolbar-searchbar" flex layout>
 			<md-icon md-font-icon="fa-search" class="fa-fw lh30 w30 h30"></md-icon>
-			<input flex type="search" placeholder="Buscar..." ng-model="filterApps" class="no-padding h30">
+			<input flex type="search" placeholder="Buscar Aplicaciones..." ng-model="filterApps" class="no-padding h30">
 		</div>
 	</div>
 

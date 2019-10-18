@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Core\MyModel;
 
-class BDD extends Model
+class BDD extends MyModel
 {
     protected $table = 'sara_bdds';
 	protected $guarded = ['id'];

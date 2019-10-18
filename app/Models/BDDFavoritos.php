@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Core\MyModel;
 
-class BDDFavoritos extends Model
+class BDDFavoritos extends MyModel
 {
     protected $table = 'sara_bdds_favoritos';
 	protected $guarded = ['id'];
