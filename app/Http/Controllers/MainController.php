@@ -34,6 +34,9 @@ class MainController extends Controller
     public function getLogin(){ 
     	return view('Login'); 
    	}
+   	public function getApp(){ 
+    	return view('Apps.App_View');
+   	}
     
     public function getHome(){  return view('Home'); }
 

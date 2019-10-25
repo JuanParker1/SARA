@@ -20,6 +20,7 @@ Route::get('/Home/{section}', 				'MainController@getSection');
 Route::get('/Home/{section}/{subsection}',  'MainController@getSubsection');
 Route::get('/Frag/{fragment}',  			'MainController@getFragment');
 Route::post('/file',  						'MainController@getFile');
+Route::get('/a', 		  					'MainController@getApp');
 
 Route::controller('/api/Main',       	'MainController');
 Route::controller('/api/Usuario',       'UsuarioController');

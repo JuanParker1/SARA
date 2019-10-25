@@ -64,4 +64,5 @@ angular.module('SARA', [
 		'Scorecards_ScorecardDiagCtrl',
 
 	'AppsCtrl',
+		'App_ViewCtrl',
 ]);

@@ -1,13 +1,14 @@
-angular.module('AppsCtrl', [])
-.controller('AppsCtrl', ['$scope', '$rootScope', '$injector', '$http', '$filter',
-	function($scope, $rootScope, $injector, $http, $filter) {
+ angular.module('AppsCtrl', [])
+.controller('AppsCtrl', ['$scope', '$rootScope', '$injector', '$http', '$filter', '$window',
+	function($scope, $rootScope, $injector, $http, $filter, $window) {
 
 		console.info('AppsCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 		Ctrl.AppsSidenav = true;
 
-		Ctrl.Grids = Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
+		Ctrl.Grids 		= Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
+		Ctrl.Scorecards = Rs.http('/api/Indicadores/scorecards-all', {}, Ctrl, 'Scorecards');
 		Ctrl.AppsCRUD  = $injector.get('CRUD').config({ base_url: '/api/App/apps' });
 		Ctrl.PagesCRUD = $injector.get('CRUD').config({ base_url: '/api/App/pages' });
 		Ctrl.TiposPage = [
@@ -45,6 +46,12 @@ angular.module('AppsCtrl', [])
 			});
 		};
 
+		Ctrl.openAppWindow = (ev) => {
+			ev.preventDefault();
+			var Url = 'http://sara.local/#/a/' + Ctrl.AppSel.Slug;
+			$window.open(Url,"Ratting","width=800,height=600,left=0,top=0,toolbar=0,status=0,")
+		};
+
 		Ctrl.updateApp = () => {
 			Ctrl.AppsCRUD.update(Ctrl.AppSel).then(() => {
 				if(Ctrl.PageSel) Ctrl.PagesCRUD.update(Ctrl.PageSel);
@@ -62,6 +69,12 @@ angular.module('AppsCtrl', [])
 
 		Ctrl.changeTextColor = () => {
 			Ctrl.AppSel.textcolor = Rs.calcTextColor(Ctrl.AppSel.Color);
+		};
+
+		Ctrl.calcSlug = () => {
+			Rs.http('/api/App/slug').then(Slug => {
+				Ctrl.AppSel.Slug = Slug;
+			});
 		};
 
 		Ctrl.addPage = () => {

@@ -21,10 +21,16 @@ class Apps extends MyModel
             [ 'id',                     'id',                   null, true, false, null, 100 ],
             [ 'Titulo',                 'Titulo',               null, true, false, null, 100 ],
             [ 'Desc',                   'Desc',                 null, true, true, null, 100 ],
+            [ 'Slug',                   'Slug',                 null, true, true, null, 100 ],
             [ 'Icono',                 'Icono',               null, true, true, null, 100 ],
             [ 'Color',                 'Color',               null, true, true, null, 100 ],
             [ 'Navegacion',                 'Navegacion',               null, true, true, null, 100 ],
         ];
+    }
+
+    public function pages()
+    {
+        return $this->hasMany('\App\Models\AppPages', 'app_id')->orderBy('Indice', 'ASC');
     }
 
     public function getTextcolorAttribute()

@@ -160,6 +160,7 @@ class GridHelper
 
     public static function addRestricRun($q, $columna_name, $Comparador, $Valor)
     {
+        $columna_name = DB::raw($columna_name);
         if($Comparador == 'nulo'){                          return $q->whereNull($columna_name);                 };
         if($Comparador == 'no_nulo'){                       return $q->whereNotNull($columna_name);              };
         if(in_array($Comparador, ['=','<=','<','>','>='])){ return $q->where($columna_name,$Comparador,$Valor);  };
@@ -171,7 +172,7 @@ class GridHelper
 
     public static function addFilters($Filtros, $Grid, $q)
     {
-    	foreach ($Filtros as $F) {
+        foreach ($Filtros as $F) {
             $Columna = H::getElm($Grid->columnas,  $F['columna_id']);
             $F['columna'] = $Columna;
             $F['filter_header'] = $Columna['column_title'];

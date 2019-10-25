@@ -9,19 +9,19 @@
 
 		<div layout layout-wrap ng-show="S.open">
 		<div layout=column class="card" flex=100 flex-gt-xs=50 flex-gt-sm=33 flex-gt-md=20 ng-repeat="C in Sco.cards | filter:{ seccion_name: S.Seccion }">
-			<div layout=column class="mh130 bg-black-3 padding-5 margin-5 relative border-radius scorecard" md-whiteframe=2 md-ink-ripple
+			<div layout=column class="mh120 bg-black-3 margin-5 relative border-radius scorecard" md-whiteframe=2 md-ink-ripple
 				ng-style="{ 'animation-delay': C.animation_delay }">
 				
 				<div ng-show="C.tipo == 'Indicador'" flex layout=column class="Pointer" ng-click="viewIndicadorDiag(C.elemento_id)"
 					ng-repeat="I in [Sco.elementos.Indicador[C.elemento_id]]">
 					<div class="card_title" layout>
 						<div flex>{{ I.Indicador }}</div>
-						<md-icon class="s20" md-font-icon="{{Sentidos[I.Sentido].icon}}">
+						<md-icon class="s15" md-font-icon="{{Sentidos[I.Sentido].icon}} fa-fw">
 							<md-tooltip md-direction=left>{{ Sentidos[I.Sentido].desc }}</md-tooltip>
 						</md-icon>
 					</div>
-					<div flex layout layout-align="center center" style="color: {{ I.valores[(Anio*100)+Mes].color }}">
-						<div class="card_value">{{ I.valores[(Anio*100)+Mes].val }}</div>
+					<div flex layout layout-align="center center">
+						<div class="card_value" style="color: {{ I.valores[(Anio*100)+Mes].color }}">{{ I.valores[(Anio*100)+Mes].val }}</div>
 					</div>
 					<div class="card_subtext">Meta: {{ I.valores[(Anio*100)+Mes].meta_val }}</div>
 				</div>
@@ -52,6 +52,7 @@
 	.card:hover .card_subtext{ opacity: 0.5;  }
 	.scorecard{
 		/*opacity: 0;*/
+		padding: 2px 4px;
 	    animation: 400ms cubic-bezier(0.18, 1, 0.63, 1.21) 100ms 1 normal both running In_FadeScale;
 	}
 </style>

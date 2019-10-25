@@ -22,6 +22,19 @@
 		</md-input-container>
 	</div>
 
+	<div layout=column ng-show="PageSel.Tipo == 'Scorecard'">
+
+		<md-input-container>
+			<label>Dashboard</label>
+			<md-select ng-model="PageSel.Config.element_id" aria-label="s">
+				<md-option ng-value="Op.id" ng-repeat="Op in Scorecards" class="text-14px">
+					<span class="">{{ Op.Titulo }}</span>
+				</md-option>
+			</md-select>
+		</md-input-container>
+
+	</div>
+
 	<div layout=column ng-show="PageSel.Tipo == 'Grid'">
 
 		<md-input-container>

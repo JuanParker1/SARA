@@ -95,7 +95,7 @@ class VariablesController extends Controller
             GridHelper::addFilters($Var['Filtros'], $Grid, $q);
 
             $ColPeriodo = H::getElm($Grid->columnas, $Var['ColPeriodo']);
-            $ColPeriodoName = $ColPeriodo->campo->getColName($ColPeriodo['tabla_consec']);
+            $ColPeriodoName = \DB::raw($ColPeriodo->campo->getColName($ColPeriodo['tabla_consec']));
             $ColCalculo = H::getElm($Grid->columnas, $Var['Col']);
             $ColCalculoName = $ColCalculo->campo->getColName($ColCalculo['tabla_consec']);
 

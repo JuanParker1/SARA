@@ -14,10 +14,8 @@ angular.module('appRoutes', [])
 						controller: 'MainCtrl',
 						resolve: {
 							promiseObj:  function($rootScope, $localStorage, $http){
-
 								var Rs = $rootScope;
 								Rs.Storage = $localStorage;
-
 								return $http.post('api/Usuario/check-token', { token: Rs.Storage.token });
 							},
 							promiseObj2:  function($http){
@@ -38,7 +36,8 @@ angular.module('appRoutes', [])
 					.state('Home.Section.Subsection', {
 						url: '/:subsection',
 						templateUrl: function (params) { return '/Home/'+params.section+'/'+params.subsection; },
-					});
+					})
+					.state('App', { url: '/a', templateUrl: '/a' }).state('App.App', { url: '/:app_id' });
 
 			$urlRouterProvider.otherwise('/Home');
 			

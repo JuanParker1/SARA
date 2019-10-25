@@ -83,6 +83,12 @@ class IndicadoresController extends Controller
 
 
     //Scorecards
+    public function postScorecardsAll()
+    {
+        $Scorecards = Scorecard::all();
+        return $Scorecards;
+    }
+
     public function postScorecards()
     {
         $CRUD = new CRUD('App\Models\Scorecard');

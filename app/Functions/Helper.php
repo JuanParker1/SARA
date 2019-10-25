@@ -49,8 +49,16 @@ class Helper
         }
 
         return $Periodos;
+    }
 
-
+    public static function randomString($len = 5, $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    {
+        $charsLen = strlen($chars);
+        $randomString = '';
+        for ($i = 0; $i < $len; $i++) {
+            $randomString .= $chars[rand(0, $charsLen - 1)];
+        }
+        return $randomString;
     }
 
 }
