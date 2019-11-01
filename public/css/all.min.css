@@ -519,6 +519,12 @@ table.md-table th.md-column {
 /**
  *  Autocomplete
  */
+md-autocomplete.h30 md-autocomplete-wrap {
+  height: 30px;
+}
+md-autocomplete.h30 md-autocomplete-wrap input {
+  height: 30px;
+}
 /**
  *  Toolbar
  */
@@ -10101,6 +10107,15 @@ md-progress-circular.md-state-ok path {
 }
 .icon-avatar-small {
   padding: 5px !important;
+}
+.icon_indicator {
+  background: red;
+  width: 8px;
+  height: 8px;
+  border-radius: 50px;
+  position: absolute;
+  top: 3px;
+  right: 3px;
 }
 /**
  *  Modal

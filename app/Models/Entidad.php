@@ -11,6 +11,7 @@ class Entidad extends Model
 	protected $hidden = [];
 	protected $primaryKey = 'id';
     protected $casts = [
+    	'config' => 'array'
     ];
     protected $appends = [];
 
@@ -27,12 +28,10 @@ class Entidad extends Model
 			[ 'Tipo',					'Tipo',					null, true, false, null, 100 ],
 			[ 'Tabla',					'Tabla',				null, true, false, null, 100 ],
 			[ 'campo_llaveprim',		'campo_llaveprim',		null, true, false, null, 100 ],
-			[ 'campo_desc1',			'campo_desc1',			null, true, false, null, 100 ],
-			[ 'campo_desc2',			'campo_desc2',			null, true, false, null, 100 ],
-			[ 'campo_desc3',			'campo_desc3',			null, true, false, null, 100 ],
 			[ 'campo_orderby',			'campo_orderby',		null, true, false, null, 100 ],
 			[ 'campo_orderbydesc',		'campo_orderbydesc',	null, true, false, null, 100 ],
-			[ 'max_rows',				'max_rows',	null, true, false, null, 100 ],
+			[ 'max_rows',				'max_rows',				null, true, false, null, 100 ],
+			[ 'config',					'config',				null, true, false, null, 100 ],
 		];
 	}
 
@@ -57,5 +56,24 @@ class Entidad extends Model
 	{
 		$Bdd = $this->bdd()->first();
 		return \App\Functions\GridHelper::getTableName($this->Tabla, $Bdd->Op3);
+	}
+
+	public function getConfigAttribute($Config)
+	{
+		$Default = [
+			'campo_desc1'   => null,
+			'campo_desc2'   => null,
+			'campo_desc3'   => null,
+			'campo_desc4'   => null,
+			'campo_desc5'   => null,
+			'search_minlen' => 2,
+			'search_elms'   => 5,
+		];
+		
+		if(gettype($Config) == 'string') $Config = json_decode($Config);
+		if(gettype($Config) == 'object') $Config = (array) $Config;
+		$Config = is_null($Config) ? $Default : array_merge($Default, $Config);
+
+		return $Config;
 	}
 }

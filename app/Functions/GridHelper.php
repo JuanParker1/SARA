@@ -35,12 +35,12 @@ class GridHelper
         return $Grid;
     }
 
-    public static function getQ($Entidad, $addRestric = true)
+    public static function getQ($Entidad, $addRestric = true, $fetchMode = \PDO::FETCH_NUM)
     {
     	$Bdd  = BDD::where('id', $Entidad['bdd_id'])->first();
     	$SchemaTabla = self::getTableName($Entidad['Tabla'], $Bdd->Op3);
     	$Conn = ConnHelper::getConn($Bdd);
-        $Conn->setFetchMode(\PDO::FETCH_NUM);
+        $Conn->setFetchMode($fetchMode);
 
         $q = $Conn->table(DB::raw($SchemaTabla[2]." AS t0"));
         if($addRestric) self::addRestric($q, $Entidad->restricciones, "t0");

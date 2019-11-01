@@ -126,8 +126,8 @@
 
 	<div layout=column class="padding" ng-show="EditorSel">
 		
-		<md-card class="no-margin" ng-style="{ width: EditorSel.Ancho }">
-			<div class="padding text-bold text-clear" layout>{{ EditorSel.Titulo }}</div>
+		<md-card class="no-margin w300" ngs-style="{ width: EditorSel.Ancho }">
+			<div class="padding text-bold text-clear" layout md-truncate>{{ EditorSel.Titulo }}</div>
 			<div layout=column class="">
 				
 				<div layout class="padding-0-10" layout-wrap>

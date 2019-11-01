@@ -1,6 +1,6 @@
 angular.module('Scorecards_ScorecardDiagCtrl', [])
-.controller('Scorecards_ScorecardDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'scorecard_id', '$timeout',
-	function($scope, $rootScope, $mdDialog, $filter, scorecard_id, $timeout) {
+.controller('Scorecards_ScorecardDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout',
+	function($scope, $rootScope, $mdDialog, $filter, $timeout) {
 
 		console.info('Scorecards_ScorecardDiagCtrl');
 		var Ctrl = $scope;
@@ -35,7 +35,8 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 
         Ctrl.Periodo = moment().toDate();
 
-		Ctrl.getScorecard = () => {
+		Ctrl.getScorecard = (scorecard_id) => {
+			if(!scorecard_id) return;
             Rs.http('api/Indicadores/scorecard-get', { id: scorecard_id, Anio: Ctrl.Anio }, Ctrl, 'Sco').then(() => {
                 Ctrl.Secciones = [{ Seccion: null, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: null }).length }]
                 angular.forEach(Ctrl.Sco.Secciones, (s) => {
@@ -44,6 +45,6 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
             });
 		};
 
-        Ctrl.getScorecard();
+        //Ctrl.getScorecard();
 	}
 ]);

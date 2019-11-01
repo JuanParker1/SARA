@@ -52,7 +52,7 @@
 		
 		
 	    <div layout class="border-bottom">
-			<md-button class="md-icon-button no-margin h40 w40" aria-label="Button" ng-click="EntidadSidenav = !EntidadSidenav">
+			<md-button class="md-icon-button no-margin h40 mw40 w40" aria-label="Button" ng-click="EntidadSidenav = !EntidadSidenav">
 				<md-icon md-svg-icon="md-bars"></md-icon>
 			</md-button>
 			<div class="text-bold lh40 margin-right" hide-xs>{{ EntidadSel.Nombre }}</div>

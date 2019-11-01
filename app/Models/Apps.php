@@ -24,7 +24,8 @@ class Apps extends MyModel
             [ 'Slug',                   'Slug',                 null, true, true, null, 100 ],
             [ 'Icono',                 'Icono',               null, true, true, null, 100 ],
             [ 'Color',                 'Color',               null, true, true, null, 100 ],
-            [ 'Navegacion',                 'Navegacion',               null, true, true, null, 100 ],
+            [ 'Navegacion',            'Navegacion',               null, true, true, null, 100 ],
+            [ 'ToolbarSize',           'ToolbarSize',               null, true, true, null, 100 ],
         ];
     }
 

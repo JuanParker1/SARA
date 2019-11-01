@@ -24,7 +24,7 @@ class EntidadEditor extends MyModel
 			[ 'entidad_id',	'entidad_id',	null, true,  false, null, 100 ],
 			[ 'Titulo',		'Titulo',		null, true,  false, null, 100 ],
 			[ 'Ancho',		'Ancho',		null, true,  false, null, 100 ],
-			[ 'Secciones',	'Secciones',		null, true,  false, null, 100 ],
+			[ 'Secciones',	'Secciones',	null, true,  false, null, 100 ],
 		];
 	}
 
@@ -32,5 +32,16 @@ class EntidadEditor extends MyModel
 	public function scopeEntidad($query,$id)
 	{
 		return $query->where('entidad_id', $id);
+	}
+
+	//Relaciones
+	public function entidad()
+	{
+		return $this->belongsTo('\App\Models\Entidad', 'entidad_id');
+	}
+	
+	public function campos()
+	{
+		return $this->hasMany('\App\Models\EntidadEditorCampo', 'editor_id')->orderBy('Indice', 'ASC');
 	}
 }

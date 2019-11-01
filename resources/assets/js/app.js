@@ -6,6 +6,7 @@ angular.module('SARA', [
 	'ngSanitize',
 
 	'md.data.table',
+	'fixed.table.header',
 	'ngFileUpload',
 	'angular-loading-bar',
 	'angularResizable',
@@ -49,9 +50,12 @@ angular.module('SARA', [
 		'Entidades_AddColumnsCtrl',
 		'Entidades_VerCamposCtrl',
 		'Entidades_GridsCtrl',
+		'Entidades_GridDiagCtrl',
 		'Entidades_Grids_TestCtrl',
 
 		'Entidades_EditoresCtrl',
+		'Entidades_EditorDiagCtrl',
+		'Entidades_EditorConfigDiagCtrl',
 		
 	'VariablesCtrl',
 		'VariablesGetDataDiagCtrl',

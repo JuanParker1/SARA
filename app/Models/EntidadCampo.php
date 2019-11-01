@@ -51,6 +51,11 @@ class EntidadCampo extends MyModel
 		return $this->belongsTo('App\Models\Entidad', 'entidad_id');
 	}
 
+	public function entidadext()
+	{
+		return $this->belongsTo('App\Models\Entidad', 'Op1');
+	}
+
 	//Scopes
 	public function scopeEntidad($query,$id)
 	{

@@ -5,6 +5,11 @@ angular.module('Entidades_GridsCtrl', [])
 		var Ctrl = $scope.$parent;
 		var Rs = $rootScope;
 
+		var DefGridConfig = {
+			main_buttons: [],
+			row_buttons: []
+		};
+
 		//Grids
 		Ctrl.getGrids = () => {
 			if(!Ctrl.EntidadSel) return;
@@ -22,12 +27,15 @@ angular.module('Entidades_GridsCtrl', [])
 				title: 'Crear Grid',
 				only: ['Titulo']
 			}).then((R) => {
+				R.Config = angular.copy(DefGridConfig);
 				if(!R) return; Ctrl.GridsCRUD.add(R);
 			});
 		};
 
 		Ctrl.openGrid = (G) => {
+			G.Config = angular.extend({},DefGridConfig,G.Config);
 			Ctrl.GridSel = G;
+			Ctrl.configEditor(G.Config.main_buttons[0]); //FIX
 			Ctrl.getColumnas().then(() => { Ctrl.getFiltros(); });
 		};
 
@@ -170,13 +178,45 @@ angular.module('Entidades_GridsCtrl', [])
 
 		Ctrl.testGrid = (grid_id) => {
 			$mdDialog.show({
-				controller: 'Entidades_Grids_TestCtrl',
-				templateUrl: 'Frag/Entidades.Entidades_Grids_Test',
+				controller: 'Entidades_GridDiagCtrl',
+				templateUrl: 'Frag/Entidades.Entidades_GridDiag',
 				clickOutsideToClose: true,
 				fullscreen: true,
 				multiple: true,
-				locals: { grid_id: grid_id }
-			})
+				//locals: { grid_id: grid_id },
+				onComplete: (scope) => {
+					scope.getGrid(grid_id);
+				}
+			});
+		};
+
+
+		//Botones
+		Ctrl.addButton = (bag, button) => {
+			Ctrl.GridSel.Config[bag].push(button);
+		};
+
+		Ctrl.queryElm = Rs.queryElm;
+
+		Ctrl.selectElm = (item, B) => {
+			B.accion_element_id = item.id;
+			B.accion_element    = item.display;
+		};
+
+		Ctrl.removeButton = (bag, i) => {
+			Ctrl.GridSel.Config[bag].splice(i,1);
+		};
+
+		Ctrl.configEditor = (B) => {
+			$mdDialog.show({
+				controller: 'Entidades_EditorConfigDiagCtrl',
+				templateUrl: 'Frag/Entidades.Entidades_EditorConfigDiag',
+				clickOutsideToClose: true, fullscreen: true, multiple: true,
+				locals: { B: B, TiposCampo: Ctrl.TiposCampo },
+				onComplete: (scope) => {
+					//scope.getGrid(grid_id);
+				}
+			});
 		};
 
 		Ctrl.getGrids();

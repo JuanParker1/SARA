@@ -12,6 +12,7 @@ use App\Models\Entidad;
 use App\Models\EntidadCampo;
 use App\Models\EntidadRestriccion;
 use App\Models\EntidadGrid;
+use App\Models\EntidadEditor;
 use App\Models\BDD;
 
 use App\Functions\Helper as H;
@@ -30,6 +31,34 @@ class EntidadesController extends Controller
         return $CRUD->call(request()->fn, request()->ops);
     }
 
+    public function postSearch()
+    {
+        extract(request()->all());
+        $Entidad = Entidad::where('id', $entidad_id)->first();
+        $q       = GridHelper::getQ($Entidad, true, \PDO::FETCH_ASSOC)->limit($search_elms);
+
+        $campos = [ $Entidad['campo_llaveprim'] ];
+        for ($i=1; $i <= 5; $i++) { $campos[] = $Entidad->config['campo_desc'.$i]; };
+
+        foreach ($campos as $k => $campo_id) {
+            if(!is_null($campo_id)){
+                $Campo = EntidadCampo::where('id', $campo_id)->first();
+                $columna_name = DB::raw(CamposHelper::getColName('t0', $Campo['Columna']));
+                
+                $q->addSelect(DB::raw("$columna_name AS C$k"));
+                $q->orWhere($columna_name, 'like', "%".strtoupper($searchText)."%");
+            };
+        };
+
+        //return $Entidad;
+        $res = collect($q->get())->transform(function($row){
+            return  collect($row)->transform(function($D){
+                return utf8_encode(trim($D));
+            });
+        });
+
+        return $res;
+    }
 
 
     //Campos
@@ -211,7 +240,17 @@ class EntidadesController extends Controller
         return $CRUD->call(request()->fn, request()->ops);
     }
 
+    public function postEditoresSearch()
+    {
+        $searchText = request('searchText');
+        return EntidadEditor::select(['id','Titulo AS display'])->where('Titulo', 'LIKE', "%{$searchText}%")->get();
+    }
 
+    public function postEditorGet()
+    {
+        $editor_id = request('editor_id');
+        return EntidadEditor::with(['campos','campos.campo','campos.campo.entidadext'])->where('id', $editor_id)->first();
+    }
 
 
 }

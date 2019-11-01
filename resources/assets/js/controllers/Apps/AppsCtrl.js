@@ -46,6 +46,10 @@
 			});
 		};
 
+		Ctrl.addButton = (group, btn) => {
+			Ctrl.PageSel.Config[group].push(btn);
+		};
+
 		Ctrl.openAppWindow = (ev) => {
 			ev.preventDefault();
 			var Url = 'http://sara.local/#/a/' + Ctrl.AppSel.Slug;
@@ -59,13 +63,6 @@
 			});
 		};
 
-		Ctrl.changeIcon = () => {
-			Rs.selectIconDiag().then(I => {
-				if(!I) return;
-				//console.log(I);
-				Ctrl.AppSel.Icono = I;
-			});
-		};
 
 		Ctrl.changeTextColor = () => {
 			Ctrl.AppSel.textcolor = Rs.calcTextColor(Ctrl.AppSel.Color);

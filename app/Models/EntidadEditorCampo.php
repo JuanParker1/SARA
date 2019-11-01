@@ -15,6 +15,7 @@ class EntidadEditorCampo extends MyModel
     	'Editable' => 'bool'
     ];
     protected $appends = [
+    	'campo_title', 'val'
     ];
 
 
@@ -45,4 +46,30 @@ class EntidadEditorCampo extends MyModel
 	{
 		return $query->where('editor_id', $id);
 	}
+
+
+	//Relaciones
+	public function editor()
+	{
+		return $this->belongsTo('\App\Models\EntidadEditor', 'editor_id');
+	}
+	
+	public function campo()
+	{
+		return $this->belongsTo('App\Models\EntidadCampo', 'campo_id');
+	}
+
+
+	//Attributes
+	public function getCampoTitleAttribute()
+	{
+		if(is_null($this->campo)) return $this->Etiqueta;
+		return $this->Etiqueta ?: $this->campo->campo_title;
+	}
+
+	public function getValAttribute()
+	{
+		return null;
+	}
+
 }

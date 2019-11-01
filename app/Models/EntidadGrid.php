@@ -11,6 +11,7 @@ class EntidadGrid extends MyModel
 	protected $hidden = [];
 	protected $primaryKey = 'id';
     protected $casts = [
+    	'Config' => 'array'
     ];
     protected $appends = [];
 
@@ -22,6 +23,7 @@ class EntidadGrid extends MyModel
 			[ 'id',			'id',			null, true,  false, null, 100 ],
 			[ 'entidad_id',	'entidad_id',	null, true,  false, null, 100 ],
 			[ 'Titulo',		'Titulo',		null, true,  false, null, 100 ],
+			[ 'Config',		'Config',		null, true,  false, null, 100 ],
 		];
 	}
 

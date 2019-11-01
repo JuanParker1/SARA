@@ -59,6 +59,7 @@
 
 			@include('Entidades.Entidades_Grids_Columnas')
 			@include('Entidades.Entidades_Grids_Filtros')
+			@include('Entidades.Entidades_Grids_Botones')
 			
 			<div class="h30"></div>
 		</div>

@@ -39,78 +39,7 @@ angular.module('MainCtrl', [])
 			Rs.OpenSidebar('SectionsNav');
 		};
 
-		Rs.AnioActual = new Date().getFullYear();
-		Rs.MesActual  = parseInt(moment().subtract(5,'d').format('MM'));
-		Rs.Meses = [
-			['01','Ene','Enero'],
-			['02','Feb','Febrero'],
-			['03','Mar','Marzo'],
-			['04','Abr','Abril'],
-			['05','May','Mayo'],
-			['06','Jun','Junio'],
-			['07','Jul','Julio'],
-			['08','Ago','Agosto'],
-			['09','Sep','Septiembre'],
-			['10','Oct','Octubre'],
-			['11','Nov','Noviembre'],
-			['12','Dic','Diciembre'],
-		];
-
-		Rs.periodDateLocale = {
-			formatDate: (date) => {
-				if(typeof date == 'undefined' || date === null || isNaN(date.getTime()) ){ return null; }else{
-					return moment(date).format('YMM');
-				}
-			}
-		};
-
-		Rs.formatVal = (d, TipoDato, Decimales) => {
-			if(TipoDato == 'Porcentaje') return d3.format('.'+Decimales+'%')(d);
-            if(TipoDato == 'Moneda')     return d3.format('$,.'+Decimales)(d);
-            return d3.format(',.'+Decimales)(d);
-		};
-
-		Rs.getVariableData = (Variables) => {
-			$mdDialog.show({
-				controller: 'VariablesGetDataDiagCtrl',
-				templateUrl: '/Frag/Variables.VariablesGetDataDiag',
-				locals: { Variables : Variables },
-				clickOutsideToClose: false, fullscreen: true, multiple: true,
-			});
-		};
-
-		Rs.viewVariableDiag = (variable_id) => {
-			$mdDialog.show({
-				controller: 'Variables_VariableDiagCtrl',
-				templateUrl: '/Frag/Variables.VariableDiag',
-				locals: { variable_id : variable_id },
-				clickOutsideToClose: false, fullscreen: true, multiple: true,
-			});
-		};
-
-		Rs.viewIndicadorDiag = (indicador_id) => {
-			$mdDialog.show({
-				controller: 'Indicadores_IndicadorDiagCtrl',
-				templateUrl: '/Frag/Indicadores.IndicadorDiag',
-				locals: { indicador_id : indicador_id },
-				clickOutsideToClose: false, fullscreen: true, multiple: true,
-			});
-		};
-
-		Rs.Sentidos = {
-			ASC: { desc: 'Mayor Mejor', icon: 'fa-arrow-circle-up' },
-			RAN: { desc: 'Mantener en Rango', icon: 'fa-arrow-circle-right' },
-			DES: { desc: 'Menor Mejor', icon: 'fa-arrow-circle-down' },
-		};
-
-		Rs.viewScorecardDiag = (scorecard_id) => {
-			$mdDialog.show({
-				controller: 'Scorecards_ScorecardDiagCtrl',
-				templateUrl: '/Frag/Scorecards.ScorecardDiag',
-				locals: { scorecard_id : scorecard_id },
-				clickOutsideToClose: false, fullscreen: true, multiple: true,
-			});
-		};
+		
 	}
 ]);
 
@@ -220,6 +149,10 @@ angular.module('LoginCtrl', [])
 			});
 		};
 
+		Ctrl.addButton = (group, btn) => {
+			Ctrl.PageSel.Config[group].push(btn);
+		};
+
 		Ctrl.openAppWindow = (ev) => {
 			ev.preventDefault();
 			var Url = 'http://sara.local/#/a/' + Ctrl.AppSel.Slug;
@@ -233,13 +166,6 @@ angular.module('LoginCtrl', [])
 			});
 		};
 
-		Ctrl.changeIcon = () => {
-			Rs.selectIconDiag().then(I => {
-				if(!I) return;
-				//console.log(I);
-				Ctrl.AppSel.Icono = I;
-			});
-		};
 
 		Ctrl.changeTextColor = () => {
 			Ctrl.AppSel.textcolor = Rs.calcTextColor(Ctrl.AppSel.Color);
@@ -280,22 +206,24 @@ angular.module('LoginCtrl', [])
 	}
 ]);
 angular.module('App_ViewCtrl', [])
-.controller('App_ViewCtrl', ['$scope', '$rootScope', '$http', '$location', '$sce', '$filter',
-	function($scope, $rootScope, $http, $location, $sce, $filter) {
+.controller('App_ViewCtrl', ['$scope', '$rootScope', 'appFunctions', '$http', '$location', '$sce', '$filter',
+	function($scope, $rootScope, appFunctions, $http, $location, $sce, $filter) {
 
 		console.info('App_ViewCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 		
 		Ctrl.ops = {
-			general_class: ''
+			general_class: '',
+			Color: '', textcolor: ''
 		};
 		Ctrl.PageSel = null;
-		Ctrl.Modo  = 'Mes';
-		Ctrl.Anio  = angular.copy(Rs.AnioActual);
-		Ctrl.Mes   = angular.copy(Rs.MesActual);
 
 		Ctrl.openPage = (P) => {
+			P.loaded = true;
+			if(P.Tipo == 'Scorecard'){ Ctrl.ops.Color = '#2d2d2d'; Ctrl.ops.textcolor = 'white' }
+			else{ Ctrl.ops.Color = Ctrl.AppSel.Color; Ctrl.ops.textcolor = Ctrl.AppSel.textcolor };
+			Ctrl.ops.general_class = 'app_text_'+Ctrl.ops.textcolor+' app_nav_'+Ctrl.AppSel.Navegacion;
 			Ctrl.PageSel = P;
 		};
 
@@ -306,156 +234,11 @@ angular.module('App_ViewCtrl', [])
 		Ctrl.$on("$stateChangeSuccess", () => {
 			var app_id = $location.path().split('/')[2];
 			if(!app_id || app_id == '') return;
-			$http.post('/api/App/app-get', { app_id: app_id }).then((r) => {
-				Ctrl.AppSel = r.data.App;
-				Ctrl.ops.general_class = 'app_text_'+Ctrl.AppSel.textcolor;
+			Rs.http('/api/App/app-get', { app_id: app_id }).then((r) => {
+				Ctrl.AppSel = r.App;
 				Ctrl.openPage(Ctrl.AppSel.pages[0]);
 			});
 		});
-
-		$http.post('api/Indicadores/scorecard-get', { id: 1, Anio: Ctrl.Anio }).then((r) => {
-			Ctrl.Sco = r.data;
-		    Ctrl.Secciones = [{ Seccion: null, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: null }).length }]
-		    angular.forEach(Ctrl.Sco.Secciones, (s) => {
-		    	Ctrl.Secciones.push({ Seccion: s, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: s }).length }); 
-		    });
-		});
-
-	}
-]);
-angular.module('BDDCtrl', [])
-.controller('BDDCtrl', ['$scope', '$rootScope', '$injector',
-	function($scope, $rootScope, $injector) {
-
-		console.info('BDDCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.BDDSidenav = true;
-		Ctrl.BDDFavSidenav = false;
-
-		Ctrl.BDDsCRUD = $injector.get('CRUD').config({ base_url: '/api/Bdds' });
-
-		Ctrl.BDDsCRUD.get().then(() => {
-			if(Ctrl.BDDsCRUD.rows.length > 0){
-				Ctrl.openBDD(Ctrl.BDDsCRUD.rows[0]);
-			};
-		});
-
-		Ctrl.openBDD = (B) => {
-			Ctrl.BDDSel = B;
-			Ctrl.getFavoritos();
-			//Ctrl.executeQuery(); //REmove
-		};
-
-		Ctrl.TiposBDD = {
-			ODBC_DB2:     { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			ODBC_MySQL:   { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			MySQL:  	  { Op1: false, Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			SQLite: 	  { Op1: false, Op2: 'Ruta al Archivo', Op3: 'Base de Datos', Op4: false, Op5: false },
-		};
-
-		Ctrl.addBDD = () => {
-			Rs.BasicDialog({
-				Title: 'Crear Conexión a Base de Datos'
-			}).then((r) => {
-				var Nombre = r.Fields[0].Value.trim();
-				if(Rs.found(Nombre, Ctrl.BDDsCRUD.rows, 'Nombre')) return;
-
-				Ctrl.BDDsCRUD.add({
-					Nombre: Nombre,
-					Tipo: 'ODBC'
-				});
-			});
-		};
-
-		Ctrl.updateBDD = () => {
-			Ctrl.BDDsCRUD.update(Ctrl.BDDSel).then(() => {
-				Rs.showToast('Actualizado', 'Success', 5000, 'bottom right');
-			});
-		};
-
-		Ctrl.removeBDD = () => {
-			Rs.confirmDelete({
-				Title: '¿Borrar la Conexión a la Base de Datos "'+Ctrl.BDDSel.Nombre+'"?'
-			}).then((del) => {
-				if(!del) return;
-				Ctrl.BDDsCRUD.delete(Ctrl.BDDSel).then(() => {
-					Ctrl.BDDSel = null;
-				});
-			});
-		};
-
-		Ctrl.testBDD = () => {
-			Rs.http('/api/Bdds/probar', { BDD: Ctrl.BDDSel }).then((r) => {
-				Rs.showToast('Conexión Exitosa', 'Success', 5000, 'bottom right');
-			});
-		};
-
-		//Panel de Consultas SQL
-		Ctrl.SQLQuery = "";
-		Ctrl.executingQuery = false;
-		Ctrl.QueryRows = null;
-		Ctrl.executeQuery = () => {
-			if(Ctrl.SQLQuery == "" || Ctrl.executingQuery) return;
-			Ctrl.executingQuery = true;
-
-			Rs.http('/api/Bdds/query', { BDD: Ctrl.BDDSel, Query: Ctrl.SQLQuery }).then((r) => {
-				Ctrl.QueryRows = r;
-			}).finally(() => {
-				Ctrl.executingQuery = false;
-			});
-		};
-
-
-
-		//Panel de Favoritos
-		Ctrl.FavsCRUD = $injector.get('CRUD').config({ 
-			base_url: '/api/Bdds/favoritos',
-			query_scopes: [
-				[ 'mine', true ]
-			]
-		});
-
-		Ctrl.getFavoritos = () => {
-			Ctrl.FavsCRUD.setScope('bddid', Ctrl.BDDSel.id);
-			Ctrl.FavsCRUD.get();
-		};
-
-		Ctrl.useFav = (F) => {
-			if(Ctrl.executingQuery) return;
-
-			Ctrl.SQLQuery = F.Consulta;
-
-			if(F.EjecutarAutom == 'S'){
-				Ctrl.executeQuery();
-			};
-		};
-
-		Ctrl.addFav = () => {
-			Ctrl.FavsCRUD.dialog({
-				Consulta: angular.copy(Ctrl.SQLQuery),
-				EjecutarAutom: 'N',
-				bdd_id: Ctrl.BDDSel.id,
-				usuario_id: Rs.Usuario.id
-			}, {
-				title: 'Crear Favorito',
-				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
-			}).then((R) => {
-				if(!R) return;
-				Ctrl.FavsCRUD.add(R);
-			});
-		};
-
-		Ctrl.editFav = (F) => {
-			Ctrl.FavsCRUD.dialog(angular.copy(F), {
-				title: 'Favorito: ' + F.Nombre,
-				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
-			}).then((R) => {
-				if(!R) return;
-				if(R == 'DELETE') return Ctrl.FavsCRUD.delete(F);
-				Ctrl.FavsCRUD.update(R);
-			});
-		};
 
 	}
 ]);
@@ -972,7 +755,8 @@ angular.module('EntidadesCtrl', [])
 			Ctrl.EntidadesCRUD.get().then(() => {
 				Ctrl.getFsEntidades();
 				Ctrl.openEntidad(Ctrl.EntidadesCRUD.rows[1]); //QUITAR
-				Ctrl.navToSubsection('General');
+				//Ctrl.navToSubsection('General');
+				Ctrl.navToSubsection('Grids');
 			});
 		};
 
@@ -1205,6 +989,74 @@ angular.module('Entidades_AddColumnsCtrl', [])
 		};
 	}
 ]);
+angular.module('Entidades_EditorConfigDiagCtrl', [])
+.controller('Entidades_EditorConfigDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', 'B', 'TiposCampo',
+	function($scope, $rootScope, $mdDialog, $filter, $timeout, B, TiposCampo) {
+
+		console.info('Entidades_EditorConfigDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.Cancel = () => { $mdDialog.cancel(); };
+		Ctrl.queryElm = Rs.queryElm;
+		Ctrl.TiposCampo = TiposCampo;
+		Ctrl.B = B;
+		Ctrl.TiposValor = ['Sin Valor','Fijo','Columna'];
+
+
+		Ctrl.getEditor = () => {
+			Rs.http('api/Entidades/editor-get', { editor_id: B.accion_element_id }, Ctrl, 'Editor').then(() => {
+				
+			});
+		};
+
+		Ctrl.getEditor();
+
+	}
+]);
+angular.module('Entidades_EditorDiagCtrl', [])
+.controller('Entidades_EditorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout',
+	function($scope, $rootScope, $mdDialog, $filter, $timeout) {
+
+		console.info('Entidades_EditorDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.opacity = 0;
+
+		Ctrl.Cancel = () => { $mdDialog.cancel(); };
+
+		var DefConfig = {
+			modo: 'Crear', color: '#e2e2e2', textcolor: 'black'
+		};
+
+		Ctrl.getEditor = (editor_id, Obj, Config) => {
+			Ctrl.Obj = Obj;
+			Ctrl.Config = angular.extend(DefConfig, Config);
+			Rs.http('api/Entidades/editor-get', { editor_id: editor_id }, Ctrl, 'Editor').then(() => {
+				Ctrl.opacity = 1;
+			});
+		};
+
+		Ctrl.searchEntidad = (C) => {
+			if(C.val !== null) return false;
+			var search_elms = C.campo.entidadext.config.search_elms;
+			return Rs.http('api/Entidades/search', { entidad_id: C.campo.Op1, searchText: C.searchText, search_elms: search_elms });
+		};
+
+		Ctrl.selectedItem = (item, C) => {
+			if(!item) return;
+			C.val = item.C0;
+		};
+
+		Ctrl.clearCampo = (C) => {
+			C.val = null; C.searchText = null; C.selectedItem = null;
+		};
+
+		Ctrl.enviarDatos = () => {
+
+		};
+
+	}
+]);
 angular.module('Entidades_EditoresCtrl', [])
 .controller('Entidades_EditoresCtrl', ['$scope', '$rootScope', '$timeout', '$filter',
 	function($scope, $rootScope, $timeout, $filter) {
@@ -1296,12 +1148,84 @@ angular.module('Entidades_EditoresCtrl', [])
 
 	}
 ]);
+angular.module('Entidades_GridDiagCtrl', [])
+.controller('Entidades_GridDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 
+	function($scope, $rootScope, $mdDialog, $filter) {
+
+		console.info('Entidades_GridDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.inArray = Rs.inArray;
+		Ctrl.loadingGrid = false;
+		Ctrl.sidenavSel = null;
+		Ctrl.SidenavIcons = [
+			['fa-filter', 		'Filtros'		,false],
+			['fa-download', 	'Descargar'		,false],
+			['fa-info-circle', 	'Información'	,false],
+		];
+		Ctrl.openSidenavElm = (S) => {
+			Ctrl.sidenavSel = (S[1] == Ctrl.sidenavSel) ? null : S[1];
+		};
+
+
+		Ctrl.Cancel = () => { $mdDialog.cancel(); };
+
+		Ctrl.Data = [];
+
+		Ctrl.filterData = () => {
+			Rs.http('api/Entidades/grids-reload-data', { Grid: Ctrl.Grid }).then((r) => {
+				Ctrl.Grid.sql  = r.sql;
+				Ctrl.Grid.data = r.data;
+			});
+		};
+
+		Ctrl.getSelectedText = (Text) => {
+			if(Text === null) return 'Seleccionar...';
+			if(angular.isArray(Text)){
+				return JoinedText = Text.join(', ');
+			};
+			return Text;
+		};
+		
+		Ctrl.getGrid = (grid_id) => {
+			
+
+			if(!grid_id) return;
+			Ctrl.loadingGrid = true;
+			Rs.http('api/Entidades/grids-get-data', { grid_id: grid_id }).then((r) => {
+				Ctrl.Grid = r.Grid;
+				Ctrl.loadingGrid = false;
+				if(Ctrl.Grid.filtros.length > 0) Ctrl.SidenavIcons[0][2] = true;
+				return Ctrl.triggerButton({ accion: 'Editor (Crear)', accion_element_id: 1 }); //TEST
+			});
+		};
+
+		
+		Ctrl.triggerButton = (B) => {
+
+			if(B.accion == 'Editor (Crear)'){
+				Rs.viewEditorDiag(B.accion_element_id, {}, {
+					modo: 'Crear', color: Ctrl.AppSel.Color, textcolor: Ctrl.AppSel.textcolor
+				});
+			};
+		};
+
+		
+		
+		
+	}
+]);
 angular.module('Entidades_GridsCtrl', [])
 .controller('Entidades_GridsCtrl', ['$scope', '$rootScope', '$injector', '$mdDialog',
 	function($scope, $rootScope, $injector, $mdDialog) {
 
 		var Ctrl = $scope.$parent;
 		var Rs = $rootScope;
+
+		var DefGridConfig = {
+			main_buttons: [],
+			row_buttons: []
+		};
 
 		//Grids
 		Ctrl.getGrids = () => {
@@ -1320,12 +1244,15 @@ angular.module('Entidades_GridsCtrl', [])
 				title: 'Crear Grid',
 				only: ['Titulo']
 			}).then((R) => {
+				R.Config = angular.copy(DefGridConfig);
 				if(!R) return; Ctrl.GridsCRUD.add(R);
 			});
 		};
 
 		Ctrl.openGrid = (G) => {
+			G.Config = angular.extend({},DefGridConfig,G.Config);
 			Ctrl.GridSel = G;
+			Ctrl.configEditor(G.Config.main_buttons[0]); //FIX
 			Ctrl.getColumnas().then(() => { Ctrl.getFiltros(); });
 		};
 
@@ -1468,13 +1395,45 @@ angular.module('Entidades_GridsCtrl', [])
 
 		Ctrl.testGrid = (grid_id) => {
 			$mdDialog.show({
-				controller: 'Entidades_Grids_TestCtrl',
-				templateUrl: 'Frag/Entidades.Entidades_Grids_Test',
+				controller: 'Entidades_GridDiagCtrl',
+				templateUrl: 'Frag/Entidades.Entidades_GridDiag',
 				clickOutsideToClose: true,
 				fullscreen: true,
 				multiple: true,
-				locals: { grid_id: grid_id }
-			})
+				//locals: { grid_id: grid_id },
+				onComplete: (scope) => {
+					scope.getGrid(grid_id);
+				}
+			});
+		};
+
+
+		//Botones
+		Ctrl.addButton = (bag, button) => {
+			Ctrl.GridSel.Config[bag].push(button);
+		};
+
+		Ctrl.queryElm = Rs.queryElm;
+
+		Ctrl.selectElm = (item, B) => {
+			B.accion_element_id = item.id;
+			B.accion_element    = item.display;
+		};
+
+		Ctrl.removeButton = (bag, i) => {
+			Ctrl.GridSel.Config[bag].splice(i,1);
+		};
+
+		Ctrl.configEditor = (B) => {
+			$mdDialog.show({
+				controller: 'Entidades_EditorConfigDiagCtrl',
+				templateUrl: 'Frag/Entidades.Entidades_EditorConfigDiag',
+				clickOutsideToClose: true, fullscreen: true, multiple: true,
+				locals: { B: B, TiposCampo: Ctrl.TiposCampo },
+				onComplete: (scope) => {
+					//scope.getGrid(grid_id);
+				}
+			});
 		};
 
 		Ctrl.getGrids();
@@ -1574,6 +1533,142 @@ angular.module('Entidades_VerCamposCtrl', [])
 			DaLlaves.push(campo_id);
 			$mdDialog.hide([entidad_id, DaRuta, DaLlaves]);
 		};
+	}
+]);
+angular.module('BDDCtrl', [])
+.controller('BDDCtrl', ['$scope', '$rootScope', '$injector',
+	function($scope, $rootScope, $injector) {
+
+		console.info('BDDCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.BDDSidenav = true;
+		Ctrl.BDDFavSidenav = false;
+
+		Ctrl.BDDsCRUD = $injector.get('CRUD').config({ base_url: '/api/Bdds' });
+
+		Ctrl.BDDsCRUD.get().then(() => {
+			if(Ctrl.BDDsCRUD.rows.length > 0){
+				Ctrl.openBDD(Ctrl.BDDsCRUD.rows[0]);
+			};
+		});
+
+		Ctrl.openBDD = (B) => {
+			Ctrl.BDDSel = B;
+			Ctrl.getFavoritos();
+			//Ctrl.executeQuery(); //REmove
+		};
+
+		Ctrl.TiposBDD = {
+			ODBC_DB2:     { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			ODBC_MySQL:   { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			MySQL:  	  { Op1: false, Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			SQLite: 	  { Op1: false, Op2: 'Ruta al Archivo', Op3: 'Base de Datos', Op4: false, Op5: false },
+		};
+
+		Ctrl.addBDD = () => {
+			Rs.BasicDialog({
+				Title: 'Crear Conexión a Base de Datos'
+			}).then((r) => {
+				var Nombre = r.Fields[0].Value.trim();
+				if(Rs.found(Nombre, Ctrl.BDDsCRUD.rows, 'Nombre')) return;
+
+				Ctrl.BDDsCRUD.add({
+					Nombre: Nombre,
+					Tipo: 'ODBC'
+				});
+			});
+		};
+
+		Ctrl.updateBDD = () => {
+			Ctrl.BDDsCRUD.update(Ctrl.BDDSel).then(() => {
+				Rs.showToast('Actualizado', 'Success', 5000, 'bottom right');
+			});
+		};
+
+		Ctrl.removeBDD = () => {
+			Rs.confirmDelete({
+				Title: '¿Borrar la Conexión a la Base de Datos "'+Ctrl.BDDSel.Nombre+'"?'
+			}).then((del) => {
+				if(!del) return;
+				Ctrl.BDDsCRUD.delete(Ctrl.BDDSel).then(() => {
+					Ctrl.BDDSel = null;
+				});
+			});
+		};
+
+		Ctrl.testBDD = () => {
+			Rs.http('/api/Bdds/probar', { BDD: Ctrl.BDDSel }).then((r) => {
+				Rs.showToast('Conexión Exitosa', 'Success', 5000, 'bottom right');
+			});
+		};
+
+		//Panel de Consultas SQL
+		Ctrl.SQLQuery = "";
+		Ctrl.executingQuery = false;
+		Ctrl.QueryRows = null;
+		Ctrl.executeQuery = () => {
+			if(Ctrl.SQLQuery == "" || Ctrl.executingQuery) return;
+			Ctrl.executingQuery = true;
+
+			Rs.http('/api/Bdds/query', { BDD: Ctrl.BDDSel, Query: Ctrl.SQLQuery }).then((r) => {
+				Ctrl.QueryRows = r;
+			}).finally(() => {
+				Ctrl.executingQuery = false;
+			});
+		};
+
+
+
+		//Panel de Favoritos
+		Ctrl.FavsCRUD = $injector.get('CRUD').config({ 
+			base_url: '/api/Bdds/favoritos',
+			query_scopes: [
+				[ 'mine', true ]
+			]
+		});
+
+		Ctrl.getFavoritos = () => {
+			Ctrl.FavsCRUD.setScope('bddid', Ctrl.BDDSel.id);
+			Ctrl.FavsCRUD.get();
+		};
+
+		Ctrl.useFav = (F) => {
+			if(Ctrl.executingQuery) return;
+
+			Ctrl.SQLQuery = F.Consulta;
+
+			if(F.EjecutarAutom == 'S'){
+				Ctrl.executeQuery();
+			};
+		};
+
+		Ctrl.addFav = () => {
+			Ctrl.FavsCRUD.dialog({
+				Consulta: angular.copy(Ctrl.SQLQuery),
+				EjecutarAutom: 'N',
+				bdd_id: Ctrl.BDDSel.id,
+				usuario_id: Rs.Usuario.id
+			}, {
+				title: 'Crear Favorito',
+				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
+			}).then((R) => {
+				if(!R) return;
+				Ctrl.FavsCRUD.add(R);
+			});
+		};
+
+		Ctrl.editFav = (F) => {
+			Ctrl.FavsCRUD.dialog(angular.copy(F), {
+				title: 'Favorito: ' + F.Nombre,
+				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
+			}).then((R) => {
+				if(!R) return;
+				if(R == 'DELETE') return Ctrl.FavsCRUD.delete(F);
+				Ctrl.FavsCRUD.update(R);
+			});
+		};
+
 	}
 ]);
 angular.module('IndicadoresCtrl', [])
@@ -1987,8 +2082,8 @@ angular.module('ScorecardsCtrl', [])
 	}
 ]);
 angular.module('Scorecards_ScorecardDiagCtrl', [])
-.controller('Scorecards_ScorecardDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'scorecard_id', '$timeout',
-	function($scope, $rootScope, $mdDialog, $filter, scorecard_id, $timeout) {
+.controller('Scorecards_ScorecardDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout',
+	function($scope, $rootScope, $mdDialog, $filter, $timeout) {
 
 		console.info('Scorecards_ScorecardDiagCtrl');
 		var Ctrl = $scope;
@@ -2023,7 +2118,8 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 
         Ctrl.Periodo = moment().toDate();
 
-		Ctrl.getScorecard = () => {
+		Ctrl.getScorecard = (scorecard_id) => {
+			if(!scorecard_id) return;
             Rs.http('api/Indicadores/scorecard-get', { id: scorecard_id, Anio: Ctrl.Anio }, Ctrl, 'Sco').then(() => {
                 Ctrl.Secciones = [{ Seccion: null, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: null }).length }]
                 angular.forEach(Ctrl.Sco.Secciones, (s) => {
@@ -2032,7 +2128,7 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
             });
 		};
 
-        Ctrl.getScorecard();
+        //Ctrl.getScorecard();
 	}
 ]);
 
@@ -2947,6 +3043,7 @@ angular.module('SARA', [
 	'ngSanitize',
 
 	'md.data.table',
+	'fixed.table.header',
 	'ngFileUpload',
 	'angular-loading-bar',
 	'angularResizable',
@@ -2990,9 +3087,12 @@ angular.module('SARA', [
 		'Entidades_AddColumnsCtrl',
 		'Entidades_VerCamposCtrl',
 		'Entidades_GridsCtrl',
+		'Entidades_GridDiagCtrl',
 		'Entidades_Grids_TestCtrl',
 
 		'Entidades_EditoresCtrl',
+		'Entidades_EditorDiagCtrl',
+		'Entidades_EditorConfigDiagCtrl',
 		
 	'VariablesCtrl',
 		'VariablesGetDataDiagCtrl',
@@ -3552,6 +3652,109 @@ angular.module('appFunctions', [])
 		    return textColor;
 		};
 
+
+
+		Rs.AnioActual = new Date().getFullYear();
+		Rs.MesActual  = parseInt(moment().subtract(5,'d').format('MM'));
+		Rs.Meses = [
+			['01','Ene','Enero'],
+			['02','Feb','Febrero'],
+			['03','Mar','Marzo'],
+			['04','Abr','Abril'],
+			['05','May','Mayo'],
+			['06','Jun','Junio'],
+			['07','Jul','Julio'],
+			['08','Ago','Agosto'],
+			['09','Sep','Septiembre'],
+			['10','Oct','Octubre'],
+			['11','Nov','Noviembre'],
+			['12','Dic','Diciembre'],
+		];
+
+		Rs.periodDateLocale = {
+			formatDate: (date) => {
+				if(typeof date == 'undefined' || date === null || isNaN(date.getTime()) ){ return null; }else{
+					return moment(date).format('YMM');
+				}
+			}
+		};
+
+		Rs.formatVal = (d, TipoDato, Decimales) => {
+			if(TipoDato == 'Porcentaje') return d3.format('.'+Decimales+'%')(d);
+            if(TipoDato == 'Moneda')     return d3.format('$,.'+Decimales)(d);
+            return d3.format(',.'+Decimales)(d);
+		};
+
+		Rs.getVariableData = (Variables) => {
+			$mdDialog.show({
+				controller: 'VariablesGetDataDiagCtrl',
+				templateUrl: '/Frag/Variables.VariablesGetDataDiag',
+				locals: { Variables : Variables },
+				clickOutsideToClose: false, fullscreen: true, multiple: true,
+			});
+		};
+
+		Rs.viewVariableDiag = (variable_id) => {
+			$mdDialog.show({
+				controller: 'Variables_VariableDiagCtrl',
+				templateUrl: '/Frag/Variables.VariableDiag',
+				locals: { variable_id : variable_id },
+				clickOutsideToClose: false, fullscreen: true, multiple: true,
+			});
+		};
+
+		Rs.viewIndicadorDiag = (indicador_id) => {
+			$mdDialog.show({
+				controller: 'Indicadores_IndicadorDiagCtrl',
+				templateUrl: '/Frag/Indicadores.IndicadorDiag',
+				locals: { indicador_id : indicador_id },
+				clickOutsideToClose: false, fullscreen: true, multiple: true,
+			});
+		};
+
+		Rs.Sentidos = {
+			ASC: { desc: 'Mayor Mejor', icon: 'fa-arrow-circle-up' },
+			RAN: { desc: 'Mantener en Rango', icon: 'fa-arrow-circle-right' },
+			DES: { desc: 'Menor Mejor', icon: 'fa-arrow-circle-down' },
+		};
+
+		Rs.viewScorecardDiag = (scorecard_id) => {
+			$mdDialog.show({
+				controller: 'Scorecards_ScorecardDiagCtrl',
+				templateUrl: '/Frag/Scorecards.ScorecardDiag',
+				clickOutsideToClose: false, fullscreen: true, multiple: true,
+				onComplete: (scope, element) => {
+					scope.getScorecard(scorecard_id);
+				}
+			});
+		};
+
+		Rs.changeIcon = (elm, prop) => {
+			Rs.selectIconDiag().then(I => {
+				if(!I) return;
+				elm[prop] = I;
+			});
+		};
+
+
+		Rs.queryElm = (searchText, accion) => {
+			if(accion == 'Editor (Crear)') 		var url = '/api/Entidades/editores-search/';
+			if(accion == 'Editor (Editar)')		var url = '/api/Entidades/editores-search/';
+			return Rs.http(url, { searchText: searchText });
+		};
+
+
+		Rs.viewEditorDiag = (editor_id, Obj, Config) => {
+			$mdDialog.show({
+				controller: 'Entidades_EditorDiagCtrl',
+				templateUrl: '/Frag/Entidades.Entidades_EditorDiag',
+				clickOutsideToClose: false, fullscreen: false, multiple: true,
+				onComplete: (scope, element) => {
+					scope.getEditor(editor_id, Obj, Config);
+				}
+			});
+		};
+
 		return {};
   }
 ]);
@@ -3594,7 +3797,8 @@ angular.module('appRoutes', [])
 						url: '/:subsection',
 						templateUrl: function (params) { return '/Home/'+params.section+'/'+params.subsection; },
 					})
-					.state('App', { url: '/a', templateUrl: '/a' }).state('App.App', { url: '/:app_id' });
+					.state('App', { url: '/a', templateUrl: '/a' } )
+					.state('App.App', { url: '/:app_id' });
 
 			$urlRouterProvider.otherwise('/Home');
 			

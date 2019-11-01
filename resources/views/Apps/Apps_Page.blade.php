@@ -37,7 +37,7 @@
 
 	<div layout=column ng-show="PageSel.Tipo == 'Grid'">
 
-		<md-input-container>
+		<md-input-container class="no-margin-bottom">
 			<label>Grid</label>
 			<md-select ng-model="PageSel.Config.element_id" aria-label="s">
 				<md-option ng-value="Op.id" ng-repeat="Op in Grids" class="text-14px">

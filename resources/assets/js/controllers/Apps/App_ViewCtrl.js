@@ -1,20 +1,22 @@
 angular.module('App_ViewCtrl', [])
-.controller('App_ViewCtrl', ['$scope', '$rootScope', '$http', '$location', '$sce', '$filter',
-	function($scope, $rootScope, $http, $location, $sce, $filter) {
+.controller('App_ViewCtrl', ['$scope', '$rootScope', 'appFunctions', '$http', '$location', '$sce', '$filter',
+	function($scope, $rootScope, appFunctions, $http, $location, $sce, $filter) {
 
 		console.info('App_ViewCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 		
 		Ctrl.ops = {
-			general_class: ''
+			general_class: '',
+			Color: '', textcolor: ''
 		};
 		Ctrl.PageSel = null;
-		Ctrl.Modo  = 'Mes';
-		Ctrl.Anio  = angular.copy(Rs.AnioActual);
-		Ctrl.Mes   = angular.copy(Rs.MesActual);
 
 		Ctrl.openPage = (P) => {
+			P.loaded = true;
+			if(P.Tipo == 'Scorecard'){ Ctrl.ops.Color = '#2d2d2d'; Ctrl.ops.textcolor = 'white' }
+			else{ Ctrl.ops.Color = Ctrl.AppSel.Color; Ctrl.ops.textcolor = Ctrl.AppSel.textcolor };
+			Ctrl.ops.general_class = 'app_text_'+Ctrl.ops.textcolor+' app_nav_'+Ctrl.AppSel.Navegacion;
 			Ctrl.PageSel = P;
 		};
 
@@ -25,19 +27,10 @@ angular.module('App_ViewCtrl', [])
 		Ctrl.$on("$stateChangeSuccess", () => {
 			var app_id = $location.path().split('/')[2];
 			if(!app_id || app_id == '') return;
-			$http.post('/api/App/app-get', { app_id: app_id }).then((r) => {
-				Ctrl.AppSel = r.data.App;
-				Ctrl.ops.general_class = 'app_text_'+Ctrl.AppSel.textcolor;
+			Rs.http('/api/App/app-get', { app_id: app_id }).then((r) => {
+				Ctrl.AppSel = r.App;
 				Ctrl.openPage(Ctrl.AppSel.pages[0]);
 			});
-		});
-
-		$http.post('api/Indicadores/scorecard-get', { id: 1, Anio: Ctrl.Anio }).then((r) => {
-			Ctrl.Sco = r.data;
-		    Ctrl.Secciones = [{ Seccion: null, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: null }).length }]
-		    angular.forEach(Ctrl.Sco.Secciones, (s) => {
-		    	Ctrl.Secciones.push({ Seccion: s, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: s }).length }); 
-		    });
 		});
 
 	}

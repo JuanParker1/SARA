@@ -28,16 +28,9 @@
 		@include('Entidades.Entidades_Campos') 
 
 		<div layout class="padding bg-white border margin-but-top border-radius" layout layout-wrap ng-show="CamposCRUD.rows.length > 0">
-			<md-input-container class="" flex=25>
+			<md-input-container class="" flex=15>
 				<label>Llave Primaria</label>
 				<md-select ng-model="EntidadSel.campo_llaveprim" aria-label="s">
-					<md-option ng-repeat="C in CamposCRUD.rows" ng-value="C.id">{{  C.Alias !== null ? C.Alias : C.Columna }}</md-option>
-				</md-select>
-			</md-input-container>
-			<md-input-container class="" flex=25 ng-repeat="D in [1,2,3]">
-				<label>Descripción {{ D }}</label>
-				<md-select ng-model="EntidadSel['campo_desc'+D]">
-					<md-option ng-value="null">Ninguna</md-option>
 					<md-option ng-repeat="C in CamposCRUD.rows" ng-value="C.id">{{  C.Alias !== null ? C.Alias : C.Columna }}</md-option>
 				</md-select>
 			</md-input-container>
@@ -53,10 +46,26 @@
 					<md-option ng-value="'DESC'"><md-icon class="s20" md-font-icon="fa-fw fa-arrow-down"></md-icon></md-option>
 				</md-select>
 			</md-input-container>
-			<md-input-container class="no-margin-bottom" flex=25>
-				<label>Máximo de Filas</label>
-				<input type="number" min="1" ng-model="EntidadSel.max_rows" aria-label=s>
+			<md-input-container class="no-margin-bottom" flex=10>
+				<input type="number" min="1" ng-model="EntidadSel.max_rows" aria-label=s placeholder="Filas Máximas">
 			</md-input-container>
+			<md-input-container class="no-margin-bottom" flex=10>
+				<input type="number" min="0" ng-model="EntidadSel.config.search_minlen" aria-label=s placeholder="Min. Letras">
+			</md-input-container>
+			<md-input-container class="no-margin-bottom" flex=10>
+				<input type="number" min="0" ng-model="EntidadSel.config.search_elms"   aria-label=s placeholder="Resultados">
+			</md-input-container>
+
+			<span flex=30></span>
+
+			<md-input-container class="" flex=50 flex-gt-xs=20 ng-repeat="D in [1,2,3,4,5]">
+				<label>Descripción {{D}}</label>
+				<md-select ng-model="EntidadSel.config['campo_desc'+D]">
+					<md-option ng-value="null">Ninguna</md-option>
+					<md-option ng-repeat="C in CamposCRUD.rows" ng-value="C.id">{{  C.campo_title }}</md-option>
+				</md-select>
+			</md-input-container>
+
 		</div>
 
 		@include('Entidades.Entidades_Restricciones') 
