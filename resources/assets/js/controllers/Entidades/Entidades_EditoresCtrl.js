@@ -15,10 +15,11 @@ angular.module('Entidades_EditoresCtrl', [])
 			if(!Ctrl.EntidadSel) return;
 			Ctrl.EditoresCRUD.setScope('entidad', Ctrl.EntidadSel.id);
 			Ctrl.EditoresCRUD.get().then(() => {
-				if(Ctrl.EditoresCRUD.rows.length == 0){
-
+				if(Ctrl.EditoresCRUD.rows.length > 0){
+					Ctrl.openEditor(Ctrl.EditoresCRUD.rows[0]);
+				}else{
+					$scope.EditoresSidenav = true;
 				};
-				Ctrl.openEditor(Ctrl.EditoresCRUD.rows[0]);
 			});
 		};
 

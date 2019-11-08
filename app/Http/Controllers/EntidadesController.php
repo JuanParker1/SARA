@@ -13,6 +13,7 @@ use App\Models\EntidadCampo;
 use App\Models\EntidadRestriccion;
 use App\Models\EntidadGrid;
 use App\Models\EntidadEditor;
+use App\Models\EntidadCargador;
 use App\Models\BDD;
 
 use App\Functions\Helper as H;
@@ -252,5 +253,46 @@ class EntidadesController extends Controller
         return EntidadEditor::with(['campos','campos.campo','campos.campo.entidadext'])->where('id', $editor_id)->first();
     }
 
+
+
+    //Cargadores
+    public function postCargadores()
+    {
+        $CRUD = new CRUD('App\Models\EntidadCargador');
+        return $CRUD->call(request()->fn, request()->ops);
+    }
+
+    public function postCargadorGet()
+    {
+        $cargador_id = request('cargador_id');
+        $Cargador    = EntidadCargador::where('id', $cargador_id)->first();
+        return $Cargador;
+    }
+
+    public function postCargadorUpload()
+    {
+        $file = request()->file('file');
+        $Cargador    = EntidadCargador::where('id', request('cargador_id'))->with(['entidad', 'entidad.campos'])->first();
+
+        $registros = \Excel::load($file, function($reader) use ($Cargador){
+            $reader->noHeading = !$Cargador->Config['with_headers'];
+        })->get();
+
+        $load_data = [];
+
+        foreach ($registros as $kR => $R) {
+            foreach ($Cargador->entidad->campos as $kC => $C) {
+                $C_Conf = $Cargador->Config['campos'][$C['id']];
+                
+                     if($C_Conf['tipo_valor'] == 'Sin Valor'){ $val = null; }
+                else if($C_Conf['tipo_valor'] == 'Columna'  ){ $val = $R[$C_Conf['Defecto'] - 1]; };
+
+                $load_data[$kR][$kC] = $val;
+            }
+        }
+        
+        //return $load_data;
+        return ['entidad' => $Cargador->entidad, 'load_data' => $load_data];
+    }
 
 }

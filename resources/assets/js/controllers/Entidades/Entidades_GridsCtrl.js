@@ -21,6 +21,8 @@ angular.module('Entidades_GridsCtrl', [])
 		};
 
 		Ctrl.addGrid = () => {
+			console.log(Ctrl.GridsCRUD);
+
 			Ctrl.GridsCRUD.dialog({
 				entidad_id: Ctrl.EntidadSel.id,
 			}, {

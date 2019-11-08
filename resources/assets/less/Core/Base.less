@@ -143,3 +143,25 @@ body{
     left: 5px;
     font-size: 0.8em;
 }
+
+.SectionIcon{
+	cursor: pointer; outline: none;
+	transition: all 0.3s;
+
+	.SectionIcon_Text{
+		max-width: 0px;
+		overflow: hidden;
+		transition: all 0.3s;
+	}
+
+	&.SectionIcon_Selected{
+
+		padding: 0 13px 0 10px;
+
+		.SectionIcon_Text{
+			max-width: 100px;
+			margin-left: 5px;
+		}
+
+	}
+}

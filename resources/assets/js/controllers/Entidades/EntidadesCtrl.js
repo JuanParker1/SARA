@@ -1,6 +1,6 @@
 angular.module('EntidadesCtrl', [])
-.controller('EntidadesCtrl', ['$scope', '$rootScope', '$injector', '$mdDialog', '$filter',
-	function($scope, $rootScope, $injector, $mdDialog, $filter) {
+.controller('EntidadesCtrl', ['$scope', '$rootScope', '$injector', '$mdDialog', '$filter', '$timeout',
+	function($scope, $rootScope, $injector, $mdDialog, $filter, $timeout) {
 
 		console.info('EntidadesCtrl');
 		var Ctrl = $scope;
@@ -15,11 +15,22 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.RestricCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/restricciones', 		add_research: true, add_with:['campo'] });
 		Ctrl.GridsCRUD 			= $injector.get('CRUD').config({ base_url: '/api/Entidades/grids', 				order_by: ['Titulo'] });
 		Ctrl.GridColumnasCRUD 	= $injector.get('CRUD').config({ base_url: '/api/Entidades/grids-columnas', 	query_with:['campo'], add_append:'refresh', order_by: ['Indice'] });
-		Ctrl.GridFiltrosCRUD 	= $injector.get('CRUD').config({ base_url: '/api/Entidades/grids-filtros', 		query_with:[], order_by: ['Indice'] });
-		Ctrl.EditoresCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/editores', 			query_with:[], order_by: ['Titulo'] });
-		Ctrl.EditoresCamposCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/editores-campos', 	query_with:[], order_by: ['Indice'] });
+		Ctrl.GridFiltrosCRUD 	= $injector.get('CRUD').config({ base_url: '/api/Entidades/grids-filtros', 		order_by: ['Indice'] });
+		Ctrl.EditoresCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/editores', 			order_by: ['Titulo'] });
+		Ctrl.EditoresCamposCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/editores-campos', 	order_by: ['Indice'] });
+		Ctrl.CargadoresCRUD 	= $injector.get('CRUD').config({ base_url: '/api/Entidades/cargadores', 		order_by: ['Titulo'] });
 		
-		Ctrl.navToSubsection = (subsection) => { Rs.navTo('Home.Section.Subsection', { section: 'Entidades', subsection: subsection }); };
+
+		Ctrl.EntidadesSecciones = [
+			['General',  	'fa-chess-pawn' ],
+			['Grids'  ,  	'fa-table' ],
+			['Editores', 	'fa-pen-square' ],
+			['Cargadores', 	'fa-sign-in-alt fa-rotate-270' ],
+		];
+
+		Ctrl.navToSubsection = (subsection) => { 
+			Rs.navTo('Home.Section.Subsection', { section: 'Entidades', subsection: subsection }); 
+		};
 
 		Ctrl.getBdds = () => {
 			Rs.http('api/Bdds/all', {}, Ctrl, 'Bdds').then(() => {
@@ -33,9 +44,10 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.getEntidades = () => {
 			Ctrl.EntidadesCRUD.get().then(() => {
 				Ctrl.getFsEntidades();
-				Ctrl.openEntidad(Ctrl.EntidadesCRUD.rows[1]); //QUITAR
+				//console.log(Ctrl.EntidadesCRUD.rows);
+				Ctrl.openEntidad(Ctrl.EntidadesCRUD.rows[4]); //QUITAR
 				//Ctrl.navToSubsection('General');
-				Ctrl.navToSubsection('Grids');
+				Ctrl.navToSubsection('Cargadores');
 			});
 		};
 

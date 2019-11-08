@@ -242,6 +242,142 @@ angular.module('App_ViewCtrl', [])
 
 	}
 ]);
+angular.module('BDDCtrl', [])
+.controller('BDDCtrl', ['$scope', '$rootScope', '$injector',
+	function($scope, $rootScope, $injector) {
+
+		console.info('BDDCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.BDDSidenav = true;
+		Ctrl.BDDFavSidenav = false;
+
+		Ctrl.BDDsCRUD = $injector.get('CRUD').config({ base_url: '/api/Bdds' });
+
+		Ctrl.BDDsCRUD.get().then(() => {
+			if(Ctrl.BDDsCRUD.rows.length > 0){
+				Ctrl.openBDD(Ctrl.BDDsCRUD.rows[0]);
+			};
+		});
+
+		Ctrl.openBDD = (B) => {
+			Ctrl.BDDSel = B;
+			Ctrl.getFavoritos();
+			//Ctrl.executeQuery(); //REmove
+		};
+
+		Ctrl.TiposBDD = {
+			ODBC_DB2:     { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			ODBC_MySQL:   { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			MySQL:  	  { Op1: false, Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			SQLite: 	  { Op1: false, Op2: 'Ruta al Archivo', Op3: 'Base de Datos', Op4: false, Op5: false },
+		};
+
+		Ctrl.addBDD = () => {
+			Rs.BasicDialog({
+				Title: 'Crear Conexión a Base de Datos'
+			}).then((r) => {
+				var Nombre = r.Fields[0].Value.trim();
+				if(Rs.found(Nombre, Ctrl.BDDsCRUD.rows, 'Nombre')) return;
+
+				Ctrl.BDDsCRUD.add({
+					Nombre: Nombre,
+					Tipo: 'ODBC'
+				});
+			});
+		};
+
+		Ctrl.updateBDD = () => {
+			Ctrl.BDDsCRUD.update(Ctrl.BDDSel).then(() => {
+				Rs.showToast('Actualizado', 'Success', 5000, 'bottom right');
+			});
+		};
+
+		Ctrl.removeBDD = () => {
+			Rs.confirmDelete({
+				Title: '¿Borrar la Conexión a la Base de Datos "'+Ctrl.BDDSel.Nombre+'"?'
+			}).then((del) => {
+				if(!del) return;
+				Ctrl.BDDsCRUD.delete(Ctrl.BDDSel).then(() => {
+					Ctrl.BDDSel = null;
+				});
+			});
+		};
+
+		Ctrl.testBDD = () => {
+			Rs.http('/api/Bdds/probar', { BDD: Ctrl.BDDSel }).then((r) => {
+				Rs.showToast('Conexión Exitosa', 'Success', 5000, 'bottom right');
+			});
+		};
+
+		//Panel de Consultas SQL
+		Ctrl.SQLQuery = "";
+		Ctrl.executingQuery = false;
+		Ctrl.QueryRows = null;
+		Ctrl.executeQuery = () => {
+			if(Ctrl.SQLQuery == "" || Ctrl.executingQuery) return;
+			Ctrl.executingQuery = true;
+
+			Rs.http('/api/Bdds/query', { BDD: Ctrl.BDDSel, Query: Ctrl.SQLQuery }).then((r) => {
+				Ctrl.QueryRows = r;
+			}).finally(() => {
+				Ctrl.executingQuery = false;
+			});
+		};
+
+
+
+		//Panel de Favoritos
+		Ctrl.FavsCRUD = $injector.get('CRUD').config({ 
+			base_url: '/api/Bdds/favoritos',
+			query_scopes: [
+				[ 'mine', true ]
+			]
+		});
+
+		Ctrl.getFavoritos = () => {
+			Ctrl.FavsCRUD.setScope('bddid', Ctrl.BDDSel.id);
+			Ctrl.FavsCRUD.get();
+		};
+
+		Ctrl.useFav = (F) => {
+			if(Ctrl.executingQuery) return;
+
+			Ctrl.SQLQuery = F.Consulta;
+
+			if(F.EjecutarAutom == 'S'){
+				Ctrl.executeQuery();
+			};
+		};
+
+		Ctrl.addFav = () => {
+			Ctrl.FavsCRUD.dialog({
+				Consulta: angular.copy(Ctrl.SQLQuery),
+				EjecutarAutom: 'N',
+				bdd_id: Ctrl.BDDSel.id,
+				usuario_id: Rs.Usuario.id
+			}, {
+				title: 'Crear Favorito',
+				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
+			}).then((R) => {
+				if(!R) return;
+				Ctrl.FavsCRUD.add(R);
+			});
+		};
+
+		Ctrl.editFav = (F) => {
+			Ctrl.FavsCRUD.dialog(angular.copy(F), {
+				title: 'Favorito: ' + F.Nombre,
+				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
+			}).then((R) => {
+				if(!R) return;
+				if(R == 'DELETE') return Ctrl.FavsCRUD.delete(F);
+				Ctrl.FavsCRUD.update(R);
+			});
+		};
+
+	}
+]);
 angular.module('BasicDialogCtrl', [])
 .controller(   'BasicDialogCtrl', ['$scope', 'Config', '$mdDialog', 
 	function ($scope, Config, $mdDialog) {
@@ -340,6 +476,7 @@ angular.module('CRUDDialogCtrl', [])
 		Ctrl.config = {};
 		Ctrl.columns = columns;
 		Ctrl.Obj = {};
+		console.log(columns);
 		//Ctrl.Obj = angular.copy(Obj);
 
 		//Saber si es nuevo
@@ -708,6 +845,292 @@ angular.module('ListSelectorCtrl', [])
 
 	}
 ]);
+angular.module('IndicadoresCtrl', [])
+.controller('IndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('IndicadoresCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.IndSel = null;
+		Ctrl.IndicadoresNav = true;
+
+		Ctrl.tiposDatoInd = ['Numero','Porcentaje','Moneda'];
+		Ctrl.OpsUsar = [
+			{id: 'Cump', desc: 'Cumplimiento (1/0)'},
+			{id: 'PorcCump', desc: '% de Cumplimiento'},
+			{id: 'Valor', desc: 'Valor del Indicador'},
+		];
+
+		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Variables' });
+		Ctrl.IndicadoresCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores' });
+		Ctrl.IndicadoresVarsCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores/variables' });
+		Ctrl.MetasCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores/metas' });
+
+
+		Ctrl.getIndicadores = () => {
+			Ctrl.IndicadoresCRUD.get().then(() => {
+				Ctrl.openIndicador(Ctrl.IndicadoresCRUD.rows[0]);
+				Ctrl.getFs();
+			});
+		};
+
+		Ctrl.getFs = () => {
+			Ctrl.filterIndicadores = "";
+			Ctrl.IndicadoresFS = Rs.FsGet(Ctrl.IndicadoresCRUD.rows,'Ruta','Indicador');
+		};
+
+		Ctrl.getFolderVarData = (F) => {
+			var Vars = Ctrl.IndicadoresCRUD.rows.filter((v) => {
+				return v.Ruta.startsWith(F.route);
+			}).map(v => v.id);
+			Rs.getIndicadorData(Vars);
+		};
+
+		Ctrl.searchIndicador = () => {
+			if(Ctrl.filterIndicadores == ""){
+				Ctrl.getFs();
+			}else{
+				Ctrl.IndicadoresFS = Rs.FsGet($filter('filter')(Ctrl.IndicadoresCRUD.rows, Ctrl.filterIndicadores),'Ruta','Indicador',true);
+			};
+		};
+
+		Ctrl.addIndicador = () => {
+			Ctrl.getFs();
+			Rs.BasicDialog({
+				Title: 'Crear Indicador', Flex: 50,
+				Fields: [
+					{ Nombre: 'Nombre',  Value: '', Required: true },
+					{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.IndicadoresFS },
+					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
+				],
+			}).then((r) => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				Ctrl.IndicadoresCRUD.add({
+					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
+					Indicador: f.Nombre,
+					Filtros: []
+				}).then(() => {
+					Ctrl.getFs();
+				});
+			});
+		};
+
+		Ctrl.openIndicador = (V) => {
+			Ctrl.IndSel = V;
+			Ctrl.IndicadoresVarsCRUD.setScope('indicador', Ctrl.IndSel.id).get();
+			Ctrl.MetasCRUD.setScope('indicador', Ctrl.IndSel.id).get();
+
+			//Rs.viewIndicadorDiag(Ctrl.IndSel.id); //FIX
+		};
+
+		Ctrl.updateIndicador = () => {
+			Ctrl.IndicadoresCRUD.update(Ctrl.IndSel).then(() => {
+				Rs.showToast('Indicador Actualizada', 'Success');
+				Ctrl.saveVariables();
+				//Ctrl.openIndicador(Ctrl.IndSel);
+			});
+		};
+
+		Ctrl.VariablesCRUD.get().then(() => {
+			Ctrl.getIndicadores();
+		});
+
+
+		Ctrl.addVariable = () => {
+			Rs.BasicDialog({
+				Title: 'Agregar Componente', Flex: 50,
+				Fields: [
+					{ Nombre: 'Variable',    Value: '', Type: 'list', List: Ctrl.VariablesCRUD.rows, Item_Val: 'id', Item_Show: 'Variable' },
+				],
+			}).then((r) => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				Ctrl.IndicadoresVarsCRUD.add({
+					indicador_id: Ctrl.IndSel.id,
+					Letra: String.fromCharCode(97 + Ctrl.IndicadoresVarsCRUD.rows.length),
+					Tipo: 'Variable', variable_id: f.Variable
+				});
+			});
+		};
+
+		Ctrl.delVariable = (Var) => {
+			Ctrl.IndicadoresVarsCRUD.delete(Var).then(() => {
+				angular.forEach(Ctrl.IndicadoresVarsCRUD.rows, (V,i) => {
+					var Letra = String.fromCharCode(97 + i);
+					if(Letra !== V.Letra){
+						V.Letra = Letra;
+						V.changed = true;
+					};
+				});
+				Ctrl.saveVariables();
+			});
+		};
+
+		Ctrl.saveVariables = () => {
+			var Updatees = $filter('filter')(Ctrl.IndicadoresVarsCRUD.rows, { changed: true });
+			if(Updatees.length == 0) return;
+			Ctrl.IndicadoresVarsCRUD.updateMultiple(Updatees);
+			angular.forEach(Ctrl.IndicadoresVarsCRUD.rows, IV => {
+				IV.changed = false;
+			});
+		};
+
+
+
+		//Metas
+		Ctrl.addMeta = () => {
+			var PeriodoDef = Rs.AnioActual+'-01-15';
+			var f = [
+				{ Nombre: 'Periodo',  Type: 'period', Value: PeriodoDef, Required: true, flex: 50 }
+			];
+			if(Ctrl.IndSel.Sentido == 'RAN'){
+				f.push({Nombre: 'Límite Inferior',  Value: '', Type: 'string', Required: true, flex: 100 });
+				f.push({Nombre: 'Límite Superior',  Value: '', Type: 'string', Required: true, flex: 100 });
+			}else{
+				f.push({Nombre: 'Meta',  			Value: '', Type: 'string', Required: true, flex: 50 });
+			};
+			Rs.BasicDialog({
+				Title: 'Crear Meta',
+				Fields: f
+			}).then(f => {
+				if(!f) return;
+				var m = {
+					indicador_id: Ctrl.IndSel.id,
+					PeriodoDesde: moment(f.Fields[0].Value).format('YYYYMM'),
+					Meta: f.Fields[1].Value,
+					Meta2: ((Ctrl.IndSel.Sentido == 'RAN') ? f.Fields[2].Value : null),
+				};
+
+				if($filter('filter')(Ctrl.MetasCRUD.rows, { PeriodoDesde: m.PeriodoDesde }).length > 0) return Rs.showToast('Periodo ya existe', 'Error');
+				
+				Ctrl.MetasCRUD.add(m);
+			});
+		};
+
+		Ctrl.delMeta = (Meta) => {
+			Ctrl.MetasCRUD.delete(Meta);
+		};
+
+		
+	}
+]);
+angular.module('Indicadores_IndicadorDiagCtrl', [])
+.controller('Indicadores_IndicadorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'indicador_id', '$timeout',
+	function($scope, $rootScope, $mdDialog, $filter, indicador_id, $timeout) {
+
+		console.info('Indicadores_IndicadorDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.Cancel = () => { $mdDialog.cancel(); }
+
+		Ctrl.Meses = Rs.Meses;
+		Ctrl.inArray = Rs.inArray;
+		Ctrl.Anio  = angular.copy(Rs.AnioActual);
+		Ctrl.anioAdd = (num) => { Ctrl.Anio += num; Ctrl.getIndicadores(); };
+		Ctrl.Sentidos = Rs.Sentidos;
+
+        Ctrl.modoComparativo = false;
+
+		Ctrl.getIndicadores = () => {
+
+			Rs.http('api/Indicadores/get', { id: indicador_id, Anio: Ctrl.Anio }, Ctrl, 'Ind').then(() => {
+
+				angular.forEach(Ctrl.Ind.valores, (m,k) => {
+					var i = parseInt(m.mes);
+					Ctrl.graphData[0].values[i-1] = { x: i, y: m.Valor, 	  val: m.val,         series: 0, key: 'Valor', color: m.color };
+                    Ctrl.graphData[1].values[i-1] = { x: i, y: m.meta_Valor,  val: m.meta_val,    series: 1, key: 'Meta'     };
+                    Ctrl.graphData[2].values[i-1] = { x: i, y: m.meta2_Valor, val: m.meta_val,    series: 2, key: 'Meta2'    };
+					Ctrl.graphData[3].values[i-1] = { x: i, y: m.anioAnt,     val: m.anioAnt_val, series: 3, key: 'AnioAnt', color: m.anioAnt_color  };
+				});
+
+                Ctrl.updateChart();
+
+			});
+
+		};
+
+        Ctrl.updateChart = () => {
+            Ctrl.graphData[2].disabled = !(Ctrl.Ind.Sentido == 'RAN');
+            Ctrl.graphData[3].disabled = !Ctrl.modoComparativo;
+            d3.selectAll('.nvtooltip').style('opacity', 0);
+            Ctrl.graphApi.update();
+        }
+		
+
+
+
+
+
+
+
+ 		Ctrl.grapOptions = {
+            chart: {
+                type: 'multiChart',
+                margin: {
+                	top:10, right:20, bottom:0, left:100
+                },
+                height: 150,
+                y: function(d,i) { return d.y; },
+                x: function(d,i) { return d.x; },
+                showLegend: false,
+                xAxis: {
+                	showMaxMin: false,
+                    ticks: 0,
+                    tickFormat: function(d){
+                        return Rs.Meses[d-1][1];
+                    },
+                },
+                yAxis1: {
+                    tickFormat: function(d){
+                        return Rs.formatVal(d,Ctrl.Ind.TipoDato,Ctrl.Ind.Decimales);
+                    },
+                },
+                bars1: {
+                },
+                lines1: {
+                	padData: true,
+                },
+                padData: true,
+                //yDomain1: [0,0.1],
+                useInteractiveGuideline: true,
+                interactiveLayer:{
+                	showGuideLine: false,
+                    tooltip: {
+                        contentGenerator: (obj) => {
+                            var Periodo = `${Rs.Meses[obj.index][1]} ${Ctrl.Anio}`;
+                            var Resultado = obj.series[0].data.val;
+                            var Meta      = obj.series[1].data.val;
+                            var Color     = obj.series[0].data.color;
+                            return `<table><thead><tr><td class=x-value colspan=3><div class='md-title'>${Periodo}</div></td></tr></thead><tbody>
+                            <tr style='color:${Color}'><td class=key>Resultado</td><td class='value'>${Resultado}</td></tr>
+                            <tr><td class=key>Meta:</td><td class=value>${Meta}</td></tr>
+                            </tbody></table>`;
+                        }
+                    }
+                    
+                }
+            }
+        };
+
+        Ctrl.graphData = [
+        	{ key: 'Valor',    yAxis: 1, type: 'bar',  values: [] },
+            { key: 'Meta',     yAxis: 1, type: 'line', values: [], classed: 'dashed', color: 'white' },
+            { key: 'Meta2',    yAxis: 1, type: 'line', values: [], classed: 'dashed', color: 'white' },
+        	{ key: 'AnioAnt',  yAxis: 1, type: 'bar',  values: [] },
+        ];
+
+        Ctrl.getIndicadores();
+
+        Ctrl.viewCompDiag = (comp) => {
+            if(comp.Tipo == 'Variable')  return Rs.viewVariableDiag(comp.variable_id);
+            if(comp.Tipo == 'Indicador') return Rs.viewIndicadorDiag(comp.variable_id);
+        };
+	}
+]);
+
 angular.module('EntidadesCamposCtrl', [])
 .controller('EntidadesCamposCtrl', ['$scope', '$rootScope', 
 	function($scope, $rootScope) {
@@ -720,8 +1143,8 @@ angular.module('EntidadesCamposCtrl', [])
 	}
 ]);
 angular.module('EntidadesCtrl', [])
-.controller('EntidadesCtrl', ['$scope', '$rootScope', '$injector', '$mdDialog', '$filter',
-	function($scope, $rootScope, $injector, $mdDialog, $filter) {
+.controller('EntidadesCtrl', ['$scope', '$rootScope', '$injector', '$mdDialog', '$filter', '$timeout',
+	function($scope, $rootScope, $injector, $mdDialog, $filter, $timeout) {
 
 		console.info('EntidadesCtrl');
 		var Ctrl = $scope;
@@ -736,11 +1159,22 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.RestricCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/restricciones', 		add_research: true, add_with:['campo'] });
 		Ctrl.GridsCRUD 			= $injector.get('CRUD').config({ base_url: '/api/Entidades/grids', 				order_by: ['Titulo'] });
 		Ctrl.GridColumnasCRUD 	= $injector.get('CRUD').config({ base_url: '/api/Entidades/grids-columnas', 	query_with:['campo'], add_append:'refresh', order_by: ['Indice'] });
-		Ctrl.GridFiltrosCRUD 	= $injector.get('CRUD').config({ base_url: '/api/Entidades/grids-filtros', 		query_with:[], order_by: ['Indice'] });
-		Ctrl.EditoresCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/editores', 			query_with:[], order_by: ['Titulo'] });
-		Ctrl.EditoresCamposCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/editores-campos', 	query_with:[], order_by: ['Indice'] });
+		Ctrl.GridFiltrosCRUD 	= $injector.get('CRUD').config({ base_url: '/api/Entidades/grids-filtros', 		order_by: ['Indice'] });
+		Ctrl.EditoresCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/editores', 			order_by: ['Titulo'] });
+		Ctrl.EditoresCamposCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/editores-campos', 	order_by: ['Indice'] });
+		Ctrl.CargadoresCRUD 	= $injector.get('CRUD').config({ base_url: '/api/Entidades/cargadores', 		order_by: ['Titulo'] });
 		
-		Ctrl.navToSubsection = (subsection) => { Rs.navTo('Home.Section.Subsection', { section: 'Entidades', subsection: subsection }); };
+
+		Ctrl.EntidadesSecciones = [
+			['General',  	'fa-chess-pawn' ],
+			['Grids'  ,  	'fa-table' ],
+			['Editores', 	'fa-pen-square' ],
+			['Cargadores', 	'fa-sign-in-alt fa-rotate-270' ],
+		];
+
+		Ctrl.navToSubsection = (subsection) => { 
+			Rs.navTo('Home.Section.Subsection', { section: 'Entidades', subsection: subsection }); 
+		};
 
 		Ctrl.getBdds = () => {
 			Rs.http('api/Bdds/all', {}, Ctrl, 'Bdds').then(() => {
@@ -754,9 +1188,10 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.getEntidades = () => {
 			Ctrl.EntidadesCRUD.get().then(() => {
 				Ctrl.getFsEntidades();
-				Ctrl.openEntidad(Ctrl.EntidadesCRUD.rows[1]); //QUITAR
+				//console.log(Ctrl.EntidadesCRUD.rows);
+				Ctrl.openEntidad(Ctrl.EntidadesCRUD.rows[4]); //QUITAR
 				//Ctrl.navToSubsection('General');
-				Ctrl.navToSubsection('Grids');
+				Ctrl.navToSubsection('Cargadores');
 			});
 		};
 
@@ -989,6 +1424,123 @@ angular.module('Entidades_AddColumnsCtrl', [])
 		};
 	}
 ]);
+angular.module('Entidades_CargadorDiagCtrl', [])
+.controller('Entidades_CargadorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', 'Upload',
+	function($scope, $rootScope, $mdDialog, $filter, $timeout, Upload) {
+
+		console.info('Entidades_CargadorDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.Cancel = () => { $mdDialog.cancel(); };
+		Ctrl.Etapa = 'PreLoad';
+
+		Ctrl.TipoArchivo = {
+			csv: [],
+		};
+
+		Ctrl.getCargador = (cargador_id) => {
+			Rs.http('api/Entidades/cargador-get', { cargador_id: cargador_id }, Ctrl, 'Cargador').then(() => {
+				
+			});
+		};
+
+		Ctrl.upload = (file) => {
+			if(!file) return;
+			Upload.upload({
+	            url: 'api/Entidades/cargador-upload',
+	            data: {file: file, 'cargador_id': Ctrl.Cargador.id }
+	        }).then(function (resp) {
+	            Ctrl.Etapa = 'TestLoad';
+	            Ctrl.Entidad   = resp.data.entidad;
+	            Ctrl.load_data = resp.data.load_data;
+	        }, function (resp) {
+	            console.log('Error status: ' + resp.status);
+	        }, function (evt) {
+	            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+	            console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+	        });
+		};
+
+	}
+]);
+angular.module('Entidades_CargadoresCtrl', [])
+.controller('Entidades_CargadoresCtrl', ['$scope', '$rootScope', '$timeout', '$filter',
+	function($scope, $rootScope, $timeout, $filter) {
+
+		var Ctrl = $scope.$parent;
+		var Rs = $rootScope;
+
+		$scope.CargadoresSidenav = false;
+		$scope.CargadoresCamposSel = [];
+
+		$scope.TiposArchivo = {
+			csv:   [ 'Archivo .CSV',  			'fa-file-csv' ],
+			excel: [ 'Archivo Excel .XLSX', 	'fa-file-excel' ],
+		};
+
+		$scope.TiposValor = ['Columna','Fijo','Variable de Sistema','Sin Valor'];
+
+		var DefConfig = {
+			tipo_archivo: 'csv',
+			delimiter: ',',
+			with_headers: true,
+			campos: {}
+		};
+
+		//Cargadores
+		Ctrl.getCargadores = () => {
+			if(!Ctrl.EntidadSel) return;
+			Ctrl.CargadoresCRUD.setScope('entidad', Ctrl.EntidadSel.id);
+			Ctrl.CargadoresCRUD.get().then(() => {
+				if(Ctrl.CargadoresCRUD.rows.length > 0){
+					Ctrl.openCargador(Ctrl.CargadoresCRUD.rows[0]);
+				}else{
+					$scope.CargadoresSidenav = true;
+				};
+			});
+		};
+
+		Ctrl.addCargador = () => {
+			Ctrl.CargadoresCRUD.dialog({
+				entidad_id: Ctrl.EntidadSel.id,
+				Titulo: 'General', Secciones: []
+			}, {
+				title: 'Crear Cargador',
+				only: ['Titulo']
+			}).then((R) => {
+				if(!R) return; Ctrl.CargadoresCRUD.add(R);
+			});
+		};
+
+		Ctrl.openCargador = (G) => {
+			G.Config = angular.extend({}, DefConfig, G.Config);
+			Ctrl.CargadorSel = G;
+
+			angular.forEach(Ctrl.CamposCRUD.rows, (C) => {
+				if(!Ctrl.CargadorSel.Config.campos.hasOwnProperty(C.id)){
+					Ctrl.CargadorSel.Config.campos[C.id] = {
+						campo_id: C.id,
+						tipo_valor: 'Sin Valor',
+						Defecto: null
+					};
+				};
+			});
+
+			Rs.viewCargadorDiag(Ctrl.CargadorSel.id);
+
+		};
+
+		Ctrl.updateCargador = () => {
+			Ctrl.CargadoresCRUD.update(Ctrl.CargadorSel).then(() => {
+				Rs.showToast('Cargador Actualizado', 'Success');
+			});
+		};
+
+		Ctrl.getCargadores();
+
+	}
+]);
 angular.module('Entidades_EditorConfigDiagCtrl', [])
 .controller('Entidades_EditorConfigDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', 'B', 'TiposCampo',
 	function($scope, $rootScope, $mdDialog, $filter, $timeout, B, TiposCampo) {
@@ -998,12 +1550,14 @@ angular.module('Entidades_EditorConfigDiagCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.Cancel = () => { $mdDialog.cancel(); };
 		Ctrl.queryElm = Rs.queryElm;
+		Ctrl.inArray  = Rs.inArray;
 		Ctrl.TiposCampo = TiposCampo;
 		Ctrl.B = B;
-		Ctrl.TiposValor = ['Sin Valor','Fijo','Columna'];
+		Ctrl.TiposValor = ['Por Defecto','Columna','Fijo','Sin Valor'];
 
 
 		Ctrl.getEditor = () => {
+			if(!B) return;
 			Rs.http('api/Entidades/editor-get', { editor_id: B.accion_element_id }, Ctrl, 'Editor').then(() => {
 				
 			});
@@ -1074,10 +1628,11 @@ angular.module('Entidades_EditoresCtrl', [])
 			if(!Ctrl.EntidadSel) return;
 			Ctrl.EditoresCRUD.setScope('entidad', Ctrl.EntidadSel.id);
 			Ctrl.EditoresCRUD.get().then(() => {
-				if(Ctrl.EditoresCRUD.rows.length == 0){
-
+				if(Ctrl.EditoresCRUD.rows.length > 0){
+					Ctrl.openEditor(Ctrl.EditoresCRUD.rows[0]);
+				}else{
+					$scope.EditoresSidenav = true;
 				};
-				Ctrl.openEditor(Ctrl.EditoresCRUD.rows[0]);
 			});
 		};
 
@@ -1238,6 +1793,8 @@ angular.module('Entidades_GridsCtrl', [])
 		};
 
 		Ctrl.addGrid = () => {
+			console.log(Ctrl.GridsCRUD);
+
 			Ctrl.GridsCRUD.dialog({
 				entidad_id: Ctrl.EntidadSel.id,
 			}, {
@@ -1535,428 +2092,6 @@ angular.module('Entidades_VerCamposCtrl', [])
 		};
 	}
 ]);
-angular.module('BDDCtrl', [])
-.controller('BDDCtrl', ['$scope', '$rootScope', '$injector',
-	function($scope, $rootScope, $injector) {
-
-		console.info('BDDCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.BDDSidenav = true;
-		Ctrl.BDDFavSidenav = false;
-
-		Ctrl.BDDsCRUD = $injector.get('CRUD').config({ base_url: '/api/Bdds' });
-
-		Ctrl.BDDsCRUD.get().then(() => {
-			if(Ctrl.BDDsCRUD.rows.length > 0){
-				Ctrl.openBDD(Ctrl.BDDsCRUD.rows[0]);
-			};
-		});
-
-		Ctrl.openBDD = (B) => {
-			Ctrl.BDDSel = B;
-			Ctrl.getFavoritos();
-			//Ctrl.executeQuery(); //REmove
-		};
-
-		Ctrl.TiposBDD = {
-			ODBC_DB2:     { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			ODBC_MySQL:   { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			MySQL:  	  { Op1: false, Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			SQLite: 	  { Op1: false, Op2: 'Ruta al Archivo', Op3: 'Base de Datos', Op4: false, Op5: false },
-		};
-
-		Ctrl.addBDD = () => {
-			Rs.BasicDialog({
-				Title: 'Crear Conexión a Base de Datos'
-			}).then((r) => {
-				var Nombre = r.Fields[0].Value.trim();
-				if(Rs.found(Nombre, Ctrl.BDDsCRUD.rows, 'Nombre')) return;
-
-				Ctrl.BDDsCRUD.add({
-					Nombre: Nombre,
-					Tipo: 'ODBC'
-				});
-			});
-		};
-
-		Ctrl.updateBDD = () => {
-			Ctrl.BDDsCRUD.update(Ctrl.BDDSel).then(() => {
-				Rs.showToast('Actualizado', 'Success', 5000, 'bottom right');
-			});
-		};
-
-		Ctrl.removeBDD = () => {
-			Rs.confirmDelete({
-				Title: '¿Borrar la Conexión a la Base de Datos "'+Ctrl.BDDSel.Nombre+'"?'
-			}).then((del) => {
-				if(!del) return;
-				Ctrl.BDDsCRUD.delete(Ctrl.BDDSel).then(() => {
-					Ctrl.BDDSel = null;
-				});
-			});
-		};
-
-		Ctrl.testBDD = () => {
-			Rs.http('/api/Bdds/probar', { BDD: Ctrl.BDDSel }).then((r) => {
-				Rs.showToast('Conexión Exitosa', 'Success', 5000, 'bottom right');
-			});
-		};
-
-		//Panel de Consultas SQL
-		Ctrl.SQLQuery = "";
-		Ctrl.executingQuery = false;
-		Ctrl.QueryRows = null;
-		Ctrl.executeQuery = () => {
-			if(Ctrl.SQLQuery == "" || Ctrl.executingQuery) return;
-			Ctrl.executingQuery = true;
-
-			Rs.http('/api/Bdds/query', { BDD: Ctrl.BDDSel, Query: Ctrl.SQLQuery }).then((r) => {
-				Ctrl.QueryRows = r;
-			}).finally(() => {
-				Ctrl.executingQuery = false;
-			});
-		};
-
-
-
-		//Panel de Favoritos
-		Ctrl.FavsCRUD = $injector.get('CRUD').config({ 
-			base_url: '/api/Bdds/favoritos',
-			query_scopes: [
-				[ 'mine', true ]
-			]
-		});
-
-		Ctrl.getFavoritos = () => {
-			Ctrl.FavsCRUD.setScope('bddid', Ctrl.BDDSel.id);
-			Ctrl.FavsCRUD.get();
-		};
-
-		Ctrl.useFav = (F) => {
-			if(Ctrl.executingQuery) return;
-
-			Ctrl.SQLQuery = F.Consulta;
-
-			if(F.EjecutarAutom == 'S'){
-				Ctrl.executeQuery();
-			};
-		};
-
-		Ctrl.addFav = () => {
-			Ctrl.FavsCRUD.dialog({
-				Consulta: angular.copy(Ctrl.SQLQuery),
-				EjecutarAutom: 'N',
-				bdd_id: Ctrl.BDDSel.id,
-				usuario_id: Rs.Usuario.id
-			}, {
-				title: 'Crear Favorito',
-				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
-			}).then((R) => {
-				if(!R) return;
-				Ctrl.FavsCRUD.add(R);
-			});
-		};
-
-		Ctrl.editFav = (F) => {
-			Ctrl.FavsCRUD.dialog(angular.copy(F), {
-				title: 'Favorito: ' + F.Nombre,
-				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
-			}).then((R) => {
-				if(!R) return;
-				if(R == 'DELETE') return Ctrl.FavsCRUD.delete(F);
-				Ctrl.FavsCRUD.update(R);
-			});
-		};
-
-	}
-]);
-angular.module('IndicadoresCtrl', [])
-.controller('IndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter',
-	function($scope, $rootScope, $injector, $filter) {
-
-		console.info('IndicadoresCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.IndSel = null;
-		Ctrl.IndicadoresNav = true;
-
-		Ctrl.tiposDatoInd = ['Numero','Porcentaje','Moneda'];
-		Ctrl.OpsUsar = [
-			{id: 'Cump', desc: 'Cumplimiento (1/0)'},
-			{id: 'PorcCump', desc: '% de Cumplimiento'},
-			{id: 'Valor', desc: 'Valor del Indicador'},
-		];
-
-		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Variables' });
-		Ctrl.IndicadoresCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores' });
-		Ctrl.IndicadoresVarsCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores/variables' });
-		Ctrl.MetasCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores/metas' });
-
-
-		Ctrl.getIndicadores = () => {
-			Ctrl.IndicadoresCRUD.get().then(() => {
-				Ctrl.openIndicador(Ctrl.IndicadoresCRUD.rows[0]);
-				Ctrl.getFs();
-			});
-		};
-
-		Ctrl.getFs = () => {
-			Ctrl.filterIndicadores = "";
-			Ctrl.IndicadoresFS = Rs.FsGet(Ctrl.IndicadoresCRUD.rows,'Ruta','Indicador');
-		};
-
-		Ctrl.getFolderVarData = (F) => {
-			var Vars = Ctrl.IndicadoresCRUD.rows.filter((v) => {
-				return v.Ruta.startsWith(F.route);
-			}).map(v => v.id);
-			Rs.getIndicadorData(Vars);
-		};
-
-		Ctrl.searchIndicador = () => {
-			if(Ctrl.filterIndicadores == ""){
-				Ctrl.getFs();
-			}else{
-				Ctrl.IndicadoresFS = Rs.FsGet($filter('filter')(Ctrl.IndicadoresCRUD.rows, Ctrl.filterIndicadores),'Ruta','Indicador',true);
-			};
-		};
-
-		Ctrl.addIndicador = () => {
-			Ctrl.getFs();
-			Rs.BasicDialog({
-				Title: 'Crear Indicador', Flex: 50,
-				Fields: [
-					{ Nombre: 'Nombre',  Value: '', Required: true },
-					{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.IndicadoresFS },
-					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
-				],
-			}).then((r) => {
-				if(!r) return;
-				var f = Rs.prepFields(r.Fields);
-				Ctrl.IndicadoresCRUD.add({
-					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
-					Indicador: f.Nombre,
-					Filtros: []
-				}).then(() => {
-					Ctrl.getFs();
-				});
-			});
-		};
-
-		Ctrl.openIndicador = (V) => {
-			Ctrl.IndSel = V;
-			Ctrl.IndicadoresVarsCRUD.setScope('indicador', Ctrl.IndSel.id).get();
-			Ctrl.MetasCRUD.setScope('indicador', Ctrl.IndSel.id).get();
-
-			//Rs.viewIndicadorDiag(Ctrl.IndSel.id); //FIX
-		};
-
-		Ctrl.updateIndicador = () => {
-			Ctrl.IndicadoresCRUD.update(Ctrl.IndSel).then(() => {
-				Rs.showToast('Indicador Actualizada', 'Success');
-				Ctrl.saveVariables();
-				//Ctrl.openIndicador(Ctrl.IndSel);
-			});
-		};
-
-		Ctrl.VariablesCRUD.get().then(() => {
-			Ctrl.getIndicadores();
-		});
-
-
-		Ctrl.addVariable = () => {
-			Rs.BasicDialog({
-				Title: 'Agregar Componente', Flex: 50,
-				Fields: [
-					{ Nombre: 'Variable',    Value: '', Type: 'list', List: Ctrl.VariablesCRUD.rows, Item_Val: 'id', Item_Show: 'Variable' },
-				],
-			}).then((r) => {
-				if(!r) return;
-				var f = Rs.prepFields(r.Fields);
-				Ctrl.IndicadoresVarsCRUD.add({
-					indicador_id: Ctrl.IndSel.id,
-					Letra: String.fromCharCode(97 + Ctrl.IndicadoresVarsCRUD.rows.length),
-					Tipo: 'Variable', variable_id: f.Variable
-				});
-			});
-		};
-
-		Ctrl.delVariable = (Var) => {
-			Ctrl.IndicadoresVarsCRUD.delete(Var).then(() => {
-				angular.forEach(Ctrl.IndicadoresVarsCRUD.rows, (V,i) => {
-					var Letra = String.fromCharCode(97 + i);
-					if(Letra !== V.Letra){
-						V.Letra = Letra;
-						V.changed = true;
-					};
-				});
-				Ctrl.saveVariables();
-			});
-		};
-
-		Ctrl.saveVariables = () => {
-			var Updatees = $filter('filter')(Ctrl.IndicadoresVarsCRUD.rows, { changed: true });
-			if(Updatees.length == 0) return;
-			Ctrl.IndicadoresVarsCRUD.updateMultiple(Updatees);
-			angular.forEach(Ctrl.IndicadoresVarsCRUD.rows, IV => {
-				IV.changed = false;
-			});
-		};
-
-
-
-		//Metas
-		Ctrl.addMeta = () => {
-			var PeriodoDef = Rs.AnioActual+'-01-15';
-			var f = [
-				{ Nombre: 'Periodo',  Type: 'period', Value: PeriodoDef, Required: true, flex: 50 }
-			];
-			if(Ctrl.IndSel.Sentido == 'RAN'){
-				f.push({Nombre: 'Límite Inferior',  Value: '', Type: 'string', Required: true, flex: 100 });
-				f.push({Nombre: 'Límite Superior',  Value: '', Type: 'string', Required: true, flex: 100 });
-			}else{
-				f.push({Nombre: 'Meta',  			Value: '', Type: 'string', Required: true, flex: 50 });
-			};
-			Rs.BasicDialog({
-				Title: 'Crear Meta',
-				Fields: f
-			}).then(f => {
-				if(!f) return;
-				var m = {
-					indicador_id: Ctrl.IndSel.id,
-					PeriodoDesde: moment(f.Fields[0].Value).format('YYYYMM'),
-					Meta: f.Fields[1].Value,
-					Meta2: ((Ctrl.IndSel.Sentido == 'RAN') ? f.Fields[2].Value : null),
-				};
-
-				if($filter('filter')(Ctrl.MetasCRUD.rows, { PeriodoDesde: m.PeriodoDesde }).length > 0) return Rs.showToast('Periodo ya existe', 'Error');
-				
-				Ctrl.MetasCRUD.add(m);
-			});
-		};
-
-		Ctrl.delMeta = (Meta) => {
-			Ctrl.MetasCRUD.delete(Meta);
-		};
-
-		
-	}
-]);
-angular.module('Indicadores_IndicadorDiagCtrl', [])
-.controller('Indicadores_IndicadorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'indicador_id', '$timeout',
-	function($scope, $rootScope, $mdDialog, $filter, indicador_id, $timeout) {
-
-		console.info('Indicadores_IndicadorDiagCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		Ctrl.Cancel = () => { $mdDialog.cancel(); }
-
-		Ctrl.Meses = Rs.Meses;
-		Ctrl.inArray = Rs.inArray;
-		Ctrl.Anio  = angular.copy(Rs.AnioActual);
-		Ctrl.anioAdd = (num) => { Ctrl.Anio += num; Ctrl.getIndicadores(); };
-		Ctrl.Sentidos = Rs.Sentidos;
-
-        Ctrl.modoComparativo = false;
-
-		Ctrl.getIndicadores = () => {
-
-			Rs.http('api/Indicadores/get', { id: indicador_id, Anio: Ctrl.Anio }, Ctrl, 'Ind').then(() => {
-
-				angular.forEach(Ctrl.Ind.valores, (m,k) => {
-					var i = parseInt(m.mes);
-					Ctrl.graphData[0].values[i-1] = { x: i, y: m.Valor, 	  val: m.val,         series: 0, key: 'Valor', color: m.color };
-                    Ctrl.graphData[1].values[i-1] = { x: i, y: m.meta_Valor,  val: m.meta_val,    series: 1, key: 'Meta'     };
-                    Ctrl.graphData[2].values[i-1] = { x: i, y: m.meta2_Valor, val: m.meta_val,    series: 2, key: 'Meta2'    };
-					Ctrl.graphData[3].values[i-1] = { x: i, y: m.anioAnt,     val: m.anioAnt_val, series: 3, key: 'AnioAnt', color: m.anioAnt_color  };
-				});
-
-                Ctrl.updateChart();
-
-			});
-
-		};
-
-        Ctrl.updateChart = () => {
-            Ctrl.graphData[2].disabled = !(Ctrl.Ind.Sentido == 'RAN');
-            Ctrl.graphData[3].disabled = !Ctrl.modoComparativo;
-            d3.selectAll('.nvtooltip').style('opacity', 0);
-            Ctrl.graphApi.update();
-        }
-		
-
-
-
-
-
-
-
- 		Ctrl.grapOptions = {
-            chart: {
-                type: 'multiChart',
-                margin: {
-                	top:10, right:20, bottom:0, left:100
-                },
-                height: 150,
-                y: function(d,i) { return d.y; },
-                x: function(d,i) { return d.x; },
-                showLegend: false,
-                xAxis: {
-                	showMaxMin: false,
-                    ticks: 0,
-                    tickFormat: function(d){
-                        return Rs.Meses[d-1][1];
-                    },
-                },
-                yAxis1: {
-                    tickFormat: function(d){
-                        return Rs.formatVal(d,Ctrl.Ind.TipoDato,Ctrl.Ind.Decimales);
-                    },
-                },
-                bars1: {
-                },
-                lines1: {
-                	padData: true,
-                },
-                padData: true,
-                //yDomain1: [0,0.1],
-                useInteractiveGuideline: true,
-                interactiveLayer:{
-                	showGuideLine: false,
-                    tooltip: {
-                        contentGenerator: (obj) => {
-                            var Periodo = `${Rs.Meses[obj.index][1]} ${Ctrl.Anio}`;
-                            var Resultado = obj.series[0].data.val;
-                            var Meta      = obj.series[1].data.val;
-                            var Color     = obj.series[0].data.color;
-                            return `<table><thead><tr><td class=x-value colspan=3><div class='md-title'>${Periodo}</div></td></tr></thead><tbody>
-                            <tr style='color:${Color}'><td class=key>Resultado</td><td class='value'>${Resultado}</td></tr>
-                            <tr><td class=key>Meta:</td><td class=value>${Meta}</td></tr>
-                            </tbody></table>`;
-                        }
-                    }
-                    
-                }
-            }
-        };
-
-        Ctrl.graphData = [
-        	{ key: 'Valor',    yAxis: 1, type: 'bar',  values: [] },
-            { key: 'Meta',     yAxis: 1, type: 'line', values: [], classed: 'dashed', color: 'white' },
-            { key: 'Meta2',    yAxis: 1, type: 'line', values: [], classed: 'dashed', color: 'white' },
-        	{ key: 'AnioAnt',  yAxis: 1, type: 'bar',  values: [] },
-        ];
-
-        Ctrl.getIndicadores();
-
-        Ctrl.viewCompDiag = (comp) => {
-            if(comp.Tipo == 'Variable')  return Rs.viewVariableDiag(comp.variable_id);
-            if(comp.Tipo == 'Indicador') return Rs.viewIndicadorDiag(comp.variable_id);
-        };
-	}
-]);
-
 angular.module('ScorecardsCtrl', [])
 .controller('ScorecardsCtrl', ['$scope', '$rootScope', '$injector', '$filter',
 	function($scope, $rootScope, $injector, $filter) {
@@ -3093,6 +3228,9 @@ angular.module('SARA', [
 		'Entidades_EditoresCtrl',
 		'Entidades_EditorDiagCtrl',
 		'Entidades_EditorConfigDiagCtrl',
+
+		'Entidades_CargadoresCtrl',
+		'Entidades_CargadorDiagCtrl',
 		
 	'VariablesCtrl',
 		'VariablesGetDataDiagCtrl',
@@ -3679,6 +3817,8 @@ angular.module('appFunctions', [])
 			}
 		};
 
+		Rs.VariablesSistema = [ 'Fecha Actual', 'Hora Actual', 'FechaHora Actual', 'Usuario Logueado' ];
+
 		Rs.formatVal = (d, TipoDato, Decimales) => {
 			if(TipoDato == 'Porcentaje') return d3.format('.'+Decimales+'%')(d);
             if(TipoDato == 'Moneda')     return d3.format('$,.'+Decimales)(d);
@@ -3751,6 +3891,17 @@ angular.module('appFunctions', [])
 				clickOutsideToClose: false, fullscreen: false, multiple: true,
 				onComplete: (scope, element) => {
 					scope.getEditor(editor_id, Obj, Config);
+				}
+			});
+		};
+
+		Rs.viewCargadorDiag = (cargador_id) => {
+			$mdDialog.show({
+				controller: 'Entidades_CargadorDiagCtrl',
+				templateUrl: '/Frag/Entidades.Entidades_CargadorDiag',
+				clickOutsideToClose: false, fullscreen: false, multiple: true,
+				onComplete: (scope, element) => {
+					scope.getCargador(cargador_id);
 				}
 			});
 		};

@@ -70,7 +70,7 @@ class EntidadCampo extends MyModel
 
 	public function getCampoTitleAttribute()
 	{
-		return $this->Alias ?: $this->campo->Columna;
+		return $this->Alias ?: $this->Columna;
 	}
 
 

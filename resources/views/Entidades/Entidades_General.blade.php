@@ -31,13 +31,13 @@
 			<md-input-container class="" flex=15>
 				<label>Llave Primaria</label>
 				<md-select ng-model="EntidadSel.campo_llaveprim" aria-label="s">
-					<md-option ng-repeat="C in CamposCRUD.rows" ng-value="C.id">{{  C.Alias !== null ? C.Alias : C.Columna }}</md-option>
+					<md-option ng-repeat="C in CamposCRUD.rows" ng-value="C.id">{{  C.Alias || C.Columna }}</md-option>
 				</md-select>
 			</md-input-container>
 			<md-input-container class="no-margin-bottom" flex=15>
 				<label>Ordenar Por</label>
 				<md-select ng-model="EntidadSel.campo_orderby" aria-label="s">
-					<md-option ng-repeat="C in CamposCRUD.rows" ng-value="C.id">{{  C.Alias !== null ? C.Alias : C.Columna }}</md-option>
+					<md-option ng-repeat="C in CamposCRUD.rows" ng-value="C.id">{{  C.Alias || C.Columna }}</md-option>
 				</md-select>
 			</md-input-container>
 			<md-input-container class="no-margin-bottom" flex=10>
@@ -62,7 +62,7 @@
 				<label>Descripción {{D}}</label>
 				<md-select ng-model="EntidadSel.config['campo_desc'+D]">
 					<md-option ng-value="null">Ninguna</md-option>
-					<md-option ng-repeat="C in CamposCRUD.rows" ng-value="C.id">{{  C.campo_title }}</md-option>
+					<md-option ng-repeat="C in CamposCRUD.rows" ng-value="C.id">{{  C.Alias || C.Columna }}</md-option>
 				</md-select>
 			</md-input-container>
 

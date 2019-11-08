@@ -407,6 +407,8 @@ angular.module('appFunctions', [])
 			}
 		};
 
+		Rs.VariablesSistema = [ 'Fecha Actual', 'Hora Actual', 'FechaHora Actual', 'Usuario Logueado' ];
+
 		Rs.formatVal = (d, TipoDato, Decimales) => {
 			if(TipoDato == 'Porcentaje') return d3.format('.'+Decimales+'%')(d);
             if(TipoDato == 'Moneda')     return d3.format('$,.'+Decimales)(d);
@@ -479,6 +481,17 @@ angular.module('appFunctions', [])
 				clickOutsideToClose: false, fullscreen: false, multiple: true,
 				onComplete: (scope, element) => {
 					scope.getEditor(editor_id, Obj, Config);
+				}
+			});
+		};
+
+		Rs.viewCargadorDiag = (cargador_id) => {
+			$mdDialog.show({
+				controller: 'Entidades_CargadorDiagCtrl',
+				templateUrl: '/Frag/Entidades.Entidades_CargadorDiag',
+				clickOutsideToClose: false, fullscreen: false, multiple: true,
+				onComplete: (scope, element) => {
+					scope.getCargador(cargador_id);
 				}
 			});
 		};

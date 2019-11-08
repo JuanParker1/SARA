@@ -15,9 +15,6 @@
 </div>
 
 <div ng-if="inArray(R.campo.Tipo, ['Entero','Decimal'])">
-
-
-
 </div>
 
 <div ng-if="inArray(R.campo.Tipo, ['Fecha'])">
@@ -46,3 +43,15 @@
 	</md-input-container>
 
 </div>
+
+<div ng-if="inArray(R.campo.Tipo, ['Entidad'])">
+	<md-input-container>
+		<input type="text" ng-model="R.Valor">
+	</md-input-container>
+</div>
+
+
+
+
+
+

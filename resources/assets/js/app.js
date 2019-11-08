@@ -56,6 +56,9 @@ angular.module('SARA', [
 		'Entidades_EditoresCtrl',
 		'Entidades_EditorDiagCtrl',
 		'Entidades_EditorConfigDiagCtrl',
+
+		'Entidades_CargadoresCtrl',
+		'Entidades_CargadorDiagCtrl',
 		
 	'VariablesCtrl',
 		'VariablesGetDataDiagCtrl',

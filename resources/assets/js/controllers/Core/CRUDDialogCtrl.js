@@ -9,6 +9,7 @@ angular.module('CRUDDialogCtrl', [])
 		Ctrl.config = {};
 		Ctrl.columns = columns;
 		Ctrl.Obj = {};
+		console.log(columns);
 		//Ctrl.Obj = angular.copy(Obj);
 
 		//Saber si es nuevo

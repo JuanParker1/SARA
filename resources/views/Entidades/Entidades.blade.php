@@ -52,13 +52,24 @@
 		
 		
 	    <div layout class="border-bottom">
-			<md-button class="md-icon-button no-margin h40 mw40 w40" aria-label="Button" ng-click="EntidadSidenav = !EntidadSidenav">
+
+    		<md-button class="md-icon-button no-margin h40 mw40 w40" aria-label="Button" ng-click="EntidadSidenav = !EntidadSidenav">
 				<md-icon md-svg-icon="md-bars"></md-icon>
 			</md-button>
-			<div class="text-bold lh40 margin-right" hide-xs>{{ EntidadSel.Nombre }}</div>
-			<span flex></span>
-			<md-tabs class="w310">
-				<md-tab ng-repeat="S in ['General','Grids','Editores']" ng-click="navToSubsection(S)" label="{{ S }}" md-active="State.route[3] == S"></md-tab>
+			<div class="text-bold lh40 margin-right" hide-xs md-truncate style="min-width: 149px">{{ EntidadSel.Nombre }}</div>
+ 
+	    	<div ng-repeat="I in EntidadesSecciones" layout layout-align="center center" class="mw40 border-left relative SectionIcon" 
+				md-ink-ripple ng-class="{ 'border-right': $last, 'SectionIcon_Selected': State.route[3] == I[0] }" 
+				ng-click="navToSubsection(I[0])">
+	    		<md-icon md-font-icon="{{ I[1] }} fa-fw SectionIcon_Icon"></md-icon>
+	    		<div class="SectionIcon_Text">{{ I[0] }}</div>
+	    		<md-tooltip md-direction="bottom" hide>{{ I[0] }}</md-tooltip>
+	    	</div>
+
+	    	<div layout flex></div>
+			
+			<md-tabs class="w450" hide>
+				<md-tab ng-repeat="S in ['General','Grids','Editores','Cargadores']" ng-click="navToSubsection(S)" label="{{ S }}" md-active="State.route[3] == S"></md-tab>
 		    </md-tabs>
 		</div>
 
@@ -72,3 +83,10 @@
 	</div>
 
 </div>
+
+<style type="text/css">
+	
+	
+
+
+</style>

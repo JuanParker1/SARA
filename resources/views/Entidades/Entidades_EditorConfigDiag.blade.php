@@ -35,29 +35,32 @@
 						</tr>
 					</thead>
 					<tbody md-body>
-						<tr md-row class="" ng-repeat="C in Editor.campos">
+						<tr md-row class="" ng-repeat="R in Editor.campos">
 							<td md-cell class="md-cell-compress">
-								<md-icon md-svg-icon="{{ TiposCampo[C.campo.Tipo].Icon }}" class="s15"></md-icon>
-								<div style="display:inline">{{ C.campo_title }}</div>
+								<md-icon md-svg-icon="{{ TiposCampo[R.campo.Tipo].Icon }}" class="s15"></md-icon>
+								<div style="display:inline">{{ R.campo_title }}</div>
 							</td>
 							<td md-cell class="md-cell-compress">
-								<md-select ng-model="C.tipo_valor" class="w100p">
+								<md-select ng-model="R.tipo_valor" class="w100p">
 									<md-option ng-repeat="Op in TiposValor" ng-value="Op">{{ Op }}</md-option>
 								</md-select>
 							</td>
-							<td md-cell></td>
+							<td md-cell>
+								
+							</td>
 						</tr>
 					</tbody>
 				</table>
 			</md-table-container>
 		</div>
 
-
-
-
-
 		<pre hide>{{ Editor | json }}</pre>
 
+	</div>
+
+	<div layout class="bg-lightgrey-5">
+		<span flex></span>
+		<md-button class="md-raised md-primary">Guardar</md-button>
 	</div>
 
 </md-dialog>
