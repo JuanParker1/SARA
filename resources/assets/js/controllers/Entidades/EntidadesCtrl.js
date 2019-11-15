@@ -8,7 +8,7 @@ angular.module('EntidadesCtrl', [])
 
 		Ctrl.EntidadSidenav = true;
 		Ctrl.loadingEntidad = false;
-
+		Ctrl.showCampos = true;
 
 		Ctrl.EntidadesCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades', 					order_by: ['Nombre'] });
 		Ctrl.CamposCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/campos', 			order_by: ['Indice'] });
@@ -44,10 +44,10 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.getEntidades = () => {
 			Ctrl.EntidadesCRUD.get().then(() => {
 				Ctrl.getFsEntidades();
-				//console.log(Ctrl.EntidadesCRUD.rows);
+				console.log(Ctrl.EntidadesCRUD.rows);
 				Ctrl.openEntidad(Ctrl.EntidadesCRUD.rows[4]); //QUITAR
-				//Ctrl.navToSubsection('General');
-				Ctrl.navToSubsection('Cargadores');
+				Ctrl.navToSubsection('General');
+				//Ctrl.navToSubsection('Grids');
 			});
 		};
 
@@ -126,6 +126,7 @@ angular.module('EntidadesCtrl', [])
 			Ctrl.CamposCRUD.setScope('entidad', Ctrl.EntidadSel.id);
 			Ctrl.CamposCRUD.get().then(() => {
 				Ctrl.loadingEntidad = false;
+				Ctrl.configLista(Ctrl.CamposCRUD.rows[3]);
 			});
 
 			Ctrl.newCampo = angular.copy(newCampoDef);
@@ -151,7 +152,8 @@ angular.module('EntidadesCtrl', [])
 			Visible: true,
 			Editable: true,
 			Buscable: false,
-			Tipo: 'Texto'
+			Tipo: 'Texto',
+			Config: []
 		};
 		
 		Ctrl.addCampo = () => {
@@ -228,6 +230,18 @@ angular.module('EntidadesCtrl', [])
 						Rs.showToast(newCampos.length+' campos agregados');
 					});
 				});
+			});
+		};
+
+		Ctrl.configLista = (C) => {
+			console.log(C);
+			$mdDialog.show({
+				controller: 'Entidades_Campos_ListaConfigCtrl',
+				templateUrl: 'Frag/Entidades.Entidades_Campos_ListaConfig',
+				clickOutsideToClose: false,
+				fullscreen: false,
+				multiple: true,
+				locals: { C: C }
 			});
 		};
 

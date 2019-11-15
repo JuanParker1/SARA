@@ -25,13 +25,13 @@
 						ng-class="{ 'app_pagesel': P.id == PageSel.id }"
 						ng-click="openPage(P)">{{ P.Titulo }}</div>
 				</div>
-				<!--<img src="https://eventosadversos.comfamiliar.com/img/logo.png" width="90%" style="margin: 10px auto" >-->
+				<img src="https://eventosadversos.comfamiliar.com/img/logo.png" width="90%" style="margin: 10px auto" >
 			</div>
 		</div>
 
 
 
-		<div layout=column flex ng-repeat="P in AppSel.pages" ng-if="P.loaded" ng-show="P.id == PageSel.id">
+		<div layout=column flex ng-repeat="P in AppSel.pages" ng-if="P.id == PageSel.id">
 
 			<div flex ng-if="P.Tipo == 'ExternalUrl'">
 				<iframe ng-src="{{ getIframeUrl(P.Config.url) }}"></iframe>			
@@ -43,6 +43,10 @@
 
 			<div flex layout ng-if="P.Tipo == 'Grid'" ng-controller="Entidades_GridDiagCtrl" ng-init="getGrid(P.Config.element_id)">
 				@include('Entidades.Entidades_GridDiag')
+			</div>
+
+			<div flex layout ng-if="P.Tipo == 'Cargador'" ng-controller="Entidades_CargadorDiagCtrl" ng-init="getCargador(P.Config.element_id)">
+				@include('Entidades.Entidades_CargadorDiag')
 			</div>
 
 		</div>

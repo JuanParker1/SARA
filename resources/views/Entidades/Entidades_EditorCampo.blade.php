@@ -1,10 +1,26 @@
-<md-input-container class="no-margin" ng-if="C.campo.Tipo == 'Texto'">
+<md-input-container class="" ng-if="C.campo.Tipo == 'Texto'">
 	<label>{{ C.campo_title }}</label>
-	<input type="text" ng-model="C.val" name="c{{ C.id }}">
+	<input type="text" ng-model="C.val" name="c{{ C.id }}" ng-required="{{ C.Requerido }}">
+</md-input-container>
+
+<md-input-container class="" ng-if="inArray(C.campo.Tipo, ['Entero'])">
+	<label>{{ C.campo_title }}</label>
+	<input type="number" ng-model="C.val" name="c{{ C.id }}" ng-required="{{ C.Requerido }}">
+</md-input-container>
+
+<md-input-container class="" ng-if="inArray(C.campo.Tipo, ['Dinero'])">
+	<label>{{ C.campo_title }}</label>
+	<input type="text" ng-model="C.val" name="c{{ C.id }}" ng-required="{{ C.Requerido }}" ui-money-mask="0">
+</md-input-container>
+
+<md-input-container class="" ng-if="inArray(C.campo.Tipo, ['Fecha'])">
+	<label>{{ C.campo_title }}</label>
+	<md-datepicker ng-model="C.val" name="c{{ C.id }}" ng-required="{{ C.Requerido }}" md-hide-icons="calendar"></md-datepicker>
 </md-input-container>
 
 
-<div layout class="padding-right">
+
+<div layout class="" ng-if="C.campo.Tipo == 'Entidad'">
 	
 	<md-autocomplete flex class=""
 		md-floating-label="{{ C.campo_title }}"
@@ -35,13 +51,14 @@
 
 		<md-not-found>"{{C.searchText}}" no encontrado.</md-not-found>
 	</md-autocomplete>
-	<md-button class="md-icon-button s30 no-margin no-padding " 
+
+	<md-button class="md-icon-button s30 no-margin no-padding " hide
 		style="transform: translateY(20px);" ng-show="C.val == null" ng-click="clearCampo(C)">
 		<md-icon md-font-icon="fa-search"></md-icon>
 		<md-tooltip md-direction="left">Buscar</md-tooltip>
 	</md-button>
 
-	<div flex layout=column ng-show="C.val !== null" class="margin-10-0">
+	<div flex layout=column ng-show="C.val !== null" class="">
 		<div class="md-caption text-clear">{{ C.campo_title }}</div>
 		<div class="bg-lightgrey-5 padding-5 border-radius border" layout=column>
 			<div class="entidad_chip" layout=column>
@@ -52,9 +69,9 @@
 		</div>
 	</div>
 	<md-button class="md-icon-button s30 no-margin no-padding focus-on-hover" 
-		style="transform: translateY(23px);" ng-show="C.val !== null" ng-click="clearCampo(C)">
-		<md-icon md-font-icon="fas fa-redo fa-flip-horizontal"></md-icon>
-		<md-tooltip md-direction="left">Cambiar</md-tooltip>
+		style="transform: translateY(23px);" ng-show="C.val !== null && C.Editable" ng-click="clearCampo(C)">
+		<md-icon md-font-icon="fas fa-eraser"></md-icon>
+		<md-tooltip md-direction="left">Borrar</md-tooltip>
 	</md-button>
 </div>
 

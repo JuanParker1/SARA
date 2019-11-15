@@ -37,11 +37,11 @@ angular.module('Filters', [])
 		return function(input, exclude, prop) {
 			if (!angular.isArray(input)) return input;
 			if (!angular.isArray(exclude)) exclude = [];
-			if (prop) {
+			/*if (prop) {
 				exclude = exclude.map(function byProp(item) {
 					return item[prop];
 				});
-			};
+			};*/
 
 			return input.filter(function byExclude(item) {
 				return exclude.indexOf(prop ? item[prop] : item) === -1;
@@ -145,4 +145,10 @@ angular.module('Filters', [])
 			if(tipodato == 'Moneda') return "$ " + number;
 			return number;
 		};
-	}]);
+	}]).filter('splice', function() {
+		return function(input, index, len) {
+			if(!input) return input;
+			//if(!index || !len) return input;
+			return input.splice(index, len);
+		};
+	});

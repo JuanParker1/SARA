@@ -66,9 +66,15 @@
 			<div class="bg-white w150 border border-radius" layout=column style="margin: 5px 0 5px 5px">
 				<div class="padding-5 md-subheader">Páginas</div>
 				<div flex layout=column class="overflow-y darkScroll">
-					<div class="margin-left-5 padding-5 Pointer h15 lh15 text-15px" 
-						ng-repeat="P in PagesCRUD.rows | orderBy:'Indice'" ng-click="openPage(P)"
-						ng-class="{'text-bold': P.id == PageSel.id}">{{ P.Titulo }}</div>
+					<div class="margin-left-5 padding-5 Pointer lh15 text-15px" 
+						ng-repeat="P in PagesCRUD.rows | orderBy:'Indice'" 
+						ng-class="{'text-bold': P.id == PageSel.id}" layout>
+						<div flex ng-click="openPage(P)" class="mh15 Pointer">{{ P.Titulo }}</div>
+						<md-button class="md-icon-button no-margin no-padding s15" aria-label="b" ng-show="!$first && PagesCRUD.rows.length > 0" 
+							style="transform: translateY(1px);" ng-click="movePageUp(P)">
+							<md-icon class="fa-arrow-up s15"></md-icon>
+						</md-button>
+					</div>
 				</div>
 			
 				<md-button class="margin-5" aria-label="b" ng-click="addPage()">

@@ -50,17 +50,18 @@ class Usuario extends Model
         $this->Secciones = $Secciones;
     }
 
-    public function apps()
+    /*public function apps()
     {
         return $this->belongsToMany('App\Models\Apps', 'sara_usuario_apps', 'usuario_id', 'app_id')->withPivot('favorito');
-    }
+    }*/
 
     public function getApps()
     {
-        $this->Apps = $this->apps()->get()->transform(function($A){
+        /*$this->Apps = $this->apps()->get()->transform(function($A){
             $A['favorito'] = ($A['pivot']['favorito'] == 1);
             return $A;
-        });
+        });*/
+        $this->Apps = \App\Models\Apps::all();
     }
 
 

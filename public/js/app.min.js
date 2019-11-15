@@ -57,14 +57,6 @@ angular.module('InicioCtrl', [])
 			Rs.http('api/App/favorito', { usuario_id: Rs.Usuario.id, app_id: A.id, favorito: make });
 		};
 
-		Ctrl.openApp = (A) => {
-			console.log(A);
-		};
-
-
-
-		
-
 
 	}
 ]);
@@ -110,14 +102,16 @@ angular.module('LoginCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.AppsSidenav = true;
 
-		Ctrl.Grids 		= Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
-		Ctrl.Scorecards = Rs.http('/api/Indicadores/scorecards-all', {}, Ctrl, 'Scorecards');
+		Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
+		Rs.http('/api/Entidades/cargadores-get', {}, Ctrl, 'Cargadores');
+		Rs.http('/api/Indicadores/scorecards-all', {}, Ctrl, 'Scorecards');
 		Ctrl.AppsCRUD  = $injector.get('CRUD').config({ base_url: '/api/App/apps' });
 		Ctrl.PagesCRUD = $injector.get('CRUD').config({ base_url: '/api/App/pages' });
 		Ctrl.TiposPage = [
 			{ id: 'ExternalUrl', Icono: 'fa-external-link-square-alt',  Nombre: 'Url Externa' 	 },
 			{ id: 'Scorecard',   Icono: 'fa-th-large', 					Nombre: 'Dashboard' 	 },
 			{ id: 'Grid', 		 Icono: 'fa-table', 					Nombre: 'Tabla de Datos' },
+			{ id: 'Cargador', 	 Icono: 'fa-sign-in-alt fa-rotate-270', Nombre: 'Cargador' },
 		];
 		var DefConfig = { url: '', element_id: null, elements_ids: [], buttons_main: [], buttons_grid: [] };
 
@@ -192,6 +186,15 @@ angular.module('LoginCtrl', [])
 				Ctrl.PagesCRUD.add(f);
 			});
 
+		};
+
+		Ctrl.movePageUp = (P) => {
+			var indexAnt = Rs.getIndex(Ctrl.PagesCRUD.rows, (P.Indice-1), 'Indice' );
+			PAnt = Ctrl.PagesCRUD.rows[indexAnt];
+			PAnt.Indice++;
+			P.Indice--;
+
+			Ctrl.PagesCRUD.updateMultiple([PAnt, P]);
 		};
 
 		Ctrl.prepConfig = () => {
@@ -376,6 +379,1063 @@ angular.module('BDDCtrl', [])
 			});
 		};
 
+	}
+]);
+angular.module('EntidadesCamposCtrl', [])
+.controller('EntidadesCamposCtrl', ['$scope', '$rootScope', 
+	function($scope, $rootScope) {
+
+		console.info('EntidadesCamposCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		
+	}
+]);
+angular.module('EntidadesCtrl', [])
+.controller('EntidadesCtrl', ['$scope', '$rootScope', '$injector', '$mdDialog', '$filter', '$timeout',
+	function($scope, $rootScope, $injector, $mdDialog, $filter, $timeout) {
+
+		console.info('EntidadesCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.EntidadSidenav = true;
+		Ctrl.loadingEntidad = false;
+		Ctrl.showCampos = true;
+
+		Ctrl.EntidadesCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades', 					order_by: ['Nombre'] });
+		Ctrl.CamposCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/campos', 			order_by: ['Indice'] });
+		Ctrl.RestricCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/restricciones', 		add_research: true, add_with:['campo'] });
+		Ctrl.GridsCRUD 			= $injector.get('CRUD').config({ base_url: '/api/Entidades/grids', 				order_by: ['Titulo'] });
+		Ctrl.GridColumnasCRUD 	= $injector.get('CRUD').config({ base_url: '/api/Entidades/grids-columnas', 	query_with:['campo'], add_append:'refresh', order_by: ['Indice'] });
+		Ctrl.GridFiltrosCRUD 	= $injector.get('CRUD').config({ base_url: '/api/Entidades/grids-filtros', 		order_by: ['Indice'] });
+		Ctrl.EditoresCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/editores', 			order_by: ['Titulo'] });
+		Ctrl.EditoresCamposCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/editores-campos', 	order_by: ['Indice'] });
+		Ctrl.CargadoresCRUD 	= $injector.get('CRUD').config({ base_url: '/api/Entidades/cargadores', 		order_by: ['Titulo'] });
+		
+
+		Ctrl.EntidadesSecciones = [
+			['General',  	'fa-chess-pawn' ],
+			['Grids'  ,  	'fa-table' ],
+			['Editores', 	'fa-pen-square' ],
+			['Cargadores', 	'fa-sign-in-alt fa-rotate-270' ],
+		];
+
+		Ctrl.navToSubsection = (subsection) => { 
+			Rs.navTo('Home.Section.Subsection', { section: 'Entidades', subsection: subsection }); 
+		};
+
+		Ctrl.getBdds = () => {
+			Rs.http('api/Bdds/all', {}, Ctrl, 'Bdds').then(() => {
+				if(Ctrl.Bdds.length > 0){
+					Ctrl.BddSel = Ctrl.Bdds[0];
+					Ctrl.getEntidades();
+				}
+			});
+		};
+
+		Ctrl.getEntidades = () => {
+			Ctrl.EntidadesCRUD.get().then(() => {
+				Ctrl.getFsEntidades();
+				console.log(Ctrl.EntidadesCRUD.rows);
+				Ctrl.openEntidad(Ctrl.EntidadesCRUD.rows[4]); //QUITAR
+				Ctrl.navToSubsection('General');
+				//Ctrl.navToSubsection('Grids');
+			});
+		};
+
+		Ctrl.getFsEntidades = () => {
+			Ctrl.filterEntidades = "";
+			Ctrl.FsEntidades = Rs.FsGet(Ctrl.EntidadesCRUD.rows,'Ruta','Entidad');
+		};
+
+		Ctrl.searchEntidades = () => {
+			if(Ctrl.filterEntidades == ""){
+				Ctrl.getFsEntidades();
+			}else{
+				Ctrl.FsEntidades = Rs.FsGet($filter('filter')(Ctrl.EntidadesCRUD.rows, Ctrl.filterEntidades),'Ruta','Entidad',true);
+			};
+		};
+
+		Ctrl.getEntidad = (id) => {
+			return $filter('filter')(Ctrl.EntidadesCRUD.rows, { id: id }, true)[0];
+		};
+
+		Ctrl.openEntidad = (E) => {
+			if(!E) return;
+			if(Ctrl.EntidadSel){ if(Ctrl.EntidadSel.id == E.id) return; }
+			Ctrl.loadingEntidad = true;
+			Ctrl.EntidadSel = E;
+			Ctrl.getCampos();
+			Ctrl.getRestricciones();
+		}
+
+		Ctrl.addEntidad = () => {
+
+			Ctrl.getFsEntidades();
+			Rs.BasicDialog({
+				Title: 'Crear Entidad', Flex: 50,
+				Fields: [
+					{ Nombre: 'Nombre',  Value: '', Required: true, flex: 50 },
+					{ Nombre: 'Tabla',   Value: '', Required: true, flex: 50 },
+					{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.FsEntidades },
+					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
+				],
+			}).then((r) => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				Ctrl.EntidadesCRUD.add({
+					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
+					Nombre: f.Nombre, Tabla: f.Tabla,
+					bdd_id: Ctrl.BddSel.id, Tipo: 'Tabla'
+				}).then(() => {
+					Ctrl.getFsEntidades();
+				});
+			});
+		};
+
+		Ctrl.updateEntidad = () => {
+			Ctrl.EntidadesCRUD.update(Ctrl.EntidadSel).then(() => {
+
+				//Actualizar los campos
+				Rs.http('/api/Entidades/campos-update', { Campos: Ctrl.CamposCRUD.rows }).then(() => {
+					angular.forEach(Ctrl.CamposCRUD.rows, (C,index) => { C.changed = false; });
+
+					//Actualizar las restricciones
+					Rs.http('/api/Entidades/restricciones-update', { Restricciones: Ctrl.RestricCRUD.rows }).then(() => {
+						angular.forEach(Ctrl.RestricCRUD.rows, (R,index) => { R.changed = false; });
+						Rs.showToast('Entidad Actualizada', 'Success');
+					});
+				});
+
+				
+			});
+		};
+
+
+		//Campos
+		Ctrl.getCampos = () => {
+	
+			Ctrl.CamposCRUD.setScope('entidad', Ctrl.EntidadSel.id);
+			Ctrl.CamposCRUD.get().then(() => {
+				Ctrl.loadingEntidad = false;
+				Ctrl.configLista(Ctrl.CamposCRUD.rows[3]);
+			});
+
+			Ctrl.newCampo = angular.copy(newCampoDef);
+			Ctrl.setTipoDefaults(Ctrl.newCampo);
+		};
+
+		Ctrl.camposSel = [];
+		Ctrl.setTipoDefaults = (C) => {
+			C.Defecto = null;
+			var Defaults = Ctrl.TiposCampo[C.Tipo]['Defaults'];
+			C = angular.extend(C,Defaults);
+			C.changed = true;
+		};
+
+		Ctrl.markChanged = (C) => {
+			C.changed = true;
+		};
+
+		var newCampoDef = {
+			Columna: '',
+			Alias: null,
+			Requerido: false,
+			Visible: true,
+			Editable: true,
+			Buscable: false,
+			Tipo: 'Texto',
+			Config: []
+		};
+		
+		Ctrl.addCampo = () => {
+			Ctrl.newCampo.Columna = Ctrl.newCampo.Columna.trim();
+			if(Ctrl.newCampo.Columna == '') return Rs.showToast('Falta Columna', 'Error');
+			if(Rs.found(Ctrl.newCampo.Columna, Ctrl.CamposCRUD.rows, 'Columna')) return;
+			Ctrl.newCampo.entidad_id = Ctrl.EntidadSel.id;
+			Ctrl.newCampo.Indice = Ctrl.CamposCRUD.rows.length;
+			Ctrl.CamposCRUD.add(Ctrl.newCampo).then(() => {
+				Ctrl.newCampo = angular.copy(newCampoDef);
+				Ctrl.setTipoDefaults(Ctrl.newCampo);
+				setTimeout(function(){ $("#newCampo").focus(); }, 500);
+			});
+		};
+
+		Ctrl.removeCampos = () => {
+			Rs.confirmDelete({
+				Title: '¿Borrar '+Ctrl.camposSel.length+' campos?',
+			}).then((del) => {
+				console.log(del);
+				if(!del) return;
+				Rs.http('/api/Entidades/campos-delete', { ids: Ctrl.camposSel }).then((msg) => {
+					if(msg == 'OK'){
+						Ctrl.getCampos();
+						Rs.showToast(Ctrl.camposSel.length+' campos eliminados');
+						Ctrl.camposSel = [];
+					}else{
+						Rs.showToast(msg, 'Error');
+					};
+				});
+			});
+		};
+
+		Ctrl.OpsBooleano = [
+			{ Mostrar: 'Ninguno', 	Valor: null  },
+			{ Mostrar: 'Verdadero', Valor: true  },
+			{ Mostrar: 'Falso',     Valor: false },
+		];
+
+		Ctrl.dragListener = {
+			accept: function (sourceItemHandleScope, destSortableScope) { return true; },
+			orderChanged: () => {
+				angular.forEach(Ctrl.CamposCRUD.rows, (C,index) => {
+					if(C.Indice !== index){
+						C.Indice = index;
+						C.changed = true;
+					};
+				});
+			}
+		};
+
+		Ctrl.getCamposAuto = () => {
+			Rs.http('api/Entidades/campos-autoget', { Bdd: Ctrl.BddSel, Entidad: Ctrl.EntidadSel, Campos: Ctrl.CamposCRUD.rows }).then((r) => {
+				if(r.length == 0) return Rs.showToast('No se encontraron nuevos campos');
+
+				$mdDialog.show({
+					controller: 'Entidades_AddColumnsCtrl',
+					templateUrl: 'Frag/Entidades.Entidades_AddColumns',
+					clickOutsideToClose: false,
+					fullscreen: false,
+					multiple: true,
+					locals: { ParentCtrl: Ctrl, newCampos: r }
+				}).then((newCampos) => {
+					if(newCampos.length == 0) return;
+					
+					var current_index = Ctrl.CamposCRUD.rows.length;
+					angular.forEach(newCampos, (nc) => {
+						nc.Indice = current_index;
+						current_index++;
+					});
+
+					Rs.http('api/Entidades/campos-add', { newCampos: newCampos }).then(() => {
+						Ctrl.getCampos();
+						Rs.showToast(newCampos.length+' campos agregados');
+					});
+				});
+			});
+		};
+
+		Ctrl.configLista = (C) => {
+			console.log(C);
+			$mdDialog.show({
+				controller: 'Entidades_Campos_ListaConfigCtrl',
+				templateUrl: 'Frag/Entidades.Entidades_Campos_ListaConfig',
+				clickOutsideToClose: false,
+				fullscreen: false,
+				multiple: true,
+				locals: { C: C }
+			});
+		};
+
+		//Restricciones
+		Ctrl.getRestricciones = () => {
+			Ctrl.RestricCRUD.setScope('entidad', Ctrl.EntidadSel.id);
+			Ctrl.RestricCRUD.get();
+		};
+
+		Ctrl.addRestriccion = () => {
+			Ctrl.RestricCRUD.add({
+				entidad_id: Ctrl.EntidadSel.id,
+				campo_id:   Ctrl.newRestriccion,
+				Comparador: '=',
+				Valor:      null
+			});
+			Ctrl.newRestriccion = null;
+		};
+
+		Ctrl.removeRestriccion = (R) => {
+			Ctrl.RestricCRUD.delete(R);
+		};
+
+		//Start Up
+		Rs.navTo('Home.Section', { section: 'Entidades' });
+		Ctrl.getBdds();
+	}
+]);
+angular.module('Entidades_AddColumnsCtrl', [])
+.controller('Entidades_AddColumnsCtrl', ['$scope', '$mdDialog', 'ParentCtrl', 'newCampos',
+	function($scope, $mdDialog, ParentCtrl, newCampos) {
+
+		console.info('Entidades_AddColumnsCtrl');
+		var Ctrl = $scope;
+
+		Ctrl.CancelDiag = () => {
+			$mdDialog.cancel();
+		};
+
+		Ctrl.EntidadSel = ParentCtrl.EntidadSel;
+		Ctrl.newCampos = newCampos;
+		Ctrl.newCamposSel = [];
+		Ctrl.TiposCampo 	 = ParentCtrl.TiposCampo;
+		Ctrl.markChanged 	 = ParentCtrl.markChanged;
+		Ctrl.setTipoDefaults = ParentCtrl.setTipoDefaults;
+		Ctrl.inArray         = ParentCtrl.inArray;
+
+		Ctrl.addNewColumns = () => {
+			$mdDialog.hide(Ctrl.newCamposSel);
+		};
+	}
+]);
+angular.module('Entidades_Campos_ListaConfigCtrl', [])
+.controller('Entidades_Campos_ListaConfigCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', 'C',
+	function($scope, $rootScope, $mdDialog, $filter, $timeout, C) {
+
+		console.info('Entidades_Campos_ListaConfigCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.Cancel = () => { $mdDialog.cancel(); };
+		Ctrl.inArray  = Rs.inArray;
+		Ctrl.C = C;
+
+	}
+]);
+angular.module('Entidades_CargadorDiagCtrl', [])
+.controller('Entidades_CargadorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', 'Upload',
+	function($scope, $rootScope, $mdDialog, $filter, $timeout, Upload) {
+
+		console.info('Entidades_CargadorDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.Cancel = () => { $mdDialog.cancel(); };
+		Ctrl.ExcludeTipos = ['Sin Valor','Variable de Sistema'];
+		Ctrl.Etapa = 'PreLoad';
+		Ctrl.pag_pages = 50;
+		Ctrl.pag_from  = 0;
+		Ctrl.pag_to    = null;
+		//Ctrl.Etapa = 'TestLoad';
+
+		var load_data_raw = [];
+		Ctrl.load_data_len = 0;
+
+		Ctrl.pag_go = (i) => {
+			var from = (Ctrl.pag_from + (Ctrl.pag_pages*i) );
+			if(from < 0 || from >= Ctrl.load_data_len) return false;
+			Ctrl.pag_from = from;
+			Ctrl.pag_to = Math.min((Ctrl.pag_from + Ctrl.pag_pages), (Ctrl.load_data_len));
+			Ctrl.load_data = load_data_raw.slice(Ctrl.pag_from, Ctrl.pag_to);
+		};
+
+		Ctrl.ConfTipoArchivo = {
+			csv: ['text/*'],
+		};
+
+		Ctrl.getCargador = (cargador_id) => {
+			Rs.http('api/Entidades/cargador-get', { cargador_id: cargador_id }, Ctrl, 'Cargador').then(() => {
+				
+			});
+		};
+
+		Ctrl.upload = (file) => {
+			if(!file) return;
+
+			Ctrl.Etapa = 'Loading';
+
+			Upload.upload({
+	            url: 'api/Entidades/cargador-upload',
+	            data: {file: file, 'cargador_id': Ctrl.Cargador.id }
+	        }).then((r) => {
+	            Ctrl.Etapa = 'TestLoad';
+	            Ctrl.Entidad   = r.data.entidad;
+	            load_data_raw = r.data.load_data;
+
+	            Ctrl.pag_from      = 0;
+	            Ctrl.load_data_len = load_data_raw.length;
+	            Ctrl.pag_go(0);
+
+	        }, (r) => {
+	        	Rs.showToast('Ocurrió un error, por favor reintente','Error');
+	            Ctrl.Etapa = 'PreLoad';
+	        }, (evt) => {
+	            //var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+	            //console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+	        });
+		};
+
+		Ctrl.sendData = () => {
+			Ctrl.Etapa = 'Loading';
+			Rs.http('api/Entidades/cargador-insert', { Cargador: Ctrl.Cargador, Entidad: Ctrl.Entidad, load_data: load_data_raw }).then(() => {
+				Rs.showToast('Se cargaron '+Ctrl.load_data_len+' registros','Success',7500,'bottom right');
+				Ctrl.Etapa = 'PreLoad';
+			}, () => {
+				Rs.showToast('Ocurrió un error, por favor reintente','Error');
+				Ctrl.Etapa = 'TestLoad';
+			});
+		};
+
+	}
+]);
+angular.module('Entidades_CargadoresCtrl', [])
+.controller('Entidades_CargadoresCtrl', ['$scope', '$rootScope', '$timeout', '$filter',
+	function($scope, $rootScope, $timeout, $filter) {
+
+		var Ctrl = $scope.$parent;
+		var Rs = $rootScope;
+
+		$scope.CargadoresSidenav = false;
+		$scope.CargadoresCamposSel = [];
+
+		$scope.TiposArchivo = {
+			csv:   [ 'Archivo .CSV',  			'fa-file-csv' ],
+			excel: [ 'Archivo Excel .XLSX', 	'fa-file-excel' ],
+		};
+
+		$scope.TiposValor = ['Columna','Fijo','Variable de Sistema','Sin Valor'];
+
+		var DefConfig = {
+			tipo_archivo: 'csv',
+			delimiter: ',',
+			with_headers: true,
+			campos: {}
+		};
+
+		//Cargadores
+		Ctrl.getCargadores = () => {
+			if(!Ctrl.EntidadSel) return;
+			Ctrl.CargadoresCRUD.setScope('entidad', Ctrl.EntidadSel.id);
+			Ctrl.CargadoresCRUD.get().then(() => {
+				if(Ctrl.CargadoresCRUD.rows.length > 0){
+					Ctrl.openCargador(Ctrl.CargadoresCRUD.rows[0]);
+				}else{
+					$scope.CargadoresSidenav = true;
+				};
+			});
+		};
+
+		Ctrl.addCargador = () => {
+			Ctrl.CargadoresCRUD.dialog({
+				entidad_id: Ctrl.EntidadSel.id,
+				Titulo: 'General', Secciones: []
+			}, {
+				title: 'Crear Cargador',
+				only: ['Titulo']
+			}).then((R) => {
+				if(!R) return; Ctrl.CargadoresCRUD.add(R);
+			});
+		};
+
+		Ctrl.openCargador = (G) => {
+			G.Config = angular.extend({}, DefConfig, G.Config);
+			Ctrl.CargadorSel = G;
+
+			angular.forEach(Ctrl.CamposCRUD.rows, (C) => {
+				if(!Ctrl.CargadorSel.Config.campos.hasOwnProperty(C.id)){
+					Ctrl.CargadorSel.Config.campos[C.id] = {
+						campo_id: C.id,
+						tipo_valor: 'Sin Valor',
+						Defecto: null
+					};
+				};
+			});
+
+			//Rs.viewCargadorDiag(Ctrl.CargadorSel.id);
+
+		};
+
+		Ctrl.updateCargador = () => {
+			Ctrl.CargadoresCRUD.update(Ctrl.CargadorSel).then(() => {
+				Rs.showToast('Cargador Actualizado', 'Success');
+			});
+		};
+
+		Ctrl.getCargadores();
+
+	}
+]);
+angular.module('Entidades_EditorConfigDiagCtrl', [])
+.controller('Entidades_EditorConfigDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', 'B', 'TiposCampo', 'GridColumnas',
+	function($scope, $rootScope, $mdDialog, $filter, $timeout, B, TiposCampo, GridColumnas) {
+
+		console.info('Entidades_EditorConfigDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.Cancel = () => { $mdDialog.cancel(); };
+		Ctrl.queryElm = Rs.queryElm;
+		Ctrl.inArray  = Rs.inArray;
+		Ctrl.TiposCampo = TiposCampo;
+		Ctrl.B = B;
+		Ctrl.GridColumnas = GridColumnas;
+		Ctrl.TiposValor = ['Por Defecto','Columna','Fijo','Sin Valor'];
+
+
+		Ctrl.getEditor = () => {
+			if(!B) return;
+			Rs.http('api/Entidades/editor-get', { editor_id: B.accion_element_id }, Ctrl, 'Editor').then(() => {
+				
+			});
+		};
+
+		Ctrl.guardarConfig = () => {
+			$mdDialog.hide(Ctrl.B);
+		};
+
+		Ctrl.getEditor();
+
+	}
+]);
+angular.module('Entidades_EditorDiagCtrl', [])
+.controller('Entidades_EditorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout',
+	function($scope, $rootScope, $mdDialog, $filter, $timeout) {
+
+		console.info('Entidades_EditorDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.opacity = 0;
+		Ctrl.inArray = Rs.inArray;
+
+		Ctrl.Cancel = () => { $mdDialog.cancel(); };
+
+		var DefConfig = {
+			color: '#e2e2e2', textcolor: 'black'
+		};
+
+		Ctrl.getEditor = (editor_id, Obj, Config) => {
+			Ctrl.Obj = Obj;
+			Ctrl.Config = angular.extend(DefConfig, Config);
+			Rs.http('api/Entidades/editor-get', { editor_id: editor_id, Obj: Obj, Config: Config }, Ctrl, 'Editor').then(() => {
+				Ctrl.opacity = 1;
+			});
+		};
+
+		Ctrl.searchEntidad = (C) => {
+			if(C.val !== null) return false;
+			var search_elms = C.campo.entidadext.config.search_elms;
+			return Rs.http('api/Entidades/search', { entidad_id: C.campo.Op1, searchText: C.searchText, search_elms: search_elms });
+		};
+
+		Ctrl.selectedItem = (item, C) => {
+			if(!item) return;
+			C.val = item.C0;
+		};
+
+		Ctrl.clearCampo = (C) => {
+			C.val = null; C.searchText = null; C.selectedItem = null;
+		};
+
+		Ctrl.enviarDatos = () => {
+
+		};
+
+	}
+]);
+angular.module('Entidades_EditoresCtrl', [])
+.controller('Entidades_EditoresCtrl', ['$scope', '$rootScope', '$timeout', '$filter',
+	function($scope, $rootScope, $timeout, $filter) {
+
+		var Ctrl = $scope.$parent;
+		var Rs = $rootScope;
+
+		$scope.EditoresSidenav = false;
+		$scope.showEditorCampos = true;
+		$scope.anchosCampo = [10,15,20,25,30,33,35,40,45,50,55,60,65,66,70,75,80,85,90,95,100];
+		$scope.EditoresCamposSel = [];
+
+		//Editores
+		Ctrl.getEditores = () => {
+			if(!Ctrl.EntidadSel) return;
+			Ctrl.EditoresCRUD.setScope('entidad', Ctrl.EntidadSel.id);
+			Ctrl.EditoresCRUD.get().then(() => {
+				if(Ctrl.EditoresCRUD.rows.length > 0){
+					Ctrl.openEditor(Ctrl.EditoresCRUD.rows[0]);
+				}else{
+					$scope.EditoresSidenav = true;
+				};
+			});
+		};
+
+		Ctrl.addEditor = () => {
+			Ctrl.EditoresCRUD.dialog({
+				entidad_id: Ctrl.EntidadSel.id,
+				Titulo: 'General', Secciones: []
+			}, {
+				title: 'Crear Editor',
+				only: ['Titulo']
+			}).then((R) => {
+				if(!R) return; Ctrl.EditoresCRUD.add(R);
+			});
+		};
+
+		Ctrl.openEditor = (G) => {
+			Ctrl.EditorSel = G;
+			Ctrl.getEditorCampos().then(() => {  });
+		};
+
+		Ctrl.updateEditor = () => {
+			Ctrl.EditoresCRUD.update(Ctrl.EditorSel).then(() => {
+				Rs.showToast('Editor Actualizado', 'Success');
+				Ctrl.saveEditorCampos();
+			});
+		};
+
+		//Campos
+		Ctrl.getEditorCampos = () => {
+			if(!Ctrl.EditorSel) return;
+			Ctrl.EditoresCamposCRUD.setScope('editor', Ctrl.EditorSel.id);
+			return Ctrl.EditoresCamposCRUD.get();
+		};
+
+		Ctrl.autogetEditorCampos = () => {
+			var Inseerts = [];
+			var Indice = Ctrl.EditoresCamposCRUD.rows.length;
+			var ids = Ctrl.EditoresCamposCRUD.rows.map(c => c.campo_id);
+
+			angular.forEach(Ctrl.CamposCRUD.rows, C => {
+				if(!ids.includes(C.id)){
+					Indice++;
+					Inseerts.push({ editor_id: Ctrl.EditorSel.id, Indice: Indice, campo_id: C.id, Ancho: 100 });
+				};
+			});
+
+			if(Inseerts.length > 0){
+				Ctrl.EditoresCamposCRUD.addMultiple(Inseerts);
+			};
+		};
+
+		Ctrl.saveEditorCampos = () => {
+			var Updatees = $filter('filter')(Ctrl.EditoresCamposCRUD.rows, { changed: true });
+			if(Updatees.length == 0) return;
+			Ctrl.EditoresCamposCRUD.updateMultiple(Updatees);
+			angular.forEach(Ctrl.EditoresCamposCRUD.rows, C => {C.changed = false;});
+		};
+
+		Ctrl.removeEditorCampos = () => {
+			if($scope.EditoresCamposSel.length == 0) return;
+			Ctrl.EditoresCamposCRUD.ops.selected = $scope.EditoresCamposSel;
+			Ctrl.EditoresCamposCRUD.deleteMultiple().then(() => {
+				 $scope.EditoresCamposSel = [];
+			});
+		};
+
+		Ctrl.getEditores();
+
+	}
+]);
+angular.module('Entidades_GridDiagCtrl', [])
+.controller('Entidades_GridDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 
+	function($scope, $rootScope, $mdDialog, $filter) {
+
+		console.info('Entidades_GridDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.inArray = Rs.inArray;
+		Ctrl.loadingGrid = false;
+		Ctrl.sidenavSel = null;
+		Ctrl.SidenavIcons = [
+			['fa-filter', 						'Filtros'		,false],
+			['fa-sign-in-alt fa-rotate-90', 	'Descargar'		,false],
+			['fa-info-circle', 					'Información'	,false],
+		];
+		Ctrl.openSidenavElm = (S) => {
+			Ctrl.sidenavSel = (S[1] == Ctrl.sidenavSel) ? null : S[1];
+		};
+
+
+		Ctrl.Cancel = () => { $mdDialog.cancel(); };
+
+		Ctrl.Data = [];
+
+		Ctrl.filterData = () => {
+			Rs.http('api/Entidades/grids-reload-data', { Grid: Ctrl.Grid }).then((r) => {
+				Ctrl.Grid.sql  = r.sql;
+				Ctrl.Grid.data = r.data;
+			});
+		};
+
+		Ctrl.getSelectedText = (Text) => {
+			if(Text === null) return 'Seleccionar...';
+			if(angular.isArray(Text)){
+				return JoinedText = Text.join(', ');
+			};
+			return Text;
+		};
+		
+		Ctrl.getGrid = (grid_id) => {
+			
+			if(!grid_id) return;
+			Ctrl.loadingGrid = true;
+			Rs.http('api/Entidades/grids-get-data', { grid_id: grid_id }).then((r) => {
+				Ctrl.Grid = r.Grid;
+				Ctrl.loadingGrid = false;
+				if(Ctrl.Grid.filtros.length > 0) Ctrl.SidenavIcons[0][2] = true;
+
+				//return Ctrl.triggerButton(Ctrl.Grid.Config.row_buttons[0], Ctrl.Grid.data[0]); //TEST
+				return Ctrl.triggerButton(Ctrl.Grid.Config.main_buttons[0]); //TEST
+			});
+		};
+
+		var prepRow = (R) => {
+			if(!R) return null;
+			var Obj = { id: R[0] };
+			angular.forEach(Ctrl.Grid.columnas, (C) => {
+				if(C.id){ Obj[C.id] = { val: R[C.Indice] }; };
+			});
+			return Obj;
+		};
+
+		Ctrl.triggerButton = (B,R) => {
+
+			var Obj = prepRow(R);
+
+			var DefConfig = {};
+			if(Ctrl.AppSel){
+				DefConfig = angular.extend(DefConfig, {
+					color: Ctrl.AppSel.Color, textcolor: Ctrl.AppSel.textcolor
+				});
+			};
+
+			if(B.accion == 'Editor'){
+				Config = angular.extend(DefConfig, B);
+				Rs.viewEditorDiag(B.accion_element_id, Obj, Config);
+			};
+		};
+
+		
+		
+		
+	}
+]);
+angular.module('Entidades_GridsCtrl', [])
+.controller('Entidades_GridsCtrl', ['$scope', '$rootScope', '$injector', '$mdDialog',
+	function($scope, $rootScope, $injector, $mdDialog) {
+
+		var Ctrl = $scope.$parent;
+		var Rs = $rootScope;
+
+		var DefGridConfig = {
+			main_buttons: [],
+			row_buttons: []
+		};
+
+		//Grids
+		Ctrl.getGrids = () => {
+			if(!Ctrl.EntidadSel) return;
+			Ctrl.GridsCRUD.setScope('entidad', Ctrl.EntidadSel.id);
+			Ctrl.GridsCRUD.get().then(() => {
+				if(Ctrl.GridsCRUD.rows.length == 0) return;
+				Ctrl.openGrid(Ctrl.GridsCRUD.rows[0]);
+			});
+		};
+
+		Ctrl.addGrid = () => {
+			console.log(Ctrl.GridsCRUD);
+
+			Ctrl.GridsCRUD.dialog({
+				entidad_id: Ctrl.EntidadSel.id,
+			}, {
+				title: 'Crear Grid',
+				only: ['Titulo']
+			}).then((R) => {
+				R.Config = angular.copy(DefGridConfig);
+				if(!R) return; Ctrl.GridsCRUD.add(R);
+			});
+		};
+
+		Ctrl.openGrid = (G) => {
+			G.Config = angular.extend({},DefGridConfig,G.Config);
+			Ctrl.GridSel = G;
+			Ctrl.getColumnas().then(() => { 
+				Ctrl.getFiltros();
+				//Ctrl.configEditor(G.Config.main_buttons[0], Ctrl.GridColumnasCRUD.rows); //FIX
+			});
+		};
+
+		//Columnas
+		Ctrl.getColumnas = () => {
+			Ctrl.GridColumnasCRUD.setScope('grid', Ctrl.GridSel.id);
+			return Ctrl.GridColumnasCRUD.get();
+		};
+
+		Ctrl.addColumna = (C, Ruta, Llaves) => {
+			var Indice = Ctrl.GridColumnasCRUD.rows.length;
+			return Ctrl.GridColumnasCRUD.add({
+				grid_id: Ctrl.GridSel.id,
+				Tipo: 'Campo', Ruta: Ruta, Llaves: Llaves, campo_id: C.id,
+				Indice: Indice,
+			}).then(() => {
+				Rs.showToast('Columna Añadida', 'Success');
+			});
+		};
+
+		Ctrl.addAllColumnas = (Cols, Ruta, Llaves) => {
+			var Indice = Ctrl.GridColumnasCRUD.rows.length;
+			var Rows = [];
+			angular.forEach(Cols, (C) => {
+				Rows.push({
+					grid_id: Ctrl.GridSel.id,
+					Tipo: 'Campo', Ruta: Ruta, Llaves: Llaves, campo_id: C.id,
+					Indice: Indice,
+				});
+				Indice++;
+			});
+
+			return Ctrl.GridColumnasCRUD.addMultiple(Rows).then(() => {
+				Rs.showToast('Columnas Añadidas', 'Success');
+			});
+		};
+
+		Ctrl.editColumna = (C) => {
+			Ctrl.GridColumnasCRUD.dialog(C, { title: 'Editar Columna', only:['Cabecera'], with_delete: false }).then((r) => {
+				var Index = Rs.getIndex(Ctrl.GridColumnasCRUD.rows, r.id);
+				if(r.Cabecera == '') r.Cabecera = null;
+				r.changed = true;
+				Ctrl.GridColumnasCRUD.rows[Index] = r;
+				
+			});
+		};
+
+		Ctrl.removeColumna = (C) => {
+			Ctrl.GridColumnasCRUD.delete(C);
+		};
+
+		Ctrl.removerColumnas = () => {
+			Ctrl.GridColumnasCRUD.deleteMultiple().then(() => {
+				Ctrl.getFiltros();
+			});
+		};
+
+		Ctrl.dragListener2 = {
+			accept: function (sourceItemHandleScope, destSortableScope) { return true; },
+			orderChanged: () => {
+				angular.forEach(Ctrl.GridColumnasCRUD.rows, (C,index) => {
+					if(C.Indice !== index){
+						C.Indice = index;
+						C.changed = true;
+					};
+				});
+			}
+		};
+
+
+		Ctrl.verCamposDiag = (entidad_id, Ruta, Llaves) => {
+			if(!entidad_id) return;
+
+			var Entidad = Ctrl.getEntidad(entidad_id);
+
+			$mdDialog.show({
+				controller: 'Entidades_VerCamposCtrl',
+				templateUrl: 'Frag/Entidades.Entidades_VerCampos',
+				clickOutsideToClose: false,
+				fullscreen: false,
+				multiple: true,
+				locals: { ParentCtrl: Ctrl, Entidad: Entidad, Ruta: Ruta, Llaves: Llaves }
+			}).then((r) => {
+				Ctrl.verCamposDiag(r[0],r[1],r[2]);
+			});
+		};
+
+		//Filtros
+		Ctrl.getFiltros = () => {
+			Ctrl.GridFiltrosCRUD.setScope('grid', Ctrl.GridSel.id);
+			return Ctrl.GridFiltrosCRUD.get();
+		};
+
+		Ctrl.addFiltro = (Co) => {
+			var Indice = Ctrl.GridFiltrosCRUD.rows.length;
+			return Ctrl.GridFiltrosCRUD.add({
+				grid_id: Ctrl.GridSel.id,
+				columna_id: Co.id,
+				Indice: Indice,
+			}).then(() => {
+				Ctrl.prepFiltros();
+				Rs.showToast('Filtro Añadido', 'Success');
+			});
+		};
+
+		Ctrl.dragListener3 = {
+			accept: function (sourceItemHandleScope, destSortableScope) { return true; },
+			orderChanged: () => {
+				angular.forEach(Ctrl.GridFiltrosCRUD.rows, (C,index) => {
+					if(C.Indice !== index){
+						C.Indice = index;
+						C.changed = true;
+					};
+				});
+			}
+		};
+		Ctrl.selectedRows = [];
+
+		//Grid
+		Ctrl.updateGrid = () => {
+			Ctrl.GridsCRUD.update(Ctrl.GridSel).then(() => {
+
+				//Actualizar las columnas
+				Rs.http('/api/Entidades/grids-columnas-update', { Columnas: Ctrl.GridColumnasCRUD.rows }).then(() => {
+					angular.forEach(Ctrl.GridColumnasCRUD.rows, (C,index) => {
+						C.changed = false;
+					});
+					
+					//Actualizar los filtros
+					Rs.http('/api/Entidades/grids-filtros-update', { Filtros: Ctrl.GridFiltrosCRUD.rows }).then(() => {
+						angular.forEach(Ctrl.GridFiltrosCRUD.rows, (C,index) => {
+							C.changed = false;
+						});
+						Rs.showToast('Grid Actualizada', 'Success');
+					});
+				});
+				
+			});
+		};
+
+		Ctrl.testGrid = (grid_id) => {
+			$mdDialog.show({
+				controller: 'Entidades_GridDiagCtrl',
+				templateUrl: 'Frag/Entidades.Entidades_GridDiag',
+				clickOutsideToClose: true,
+				fullscreen: true,
+				multiple: true,
+				//locals: { grid_id: grid_id },
+				onComplete: (scope) => {
+					scope.getGrid(grid_id);
+				}
+			});
+		};
+
+
+		//Botones
+		var DefaultButton = { icono: '', texto: '', accion: 'Editor', modo: 'Crear', accion_element: '', accion_element_id: null, campos: {} };
+		Ctrl.addButton = (bag, button) => {
+			var button = angular.extend({}, DefaultButton, button);
+			Ctrl.GridSel.Config[bag].push(button);
+		};
+
+		Ctrl.queryElm = Rs.queryElm;
+
+		Ctrl.selectElm = (item, B) => {
+			B.accion_element_id = item.id;
+			B.accion_element    = item.display;
+		};
+
+		Ctrl.removeButton = (bag, i) => {
+			Ctrl.GridSel.Config[bag].splice(i,1);
+		};
+
+		Ctrl.configEditor = (B, GridColumnas) => {
+
+			var BConf = angular.extend({}, DefaultButton, B);
+			$mdDialog.show({
+				controller: 'Entidades_EditorConfigDiagCtrl',
+				templateUrl: 'Frag/Entidades.Entidades_EditorConfigDiag',
+				clickOutsideToClose: true, fullscreen: true, multiple: true,
+				locals: { B: BConf, TiposCampo: Ctrl.TiposCampo, GridColumnas: GridColumnas },
+				onComplete: (scope) => {
+					//scope.getGrid(grid_id);
+				}
+			}).then((nB) => {
+				if(!nB) return;
+				B = angular.extend(B, nB);
+				Ctrl.GridsCRUD.update(Ctrl.GridSel);
+			});
+		};
+
+		Ctrl.getGrids();
+
+	}
+]);
+angular.module('Entidades_Grids_TestCtrl', [])
+.controller('Entidades_Grids_TestCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'grid_id', 
+	function($scope, $rootScope, $mdDialog, $filter, grid_id) {
+
+		console.info('Entidades_Grids_TestCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.inArray = Rs.inArray;
+
+		Ctrl.Cancel = () => {
+			$mdDialog.cancel();
+		};
+
+		Ctrl.Data = [];
+
+		Ctrl.filterData = () => {
+			/*Ctrl.Data = [];
+			var d = angular.copy(Ctrl.Grid.data);
+			angular.forEach(Ctrl.Grid.filtros, (F) => {
+				if(d.length > 0 && Ctrl.inArray(F.Comparador, ['lista','radios'])){
+
+					if(angular.isArray(F.val)){ if(F.val.length == 0) F.val = null }
+					if(F.val !== null){
+						d = $filter('filter')(d, function (item) {
+							if(angular.isArray(F.val)){
+								return F.val.includes(item[F.columna.header_index]);
+							}
+							return item[F.columna.header_index] === F.val;
+						});
+					}
+				};
+			});
+
+			Ctrl.Data = d; delete d;*/
+			Rs.http('api/Entidades/grids-reload-data', { Grid: Ctrl.Grid }).then((r) => {
+				Ctrl.Grid.sql  = r.sql;
+				Ctrl.Grid.data = r.data;
+			});
+		};
+
+		Rs.http('api/Entidades/grids-get-data', { grid_id: grid_id }).then((r) => {
+			Ctrl.Grid = r.Grid;
+			//Ctrl.filterData();
+		});
+
+		Ctrl.getSelectedText = (Text) => {
+			if(Text === null) return 'Seleccionar...';
+			if(angular.isArray(Text)){
+				return JoinedText = Text.join(', ');
+				//var Len = JoinedText.length;
+				//return ( Len < 1000 ) ? JoinedText : (Text.length + ' Seleccionados');
+			}
+			return Text;
+		};
+		
+	}
+]);
+angular.module('Entidades_VerCamposCtrl', [])
+.controller('Entidades_VerCamposCtrl', ['$scope', '$rootScope', '$injector', 'Entidad', 'Ruta', 'Llaves', 'ParentCtrl', '$mdDialog',
+	function($scope, $rootScope, $injector, Entidad, Ruta, Llaves, ParentCtrl, $mdDialog) {
+
+		console.info('Entidades_VerCamposCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.Entidad = Entidad;
+		Ctrl.TiposCampo = ParentCtrl.TiposCampo;
+
+		Ctrl.CamposCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/campos', order_by: ['Indice'] });
+
+		Ctrl.CamposCRUD.setScope('entidad', Entidad.id);
+		Ctrl.CamposCRUD.get();
+
+		var DaRuta = angular.copy(Ruta);
+		DaRuta.push(Entidad.id);
+
+		Ctrl.Cancel = () => {
+			$mdDialog.cancel();
+		};
+
+		Ctrl.addColumna = (C) => {
+			var DaLlaves = angular.copy(Llaves);
+			DaLlaves.push(C.id);
+			ParentCtrl.addColumna(C, DaRuta, DaLlaves).then(() => {
+
+			});
+		};
+
+		Ctrl.verCamposDiag = (entidad_id, campo_id) => {
+			var DaLlaves = angular.copy(Llaves);
+			DaLlaves.push(campo_id);
+			$mdDialog.hide([entidad_id, DaRuta, DaLlaves]);
+		};
 	}
 ]);
 angular.module('BasicDialogCtrl', [])
@@ -1131,967 +2191,6 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 	}
 ]);
 
-angular.module('EntidadesCamposCtrl', [])
-.controller('EntidadesCamposCtrl', ['$scope', '$rootScope', 
-	function($scope, $rootScope) {
-
-		console.info('EntidadesCamposCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		
-	}
-]);
-angular.module('EntidadesCtrl', [])
-.controller('EntidadesCtrl', ['$scope', '$rootScope', '$injector', '$mdDialog', '$filter', '$timeout',
-	function($scope, $rootScope, $injector, $mdDialog, $filter, $timeout) {
-
-		console.info('EntidadesCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		Ctrl.EntidadSidenav = true;
-		Ctrl.loadingEntidad = false;
-
-
-		Ctrl.EntidadesCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades', 					order_by: ['Nombre'] });
-		Ctrl.CamposCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/campos', 			order_by: ['Indice'] });
-		Ctrl.RestricCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/restricciones', 		add_research: true, add_with:['campo'] });
-		Ctrl.GridsCRUD 			= $injector.get('CRUD').config({ base_url: '/api/Entidades/grids', 				order_by: ['Titulo'] });
-		Ctrl.GridColumnasCRUD 	= $injector.get('CRUD').config({ base_url: '/api/Entidades/grids-columnas', 	query_with:['campo'], add_append:'refresh', order_by: ['Indice'] });
-		Ctrl.GridFiltrosCRUD 	= $injector.get('CRUD').config({ base_url: '/api/Entidades/grids-filtros', 		order_by: ['Indice'] });
-		Ctrl.EditoresCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/editores', 			order_by: ['Titulo'] });
-		Ctrl.EditoresCamposCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/editores-campos', 	order_by: ['Indice'] });
-		Ctrl.CargadoresCRUD 	= $injector.get('CRUD').config({ base_url: '/api/Entidades/cargadores', 		order_by: ['Titulo'] });
-		
-
-		Ctrl.EntidadesSecciones = [
-			['General',  	'fa-chess-pawn' ],
-			['Grids'  ,  	'fa-table' ],
-			['Editores', 	'fa-pen-square' ],
-			['Cargadores', 	'fa-sign-in-alt fa-rotate-270' ],
-		];
-
-		Ctrl.navToSubsection = (subsection) => { 
-			Rs.navTo('Home.Section.Subsection', { section: 'Entidades', subsection: subsection }); 
-		};
-
-		Ctrl.getBdds = () => {
-			Rs.http('api/Bdds/all', {}, Ctrl, 'Bdds').then(() => {
-				if(Ctrl.Bdds.length > 0){
-					Ctrl.BddSel = Ctrl.Bdds[0];
-					Ctrl.getEntidades();
-				}
-			});
-		};
-
-		Ctrl.getEntidades = () => {
-			Ctrl.EntidadesCRUD.get().then(() => {
-				Ctrl.getFsEntidades();
-				//console.log(Ctrl.EntidadesCRUD.rows);
-				Ctrl.openEntidad(Ctrl.EntidadesCRUD.rows[4]); //QUITAR
-				//Ctrl.navToSubsection('General');
-				Ctrl.navToSubsection('Cargadores');
-			});
-		};
-
-		Ctrl.getFsEntidades = () => {
-			Ctrl.filterEntidades = "";
-			Ctrl.FsEntidades = Rs.FsGet(Ctrl.EntidadesCRUD.rows,'Ruta','Entidad');
-		};
-
-		Ctrl.searchEntidades = () => {
-			if(Ctrl.filterEntidades == ""){
-				Ctrl.getFsEntidades();
-			}else{
-				Ctrl.FsEntidades = Rs.FsGet($filter('filter')(Ctrl.EntidadesCRUD.rows, Ctrl.filterEntidades),'Ruta','Entidad',true);
-			};
-		};
-
-		Ctrl.getEntidad = (id) => {
-			return $filter('filter')(Ctrl.EntidadesCRUD.rows, { id: id }, true)[0];
-		};
-
-		Ctrl.openEntidad = (E) => {
-			if(!E) return;
-			if(Ctrl.EntidadSel){ if(Ctrl.EntidadSel.id == E.id) return; }
-			Ctrl.loadingEntidad = true;
-			Ctrl.EntidadSel = E;
-			Ctrl.getCampos();
-			Ctrl.getRestricciones();
-		}
-
-		Ctrl.addEntidad = () => {
-
-			Ctrl.getFsEntidades();
-			Rs.BasicDialog({
-				Title: 'Crear Entidad', Flex: 50,
-				Fields: [
-					{ Nombre: 'Nombre',  Value: '', Required: true, flex: 50 },
-					{ Nombre: 'Tabla',   Value: '', Required: true, flex: 50 },
-					{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.FsEntidades },
-					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
-				],
-			}).then((r) => {
-				if(!r) return;
-				var f = Rs.prepFields(r.Fields);
-				Ctrl.EntidadesCRUD.add({
-					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
-					Nombre: f.Nombre, Tabla: f.Tabla,
-					bdd_id: Ctrl.BddSel.id, Tipo: 'Tabla'
-				}).then(() => {
-					Ctrl.getFsEntidades();
-				});
-			});
-		};
-
-		Ctrl.updateEntidad = () => {
-			Ctrl.EntidadesCRUD.update(Ctrl.EntidadSel).then(() => {
-
-				//Actualizar los campos
-				Rs.http('/api/Entidades/campos-update', { Campos: Ctrl.CamposCRUD.rows }).then(() => {
-					angular.forEach(Ctrl.CamposCRUD.rows, (C,index) => { C.changed = false; });
-
-					//Actualizar las restricciones
-					Rs.http('/api/Entidades/restricciones-update', { Restricciones: Ctrl.RestricCRUD.rows }).then(() => {
-						angular.forEach(Ctrl.RestricCRUD.rows, (R,index) => { R.changed = false; });
-						Rs.showToast('Entidad Actualizada', 'Success');
-					});
-				});
-
-				
-			});
-		};
-
-
-		//Campos
-		Ctrl.getCampos = () => {
-	
-			Ctrl.CamposCRUD.setScope('entidad', Ctrl.EntidadSel.id);
-			Ctrl.CamposCRUD.get().then(() => {
-				Ctrl.loadingEntidad = false;
-			});
-
-			Ctrl.newCampo = angular.copy(newCampoDef);
-			Ctrl.setTipoDefaults(Ctrl.newCampo);
-		};
-
-		Ctrl.camposSel = [];
-		Ctrl.setTipoDefaults = (C) => {
-			C.Defecto = null;
-			var Defaults = Ctrl.TiposCampo[C.Tipo]['Defaults'];
-			C = angular.extend(C,Defaults);
-			C.changed = true;
-		};
-
-		Ctrl.markChanged = (C) => {
-			C.changed = true;
-		};
-
-		var newCampoDef = {
-			Columna: '',
-			Alias: null,
-			Requerido: false,
-			Visible: true,
-			Editable: true,
-			Buscable: false,
-			Tipo: 'Texto'
-		};
-		
-		Ctrl.addCampo = () => {
-			Ctrl.newCampo.Columna = Ctrl.newCampo.Columna.trim();
-			if(Ctrl.newCampo.Columna == '') return Rs.showToast('Falta Columna', 'Error');
-			if(Rs.found(Ctrl.newCampo.Columna, Ctrl.CamposCRUD.rows, 'Columna')) return;
-			Ctrl.newCampo.entidad_id = Ctrl.EntidadSel.id;
-			Ctrl.newCampo.Indice = Ctrl.CamposCRUD.rows.length;
-			Ctrl.CamposCRUD.add(Ctrl.newCampo).then(() => {
-				Ctrl.newCampo = angular.copy(newCampoDef);
-				Ctrl.setTipoDefaults(Ctrl.newCampo);
-				setTimeout(function(){ $("#newCampo").focus(); }, 500);
-			});
-		};
-
-		Ctrl.removeCampos = () => {
-			Rs.confirmDelete({
-				Title: '¿Borrar '+Ctrl.camposSel.length+' campos?',
-			}).then((del) => {
-				console.log(del);
-				if(!del) return;
-				Rs.http('/api/Entidades/campos-delete', { ids: Ctrl.camposSel }).then((msg) => {
-					if(msg == 'OK'){
-						Ctrl.getCampos();
-						Rs.showToast(Ctrl.camposSel.length+' campos eliminados');
-						Ctrl.camposSel = [];
-					}else{
-						Rs.showToast(msg, 'Error');
-					};
-				});
-			});
-		};
-
-		Ctrl.OpsBooleano = [
-			{ Mostrar: 'Ninguno', 	Valor: null  },
-			{ Mostrar: 'Verdadero', Valor: true  },
-			{ Mostrar: 'Falso',     Valor: false },
-		];
-
-		Ctrl.dragListener = {
-			accept: function (sourceItemHandleScope, destSortableScope) { return true; },
-			orderChanged: () => {
-				angular.forEach(Ctrl.CamposCRUD.rows, (C,index) => {
-					if(C.Indice !== index){
-						C.Indice = index;
-						C.changed = true;
-					};
-				});
-			}
-		};
-
-		Ctrl.getCamposAuto = () => {
-			Rs.http('api/Entidades/campos-autoget', { Bdd: Ctrl.BddSel, Entidad: Ctrl.EntidadSel, Campos: Ctrl.CamposCRUD.rows }).then((r) => {
-				if(r.length == 0) return Rs.showToast('No se encontraron nuevos campos');
-
-				$mdDialog.show({
-					controller: 'Entidades_AddColumnsCtrl',
-					templateUrl: 'Frag/Entidades.Entidades_AddColumns',
-					clickOutsideToClose: false,
-					fullscreen: false,
-					multiple: true,
-					locals: { ParentCtrl: Ctrl, newCampos: r }
-				}).then((newCampos) => {
-					if(newCampos.length == 0) return;
-					
-					var current_index = Ctrl.CamposCRUD.rows.length;
-					angular.forEach(newCampos, (nc) => {
-						nc.Indice = current_index;
-						current_index++;
-					});
-
-					Rs.http('api/Entidades/campos-add', { newCampos: newCampos }).then(() => {
-						Ctrl.getCampos();
-						Rs.showToast(newCampos.length+' campos agregados');
-					});
-				});
-			});
-		};
-
-		//Restricciones
-		Ctrl.getRestricciones = () => {
-			Ctrl.RestricCRUD.setScope('entidad', Ctrl.EntidadSel.id);
-			Ctrl.RestricCRUD.get();
-		};
-
-		Ctrl.addRestriccion = () => {
-			Ctrl.RestricCRUD.add({
-				entidad_id: Ctrl.EntidadSel.id,
-				campo_id:   Ctrl.newRestriccion,
-				Comparador: '=',
-				Valor:      null
-			});
-			Ctrl.newRestriccion = null;
-		};
-
-		Ctrl.removeRestriccion = (R) => {
-			Ctrl.RestricCRUD.delete(R);
-		};
-
-		//Start Up
-		Rs.navTo('Home.Section', { section: 'Entidades' });
-		Ctrl.getBdds();
-	}
-]);
-angular.module('Entidades_AddColumnsCtrl', [])
-.controller('Entidades_AddColumnsCtrl', ['$scope', '$mdDialog', 'ParentCtrl', 'newCampos',
-	function($scope, $mdDialog, ParentCtrl, newCampos) {
-
-		console.info('Entidades_AddColumnsCtrl');
-		var Ctrl = $scope;
-
-		Ctrl.CancelDiag = () => {
-			$mdDialog.cancel();
-		};
-
-		Ctrl.EntidadSel = ParentCtrl.EntidadSel;
-		Ctrl.newCampos = newCampos;
-		Ctrl.newCamposSel = [];
-		Ctrl.TiposCampo 	 = ParentCtrl.TiposCampo;
-		Ctrl.markChanged 	 = ParentCtrl.markChanged;
-		Ctrl.setTipoDefaults = ParentCtrl.setTipoDefaults;
-		Ctrl.inArray         = ParentCtrl.inArray;
-
-		Ctrl.addNewColumns = () => {
-			$mdDialog.hide(Ctrl.newCamposSel);
-		};
-	}
-]);
-angular.module('Entidades_CargadorDiagCtrl', [])
-.controller('Entidades_CargadorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', 'Upload',
-	function($scope, $rootScope, $mdDialog, $filter, $timeout, Upload) {
-
-		console.info('Entidades_CargadorDiagCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		Ctrl.Cancel = () => { $mdDialog.cancel(); };
-		Ctrl.Etapa = 'PreLoad';
-
-		Ctrl.TipoArchivo = {
-			csv: [],
-		};
-
-		Ctrl.getCargador = (cargador_id) => {
-			Rs.http('api/Entidades/cargador-get', { cargador_id: cargador_id }, Ctrl, 'Cargador').then(() => {
-				
-			});
-		};
-
-		Ctrl.upload = (file) => {
-			if(!file) return;
-			Upload.upload({
-	            url: 'api/Entidades/cargador-upload',
-	            data: {file: file, 'cargador_id': Ctrl.Cargador.id }
-	        }).then(function (resp) {
-	            Ctrl.Etapa = 'TestLoad';
-	            Ctrl.Entidad   = resp.data.entidad;
-	            Ctrl.load_data = resp.data.load_data;
-	        }, function (resp) {
-	            console.log('Error status: ' + resp.status);
-	        }, function (evt) {
-	            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-	            console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
-	        });
-		};
-
-	}
-]);
-angular.module('Entidades_CargadoresCtrl', [])
-.controller('Entidades_CargadoresCtrl', ['$scope', '$rootScope', '$timeout', '$filter',
-	function($scope, $rootScope, $timeout, $filter) {
-
-		var Ctrl = $scope.$parent;
-		var Rs = $rootScope;
-
-		$scope.CargadoresSidenav = false;
-		$scope.CargadoresCamposSel = [];
-
-		$scope.TiposArchivo = {
-			csv:   [ 'Archivo .CSV',  			'fa-file-csv' ],
-			excel: [ 'Archivo Excel .XLSX', 	'fa-file-excel' ],
-		};
-
-		$scope.TiposValor = ['Columna','Fijo','Variable de Sistema','Sin Valor'];
-
-		var DefConfig = {
-			tipo_archivo: 'csv',
-			delimiter: ',',
-			with_headers: true,
-			campos: {}
-		};
-
-		//Cargadores
-		Ctrl.getCargadores = () => {
-			if(!Ctrl.EntidadSel) return;
-			Ctrl.CargadoresCRUD.setScope('entidad', Ctrl.EntidadSel.id);
-			Ctrl.CargadoresCRUD.get().then(() => {
-				if(Ctrl.CargadoresCRUD.rows.length > 0){
-					Ctrl.openCargador(Ctrl.CargadoresCRUD.rows[0]);
-				}else{
-					$scope.CargadoresSidenav = true;
-				};
-			});
-		};
-
-		Ctrl.addCargador = () => {
-			Ctrl.CargadoresCRUD.dialog({
-				entidad_id: Ctrl.EntidadSel.id,
-				Titulo: 'General', Secciones: []
-			}, {
-				title: 'Crear Cargador',
-				only: ['Titulo']
-			}).then((R) => {
-				if(!R) return; Ctrl.CargadoresCRUD.add(R);
-			});
-		};
-
-		Ctrl.openCargador = (G) => {
-			G.Config = angular.extend({}, DefConfig, G.Config);
-			Ctrl.CargadorSel = G;
-
-			angular.forEach(Ctrl.CamposCRUD.rows, (C) => {
-				if(!Ctrl.CargadorSel.Config.campos.hasOwnProperty(C.id)){
-					Ctrl.CargadorSel.Config.campos[C.id] = {
-						campo_id: C.id,
-						tipo_valor: 'Sin Valor',
-						Defecto: null
-					};
-				};
-			});
-
-			Rs.viewCargadorDiag(Ctrl.CargadorSel.id);
-
-		};
-
-		Ctrl.updateCargador = () => {
-			Ctrl.CargadoresCRUD.update(Ctrl.CargadorSel).then(() => {
-				Rs.showToast('Cargador Actualizado', 'Success');
-			});
-		};
-
-		Ctrl.getCargadores();
-
-	}
-]);
-angular.module('Entidades_EditorConfigDiagCtrl', [])
-.controller('Entidades_EditorConfigDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', 'B', 'TiposCampo',
-	function($scope, $rootScope, $mdDialog, $filter, $timeout, B, TiposCampo) {
-
-		console.info('Entidades_EditorConfigDiagCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.Cancel = () => { $mdDialog.cancel(); };
-		Ctrl.queryElm = Rs.queryElm;
-		Ctrl.inArray  = Rs.inArray;
-		Ctrl.TiposCampo = TiposCampo;
-		Ctrl.B = B;
-		Ctrl.TiposValor = ['Por Defecto','Columna','Fijo','Sin Valor'];
-
-
-		Ctrl.getEditor = () => {
-			if(!B) return;
-			Rs.http('api/Entidades/editor-get', { editor_id: B.accion_element_id }, Ctrl, 'Editor').then(() => {
-				
-			});
-		};
-
-		Ctrl.getEditor();
-
-	}
-]);
-angular.module('Entidades_EditorDiagCtrl', [])
-.controller('Entidades_EditorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout',
-	function($scope, $rootScope, $mdDialog, $filter, $timeout) {
-
-		console.info('Entidades_EditorDiagCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.opacity = 0;
-
-		Ctrl.Cancel = () => { $mdDialog.cancel(); };
-
-		var DefConfig = {
-			modo: 'Crear', color: '#e2e2e2', textcolor: 'black'
-		};
-
-		Ctrl.getEditor = (editor_id, Obj, Config) => {
-			Ctrl.Obj = Obj;
-			Ctrl.Config = angular.extend(DefConfig, Config);
-			Rs.http('api/Entidades/editor-get', { editor_id: editor_id }, Ctrl, 'Editor').then(() => {
-				Ctrl.opacity = 1;
-			});
-		};
-
-		Ctrl.searchEntidad = (C) => {
-			if(C.val !== null) return false;
-			var search_elms = C.campo.entidadext.config.search_elms;
-			return Rs.http('api/Entidades/search', { entidad_id: C.campo.Op1, searchText: C.searchText, search_elms: search_elms });
-		};
-
-		Ctrl.selectedItem = (item, C) => {
-			if(!item) return;
-			C.val = item.C0;
-		};
-
-		Ctrl.clearCampo = (C) => {
-			C.val = null; C.searchText = null; C.selectedItem = null;
-		};
-
-		Ctrl.enviarDatos = () => {
-
-		};
-
-	}
-]);
-angular.module('Entidades_EditoresCtrl', [])
-.controller('Entidades_EditoresCtrl', ['$scope', '$rootScope', '$timeout', '$filter',
-	function($scope, $rootScope, $timeout, $filter) {
-
-		var Ctrl = $scope.$parent;
-		var Rs = $rootScope;
-
-		$scope.EditoresSidenav = false;
-		$scope.showEditorCampos = true;
-		$scope.anchosCampo = [10,15,20,25,30,33,35,40,45,50,55,60,65,66,70,75,80,85,90,95,100];
-		$scope.EditoresCamposSel = [];
-
-		//Editores
-		Ctrl.getEditores = () => {
-			if(!Ctrl.EntidadSel) return;
-			Ctrl.EditoresCRUD.setScope('entidad', Ctrl.EntidadSel.id);
-			Ctrl.EditoresCRUD.get().then(() => {
-				if(Ctrl.EditoresCRUD.rows.length > 0){
-					Ctrl.openEditor(Ctrl.EditoresCRUD.rows[0]);
-				}else{
-					$scope.EditoresSidenav = true;
-				};
-			});
-		};
-
-		Ctrl.addEditor = () => {
-			Ctrl.EditoresCRUD.dialog({
-				entidad_id: Ctrl.EntidadSel.id,
-				Titulo: 'General', Secciones: []
-			}, {
-				title: 'Crear Editor',
-				only: ['Titulo']
-			}).then((R) => {
-				if(!R) return; Ctrl.EditoresCRUD.add(R);
-			});
-		};
-
-		Ctrl.openEditor = (G) => {
-			Ctrl.EditorSel = G;
-			Ctrl.getEditorCampos().then(() => {  });
-		};
-
-		Ctrl.updateEditor = () => {
-			Ctrl.EditoresCRUD.update(Ctrl.EditorSel).then(() => {
-				Rs.showToast('Editor Actualizado', 'Success');
-				Ctrl.saveEditorCampos();
-			});
-		};
-
-		//Campos
-		Ctrl.getEditorCampos = () => {
-			if(!Ctrl.EditorSel) return;
-			Ctrl.EditoresCamposCRUD.setScope('editor', Ctrl.EditorSel.id);
-			return Ctrl.EditoresCamposCRUD.get();
-		};
-
-		Ctrl.autogetEditorCampos = () => {
-			var Inseerts = [];
-			var Indice = Ctrl.EditoresCamposCRUD.rows.length;
-			var ids = Ctrl.EditoresCamposCRUD.rows.map(c => c.campo_id);
-
-			angular.forEach(Ctrl.CamposCRUD.rows, C => {
-				if(!ids.includes(C.id)){
-					Indice++;
-					Inseerts.push({ editor_id: Ctrl.EditorSel.id, Indice: Indice, campo_id: C.id, Ancho: 100 });
-				};
-			});
-
-			if(Inseerts.length > 0){
-				Ctrl.EditoresCamposCRUD.addMultiple(Inseerts);
-			};
-		};
-
-		Ctrl.saveEditorCampos = () => {
-			var Updatees = $filter('filter')(Ctrl.EditoresCamposCRUD.rows, { changed: true });
-			if(Updatees.length == 0) return;
-			Ctrl.EditoresCamposCRUD.updateMultiple(Updatees);
-			angular.forEach(Ctrl.EditoresCamposCRUD.rows, C => {C.changed = false;});
-		};
-
-		Ctrl.removeEditorCampos = () => {
-			if($scope.EditoresCamposSel.length == 0) return;
-			Ctrl.EditoresCamposCRUD.ops.selected = $scope.EditoresCamposSel;
-			Ctrl.EditoresCamposCRUD.deleteMultiple().then(() => {
-				 $scope.EditoresCamposSel = [];
-			});
-		};
-
-		Ctrl.getEditores();
-
-	}
-]);
-angular.module('Entidades_GridDiagCtrl', [])
-.controller('Entidades_GridDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 
-	function($scope, $rootScope, $mdDialog, $filter) {
-
-		console.info('Entidades_GridDiagCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.inArray = Rs.inArray;
-		Ctrl.loadingGrid = false;
-		Ctrl.sidenavSel = null;
-		Ctrl.SidenavIcons = [
-			['fa-filter', 		'Filtros'		,false],
-			['fa-download', 	'Descargar'		,false],
-			['fa-info-circle', 	'Información'	,false],
-		];
-		Ctrl.openSidenavElm = (S) => {
-			Ctrl.sidenavSel = (S[1] == Ctrl.sidenavSel) ? null : S[1];
-		};
-
-
-		Ctrl.Cancel = () => { $mdDialog.cancel(); };
-
-		Ctrl.Data = [];
-
-		Ctrl.filterData = () => {
-			Rs.http('api/Entidades/grids-reload-data', { Grid: Ctrl.Grid }).then((r) => {
-				Ctrl.Grid.sql  = r.sql;
-				Ctrl.Grid.data = r.data;
-			});
-		};
-
-		Ctrl.getSelectedText = (Text) => {
-			if(Text === null) return 'Seleccionar...';
-			if(angular.isArray(Text)){
-				return JoinedText = Text.join(', ');
-			};
-			return Text;
-		};
-		
-		Ctrl.getGrid = (grid_id) => {
-			
-
-			if(!grid_id) return;
-			Ctrl.loadingGrid = true;
-			Rs.http('api/Entidades/grids-get-data', { grid_id: grid_id }).then((r) => {
-				Ctrl.Grid = r.Grid;
-				Ctrl.loadingGrid = false;
-				if(Ctrl.Grid.filtros.length > 0) Ctrl.SidenavIcons[0][2] = true;
-				return Ctrl.triggerButton({ accion: 'Editor (Crear)', accion_element_id: 1 }); //TEST
-			});
-		};
-
-		
-		Ctrl.triggerButton = (B) => {
-
-			if(B.accion == 'Editor (Crear)'){
-				Rs.viewEditorDiag(B.accion_element_id, {}, {
-					modo: 'Crear', color: Ctrl.AppSel.Color, textcolor: Ctrl.AppSel.textcolor
-				});
-			};
-		};
-
-		
-		
-		
-	}
-]);
-angular.module('Entidades_GridsCtrl', [])
-.controller('Entidades_GridsCtrl', ['$scope', '$rootScope', '$injector', '$mdDialog',
-	function($scope, $rootScope, $injector, $mdDialog) {
-
-		var Ctrl = $scope.$parent;
-		var Rs = $rootScope;
-
-		var DefGridConfig = {
-			main_buttons: [],
-			row_buttons: []
-		};
-
-		//Grids
-		Ctrl.getGrids = () => {
-			if(!Ctrl.EntidadSel) return;
-			Ctrl.GridsCRUD.setScope('entidad', Ctrl.EntidadSel.id);
-			Ctrl.GridsCRUD.get().then(() => {
-				if(Ctrl.GridsCRUD.rows.length == 0) return;
-				Ctrl.openGrid(Ctrl.GridsCRUD.rows[0]);
-			});
-		};
-
-		Ctrl.addGrid = () => {
-			console.log(Ctrl.GridsCRUD);
-
-			Ctrl.GridsCRUD.dialog({
-				entidad_id: Ctrl.EntidadSel.id,
-			}, {
-				title: 'Crear Grid',
-				only: ['Titulo']
-			}).then((R) => {
-				R.Config = angular.copy(DefGridConfig);
-				if(!R) return; Ctrl.GridsCRUD.add(R);
-			});
-		};
-
-		Ctrl.openGrid = (G) => {
-			G.Config = angular.extend({},DefGridConfig,G.Config);
-			Ctrl.GridSel = G;
-			Ctrl.configEditor(G.Config.main_buttons[0]); //FIX
-			Ctrl.getColumnas().then(() => { Ctrl.getFiltros(); });
-		};
-
-		//Columnas
-		Ctrl.getColumnas = () => {
-			Ctrl.GridColumnasCRUD.setScope('grid', Ctrl.GridSel.id);
-			return Ctrl.GridColumnasCRUD.get();
-		};
-
-		Ctrl.addColumna = (C, Ruta, Llaves) => {
-			var Indice = Ctrl.GridColumnasCRUD.rows.length;
-			return Ctrl.GridColumnasCRUD.add({
-				grid_id: Ctrl.GridSel.id,
-				Tipo: 'Campo', Ruta: Ruta, Llaves: Llaves, campo_id: C.id,
-				Indice: Indice,
-			}).then(() => {
-				Rs.showToast('Columna Añadida', 'Success');
-			});
-		};
-
-		Ctrl.addAllColumnas = (Cols, Ruta, Llaves) => {
-			var Indice = Ctrl.GridColumnasCRUD.rows.length;
-			var Rows = [];
-			angular.forEach(Cols, (C) => {
-				Rows.push({
-					grid_id: Ctrl.GridSel.id,
-					Tipo: 'Campo', Ruta: Ruta, Llaves: Llaves, campo_id: C.id,
-					Indice: Indice,
-				});
-				Indice++;
-			});
-
-			return Ctrl.GridColumnasCRUD.addMultiple(Rows).then(() => {
-				Rs.showToast('Columnas Añadidas', 'Success');
-			});
-		};
-
-		Ctrl.editColumna = (C) => {
-			Ctrl.GridColumnasCRUD.dialog(C, { title: 'Editar Columna', only:['Cabecera'], with_delete: false }).then((r) => {
-				var Index = Rs.getIndex(Ctrl.GridColumnasCRUD.rows, r.id);
-				if(r.Cabecera == '') r.Cabecera = null;
-				r.changed = true;
-				Ctrl.GridColumnasCRUD.rows[Index] = r;
-				
-			});
-		};
-
-		Ctrl.removeColumna = (C) => {
-			Ctrl.GridColumnasCRUD.delete(C);
-		};
-
-		Ctrl.removerColumnas = () => {
-			Ctrl.GridColumnasCRUD.deleteMultiple().then(() => {
-				Ctrl.getFiltros();
-			});
-		};
-
-		Ctrl.dragListener2 = {
-			accept: function (sourceItemHandleScope, destSortableScope) { return true; },
-			orderChanged: () => {
-				angular.forEach(Ctrl.GridColumnasCRUD.rows, (C,index) => {
-					if(C.Indice !== index){
-						C.Indice = index;
-						C.changed = true;
-					};
-				});
-			}
-		};
-
-
-		Ctrl.verCamposDiag = (entidad_id, Ruta, Llaves) => {
-			if(!entidad_id) return;
-
-			var Entidad = Ctrl.getEntidad(entidad_id);
-
-			$mdDialog.show({
-				controller: 'Entidades_VerCamposCtrl',
-				templateUrl: 'Frag/Entidades.Entidades_VerCampos',
-				clickOutsideToClose: false,
-				fullscreen: false,
-				multiple: true,
-				locals: { ParentCtrl: Ctrl, Entidad: Entidad, Ruta: Ruta, Llaves: Llaves }
-			}).then((r) => {
-				Ctrl.verCamposDiag(r[0],r[1],r[2]);
-			});
-		};
-
-		//Filtros
-		Ctrl.getFiltros = () => {
-			Ctrl.GridFiltrosCRUD.setScope('grid', Ctrl.GridSel.id);
-			return Ctrl.GridFiltrosCRUD.get();
-		};
-
-		Ctrl.addFiltro = (Co) => {
-			var Indice = Ctrl.GridFiltrosCRUD.rows.length;
-			return Ctrl.GridFiltrosCRUD.add({
-				grid_id: Ctrl.GridSel.id,
-				columna_id: Co.id,
-				Indice: Indice,
-			}).then(() => {
-				Ctrl.prepFiltros();
-				Rs.showToast('Filtro Añadido', 'Success');
-			});
-		};
-
-		Ctrl.dragListener3 = {
-			accept: function (sourceItemHandleScope, destSortableScope) { return true; },
-			orderChanged: () => {
-				angular.forEach(Ctrl.GridFiltrosCRUD.rows, (C,index) => {
-					if(C.Indice !== index){
-						C.Indice = index;
-						C.changed = true;
-					};
-				});
-			}
-		};
-		Ctrl.selectedRows = [];
-
-		//Grid
-		Ctrl.updateGrid = () => {
-			Ctrl.GridsCRUD.update(Ctrl.GridSel).then(() => {
-
-				//Actualizar las columnas
-				Rs.http('/api/Entidades/grids-columnas-update', { Columnas: Ctrl.GridColumnasCRUD.rows }).then(() => {
-					angular.forEach(Ctrl.GridColumnasCRUD.rows, (C,index) => {
-						C.changed = false;
-					});
-					
-					//Actualizar los filtros
-					Rs.http('/api/Entidades/grids-filtros-update', { Filtros: Ctrl.GridFiltrosCRUD.rows }).then(() => {
-						angular.forEach(Ctrl.GridFiltrosCRUD.rows, (C,index) => {
-							C.changed = false;
-						});
-						Rs.showToast('Grid Actualizada', 'Success');
-					});
-				});
-				
-			});
-		};
-
-		Ctrl.testGrid = (grid_id) => {
-			$mdDialog.show({
-				controller: 'Entidades_GridDiagCtrl',
-				templateUrl: 'Frag/Entidades.Entidades_GridDiag',
-				clickOutsideToClose: true,
-				fullscreen: true,
-				multiple: true,
-				//locals: { grid_id: grid_id },
-				onComplete: (scope) => {
-					scope.getGrid(grid_id);
-				}
-			});
-		};
-
-
-		//Botones
-		Ctrl.addButton = (bag, button) => {
-			Ctrl.GridSel.Config[bag].push(button);
-		};
-
-		Ctrl.queryElm = Rs.queryElm;
-
-		Ctrl.selectElm = (item, B) => {
-			B.accion_element_id = item.id;
-			B.accion_element    = item.display;
-		};
-
-		Ctrl.removeButton = (bag, i) => {
-			Ctrl.GridSel.Config[bag].splice(i,1);
-		};
-
-		Ctrl.configEditor = (B) => {
-			$mdDialog.show({
-				controller: 'Entidades_EditorConfigDiagCtrl',
-				templateUrl: 'Frag/Entidades.Entidades_EditorConfigDiag',
-				clickOutsideToClose: true, fullscreen: true, multiple: true,
-				locals: { B: B, TiposCampo: Ctrl.TiposCampo },
-				onComplete: (scope) => {
-					//scope.getGrid(grid_id);
-				}
-			});
-		};
-
-		Ctrl.getGrids();
-
-	}
-]);
-angular.module('Entidades_Grids_TestCtrl', [])
-.controller('Entidades_Grids_TestCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'grid_id', 
-	function($scope, $rootScope, $mdDialog, $filter, grid_id) {
-
-		console.info('Entidades_Grids_TestCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.inArray = Rs.inArray;
-
-		Ctrl.Cancel = () => {
-			$mdDialog.cancel();
-		};
-
-		Ctrl.Data = [];
-
-		Ctrl.filterData = () => {
-			/*Ctrl.Data = [];
-			var d = angular.copy(Ctrl.Grid.data);
-			angular.forEach(Ctrl.Grid.filtros, (F) => {
-				if(d.length > 0 && Ctrl.inArray(F.Comparador, ['lista','radios'])){
-
-					if(angular.isArray(F.val)){ if(F.val.length == 0) F.val = null }
-					if(F.val !== null){
-						d = $filter('filter')(d, function (item) {
-							if(angular.isArray(F.val)){
-								return F.val.includes(item[F.columna.header_index]);
-							}
-							return item[F.columna.header_index] === F.val;
-						});
-					}
-				};
-			});
-
-			Ctrl.Data = d; delete d;*/
-			Rs.http('api/Entidades/grids-reload-data', { Grid: Ctrl.Grid }).then((r) => {
-				Ctrl.Grid.sql  = r.sql;
-				Ctrl.Grid.data = r.data;
-			});
-		};
-
-		Rs.http('api/Entidades/grids-get-data', { grid_id: grid_id }).then((r) => {
-			Ctrl.Grid = r.Grid;
-			//Ctrl.filterData();
-		});
-
-		Ctrl.getSelectedText = (Text) => {
-			if(Text === null) return 'Seleccionar...';
-			if(angular.isArray(Text)){
-				return JoinedText = Text.join(', ');
-				//var Len = JoinedText.length;
-				//return ( Len < 1000 ) ? JoinedText : (Text.length + ' Seleccionados');
-			}
-			return Text;
-		};
-		
-	}
-]);
-angular.module('Entidades_VerCamposCtrl', [])
-.controller('Entidades_VerCamposCtrl', ['$scope', '$rootScope', '$injector', 'Entidad', 'Ruta', 'Llaves', 'ParentCtrl', '$mdDialog',
-	function($scope, $rootScope, $injector, Entidad, Ruta, Llaves, ParentCtrl, $mdDialog) {
-
-		console.info('Entidades_VerCamposCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		Ctrl.Entidad = Entidad;
-		Ctrl.TiposCampo = ParentCtrl.TiposCampo;
-
-		Ctrl.CamposCRUD = $injector.get('CRUD').config({ base_url: '/api/Entidades/campos', order_by: ['Indice'] });
-
-		Ctrl.CamposCRUD.setScope('entidad', Entidad.id);
-		Ctrl.CamposCRUD.get();
-
-		var DaRuta = angular.copy(Ruta);
-		DaRuta.push(Entidad.id);
-
-		Ctrl.Cancel = () => {
-			$mdDialog.cancel();
-		};
-
-		Ctrl.addColumna = (C) => {
-			var DaLlaves = angular.copy(Llaves);
-			DaLlaves.push(C.id);
-			ParentCtrl.addColumna(C, DaRuta, DaLlaves).then(() => {
-
-			});
-		};
-
-		Ctrl.verCamposDiag = (entidad_id, campo_id) => {
-			var DaLlaves = angular.copy(Llaves);
-			DaLlaves.push(campo_id);
-			$mdDialog.hide([entidad_id, DaRuta, DaLlaves]);
-		};
-	}
-]);
 angular.module('ScorecardsCtrl', [])
 .controller('ScorecardsCtrl', ['$scope', '$rootScope', '$injector', '$filter',
 	function($scope, $rootScope, $injector, $filter) {
@@ -2839,11 +2938,11 @@ angular.module('Filters', [])
 		return function(input, exclude, prop) {
 			if (!angular.isArray(input)) return input;
 			if (!angular.isArray(exclude)) exclude = [];
-			if (prop) {
+			/*if (prop) {
 				exclude = exclude.map(function byProp(item) {
 					return item[prop];
 				});
-			};
+			};*/
 
 			return input.filter(function byExclude(item) {
 				return exclude.indexOf(prop ? item[prop] : item) === -1;
@@ -2947,7 +3046,13 @@ angular.module('Filters', [])
 			if(tipodato == 'Moneda') return "$ " + number;
 			return number;
 		};
-	}]);
+	}]).filter('splice', function() {
+		return function(input, index, len) {
+			if(!input) return input;
+			//if(!index || !len) return input;
+			return input.splice(index, len);
+		};
+	});
 // Reacts upon enter key press.
 angular.module('enterStroke', []).directive('enterStroke',
   function () {
@@ -3219,6 +3324,7 @@ angular.module('SARA', [
 	'BDDCtrl',
 
 	'EntidadesCtrl',
+		'Entidades_Campos_ListaConfigCtrl',
 		'Entidades_AddColumnsCtrl',
 		'Entidades_VerCamposCtrl',
 		'Entidades_GridsCtrl',
@@ -3336,10 +3442,10 @@ angular.module('appConfig', [])
 		$mdDateLocaleProvider.days = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado' ];
 		$mdDateLocaleProvider.shortDays = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'];
 
-		$mdDateLocaleProvider.parseDate = function(dateString) {
+		/*$mdDateLocaleProvider.parseDate = function(dateString) {
 			var m = moment(dateString, 'L', true);
 			return m.isValid() ? m.toDate() : new Date(NaN);
-		};
+		};*/
 		$mdDateLocaleProvider.formatDate = function(date) {
 			if(typeof date == 'undefined' || date === null || isNaN(date.getTime()) ){
 				return null;
@@ -3393,6 +3499,8 @@ angular.module('appConfig', [])
 			'my-entero'			: '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg"><g><text style="cursor: move;" font-weight="bold" stroke="#000" transform="matrix(0.8789344025030082,0,0,0.8789344025030082,-0.006719467772585017,1.6922866269988484) " xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_1" y="20.046582" x="6.90954" stroke-width="0" fill="#757575">#</text></g></svg>',
 			'my-decimal'		: '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg"><g><text font-weight="bold" stroke="#000" transform="matrix(0.8789344025030082,0,0,0.8789344025030082,-0.006719467772585017,1.6922866269988484) " xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="19" id="svg_1" y="18.308238" x="0.457763" stroke-width="0" fill="#757575">.01</text></g></svg>',
 			'md-color'			: '<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M24 0H0v24h24z" fill="none"/><path d="M17.66 7.93L12 2.27 6.34 7.93c-3.12 3.12-3.12 8.19 0 11.31C7.9 20.8 9.95 21.58 12 21.58c2.05 0 4.1-.78 5.66-2.34 3.12-3.12 3.12-8.19 0-11.31zM12 19.59c-1.6 0-3.11-.62-4.24-1.76C6.62 16.69 6 15.19 6 13.59s.62-3.11 1.76-4.24L12 5.1v14.49z"/></svg>',
+			'md-list'			: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/><path d="M0 0h24v24H0z" fill="none"/></svg>',
+			'md-list-view'		: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M4 14h4v-4H4v4zm0 5h4v-4H4v4zM4 9h4V5H4v4zm5 5h12v-4H9v4zm0 5h12v-4H9v4zM9 5v4h12V5H9z"/><path d="M0 0h24v24H0z" fill="none"/></svg>',
 		};
 
 		iconp = $mdIconProvider.defaultFontSet( 'fa' );
@@ -3409,8 +3517,8 @@ angular.module('appConfig', [])
  * green, light-green, lime, yellow, amber, orange, deep-orange, brown, grey, blue-grey
  */
 angular.module('appFunctions', [])
-.factory('appFunctions', [ '$rootScope', '$http', '$mdDialog', '$mdSidenav', '$mdToast', '$q', '$state', '$location', '$filter', 
-	function($rootScope, $http, $mdDialog, $mdSidenav, $mdToast, $q, $state, $location, $filter){
+.factory('appFunctions', [ '$rootScope', '$http', '$mdDialog', '$mdSidenav', '$mdToast', '$q', '$state', '$location', '$filter', '$window',
+	function($rootScope, $http, $mdDialog, $mdSidenav, $mdToast, $q, $state, $location, $filter, $window){
 
 		var Rs = $rootScope;
 
@@ -3878,8 +3986,7 @@ angular.module('appFunctions', [])
 
 
 		Rs.queryElm = (searchText, accion) => {
-			if(accion == 'Editor (Crear)') 		var url = '/api/Entidades/editores-search/';
-			if(accion == 'Editor (Editar)')		var url = '/api/Entidades/editores-search/';
+			if(accion == 'Editor') 		var url = '/api/Entidades/editores-search/';
 			return Rs.http(url, { searchText: searchText });
 		};
 
@@ -3904,6 +4011,19 @@ angular.module('appFunctions', [])
 					scope.getCargador(cargador_id);
 				}
 			});
+		};
+
+		Rs.openApp = (A) => {
+			//console.log('opening...', A);
+			var url = "http://sara.local/#/a/"+A.Slug;
+			var w = screen.availWidth - 5; var h = screen.availHeight;
+			//$window.open(url, 'popup', `width=${w},height=${h}`);
+			
+			if(!angular.isDefined(A.w) || A.w.closed) {
+				A.w = window.open(url,"_blank",`menubar=0, scrollbars=0,width=${w},height=${h}`);
+			};
+			A.w.focus();
+			
 		};
 
 		return {};

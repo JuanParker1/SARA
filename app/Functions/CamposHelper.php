@@ -16,7 +16,8 @@ class CamposHelper
 		$TC = [
 			'Entidad'     => [ 'Icon' => 'md-pawn', 			'Divide' => true, 	'Defaults' => [  null, null, null,             null, null] ],
 			'Texto'       => [ 'Icon' => 'md-format-quote', 	'Divide' => false, 	'Defaults' => [  null, null, null,             null, null] ],
-			'TextoLargo'  => [ 'Icon' => 'md-insert-comment', 	'Divide' => true, 	'Defaults' => [  1000, null, null,             null, null] ],
+            'TextoLargo'  => [ 'Icon' => 'md-insert-comment',   'Divide' => true,   'Defaults' => [  1000, null, null,             null, null] ],
+			'Lista'       => [ 'Icon' => 'md-list-view', 	    'Divide' => true, 	'Defaults' => [  null, null, null,             '[]', null] ],
 			'Entero'      => [ 'Icon' => 'my-entero', 			'Divide' => false, 	'Defaults' => [  null, null, null,             null, null] ],
 			'Decimal'     => [ 'Icon' => 'my-decimal', 			'Divide' => false, 	'Defaults' => [  null, null,    1,             null, null] ],
 			'Dinero'      => [ 'Icon' => 'md-money', 			'Divide' => true, 	'Defaults' => [  null, null,    1,             null, null] ],
@@ -112,6 +113,14 @@ class CamposHelper
         return $D;
     }
 
+    public static function prepDatoIns($Campo, $D)
+    {
+        if($Campo['Tipo'] == 'Fecha'){
+            return Carbon::createFromFormat($Campo['formato'], $D)->format($Campo['Op4']);
+        };
+        return $D;
+    }
+
     public static function prepData($Columnas, $Datos)
     {
         $Datos = collect($Datos)->transform(function($row) use ($Columnas){
@@ -154,6 +163,14 @@ class CamposHelper
     {
         $base = ($base == "") ? "" : "$base.";
         return str_replace('.', $base, $Columna);
+    }
+
+    public static function getSysVariable($Var)
+    {
+        if($Var == 'Fecha Actual')    { return Carbon::now()->toDateString(); };
+        if($Var == 'Hora Actual')     { return Carbon::now()->toTimeString(); };
+        if($Var == 'FechaHora Actual'){ return Carbon::now()->toDateTimeString(); };
+        if($Var == 'Usuario Logueado'){ return 'SISCORREGO'; }
     }
 
 }

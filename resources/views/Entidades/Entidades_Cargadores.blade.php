@@ -64,8 +64,8 @@
 					<table md-table class="md-table-short table-col-compress">
 						<thead md-head>
 							<tr md-row>
+								<th md-column></th>
 								<th md-column>Campo</th>
-								<th md-column><md-icon md-font-icon="fa-key">	     <md-tooltip md-direction=up>Llave Primaria</md-tooltip></md-icon></th>
 								<th md-column><md-icon md-font-icon="fa-asterisk">	 <md-tooltip md-direction=up>Requerido</md-tooltip></md-icon></th>
 								<th md-column><md-icon md-font-icon="fa-fingerprint"><md-tooltip md-direction=up>Unico</md-tooltip></md-icon></th>
 								<th md-column>Valor</th>
@@ -74,11 +74,11 @@
 						</thead>
 						<tbody md-body ng-repeat="R in CargadorSel.Config.campos">
 							<tr md-row class="" ng-repeat="C in [CamposCRUD.one(R.campo_id)]">
+								<td md-cell class="md-cell-compress"><md-icon md-font-icon="fa-key fa-fw" ng-if="C.id == EntidadSel.campo_llaveprim"></md-icon></td>
 								<td md-cell class="md-cell-compress">
 									<md-icon md-svg-icon="{{ TiposCampo[C.Tipo].Icon }}" class="s15"></md-icon>
 									<div style="display:inline">{{ C.campo_title }}</div>
 								</td>
-								<td md-cell class="md-cell-compress"><md-icon md-font-icon="fa-check fa-fw" ng-if="C.id == EntidadSel.campo_llaveprim"></md-icon></td>
 								<td md-cell class="md-cell-compress"><md-icon md-font-icon="fa-check fa-fw" ng-if="C.Requerido"></md-icon></td>
 								<td md-cell class="md-cell-compress"><md-icon md-font-icon="fa-check fa-fw" ng-if="C.Unico"></md-icon></td>
 								<td md-cell class="md-cell-compress">
@@ -87,10 +87,15 @@
 									</md-select>
 								</td>
 								<td md-cell>
+									<div layout ng-if="R.tipo_valor == 'Columna'">
+										<md-input-container class="no-margin no-padding w70" md-no-float>
+											<input type="number" ng-model="R.Defecto" placeholder="Columna" min="1" class="no-padding">
+										</md-input-container>
 
-									<md-input-container class="no-margin no-padding w70" ng-if="R.tipo_valor == 'Columna'" md-no-float>
-										<input type="number" ng-model="R.Defecto" placeholder="Columna" min="1" class="no-padding">
-									</md-input-container>
+										<md-input-container class="no-margin no-padding w120" md-no-float ng-if="inArray(C.Tipo, ['Fecha','Hora','fechaHora'])">
+											<input type="text" ng-model="R.formato" placeholder="Formato" class="no-padding">
+										</md-input-container>
+									</div>
 
 									<md-select ng-model="R.Defecto" aria-label=s ng-if="R.tipo_valor == 'Variable de Sistema'">
 										<md-option ng-repeat="Op in VariablesSistema" ng-value="Op">{{ Op }}</md-option>

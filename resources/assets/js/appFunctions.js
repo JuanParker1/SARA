@@ -1,6 +1,6 @@
 angular.module('appFunctions', [])
-.factory('appFunctions', [ '$rootScope', '$http', '$mdDialog', '$mdSidenav', '$mdToast', '$q', '$state', '$location', '$filter', 
-	function($rootScope, $http, $mdDialog, $mdSidenav, $mdToast, $q, $state, $location, $filter){
+.factory('appFunctions', [ '$rootScope', '$http', '$mdDialog', '$mdSidenav', '$mdToast', '$q', '$state', '$location', '$filter', '$window',
+	function($rootScope, $http, $mdDialog, $mdSidenav, $mdToast, $q, $state, $location, $filter, $window){
 
 		var Rs = $rootScope;
 
@@ -468,8 +468,7 @@ angular.module('appFunctions', [])
 
 
 		Rs.queryElm = (searchText, accion) => {
-			if(accion == 'Editor (Crear)') 		var url = '/api/Entidades/editores-search/';
-			if(accion == 'Editor (Editar)')		var url = '/api/Entidades/editores-search/';
+			if(accion == 'Editor') 		var url = '/api/Entidades/editores-search/';
 			return Rs.http(url, { searchText: searchText });
 		};
 
@@ -494,6 +493,19 @@ angular.module('appFunctions', [])
 					scope.getCargador(cargador_id);
 				}
 			});
+		};
+
+		Rs.openApp = (A) => {
+			//console.log('opening...', A);
+			var url = "http://sara.local/#/a/"+A.Slug;
+			var w = screen.availWidth - 5; var h = screen.availHeight;
+			//$window.open(url, 'popup', `width=${w},height=${h}`);
+			
+			if(!angular.isDefined(A.w) || A.w.closed) {
+				A.w = window.open(url,"_blank",`menubar=0, scrollbars=0,width=${w},height=${h}`);
+			};
+			A.w.focus();
+			
 		};
 
 		return {};

@@ -7,14 +7,16 @@
 		var Rs = $rootScope;
 		Ctrl.AppsSidenav = true;
 
-		Ctrl.Grids 		= Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
-		Ctrl.Scorecards = Rs.http('/api/Indicadores/scorecards-all', {}, Ctrl, 'Scorecards');
+		Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
+		Rs.http('/api/Entidades/cargadores-get', {}, Ctrl, 'Cargadores');
+		Rs.http('/api/Indicadores/scorecards-all', {}, Ctrl, 'Scorecards');
 		Ctrl.AppsCRUD  = $injector.get('CRUD').config({ base_url: '/api/App/apps' });
 		Ctrl.PagesCRUD = $injector.get('CRUD').config({ base_url: '/api/App/pages' });
 		Ctrl.TiposPage = [
 			{ id: 'ExternalUrl', Icono: 'fa-external-link-square-alt',  Nombre: 'Url Externa' 	 },
 			{ id: 'Scorecard',   Icono: 'fa-th-large', 					Nombre: 'Dashboard' 	 },
 			{ id: 'Grid', 		 Icono: 'fa-table', 					Nombre: 'Tabla de Datos' },
+			{ id: 'Cargador', 	 Icono: 'fa-sign-in-alt fa-rotate-270', Nombre: 'Cargador' },
 		];
 		var DefConfig = { url: '', element_id: null, elements_ids: [], buttons_main: [], buttons_grid: [] };
 
@@ -89,6 +91,15 @@
 				Ctrl.PagesCRUD.add(f);
 			});
 
+		};
+
+		Ctrl.movePageUp = (P) => {
+			var indexAnt = Rs.getIndex(Ctrl.PagesCRUD.rows, (P.Indice-1), 'Indice' );
+			PAnt = Ctrl.PagesCRUD.rows[indexAnt];
+			PAnt.Indice++;
+			P.Indice--;
+
+			Ctrl.PagesCRUD.updateMultiple([PAnt, P]);
 		};
 
 		Ctrl.prepConfig = () => {

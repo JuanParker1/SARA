@@ -17,6 +17,7 @@ use App\Models\EntidadCargador;
 use App\Models\BDD;
 
 use App\Functions\Helper as H;
+use App\Functions\EntidadHelper;
 use App\Functions\GridHelper;
 use App\Functions\CamposHelper;
 use DB;
@@ -35,30 +36,7 @@ class EntidadesController extends Controller
     public function postSearch()
     {
         extract(request()->all());
-        $Entidad = Entidad::where('id', $entidad_id)->first();
-        $q       = GridHelper::getQ($Entidad, true, \PDO::FETCH_ASSOC)->limit($search_elms);
-
-        $campos = [ $Entidad['campo_llaveprim'] ];
-        for ($i=1; $i <= 5; $i++) { $campos[] = $Entidad->config['campo_desc'.$i]; };
-
-        foreach ($campos as $k => $campo_id) {
-            if(!is_null($campo_id)){
-                $Campo = EntidadCampo::where('id', $campo_id)->first();
-                $columna_name = DB::raw(CamposHelper::getColName('t0', $Campo['Columna']));
-                
-                $q->addSelect(DB::raw("$columna_name AS C$k"));
-                $q->orWhere($columna_name, 'like', "%".strtoupper($searchText)."%");
-            };
-        };
-
-        //return $Entidad;
-        $res = collect($q->get())->transform(function($row){
-            return  collect($row)->transform(function($D){
-                return utf8_encode(trim($D));
-            });
-        });
-
-        return $res;
+        return EntidadHelper::searchElms($entidad_id, $searchText, $search_elms, true);
     }
 
 
@@ -249,8 +227,10 @@ class EntidadesController extends Controller
 
     public function postEditorGet()
     {
-        $editor_id = request('editor_id');
-        return EntidadEditor::with(['campos','campos.campo','campos.campo.entidadext'])->where('id', $editor_id)->first();
+        extract(request()->all()); //$editor_id, $Obj, $Config
+        $Editor = EntidadEditor::with(['entidad','campos','campos.campo','campos.campo.entidadext'])->where('id', $editor_id)->first();
+        if(isset($Config)) $Editor->prepFields($Config, $Obj);
+        return $Editor;
     }
 
 
@@ -260,6 +240,11 @@ class EntidadesController extends Controller
     {
         $CRUD = new CRUD('App\Models\EntidadCargador');
         return $CRUD->call(request()->fn, request()->ops);
+    }
+
+    public function postCargadoresGet()
+    {
+        return EntidadCargador::get();
     }
 
     public function postCargadorGet()
@@ -284,15 +269,56 @@ class EntidadesController extends Controller
             foreach ($Cargador->entidad->campos as $kC => $C) {
                 $C_Conf = $Cargador->Config['campos'][$C['id']];
                 
-                     if($C_Conf['tipo_valor'] == 'Sin Valor'){ $val = null; }
-                else if($C_Conf['tipo_valor'] == 'Columna'  ){ $val = $R[$C_Conf['Defecto'] - 1]; };
 
+                     if($C_Conf['tipo_valor'] == 'Sin Valor'){ $val = null; }
+                else if($C_Conf['tipo_valor'] == 'Columna'  ){
+                    $Indice = $C_Conf['Defecto'] - 1;
+                    $val = $R->has($Indice) ? $R[$Indice] : null; 
+                };
+
+                $Cargador->entidad->campos[$kC]['tipo_valor'] = $C_Conf['tipo_valor'];
                 $load_data[$kR][$kC] = $val;
             }
         }
         
         //return $load_data;
         return ['entidad' => $Cargador->entidad, 'load_data' => $load_data];
+    }
+
+    public function postCargadorInsert()
+    {
+        extract(request()->all());
+
+        $load_data = collect($load_data)->transform(function($R) use ($Cargador, $Entidad){
+            $row = [];
+            foreach ($Entidad['campos'] as $C) {
+                if($C['tipo_valor'] == 'Sin Valor') continue;
+
+                $ConfigCampo = $Cargador['Config']['campos'][$C['id']];
+
+                if(array_key_exists('formato', $ConfigCampo)) $C['formato'] = $ConfigCampo['formato'];
+
+                if($C['tipo_valor'] == 'Columna')             $Val = CamposHelper::prepDatoIns($C, $R[$C['Indice']]);
+                if($C['tipo_valor'] == 'Variable de Sistema') $Val = CamposHelper::getSysVariable($ConfigCampo['Defecto']);
+
+                //if(empty($Val)) $Val = null;
+                $row[CamposHelper::getColName("",$C['Columna'])] = $Val;
+            };
+
+            return $row;
+        });
+
+        //return $load_data;
+
+        $Bdd  = BDD::where('id', $Entidad['bdd_id'])->first();
+        $SchemaTabla = GridHelper::getTableName($Entidad['Tabla'], $Bdd->Op3);
+        $Conn =  \App\Functions\ConnHelper::getConn($Bdd);
+        
+        $data_chunk = $load_data->chunk(1);
+
+        foreach ($data_chunk as $chunk) {
+            $Conn->table($SchemaTabla[2])->insert($chunk->toArray());
+        };
     }
 
 }

@@ -1,11 +1,11 @@
-<md-dialog id="EditorDiag" class="w100p" aria-label=m ng-style="{ 'max-width': Editor.Ancho }" style="max-height: 95%">
+<md-dialog id="EditorDiag" class="w100p" aria-label=m ng-style="{ 'max-width': Editor.Ancho }" style="max-height: 95%" layout=column>
 	
 	<div ng-show="!Editor" class="padding-20" layout layout-align="center center">
 		<md-progress-circular md-diameter="48"></md-progress-circular>
 	</div>
 
-	<div layout=column ng-show="Editor">
-		<div layout class="margin-bottom-5">
+	<div flex layout=column ng-show="Editor">
+		<div layout class="">
 			<div layout flex class="padding-left lh30" md-truncate>{{ Editor.Titulo }}</div>
 			
 			<md-button class="md-icon-button s30 no-padding only-dialog" aria-label="Button" ng-click="Cancel()">
@@ -15,24 +15,48 @@
 		</div>
 
 
-		<form id="EditorForm" flex layout=column layout-gt-xs=row layout-wrap class="padding-0-10 overflow-y darkScroll" ng-submit="enviarDatos()">
+		<form id="EditorForm" flex layout=column layout-gt-xs=row layout-wrap class="overflow-y" ng-submit="enviarDatos()">
 			
-			<div ng-repeat="C in Editor.campos" layout=column flex-gt-xs={{C.Ancho}} class="">@include('Entidades.Entidades_EditorCampo')</div>
-			<div class="h20"></div>
+			<div ng-repeat="C in Editor.campos" layout=column flex-gt-xs={{C.Ancho}} class="EditorCampo" ng-show="C.Visible">
+				@include('Entidades.Entidades_EditorCampo')
+			</div>
 
 		</form>
 
 		<div layout>
 			<span flex></span>
-			<md-button class="md-raised" ng-style="{ backgroundColor: Config.color, color: Config.textcolor }" 
-				type="submit" form="EditorForm">{{ Config.modo }}</md-button>
+			<md-button class="md-raised margin-5 text-16px" ng-style="{ backgroundColor: Config.color, color: Config.textcolor }" 
+				type="button" form="EditorForm" >{{ Config.modo }}</md-button>
 		</div>
 	</div>
+
+	<pre hide>{{ Config | json }}</pre>
 
 	<style type="text/css">
 		
 		#EditorDiag{
-			max-width: 0px
+			max-width: 0px;
+		}
+
+		#EditorForm md-input-container {
+    		margin: 0;
+    		padding: 0;
+		}
+
+		#EditorForm .md-datepicker-input-container{
+			width: 100%;
+		}
+
+		#EditorForm{
+			padding: 0 5px 50px;
+		}
+
+		#EditorForm .EditorCampo{
+			padding: 25px 5px 0;
+		}
+
+		#EditorForm md-input-container.md-input-focused label:not(.md-no-float), #EditorForm md-input-container.md-input-has-value label:not(.md-no-float){
+			width: 130%; min-width: 130%;
 		}
 
 		.autocomplete-custom li {

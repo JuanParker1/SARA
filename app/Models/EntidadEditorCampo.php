@@ -15,7 +15,7 @@ class EntidadEditorCampo extends MyModel
     	'Editable' => 'bool'
     ];
     protected $appends = [
-    	'campo_title', 'val'
+    	'campo_title',
     ];
 
 
@@ -67,9 +67,9 @@ class EntidadEditorCampo extends MyModel
 		return $this->Etiqueta ?: $this->campo->campo_title;
 	}
 
-	public function getValAttribute()
+	/*public function getValAttribute()
 	{
 		return null;
-	}
+	}*/
 
 }

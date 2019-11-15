@@ -66,9 +66,14 @@
 
 
 		<div layout class="border-top seam-top">
-			<md-button class="md-primary" ng-click="testGrid(GridSel.id)">
+			<md-button class="md-primary" ng-click="testGrid(GridSel.id)" hide>
 				<md-icon md-font-icon="fa-flask" class="margin-right"></md-icon>Probar
 			</md-button>
+
+			<md-button class="md-icon-button no-margin s40" aria-label="b" ng-click="testGrid(GridSel.id)">
+				<md-icon md-font-icon="fa-external-link-alt fa-fw fa-lg"></md-icon>
+			</md-button>
+
 			<span flex></span>
 			<md-button class="md-primary md-raised" ng-click="updateGrid()">
 				<md-icon md-svg-icon="md-save" class="margin-right"></md-icon>Guardar

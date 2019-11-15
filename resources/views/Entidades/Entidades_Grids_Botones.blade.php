@@ -6,7 +6,7 @@
 	<div class="h30" layout layout-align="center center">
 		<div class="md-subheader margin-left margin-right">Botones Principales</div>
 		<span flex></span>
-		<md-button class="md-icon-button no-margin no-padding s30 margin-right-5" aria-label="b" ng-click="addButton('main_buttons', { icono: 'fa-plus', texto: 'Nuevo', accion: 'Editor (Crear)', accion_element: '', accion_element_id: null })">
+		<md-button class="md-icon-button no-margin no-padding s30 margin-right-5" aria-label="b" ng-click="addButton('main_buttons', { icono: 'fa-plus', texto: 'Nuevo', accion: 'Editor', modo: 'Crear' })">
 			<md-icon md-svg-icon="md-plus"></md-icon>
 			<md-tooltip md-direction="left">Agregar Botón</md-tooltip>
 		</md-button>
@@ -27,7 +27,7 @@
 					</td>
 					<td md-cell class="md-cell-compress ">
 						<md-select ng-model="B.accion" aria-label="s">
-							<md-option ng-repeat="Op in ['Editor (Crear)']" ng-value="Op">{{ Op }}</md-option>
+							<md-option ng-repeat="Op in ['Editor']" ng-value="Op">{{ Op }}</md-option>
 						</md-select>
 					</td>
 					<td md-cell class="" layout>
@@ -48,7 +48,7 @@
 
 						<md-button class="md-icon-button" aria-label="b" ng-click="configEditor(B)">
 							<md-icon md-svg-icon="md-settings" class="s20"></md-icon>
-							<md-tooltip md-direction=left>Configuración</md-tooltip>
+							<md-tooltip md-direction=left>Configuración de Editor</md-tooltip>
 						</md-button>
 
 					</td>
@@ -68,7 +68,7 @@
 	<div class="h30" layout layout-align="center center">
 		<div class="md-subheader margin-left margin-right">Botones de Fila</div>
 		<span flex></span>
-		<md-button class="md-icon-button no-margin no-padding s30 margin-right-5" aria-label="b" ng-click="addButton('row_buttons', { icono: 'fa-pencil-alt', texto: 'Editar', accion: 'Editor (Editar)', accion_element: '', accion_element_id: null })">
+		<md-button class="md-icon-button no-margin no-padding s30 margin-right-5" aria-label="b" ng-click="addButton('row_buttons', { icono: 'fa-pencil-alt', texto: 'Editar', accion: 'Editor', modo: 'Editar' })">
 			<md-icon md-svg-icon="md-plus"></md-icon>
 			<md-tooltip md-direction="left">Agregar Botón</md-tooltip>
 		</md-button>
@@ -89,11 +89,11 @@
 					</td>
 					<td md-cell class="md-cell-compress ">
 						<md-select ng-model="B.accion" aria-label="s">
-							<md-option ng-repeat="Op in ['Editor (Crear)', 'Editor (Editar)']" ng-value="Op">{{ Op }}</md-option>
+							<md-option ng-repeat="Op in ['Editor']" ng-value="Op">{{ Op }}</md-option>
 						</md-select>
 					</td>
-					<td md-cell class="">
-						<md-autocomplete 
+					<td md-cell class="" layout>
+						<md-autocomplete flex
 							md-selected-item="selectedItem"
 							md-search-text="B.accion_element"
 							md-selected-item-change="selectElm(item, B)"
@@ -106,6 +106,12 @@
 							</md-item-template>
 							<md-not-found>No encontrado</md-not-found>
 						</md-autocomplete>
+
+						<md-button class="md-icon-button" aria-label="b" ng-click="configEditor(B, GridColumnasCRUD.rows)">
+							<md-icon md-svg-icon="md-settings" class="s20"></md-icon>
+							<md-tooltip md-direction=left>Configuración de Editor</md-tooltip>
+						</md-button>
+
 					</td>
 					<td md-cell class="md-cell-compress">
 						<md-button class="md-icon-button s30 no-padding focus-on-hover" aria-label="b" ng-click="removeButton('row_buttons', iB)">

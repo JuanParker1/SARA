@@ -44,7 +44,8 @@
 					<tbody md-body> <!-- md-virtual-repeat -->
 						<tr md-row class="md-row-hover" ng-repeat="R in Grid.data | filter:filterRows | orderBy:Grid.order">
 							<td md-cell class="md-cell-compress " ng-if="Grid.Config.row_buttons.length > 0" style="padding: 0 5px !important;">
-								<md-button class="md-icon-button s30 no-padding" aria-label="b" ng-repeat="B in Grid.Config.row_buttons">
+								<md-button class="md-icon-button s30 no-padding" aria-label="b" ng-repeat="B in Grid.Config.row_buttons" 
+									ng-click="triggerButton(B,R)">
 									<md-icon md-font-icon="fa-fw {{ B.icono }} text-16px focus-on-hover"></md-icon>
 									<md-tooltip md-direction="right" md-delay=500>{{ B.texto }}</md-tooltip>
 								</md-button>

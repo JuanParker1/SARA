@@ -177,6 +177,9 @@ thead md-icon {
   padding: 0;
   width: 20px;
 }
+.md-button {
+  text-transform: none !important;
+}
 .md-button.md-white {
   color: white !important;
 }
@@ -9875,6 +9878,9 @@ md-tooltip {
 }
 .text-underline {
   text-decoration: underline;
+}
+.no-underline {
+  text-decoration: none !important;
 }
 .text-ellipsis {
   white-space: nowrap;

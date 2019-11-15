@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Core\MyModel;
+use App\Functions\EntidadHelper;
 
 class EntidadEditor extends MyModel
 {
@@ -44,4 +45,40 @@ class EntidadEditor extends MyModel
 	{
 		return $this->hasMany('\App\Models\EntidadEditorCampo', 'editor_id')->orderBy('Indice', 'ASC');
 	}
+
+
+
+	//Funciones
+	public function prepFields($Config, $Obj = null)
+	{
+		$Config['campos'] = collect($Config['campos']);
+
+		foreach ($this->campos as $F) {
+			
+			$ConfigField = $Config['campos']->get($F->id);
+			$TipoCampo   = $F->campo->Tipo;
+			$TipoValor   = $ConfigField['tipo_valor'];
+			$Valor       = null;
+			$primary_key = ($F->campo->id == $this->entidad->campo_llaveprim);
+
+
+			if($TipoValor == 'Columna'){
+				$Valor = $Obj[$ConfigField['columna_id']]['val'];
+			};
+
+			if($TipoCampo == 'Entidad'){
+				$F->val = $Valor;
+				if($F->val) $F->selectedItem = EntidadHelper::searchElms($F->campo->Op1, $F->val);
+			};
+
+			//Definir Editable
+			$F->Editable = ( $Config['modo'] !== 'Crear' && $F->Editable );
+			if($primary_key) $F->Editable = false;
+
+			//Definir Requerido
+			$F->Requerido = $F->campo->Requerido;
+		};
+	}
+
+
 }

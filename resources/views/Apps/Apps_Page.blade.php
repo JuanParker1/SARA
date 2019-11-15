@@ -48,4 +48,17 @@
 
 	</div>
 
+	<div layout=column ng-show="PageSel.Tipo == 'Cargador'">
+
+		<md-input-container class="no-margin-bottom">
+			<label>Cargador</label>
+			<md-select ng-model="PageSel.Config.element_id" aria-label="s">
+				<md-option ng-value="Op.id" ng-repeat="Op in Cargadores" class="text-14px">
+					<span class="">{{ Op.Titulo }}</span>
+				</md-option>
+			</md-select>
+		</md-input-container>
+
+	</div>
+
 </div>

@@ -33,6 +33,12 @@ class ConnHelper
 		};
 
 		$conn_id = 'db_'.$BDD->id;
-		return DB::connection($conn_id);
+		$Conn = DB::connection($conn_id);
+
+		if(substr($BDD->Tipo,0,4) == 'ODBC'){
+			$Conn->setSchemaGrammar(new \App\Models\Core\DB2Grammar);
+		};
+
+		return $Conn;
 	}
 }

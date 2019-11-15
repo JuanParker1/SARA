@@ -7,19 +7,22 @@
 		</div>
 	</div>
 
-	<div layout=column class="bg-white border-radius margin-bottom" 
-		ng-repeat="Fav in [true,false]">
-		<div layout class="border Pointer relative" ng-click="openApp(A)" md-ink-ripple 
-			ng-repeat="A in Usuario.Apps | filter:{favorito:Fav} | filter:filterApps | orderBy:'Titulo' "
-			style="margin-bottom: -1px;">
-			<md-button class="md-icon-button no-margin" ng-click="makeFavorite(A,!Fav)">
+	<div layout=column class="bg-white border border-radius margin-bottom no-overflow">
+		<a class="Pointer mh40 no-underline" layout layout-align="center center"
+			ng-repeat="A in Usuario.Apps | filter:filterApps | orderBy:'Titulo' " 
+			href="http://sara.local/#/a/{{ A.Slug }}" target="_blank"
+			ngs-click="openApp(A)"
+			ng-class="{ 'border-bottom': !$last }">
+			<md-button class="md-icon-button no-margin" ng-click="makeFavorite(A,!Fav)" hide>
 				<md-icon class="fa-fw fa-star" md-font-icon="{{ Fav ? 'fa' : 'far' }}"></md-icon>
 			</md-button>
-			<div ng-style="{ backgroundColor: A.Color }" class="w40 h40" layout layout-align="center center">
+			<div ng-style="{ backgroundColor: A.Color }" class="s40" layout layout-align="center center">
 				<md-icon class="fa-fw fa-lg" md-font-icon="{{ A.Icono }}" ng-style="{ color: A.textcolor }"></md-icon>
 			</div>
-			<div flex class="text-16px lh40 margin-left">{{ A.Titulo }}</div>
-		</div>
+			<div flex class="text-16px lh30 margin-left text-black">{{ A.Titulo }}</div>
+		</a>
 	</div>
 
 </div>
+
+<!-- href="http://sara.local/#/a/{{ A.Slug }}" target="_blank"  -->

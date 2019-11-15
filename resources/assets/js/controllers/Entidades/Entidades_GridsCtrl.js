@@ -37,8 +37,10 @@ angular.module('Entidades_GridsCtrl', [])
 		Ctrl.openGrid = (G) => {
 			G.Config = angular.extend({},DefGridConfig,G.Config);
 			Ctrl.GridSel = G;
-			Ctrl.configEditor(G.Config.main_buttons[0]); //FIX
-			Ctrl.getColumnas().then(() => { Ctrl.getFiltros(); });
+			Ctrl.getColumnas().then(() => { 
+				Ctrl.getFiltros();
+				//Ctrl.configEditor(G.Config.main_buttons[0], Ctrl.GridColumnasCRUD.rows); //FIX
+			});
 		};
 
 		//Columnas
@@ -194,7 +196,9 @@ angular.module('Entidades_GridsCtrl', [])
 
 
 		//Botones
+		var DefaultButton = { icono: '', texto: '', accion: 'Editor', modo: 'Crear', accion_element: '', accion_element_id: null, campos: {} };
 		Ctrl.addButton = (bag, button) => {
+			var button = angular.extend({}, DefaultButton, button);
 			Ctrl.GridSel.Config[bag].push(button);
 		};
 
@@ -209,15 +213,21 @@ angular.module('Entidades_GridsCtrl', [])
 			Ctrl.GridSel.Config[bag].splice(i,1);
 		};
 
-		Ctrl.configEditor = (B) => {
+		Ctrl.configEditor = (B, GridColumnas) => {
+
+			var BConf = angular.extend({}, DefaultButton, B);
 			$mdDialog.show({
 				controller: 'Entidades_EditorConfigDiagCtrl',
 				templateUrl: 'Frag/Entidades.Entidades_EditorConfigDiag',
 				clickOutsideToClose: true, fullscreen: true, multiple: true,
-				locals: { B: B, TiposCampo: Ctrl.TiposCampo },
+				locals: { B: BConf, TiposCampo: Ctrl.TiposCampo, GridColumnas: GridColumnas },
 				onComplete: (scope) => {
 					//scope.getGrid(grid_id);
 				}
+			}).then((nB) => {
+				if(!nB) return;
+				B = angular.extend(B, nB);
+				Ctrl.GridsCRUD.update(Ctrl.GridSel);
 			});
 		};
 

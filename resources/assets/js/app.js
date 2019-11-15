@@ -47,6 +47,7 @@ angular.module('SARA', [
 	'BDDCtrl',
 
 	'EntidadesCtrl',
+		'Entidades_Campos_ListaConfigCtrl',
 		'Entidades_AddColumnsCtrl',
 		'Entidades_VerCamposCtrl',
 		'Entidades_GridsCtrl',

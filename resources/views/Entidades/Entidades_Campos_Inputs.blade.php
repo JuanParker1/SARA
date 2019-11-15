@@ -73,6 +73,13 @@
 		</md-select>
 	</div>
 
+	<div ng-if="inArray(C.Tipo, ['Lista'])">
+		<md-button class="md-icon-button no-margin s30" aria-label="b" ng-click="configLista(C)">
+			<md-icon md-svg-icon="md-settings" class="s20"></md-icon>
+			<md-tooltip md-direction=right>Configuración de Lista</md-tooltip>
+		</md-button>
+	</div>
+
 </td>
 <td md-cell class="">
 

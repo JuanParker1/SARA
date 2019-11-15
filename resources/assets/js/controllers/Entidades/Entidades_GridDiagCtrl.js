@@ -9,9 +9,9 @@ angular.module('Entidades_GridDiagCtrl', [])
 		Ctrl.loadingGrid = false;
 		Ctrl.sidenavSel = null;
 		Ctrl.SidenavIcons = [
-			['fa-filter', 		'Filtros'		,false],
-			['fa-download', 	'Descargar'		,false],
-			['fa-info-circle', 	'Información'	,false],
+			['fa-filter', 						'Filtros'		,false],
+			['fa-sign-in-alt fa-rotate-90', 	'Descargar'		,false],
+			['fa-info-circle', 					'Información'	,false],
 		];
 		Ctrl.openSidenavElm = (S) => {
 			Ctrl.sidenavSel = (S[1] == Ctrl.sidenavSel) ? null : S[1];
@@ -39,24 +39,41 @@ angular.module('Entidades_GridDiagCtrl', [])
 		
 		Ctrl.getGrid = (grid_id) => {
 			
-
 			if(!grid_id) return;
 			Ctrl.loadingGrid = true;
 			Rs.http('api/Entidades/grids-get-data', { grid_id: grid_id }).then((r) => {
 				Ctrl.Grid = r.Grid;
 				Ctrl.loadingGrid = false;
 				if(Ctrl.Grid.filtros.length > 0) Ctrl.SidenavIcons[0][2] = true;
-				return Ctrl.triggerButton({ accion: 'Editor (Crear)', accion_element_id: 1 }); //TEST
+
+				//return Ctrl.triggerButton(Ctrl.Grid.Config.row_buttons[0], Ctrl.Grid.data[0]); //TEST
+				return Ctrl.triggerButton(Ctrl.Grid.Config.main_buttons[0]); //TEST
 			});
 		};
 
-		
-		Ctrl.triggerButton = (B) => {
+		var prepRow = (R) => {
+			if(!R) return null;
+			var Obj = { id: R[0] };
+			angular.forEach(Ctrl.Grid.columnas, (C) => {
+				if(C.id){ Obj[C.id] = { val: R[C.Indice] }; };
+			});
+			return Obj;
+		};
 
-			if(B.accion == 'Editor (Crear)'){
-				Rs.viewEditorDiag(B.accion_element_id, {}, {
-					modo: 'Crear', color: Ctrl.AppSel.Color, textcolor: Ctrl.AppSel.textcolor
+		Ctrl.triggerButton = (B,R) => {
+
+			var Obj = prepRow(R);
+
+			var DefConfig = {};
+			if(Ctrl.AppSel){
+				DefConfig = angular.extend(DefConfig, {
+					color: Ctrl.AppSel.Color, textcolor: Ctrl.AppSel.textcolor
 				});
+			};
+
+			if(B.accion == 'Editor'){
+				Config = angular.extend(DefConfig, B);
+				Rs.viewEditorDiag(B.accion_element_id, Obj, Config);
 			};
 		};
 

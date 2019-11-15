@@ -11,14 +11,6 @@ angular.module('InicioCtrl', [])
 			Rs.http('api/App/favorito', { usuario_id: Rs.Usuario.id, app_id: A.id, favorito: make });
 		};
 
-		Ctrl.openApp = (A) => {
-			console.log(A);
-		};
-
-
-
-		
-
 
 	}
 ]);

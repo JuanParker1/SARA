@@ -6,17 +6,18 @@ angular.module('Entidades_EditorDiagCtrl', [])
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 		Ctrl.opacity = 0;
+		Ctrl.inArray = Rs.inArray;
 
 		Ctrl.Cancel = () => { $mdDialog.cancel(); };
 
 		var DefConfig = {
-			modo: 'Crear', color: '#e2e2e2', textcolor: 'black'
+			color: '#e2e2e2', textcolor: 'black'
 		};
 
 		Ctrl.getEditor = (editor_id, Obj, Config) => {
 			Ctrl.Obj = Obj;
 			Ctrl.Config = angular.extend(DefConfig, Config);
-			Rs.http('api/Entidades/editor-get', { editor_id: editor_id }, Ctrl, 'Editor').then(() => {
+			Rs.http('api/Entidades/editor-get', { editor_id: editor_id, Obj: Obj, Config: Config }, Ctrl, 'Editor').then(() => {
 				Ctrl.opacity = 1;
 			});
 		};

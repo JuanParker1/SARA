@@ -2,7 +2,8 @@
 
 namespace App\Models\Core;
 
-use Illuminate\Database\Query\Grammars\Grammar;
+//use Illuminate\Database\Query\Grammars\Grammar;
+use Illuminate\Database\Schema\Grammars\Grammar;
 use Illuminate\Database\Query\Builder;
 
 class DB2Grammar extends Grammar

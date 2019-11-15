@@ -61,7 +61,7 @@ angular.module('Entidades_CargadoresCtrl', [])
 				};
 			});
 
-			Rs.viewCargadorDiag(Ctrl.CargadorSel.id);
+			//Rs.viewCargadorDiag(Ctrl.CargadorSel.id);
 
 		};
 
