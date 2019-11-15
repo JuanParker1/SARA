@@ -1,4 +1,4 @@
-<md-dialog layout=column class="mw500">
+<md-dialog layout=column class="mw400">
 	
 	<div layout class="h30 lh30 padding-left">
 		<div flex class="">Opciones para: <b>{{ C.Alias || C.Columna }}</b></div>
