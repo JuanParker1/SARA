@@ -262,6 +262,14 @@ span.highlight {
 	&:hover .child{ display: block !important; opacity: 1 !important; }
 }
 
+.show-child-on-hover-w{
+	.child{
+		width: 0 !important; min-width: 0 !important; overflow: hidden;
+		transition: all 0.3s;
+	}
+	&:hover .child{ width: unset !important; min-width: unset !important; }
+}
+
 .focus-on-hover{
 	opacity: 0.5;
 	transition: opacity 0.3s;

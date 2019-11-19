@@ -19,6 +19,14 @@
 </md-input-container>
 
 
+<md-input-container class="" ng-if="inArray(C.campo.Tipo, ['Lista'])">
+	<label>{{ C.campo_title }}</label>
+	<md-select ng-model="C.val" name="c{{ C.id }}" ng-required="{{ C.Requerido }}" class="w100p">
+		<md-option ng-repeat="Op in C.campo.Config.opciones" ng-value="Op.value">{{ Op.desc == '' ? Op.value : Op.desc }}</md-option>
+	</md-select>
+</md-input-container>
+
+
 
 <div layout class="" ng-if="C.campo.Tipo == 'Entidad'">
 	
@@ -52,27 +60,29 @@
 		<md-not-found>"{{C.searchText}}" no encontrado.</md-not-found>
 	</md-autocomplete>
 
-	<md-button class="md-icon-button s30 no-margin no-padding " hide
-		style="transform: translateY(20px);" ng-show="C.val == null" ng-click="clearCampo(C)">
+	<md-button class="md-icon-button s30 no-margin no-padding " hide ng-show="C.val == null" ng-click="clearCampo(C)">
 		<md-icon md-font-icon="fa-search"></md-icon>
 		<md-tooltip md-direction="left">Buscar</md-tooltip>
 	</md-button>
 
-	<div flex layout=column ng-show="C.val !== null" class="">
-		<div class="md-caption text-clear">{{ C.campo_title }}</div>
-		<div class="bg-lightgrey-5 padding-5 border-radius border" layout=column>
-			<div class="entidad_chip" layout=column>
-				<div class="entidad_title" layout><div flex>{{C.selectedItem.C1}}</div><div class="entidad_id">{{C.selectedItem.C2}}</div></div>
-				<div class="entidad_metadata" layout><div flex>{{C.selectedItem.C3}}</div><div>{{C.selectedItem.C4}}</div></div>
-				<div class="entidad_metadata" layout><div flex>{{C.selectedItem.C5}}</div></div>
+	<div flex layout ng-show="C.val !== null" class="show-child-on-hover-w">
+		<div flex layout=column class="relative">
+			<label class="custom-label">{{ C.campo_title }}</label>
+			<div class="entidad_pill" layout=column>
+				<div class="entidad_chip" layout=column>
+					<div class="entidad_title" layout><div flex>{{C.selectedItem.C1}}</div><div class="entidad_id">{{C.selectedItem.C2}}</div></div>
+					<div class="entidad_metadata" layout><div flex>{{C.selectedItem.C3}}</div><div>{{C.selectedItem.C4}}</div></div>
+					<div class="entidad_metadata" layout><div flex>{{C.selectedItem.C5}}</div></div>
+				</div>
 			</div>
 		</div>
+		<md-button class="md-icon-button s30 no-margin no-padding child focus-on-hover" 
+			ng-show="C.Editable" ng-click="clearCampo(C)">
+			<md-icon md-font-icon="fas fa-eraser"></md-icon>
+			<md-tooltip md-direction="left">Borrar</md-tooltip>
+		</md-button>
 	</div>
-	<md-button class="md-icon-button s30 no-margin no-padding focus-on-hover" 
-		style="transform: translateY(23px);" ng-show="C.val !== null && C.Editable" ng-click="clearCampo(C)">
-		<md-icon md-font-icon="fas fa-eraser"></md-icon>
-		<md-tooltip md-direction="left">Borrar</md-tooltip>
-	</md-button>
+
 </div>
 
 <pre hide>{{ C | json }}</pre>

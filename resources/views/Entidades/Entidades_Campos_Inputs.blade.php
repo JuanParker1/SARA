@@ -73,17 +73,18 @@
 		</md-select>
 	</div>
 
-	<div ng-if="inArray(C.Tipo, ['Lista'])">
+	<div ng-if="inArray(C.Tipo, ['Lista'])" layout>
 		<md-button class="md-icon-button no-margin s30" aria-label="b" ng-click="configLista(C)">
 			<md-icon md-svg-icon="md-settings" class="s20"></md-icon>
 			<md-tooltip md-direction=right>Configuración de Lista</md-tooltip>
 		</md-button>
+		<div class="bg-lightgrey border-rounded h25 lh25 ng-binding padding-0-10" style="border: 1px solid #c5c5c5; margin: 1px 0 0 5px;">{{ C.Config.opciones.length }} Opciones</div>
 	</div>
 
 </td>
 <td md-cell class="">
 
-	<div ng-if="inArray(C.Tipo, ['Texto','TextoLargo'])">
+	<div ng-if="inArray(C.Tipo, ['Texto','TextoLargo','Entidad'])">
 		<md-input-container md-no-float class="no-padding no-margin">
 			<input type="text" ng-model="C.Defecto" class="h30" aria-label="L" placeholder="Valor por Defecto" autocomplete="new-password" ng-change="markChanged(C)">
 		</md-input-container>
@@ -97,9 +98,31 @@
 		</md-input-container>
 	</div>
 
+
+	<div ng-if="inArray(C.Tipo, ['Dinero'])">
+		<md-input-container md-no-float class="no-padding no-margin">
+			<input type="text" ng-model="C.Defecto" class="h30" aria-label="L" placeholder="Valor por Defecto" autocomplete="new-password" 
+			ng-change="markChanged(C)" ui-money-mask="0">
+		</md-input-container>
+	</div>
+
+	<div ng-if="inArray(C.Tipo, ['Fecha'])">
+		<md-input-container md-no-float class="no-padding no-margin">
+			<input type="text" ng-model="C.Defecto" class="h30" aria-label="L" placeholder="Valor por Defecto" autocomplete="new-password" ng-change="markChanged(C)">
+		</md-input-container>
+	</div>
+
+
 	<div ng-if="inArray(C.Tipo, ['Booleano'])">
 		<md-select ng-model="C.Defecto" aria-label="s" class="w140" ng-change="markChanged(C)">
 		  <md-option ng-value="Op.Valor" ng-repeat="Op in OpsBooleano">{{ Op.Mostrar }}</md-option>
+		</md-select>
+	</div>
+
+	<div ng-if="inArray(C.Tipo, ['Lista'])">
+		<md-select ng-model="C.Defecto" aria-label="s" class="w140" ng-change="markChanged(C)">
+			<md-option ng-value="''">Ninguno</md-option>
+			<md-option ng-value="Op.value" ng-repeat="Op in C.Config.opciones">{{ Op.desc == '' ? Op.value : Op.desc }}</md-option>
 		</md-select>
 	</div>
 

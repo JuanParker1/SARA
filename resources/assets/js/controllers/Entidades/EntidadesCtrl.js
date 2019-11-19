@@ -126,7 +126,7 @@ angular.module('EntidadesCtrl', [])
 			Ctrl.CamposCRUD.setScope('entidad', Ctrl.EntidadSel.id);
 			Ctrl.CamposCRUD.get().then(() => {
 				Ctrl.loadingEntidad = false;
-				Ctrl.configLista(Ctrl.CamposCRUD.rows[3]);
+				//Ctrl.configLista(Ctrl.CamposCRUD.rows[3]); FIX
 			});
 
 			Ctrl.newCampo = angular.copy(newCampoDef);
@@ -242,6 +242,10 @@ angular.module('EntidadesCtrl', [])
 				fullscreen: false,
 				multiple: true,
 				locals: { C: C }
+			}).then((newC) => {
+				if(!newC) return;
+				C = newC;
+				C.changed = true;
 			});
 		};
 

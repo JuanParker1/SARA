@@ -233,6 +233,41 @@ class EntidadesController extends Controller
         return $Editor;
     }
 
+    public function postEditorSave()
+    {
+        extract(request()->all()); //$Editor, $Config
+
+        $Obj = [];
+        $campo_llaveprim = $Editor['entidad']['campo_llaveprim'];
+        $llaveprim_col = null;
+        $llaveprim_val = null;
+
+        foreach ($Editor['campos'] as $F) {
+
+            $Columna = CamposHelper::getColName("",$F['campo']['Columna']);
+
+            if($F['campo_id'] == $campo_llaveprim){ //Es Id
+                $llaveprim_col = $Columna;
+                if($Config['modo'] != 'Crear' AND !is_null($Editor['primary_key_val']) ){ 
+                    $llaveprim_val = $Editor['primary_key_val'];
+                };
+            }else{
+                if(!is_null($F['val'])){
+                    $Obj[$Columna] = $F['val'];
+                };
+                
+            };
+        };
+
+        if(is_null($llaveprim_val)){ //Nuevo elemento
+            EntidadHelper::insertRows($Editor['entidad'], collect([$Obj]));
+        }else{
+            EntidadHelper::updateRow($Editor['entidad'], [ $llaveprim_col, $llaveprim_val ], collect($Obj));
+        };
+
+        return compact('Obj', 'llaveprim_val', 'Editor', 'Config');
+    }
+
 
 
     //Cargadores
@@ -293,11 +328,8 @@ class EntidadesController extends Controller
             $row = [];
             foreach ($Entidad['campos'] as $C) {
                 if($C['tipo_valor'] == 'Sin Valor') continue;
-
                 $ConfigCampo = $Cargador['Config']['campos'][$C['id']];
-
                 if(array_key_exists('formato', $ConfigCampo)) $C['formato'] = $ConfigCampo['formato'];
-
                 if($C['tipo_valor'] == 'Columna')             $Val = CamposHelper::prepDatoIns($C, $R[$C['Indice']]);
                 if($C['tipo_valor'] == 'Variable de Sistema') $Val = CamposHelper::getSysVariable($ConfigCampo['Defecto']);
 
@@ -308,17 +340,7 @@ class EntidadesController extends Controller
             return $row;
         });
 
-        //return $load_data;
-
-        $Bdd  = BDD::where('id', $Entidad['bdd_id'])->first();
-        $SchemaTabla = GridHelper::getTableName($Entidad['Tabla'], $Bdd->Op3);
-        $Conn =  \App\Functions\ConnHelper::getConn($Bdd);
-        
-        $data_chunk = $load_data->chunk(1);
-
-        foreach ($data_chunk as $chunk) {
-            $Conn->table($SchemaTabla[2])->insert($chunk->toArray());
-        };
+        EntidadHelper::insertRows($Entidad, $load_data, 50);
     }
 
 }

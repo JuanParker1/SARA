@@ -47,15 +47,15 @@ angular.module('Entidades_GridDiagCtrl', [])
 				if(Ctrl.Grid.filtros.length > 0) Ctrl.SidenavIcons[0][2] = true;
 
 				//return Ctrl.triggerButton(Ctrl.Grid.Config.row_buttons[0], Ctrl.Grid.data[0]); //TEST
-				return Ctrl.triggerButton(Ctrl.Grid.Config.main_buttons[0]); //TEST
+				//return Ctrl.triggerButton(Ctrl.Grid.Config.main_buttons[0]); //TEST
 			});
 		};
 
 		var prepRow = (R) => {
 			if(!R) return null;
 			var Obj = { id: R[0] };
-			angular.forEach(Ctrl.Grid.columnas, (C) => {
-				if(C.id){ Obj[C.id] = { val: R[C.Indice] }; };
+			angular.forEach(Ctrl.Grid.columnas, (C, kC) => {
+				if(C.id){ Obj[C.id] = { val: R[kC] }; };
 			});
 			return Obj;
 		};

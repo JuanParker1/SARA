@@ -1,10 +1,10 @@
 <md-dialog id="EditorDiag" class="w100p" aria-label=m ng-style="{ 'max-width': Editor.Ancho }" style="max-height: 95%" layout=column>
 	
-	<div ng-show="!Editor" class="padding-20" layout layout-align="center center">
+	<div ng-show="loading" class="padding-20" layout layout-align="center center">
 		<md-progress-circular md-diameter="48"></md-progress-circular>
 	</div>
 
-	<div flex layout=column ng-show="Editor">
+	<div flex layout=column ng-show="!loading">
 		<div layout class="">
 			<div layout flex class="padding-left lh30" md-truncate>{{ Editor.Titulo }}</div>
 			
@@ -17,7 +17,7 @@
 
 		<form id="EditorForm" flex layout=column layout-gt-xs=row layout-wrap class="overflow-y" ng-submit="enviarDatos()">
 			
-			<div ng-repeat="C in Editor.campos" layout=column flex-gt-xs={{C.Ancho}} class="EditorCampo" ng-show="C.Visible">
+			<div ng-repeat="C in Editor.campos" layout=column flex-gt-xs={{C.Ancho}} class="EditorCampo" ng-if="C.Visible">
 				@include('Entidades.Entidades_EditorCampo')
 			</div>
 
@@ -26,7 +26,7 @@
 		<div layout>
 			<span flex></span>
 			<md-button class="md-raised margin-5 text-16px" ng-style="{ backgroundColor: Config.color, color: Config.textcolor }" 
-				type="button" form="EditorForm" >{{ Config.modo }}</md-button>
+				type="submit" form="EditorForm" >{{ Config.modo }}</md-button>
 		</div>
 	</div>
 
@@ -59,10 +59,40 @@
 			width: 130%; min-width: 130%;
 		}
 
+		#EditorForm .md-select-value{ 
+			min-width: 0;
+			width: 100%;
+		}
+
+		#EditorForm .md-select-icon{
+			width: 12px;
+			margin: 0;
+			transform: none;
+		}
+
+		.custom-label{
+			padding-left: 3px;
+			transform-origin: left top;
+			color: rgba(0,0,0,0.54);
+			position: absolute;
+			bottom: 100%;
+			left: 0;
+			right: auto;
+			transform: translate3d(0, 6px, 0) scale(0.75);
+		}
+
 		.autocomplete-custom li {
 		  height: auto;
 		  padding: 8px 8px 5px !important;
 		  white-space: normal;
+		}
+
+		.entidad_pill{
+			background-color: #eaeaea;
+			border-radius: 5px;
+			padding: 5px;
+			border: 1px solid #e1e1e1;
+			margin-top: 1px;
 		}
 
 		.entidad_chip > *{

@@ -2,7 +2,9 @@
 
 namespace App\Functions;
 
+use App\Functions\ConnHelper;
 use App\Functions\GridHelper;
+use App\Models\BDD;
 use App\Models\Entidad;
 use App\Models\EntidadCampo;
 use DB;
@@ -26,10 +28,12 @@ class EntidadHelper
                 if($multiple){
                     $q->orWhere($columna_name, 'like', "%".strtoupper($searchText)."%");
                 }else{
-                    if($k == 0) $q->where($columna_name, $searchText);
+                    if($k == 0) $q->where($columna_name, '=', DB::raw("'$searchText'") );
                 };
             };
         };
+
+        //dd($q->toSql());
 
         //return $Entidad;
         $res = collect($q->get())->transform(function($row){
@@ -38,7 +42,47 @@ class EntidadHelper
             });
         });
 
-        return $multiple ? $res : $res[0];
+        if($multiple) return $res;
+
+        if($res) return $res[0];
+        return null;
     }
+
+    public static function getTableConn($Entidad)
+    {
+        $Bdd  = BDD::where('id', $Entidad['bdd_id'])->first();
+        $SchemaTabla = GridHelper::getTableName($Entidad['Tabla'], $Bdd->Op3);
+        $Conn = ConnHelper::getConn($Bdd);
+        return $Conn->table($SchemaTabla[2]);
+    }
+
+    public static function insertRows($Entidad, $rows, $batchSize = 0)
+    {
+        $Tb = self::getTableConn($Entidad);
+
+        if($batchSize == 0){
+            $Tb->insert($rows->toArray());
+        }else{
+            $data_chunk = $rows->chunk($batchSize);
+            foreach ($data_chunk as $chunk) {
+                $Tb->insert($chunk->toArray());
+            };
+        }        
+    }
+
+    public static function updateRow($Entidad, $primary_key, $Obj)
+    {
+        $Tb = self::getTableConn($Entidad);
+        $Row = $Tb->where($primary_key[0], DB::raw("'{$primary_key[1]}'") );
+        if(empty($Row->get())){ // Crear
+            self::insertRows($Entidad, $Obj);
+        }else{
+            $r = $Row->update($Obj->toArray());
+
+            dd($r);
+        };
+    }
+
+
 
 }

@@ -53,6 +53,8 @@ class EntidadEditor extends MyModel
 	{
 		$Config['campos'] = collect($Config['campos']);
 
+		$this->primary_key_val = is_null($Obj) ? null : $Obj['id'];
+
 		foreach ($this->campos as $F) {
 			
 			$ConfigField = $Config['campos']->get($F->id);
@@ -61,6 +63,10 @@ class EntidadEditor extends MyModel
 			$Valor       = null;
 			$primary_key = ($F->campo->id == $this->entidad->campo_llaveprim);
 
+			//Definir el valor
+			if($F->campo->Defecto !== ""){
+				$Valor = $F->campo->Defecto;
+			};
 
 			if($TipoValor == 'Columna'){
 				$Valor = $Obj[$ConfigField['columna_id']]['val'];
@@ -69,10 +75,12 @@ class EntidadEditor extends MyModel
 			if($TipoCampo == 'Entidad'){
 				$F->val = $Valor;
 				if($F->val) $F->selectedItem = EntidadHelper::searchElms($F->campo->Op1, $F->val);
+			}else{
+				$F->val = $Valor;
 			};
 
 			//Definir Editable
-			$F->Editable = ( $Config['modo'] !== 'Crear' && $F->Editable );
+			$F->Editable = $F->Editable;
 			if($primary_key) $F->Editable = false;
 
 			//Definir Requerido
