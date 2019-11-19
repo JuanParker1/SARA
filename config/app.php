@@ -209,6 +209,7 @@ return [
 
     'env'    => env('APP_ENV', 'production'),
     'online' => env('APP_ONLINE', true),
+    'url'    => env('APP_URL', 'http://sara.local/'),
 
 
 

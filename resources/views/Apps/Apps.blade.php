@@ -98,7 +98,7 @@
 					<md-menu-item><md-button ng-click="calcSlug()"><md-icon md-font-icon="fa-fingerprint margin-right-5 fa-fw"></md-icon>Cambiar URL</md-button></md-menu-item>
 				</md-menu-content>
 			</md-menu>
-			<a class="text-clear h40 lh40" href="http://sara.local/#/a/{{ AppSel.Slug }}" target="_blank">http://sara.local/#/a/{{ AppSel.Slug }}</a>
+			<a class="text-clear h40 lh40" href="{{ Usuario.url }}#/a/{{ AppSel.Slug }}" target="_blank">{{ Usuario.url }}#/a/{{ AppSel.Slug }}</a>
 			<span flex></span>
 			<md-button class="mh30 h30 lh30 margin-5" ng-click="updateApp()" ng-style="{ backgroundColor: AppSel.Color, color: AppSel.textcolor }">
 				<md-icon md-svg-icon="md-save" class="margin-right-5 s20"></md-icon>Guardar
