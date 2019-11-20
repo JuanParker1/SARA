@@ -180,9 +180,9 @@ class EntidadesController extends Controller
         GridHelper::addCols($Grid, $q);
         GridHelper::addFilters($Grid->filtros, $Grid, $q);
         GridHelper::addOrders($Grid, $q);
-        GridHelper::getData($Grid, $q);
+        $Data = GridHelper::getData($Grid, $q);
 
-        return compact('Grid');
+        return compact('Grid', 'Data');
     }
 
     public function postGridsReloadData()
@@ -252,10 +252,7 @@ class EntidadesController extends Controller
                     $llaveprim_val = $Editor['primary_key_val'];
                 };
             }else{
-                if(!is_null($F['val'])){
-                    $Obj[$Columna] = $F['val'];
-                };
-                
+                $Obj[$Columna] = $F['val'];
             };
         };
 

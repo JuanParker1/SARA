@@ -9,7 +9,7 @@
 				ng-class="{ 'app_pagesel': P.id == PageSel.id }"
 				ng-click="openPage(P)" layout=column layout-align=center>{{ P.Titulo }}</div>
 		</div>
-		<!-- <img src="https://eventosadversos.comfamiliar.com/img/logo.png" height="{{ AppSel.ToolbarSize }}"> -->
+		<img hide src="https://eventosadversos.comfamiliar.com/img/logo.png" height="{{ AppSel.ToolbarSize }}">
 	</div>
 
 	<div flex layout>
@@ -25,7 +25,7 @@
 						ng-class="{ 'app_pagesel': P.id == PageSel.id }"
 						ng-click="openPage(P)">{{ P.Titulo }}</div>
 				</div>
-				<img src="https://eventosadversos.comfamiliar.com/img/logo.png" width="90%" style="margin: 10px auto" >
+				<img hide src="https://eventosadversos.comfamiliar.com/img/logo.png" width="90%" style="margin: 10px auto" >
 			</div>
 		</div>
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost
--- Tiempo de generación: 15-11-2019 a las 22:47:47
+-- Tiempo de generación: 20-11-2019 a las 23:10:01
 -- Versión del servidor: 10.1.26-MariaDB
 -- Versión de PHP: 7.1.9
 
@@ -21,8 +21,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `bdsara`
 --
-CREATE DATABASE IF NOT EXISTS `bdsara` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE `bdsara`;
 
 -- --------------------------------------------------------
 
@@ -52,7 +50,7 @@ INSERT INTO `sara_apps` (`id`, `Titulo`, `Desc`, `Slug`, `Icono`, `Color`, `Nave
 (1, 'Actividades y Servicios', NULL, 'MSHUZ', 'far fa-handshake', '#00428c', 'Superior', 40, 183, '0000-00-00 00:00:00', '2019-11-12 14:48:56'),
 (2, 'Listado de Fallecimientos', NULL, NULL, 'fa-book-dead', '#484848', 'Superior', 30, 183, '0000-00-00 00:00:00', '2019-10-18 09:11:36'),
 (3, 'Listado de Infecciones Intrahospitalarias', NULL, 'G29BS', 'fa-bug', '#a0d873', 'Superior', 40, 183, '0000-00-00 00:00:00', '2019-10-29 12:24:04'),
-(4, 'Gestión de RIPS', NULL, 'V8J1W', 'far fa-file-alt', '#00428c', 'Izquierda', 200, 0, '2019-11-12 14:45:02', '2019-11-12 16:04:37');
+(4, 'Gestión de RIPS', NULL, 'V8J1W', 'far fa-file-alt', '#00428c', 'Superior', 40, 0, '2019-11-12 14:45:02', '2019-11-20 09:47:35');
 
 -- --------------------------------------------------------
 
@@ -76,8 +74,8 @@ CREATE TABLE `sara_apps_pages` (
 --
 
 INSERT INTO `sara_apps_pages` (`id`, `app_id`, `Indice`, `Titulo`, `Tipo`, `Config`, `created_at`, `updated_at`) VALUES
-(2, 1, 1, 'Relaciones', 'Grid', '{\"url\":\"\",\"element_id\":5,\"elements_ids\":[],\"buttons_main\":[],\"buttons_grid\":[]}', '2019-10-15 15:02:55', '2019-11-15 12:07:02'),
-(3, 1, 0, 'Indicadores', 'Scorecard', '{\"url\":\"\",\"element_id\":1,\"elements_ids\":[],\"buttons_main\":[],\"buttons_grid\":[]}', '2019-10-15 15:47:16', '2019-11-15 12:07:02'),
+(2, 1, 0, 'Relaciones', 'Grid', '{\"url\":\"\",\"element_id\":5,\"elements_ids\":[],\"buttons_main\":[],\"buttons_grid\":[]}', '2019-10-15 15:02:55', '2019-11-19 15:41:44'),
+(3, 1, 1, 'Indicadores', 'Scorecard', '{\"url\":\"\",\"element_id\":1,\"elements_ids\":[],\"buttons_main\":[],\"buttons_grid\":[]}', '2019-10-15 15:47:16', '2019-11-19 15:41:44'),
 (4, 3, 0, 'General', 'Grid', '{\"url\":\"\",\"element_id\":3,\"elements_ids\":[],\"buttons_main\":[],\"buttons_grid\":[]}', '2019-10-28 12:19:17', '2019-10-28 12:19:26'),
 (5, 1, 2, 'Reporte', 'ExternalUrl', '{\"url\":\"https:\\/\\/app.powerbi.com\\/view?r=eyJrIjoiZTE4NzhkNDctYTQwMi00ZWRhLWIwNzctNjVmYzdmMzE0ZjFjIiwidCI6ImEzOTI1M2I3LTgxNzktNGY0ZC04YzdhLWIzMWJlMjc5OTliOSIsImMiOjR9\",\"element_id\":null,\"elements_ids\":[],\"buttons_main\":[],\"buttons_grid\":[]}', '2019-10-28 16:20:09', '2019-11-15 11:37:38'),
 (6, 4, 1, 'Cargar Archivo AC', 'Cargador', '{\"url\":\"\",\"element_id\":3,\"elements_ids\":[],\"buttons_main\":[],\"buttons_grid\":[]}', '2019-11-12 14:46:04', '2019-11-15 12:10:25'),
@@ -175,11 +173,11 @@ INSERT INTO `sara_entidades` (`id`, `bdd_id`, `Ruta`, `Nombre`, `Tipo`, `Tabla`,
 (13, 1, 'Financiera', 'Maestro Cuentas', 'Tabla', 'BDFINAN.VTCUENTAS', 344, 344, 'DESC', 100, '', '2019-09-18 16:16:00', '2019-09-18 16:39:23'),
 (15, 1, 'Salud\\General', 'Relación: Actividades - Servicios', 'Tabla', 'BDSALUD.TBSRACTSER', 360, 360, 'DESC', 100, '{\"campo_desc1\":null,\"campo_desc2\":null,\"campo_desc3\":null,\"campo_desc4\":null,\"campo_desc5\":null,\"search_minlen\":3,\"search_elms\":5}', '2019-10-02 11:47:27', '2019-10-31 13:01:15'),
 (16, 1, 'Salud\\General', 'Tipos Servicio', 'Tabla', 'BDSALUD.TBBDTIPSER', 362, 363, 'DESC', 10000, '{\"campo_desc1\":363,\"campo_desc2\":362,\"campo_desc3\":null,\"campo_desc4\":null,\"campo_desc5\":null,\"search_minlen\":2,\"search_elms\":5}', '2019-10-02 11:52:52', '2019-10-31 13:40:34'),
-(17, 1, 'Salud\\General', 'Actividades', 'Tabla', 'BDSALUD.TBFAACTIVI', 366, 367, 'DESC', 100, '{\"campo_desc1\":367,\"campo_desc2\":366,\"campo_desc3\":null,\"campo_desc4\":null,\"campo_desc5\":null,\"search_minlen\":2,\"search_elms\":10}', '2019-10-02 11:57:26', '2019-10-31 14:03:33'),
+(17, 1, 'Salud\\General', 'Actividades', 'Tabla', 'BDSALUD.TBFAACTIVI', 366, 367, 'DESC', 100, '{\"campo_desc1\":367,\"campo_desc2\":366,\"campo_desc3\":null,\"campo_desc4\":null,\"campo_desc5\":null,\"search_minlen\":2,\"search_elms\":10}', '2019-10-02 11:57:26', '2019-11-20 10:30:53'),
 (18, 1, 'Salud\\PGP', 'PGP asignación CUP a Grupo NT', 'Tabla', 'TBPGPNTCUP', 370, 370, 'DESC', 100, '{\"campo_desc1\":null,\"campo_desc2\":null,\"campo_desc3\":null,\"campo_desc4\":null,\"campo_desc5\":null,\"search_minlen\":2,\"search_elms\":5}', '2019-11-05 15:57:47', '2019-11-05 16:41:38'),
 (19, 1, 'Salud\\PGP', 'PGP Nota Técnica', 'Tabla', 'TBPGPNT', 375, 375, 'DESC', 100, '{\"search_minlen\":0,\"search_elms\":10,\"campo_desc1\":379,\"campo_desc2\":375,\"campo_desc3\":376}', '2019-11-05 16:43:00', '2019-11-05 16:46:17'),
 (20, 1, 'Salud\\Hospitalaria\\Cirugía', 'Liquidación Cirugía', 'Tabla', 'TBFALIQCIR', NULL, NULL, 'DESC', 100, '', '2019-11-06 15:34:25', '2019-11-06 15:34:25'),
-(21, 1, 'Salud\\Externos', 'RIPS Externos', 'Tabla', 'TBRIPSEXT', 383, 399, 'DESC', 50, '{\"campo_desc1\":null,\"campo_desc2\":null,\"campo_desc3\":null,\"campo_desc4\":null,\"campo_desc5\":null,\"search_minlen\":2,\"search_elms\":5}', '2019-11-08 09:40:20', '2019-11-15 12:14:17');
+(21, 1, 'Salud\\Externos', 'RIPS Externos', 'Tabla', 'TBRIPSEXT', 383, 399, 'DESC', 50, '{\"campo_desc1\":null,\"campo_desc2\":null,\"campo_desc3\":null,\"campo_desc4\":null,\"campo_desc5\":null,\"search_minlen\":2,\"search_elms\":5}', '2019-11-08 09:40:20', '2019-11-20 15:06:18');
 
 -- --------------------------------------------------------
 
@@ -358,22 +356,23 @@ INSERT INTO `sara_entidades_campos` (`id`, `entidad_id`, `Indice`, `Columna`, `A
 (381, 19, 6, '.FU', '', 'Decimal', '', 1, 1, 0, 1, 0, 0, 10, 23, NULL, NULL, '', '2019-11-05 16:43:17', '2019-11-05 16:45:22'),
 (382, 19, 7, '.CXE', '', 'Decimal', '', 1, 1, 0, 1, 0, 0, 999999, 4, NULL, NULL, '', '2019-11-05 16:43:17', '2019-11-05 16:45:22'),
 (383, 21, 0, '.ID', 'Id', 'Entero', NULL, 1, 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, '', '2019-11-08 09:41:19', '2019-11-08 09:50:36'),
-(384, 21, 1, '.NUMFAC', 'No. Factura', 'Texto', '', 1, 1, 0, 1, 0, NULL, 50, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-08 09:50:32'),
-(385, 21, 2, '.CODIPS', 'Código IPS', 'Texto', '', 1, 1, 0, 1, 0, NULL, 20, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-08 09:50:33'),
-(386, 21, 3, '.TIPDOC', 'Tipo Documento', 'Lista', NULL, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-15 15:21:37'),
-(387, 21, 4, '.NUMDOC', 'Documento', 'Texto', '', 1, 1, 0, 1, 0, NULL, 20, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-08 09:50:33'),
-(388, 21, 5, '.FECHA', 'Fecha', 'Fecha', '', 1, 1, 0, 1, 0, NULL, NULL, NULL, 'Y-m-d', NULL, '', '2019-11-08 09:41:20', '2019-11-08 09:50:33'),
+(384, 21, 1, '.NUMFAC', 'No. Factura', 'Texto', '', 1, 1, 0, 1, 0, NULL, 50, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-19 13:51:57'),
+(385, 21, 2, '.CODIPS', 'Código IPS', 'Texto', '', 1, 1, 0, 1, 0, NULL, 20, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-19 13:51:57'),
+(386, 21, 3, '.TIPDOC', 'Tipo Documento', 'Lista', 'CC', 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, '{\"opciones\":[{\"value\":\"CC\",\"desc\":\"\",\"color\":\"#ffffff\",\"icono\":null},{\"value\":\"CE\",\"desc\":\"\",\"color\":\"#ffffff\",\"icono\":null},{\"value\":\"PA\",\"desc\":\"\",\"color\":\"#ffffff\",\"icono\":null},{\"value\":\"RC\",\"desc\":\"\",\"color\":\"#ffffff\",\"icono\":null},{\"value\":\"TI\",\"desc\":\"\",\"color\":\"#ffffff\",\"icono\":null},{\"value\":\"AS\",\"desc\":\"\",\"color\":\"#ffffff\",\"icono\":null},{\"value\":\"MS\",\"desc\":\"\",\"color\":\"#ffffff\",\"icono\":null}]}', '2019-11-08 09:41:20', '2019-11-20 10:23:44'),
+(387, 21, 4, '.NUMDOC', 'Documento', 'Texto', '', 1, 1, 0, 1, 0, NULL, 20, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-19 13:51:57'),
+(388, 21, 5, '.FECHA', 'Fecha', 'Fecha', '', 1, 1, 0, 1, 0, NULL, NULL, NULL, 'Y-m-d', NULL, '', '2019-11-08 09:41:20', '2019-11-19 13:51:57'),
 (389, 21, 6, '.NUMAUT', 'No. Autorización', 'Texto', NULL, 0, 1, 0, 1, 0, NULL, 20, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-08 09:49:25'),
-(390, 21, 7, '.CUP', 'Cod. CUPS', 'Texto', '', 1, 1, 0, 1, 0, NULL, 20, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-08 09:50:33'),
-(391, 21, 8, '.DIAGPRI', 'Diag. Pri.', 'Entidad', NULL, 1, 1, 0, 1, 0, 17, NULL, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-15 13:52:24'),
-(392, 21, 9, '.DIAGREL1', 'Diag. Rel.', 'Entidad', NULL, 0, 1, 0, 1, 0, 17, NULL, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-15 13:52:25'),
-(393, 21, 10, '.DIAGREL2', 'Diag. Rel. 2', 'Entidad', NULL, 0, 1, 0, 1, 0, 17, NULL, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-15 13:52:25'),
-(394, 21, 11, '.DIAGREL3', 'Diag. Rel. 3', 'Entidad', NULL, 0, 1, 0, 1, 0, 17, NULL, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-15 13:52:25'),
-(395, 21, 12, '.VRTOTAL', 'Valor Total', 'Dinero', NULL, 0, 1, 0, 1, 0, NULL, NULL, 1, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-08 09:49:26'),
-(396, 21, 13, '.VRCOPAGO', 'Valor Copago', 'Dinero', NULL, 0, 1, 0, 1, 0, NULL, NULL, 1, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-08 09:49:26'),
-(397, 21, 14, '.VRPAGAR', 'Valor a Pagar', 'Dinero', NULL, 0, 1, 0, 1, 0, NULL, NULL, 1, NULL, NULL, '', '2019-11-08 09:41:21', '2019-11-08 09:49:26'),
-(398, 21, 15, '.AUUSUARIO', 'Aud. Usuario', 'Texto', NULL, 1, 1, 0, 1, 0, NULL, 30, NULL, NULL, NULL, '', '2019-11-08 09:41:21', '2019-11-08 09:50:33'),
-(399, 21, 16, '.AUFECHAIN', 'Aud. Fecha Ins.', 'FechaHora', '', 1, 1, 0, 1, 0, NULL, NULL, NULL, 'Y-m-d H:i', NULL, '', '2019-11-08 09:41:21', '2019-11-08 09:50:33');
+(390, 21, 7, '.CUP', 'Cod. CUPS', 'Entidad', NULL, 1, 1, 0, 1, 0, 17, NULL, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-20 09:51:27'),
+(391, 21, 8, '.DIAGPRI', 'Diag. Pri.', 'Texto', NULL, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-20 09:51:27'),
+(392, 21, 9, '.DIAGREL1', 'Diag. Rel.', 'Texto', NULL, 0, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-20 09:42:52'),
+(393, 21, 10, '.DIAGREL2', 'Diag. Rel. 2', 'Texto', NULL, 0, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-20 09:42:52'),
+(394, 21, 11, '.DIAGREL3', 'Diag. Rel. 3', 'Texto', NULL, 0, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-20 09:42:52'),
+(395, 21, 12, '.VRTOTAL', 'Valor Total', 'Dinero', '', 0, 1, 0, 1, 0, NULL, NULL, 1, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-19 13:51:57'),
+(396, 21, 13, '.VRCOPAGO', 'Valor Copago', 'Dinero', '', 0, 1, 0, 1, 0, NULL, NULL, 1, NULL, NULL, '', '2019-11-08 09:41:20', '2019-11-19 13:51:57'),
+(397, 21, 14, '.VRPAGAR', 'Valor a Pagar', 'Dinero', '', 0, 1, 0, 1, 0, NULL, NULL, 1, NULL, NULL, '', '2019-11-08 09:41:21', '2019-11-19 13:51:57'),
+(398, 21, 15, '.AUUSUARIO', 'Aud. Usuario', 'Texto', '', 1, 1, 0, 1, 0, NULL, 30, NULL, NULL, NULL, '', '2019-11-08 09:41:21', '2019-11-19 13:51:57'),
+(399, 21, 16, '.AUFECHAIN', 'Aud. Fecha Ins.', 'FechaHora', '', 1, 1, 0, 1, 0, NULL, NULL, NULL, 'Y-m-d H:i', NULL, '', '2019-11-08 09:41:21', '2019-11-08 09:50:33'),
+(400, 21, 17, 'VARCHAR_FORMAT( .FECHA, \'YYYYMM\' )', 'Periodo', 'Periodo', NULL, 0, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, '[]', '2019-11-20 15:56:00', '2019-11-20 15:56:00');
 
 -- --------------------------------------------------------
 
@@ -459,17 +458,17 @@ INSERT INTO `sara_entidades_editores_campos` (`id`, `editor_id`, `seccion_id`, `
 (8, 1, NULL, 1, 'Actividad', 360, NULL, 100, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-10-07 12:08:25', '2019-11-15 11:10:39'),
 (9, 1, NULL, 2, 'Servicio', 361, NULL, 100, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-10-07 12:08:25', '2019-11-15 11:10:39'),
 (10, 2, NULL, 1, NULL, 383, NULL, 100, 0, 0, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:16', '2019-11-15 12:33:05'),
-(11, 2, NULL, 2, NULL, 384, NULL, 50, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:16', '2019-11-15 12:35:15'),
-(12, 2, NULL, 3, NULL, 385, NULL, 50, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:16', '2019-11-15 12:35:15'),
-(13, 2, NULL, 4, NULL, 386, NULL, 20, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:16', '2019-11-15 15:01:39'),
-(14, 2, NULL, 5, NULL, 387, NULL, 80, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-15 15:01:39'),
+(11, 2, NULL, 2, NULL, 384, NULL, 25, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:16', '2019-11-19 08:36:48'),
+(12, 2, NULL, 3, NULL, 385, NULL, 25, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:16', '2019-11-19 08:36:48'),
+(13, 2, NULL, 4, NULL, 386, NULL, 10, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:16', '2019-11-19 08:27:31'),
+(14, 2, NULL, 5, NULL, 387, NULL, 40, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-19 08:36:48'),
 (15, 2, NULL, 6, NULL, 388, NULL, 30, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-15 14:20:59'),
-(16, 2, NULL, 7, NULL, 389, NULL, 35, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-15 14:21:00'),
-(17, 2, NULL, 8, NULL, 390, NULL, 35, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-15 14:21:00'),
-(18, 2, NULL, 9, NULL, 391, NULL, 100, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-15 14:26:30'),
-(19, 2, NULL, 10, NULL, 392, NULL, 100, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-15 14:26:30'),
-(20, 2, NULL, 11, NULL, 393, NULL, 100, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-15 14:26:30'),
-(21, 2, NULL, 12, NULL, 394, NULL, 100, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-15 14:26:30'),
+(16, 2, NULL, 7, NULL, 389, NULL, 70, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-20 09:52:15'),
+(17, 2, NULL, 8, NULL, 390, NULL, 100, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-20 09:52:16'),
+(18, 2, NULL, 9, NULL, 391, NULL, 100, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-19 08:43:32'),
+(19, 2, NULL, 10, NULL, 392, NULL, 100, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-19 08:43:32'),
+(20, 2, NULL, 11, NULL, 393, NULL, 100, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-19 08:43:32'),
+(21, 2, NULL, 12, NULL, 394, NULL, 100, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-19 08:43:32'),
 (22, 2, NULL, 13, NULL, 395, NULL, 33, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-15 12:35:16'),
 (23, 2, NULL, 14, NULL, 396, NULL, 33, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-15 12:35:16'),
 (24, 2, NULL, 15, NULL, 397, NULL, 33, 1, 1, NULL, NULL, NULL, NULL, NULL, '2019-11-15 12:16:17', '2019-11-15 12:35:16'),
@@ -504,7 +503,7 @@ INSERT INTO `sara_entidades_grids` (`id`, `entidad_id`, `Titulo`, `Config`, `cre
 (6, 16, 'Tipos Servicio', NULL, '2019-10-02 11:54:25', '2019-10-02 11:54:25'),
 (7, 18, 'General', '{\"main_buttons\":[],\"row_buttons\":[]}', '2019-11-05 16:46:37', '2019-11-05 16:46:37'),
 (8, 19, 'General', '{\"main_buttons\":[],\"row_buttons\":[]}', '2019-11-05 16:48:10', '2019-11-05 16:48:10'),
-(9, 21, 'General', '{\"main_buttons\":[{\"icono\":\"fa-plus\",\"texto\":\"Nuevo RIPS\",\"accion\":\"Editor\",\"modo\":\"Crear\",\"accion_element\":\"RIPS Externos\",\"accion_element_id\":2,\"campos\":[null,null,null,null,null,null,null,null,null,null,{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"}]}],\"row_buttons\":[]}', '2019-11-08 09:57:11', '2019-11-15 12:21:56');
+(9, 21, 'General', '{\"main_buttons\":[{\"icono\":\"fa-plus\",\"texto\":\"Nuevo RIPS\",\"accion\":\"Editor\",\"modo\":\"Crear\",\"accion_element\":\"RIPS Externos\",\"accion_element_id\":2,\"campos\":[null,null,null,null,null,null,null,null,null,null,{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"},{\"tipo_valor\":\"Sin Valor\"}]}],\"row_buttons\":[{\"icono\":\"fa-pencil-alt\",\"texto\":\"Editar\",\"accion\":\"Editor\",\"modo\":\"Editar\",\"accion_element\":\"RIPS Externo\",\"accion_element_id\":2,\"campos\":{\"10\":{\"tipo_valor\":\"Sin Valor\"},\"11\":{\"tipo_valor\":\"Columna\",\"columna_id\":276},\"12\":{\"tipo_valor\":\"Columna\",\"columna_id\":277},\"13\":{\"tipo_valor\":\"Columna\",\"columna_id\":278},\"14\":{\"tipo_valor\":\"Columna\",\"columna_id\":279},\"15\":{\"tipo_valor\":\"Columna\",\"columna_id\":280},\"16\":{\"tipo_valor\":\"Columna\",\"columna_id\":281},\"17\":{\"tipo_valor\":\"Columna\",\"columna_id\":282},\"18\":{\"tipo_valor\":\"Columna\",\"columna_id\":283},\"19\":{\"tipo_valor\":\"Columna\",\"columna_id\":284},\"20\":{\"tipo_valor\":\"Columna\",\"columna_id\":285},\"21\":{\"tipo_valor\":\"Columna\",\"columna_id\":286},\"22\":{\"tipo_valor\":\"Columna\",\"columna_id\":287},\"23\":{\"tipo_valor\":\"Columna\",\"columna_id\":288},\"24\":{\"tipo_valor\":\"Columna\",\"columna_id\":289},\"25\":{\"tipo_valor\":\"Columna\",\"columna_id\":290},\"26\":{\"tipo_valor\":\"Columna\",\"columna_id\":291}}}]}', '2019-11-08 09:57:11', '2019-11-19 13:55:02');
 
 -- --------------------------------------------------------
 
@@ -627,24 +626,25 @@ INSERT INTO `sara_entidades_grids_columnas` (`id`, `grid_id`, `Indice`, `Cabecer
 (272, 7, 4, NULL, 'Campo', '[18,19]', '[null,374,376]', 1, 376, NULL, '2019-11-05 17:03:26', '2019-11-05 17:03:57'),
 (273, 7, 5, NULL, 'Campo', '[18,19]', '[null,374,379]', 1, 379, NULL, '2019-11-05 17:03:27', '2019-11-05 17:03:57'),
 (274, 7, 3, NULL, 'Campo', '[18]', '[null]', 0, 374, NULL, '2019-11-05 17:03:32', '2019-11-05 17:03:32'),
-(275, 9, 0, NULL, 'Campo', '[21]', '[null]', 1, 383, NULL, '2019-11-08 09:57:26', '2019-11-08 09:57:26'),
+(275, 9, 0, NULL, 'Campo', '[21]', '[null]', 1, 383, NULL, '2019-11-08 09:57:26', '2019-11-20 15:07:33'),
 (276, 9, 1, NULL, 'Campo', '[21]', '[null]', 1, 384, NULL, '2019-11-08 09:57:26', '2019-11-08 09:57:26'),
 (277, 9, 2, NULL, 'Campo', '[21]', '[null]', 1, 385, NULL, '2019-11-08 09:57:26', '2019-11-08 09:57:26'),
-(278, 9, 3, NULL, 'Campo', '[21]', '[null]', 1, 386, NULL, '2019-11-08 09:57:26', '2019-11-08 09:57:26'),
+(278, 9, 3, 'Tipo', 'Campo', '[21]', '[null]', 1, 386, NULL, '2019-11-08 09:57:26', '2019-11-20 09:54:32'),
 (279, 9, 4, NULL, 'Campo', '[21]', '[null]', 1, 387, NULL, '2019-11-08 09:57:26', '2019-11-08 09:57:26'),
-(280, 9, 5, NULL, 'Campo', '[21]', '[null]', 1, 388, NULL, '2019-11-08 09:57:26', '2019-11-08 09:57:26'),
-(281, 9, 6, NULL, 'Campo', '[21]', '[null]', 1, 389, NULL, '2019-11-08 09:57:26', '2019-11-08 09:57:26'),
-(282, 9, 7, NULL, 'Campo', '[21]', '[null]', 1, 390, NULL, '2019-11-08 09:57:26', '2019-11-08 09:57:26'),
-(283, 9, 8, NULL, 'Campo', '[21]', '[null]', 1, 391, NULL, '2019-11-08 09:57:26', '2019-11-08 09:57:26'),
-(284, 9, 9, NULL, 'Campo', '[21]', '[null]', 1, 392, NULL, '2019-11-08 09:57:26', '2019-11-08 09:57:26'),
-(285, 9, 10, NULL, 'Campo', '[21]', '[null]', 1, 393, NULL, '2019-11-08 09:57:27', '2019-11-08 09:57:27'),
-(286, 9, 11, NULL, 'Campo', '[21]', '[null]', 1, 394, NULL, '2019-11-08 09:57:27', '2019-11-08 09:57:27'),
-(287, 9, 12, NULL, 'Campo', '[21]', '[null]', 1, 395, NULL, '2019-11-08 09:57:27', '2019-11-08 09:57:27'),
-(288, 9, 13, NULL, 'Campo', '[21]', '[null]', 1, 396, NULL, '2019-11-08 09:57:27', '2019-11-08 09:57:27'),
-(289, 9, 14, NULL, 'Campo', '[21]', '[null]', 1, 397, NULL, '2019-11-08 09:57:27', '2019-11-08 09:57:27'),
-(290, 9, 15, NULL, 'Campo', '[21]', '[null]', 1, 398, NULL, '2019-11-08 09:57:27', '2019-11-08 09:57:27'),
-(291, 9, 16, NULL, 'Campo', '[21]', '[null]', 1, 399, NULL, '2019-11-08 09:57:27', '2019-11-08 09:57:27'),
-(292, 5, 1, NULL, 'Campo', '[15,17]', '[null,360,366]', 1, 366, NULL, '2019-11-14 15:53:14', '2019-11-14 15:53:25');
+(280, 9, 6, NULL, 'Campo', '[21]', '[null]', 1, 388, NULL, '2019-11-08 09:57:26', '2019-11-20 16:53:42'),
+(281, 9, 7, NULL, 'Campo', '[21]', '[null]', 1, 389, NULL, '2019-11-08 09:57:26', '2019-11-20 15:56:22'),
+(282, 9, 8, NULL, 'Campo', '[21]', '[null]', 1, 390, NULL, '2019-11-08 09:57:26', '2019-11-20 15:56:23'),
+(283, 9, 9, NULL, 'Campo', '[21]', '[null]', 1, 391, NULL, '2019-11-08 09:57:26', '2019-11-20 09:55:04'),
+(284, 9, 10, NULL, 'Campo', '[21]', '[null]', 1, 392, NULL, '2019-11-08 09:57:26', '2019-11-20 09:55:04'),
+(285, 9, 11, NULL, 'Campo', '[21]', '[null]', 1, 393, NULL, '2019-11-08 09:57:27', '2019-11-20 09:55:04'),
+(286, 9, 12, NULL, 'Campo', '[21]', '[null]', 1, 394, NULL, '2019-11-08 09:57:27', '2019-11-20 09:55:04'),
+(287, 9, 13, NULL, 'Campo', '[21]', '[null]', 1, 395, NULL, '2019-11-08 09:57:27', '2019-11-20 09:55:04'),
+(288, 9, 14, NULL, 'Campo', '[21]', '[null]', 1, 396, NULL, '2019-11-08 09:57:27', '2019-11-20 09:55:04'),
+(289, 9, 15, NULL, 'Campo', '[21]', '[null]', 1, 397, NULL, '2019-11-08 09:57:27', '2019-11-20 09:55:05'),
+(290, 9, 16, NULL, 'Campo', '[21]', '[null]', 1, 398, NULL, '2019-11-08 09:57:27', '2019-11-20 09:55:05'),
+(291, 9, 17, NULL, 'Campo', '[21]', '[null]', 1, 399, NULL, '2019-11-08 09:57:27', '2019-11-20 09:55:05'),
+(292, 5, 1, NULL, 'Campo', '[15,17]', '[null,360,366]', 1, 366, NULL, '2019-11-14 15:53:14', '2019-11-14 15:53:25'),
+(294, 9, 5, NULL, 'Campo', '[21]', '[null]', 1, 400, NULL, '2019-11-20 15:56:15', '2019-11-20 16:53:42');
 
 -- --------------------------------------------------------
 
@@ -3888,7 +3888,7 @@ ALTER TABLE `sara_entidades`
 -- AUTO_INCREMENT de la tabla `sara_entidades_campos`
 --
 ALTER TABLE `sara_entidades_campos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=400;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=401;
 
 --
 -- AUTO_INCREMENT de la tabla `sara_entidades_cargadores`
@@ -3918,7 +3918,7 @@ ALTER TABLE `sara_entidades_grids`
 -- AUTO_INCREMENT de la tabla `sara_entidades_grids_columnas`
 --
 ALTER TABLE `sara_entidades_grids_columnas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=293;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=295;
 
 --
 -- AUTO_INCREMENT de la tabla `sara_entidades_grids_filtros`

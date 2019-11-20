@@ -8,6 +8,8 @@ angular.module('Entidades_GridDiagCtrl', [])
 		Ctrl.inArray = Rs.inArray;
 		Ctrl.loadingGrid = false;
 		Ctrl.sidenavSel = null;
+		Ctrl.filterRows = '';
+		Ctrl.orderRows = '';
 		Ctrl.SidenavIcons = [
 			['fa-filter', 						'Filtros'		,false],
 			['fa-sign-in-alt fa-rotate-90', 	'Descargar'		,false],
@@ -20,13 +22,43 @@ angular.module('Entidades_GridDiagCtrl', [])
 
 		Ctrl.Cancel = () => { $mdDialog.cancel(); };
 
+		var Data = null;
+		var filteredData = null;
 		Ctrl.Data = [];
+		Ctrl.load_data_len = 0;
+		Ctrl.pag_pages = 50;
+		Ctrl.pag_from  = 0;
+		Ctrl.pag_to    = null;
+
+		Ctrl.pag_go = (i) => {
+			var from = (Ctrl.pag_from + (Ctrl.pag_pages*i) );
+			if(from < 0 || from >= Ctrl.load_data_len) return false;
+			Ctrl.pag_from = from;
+			Ctrl.pag_to = Math.min((Ctrl.pag_from + Ctrl.pag_pages), (Ctrl.load_data_len));
+			Ctrl.Data = filteredData.slice(Ctrl.pag_from, Ctrl.pag_to);
+		};
 
 		Ctrl.filterData = () => {
-			Rs.http('api/Entidades/grids-reload-data', { Grid: Ctrl.Grid }).then((r) => {
+			/*Rs.http('api/Entidades/grids-reload-data', { Grid: Ctrl.Grid }).then((r) => {
 				Ctrl.Grid.sql  = r.sql;
 				Ctrl.Grid.data = r.data;
-			});
+			});*/
+			
+			filteredData = Data.slice();
+			if(Ctrl.filterRows.trim() !== '') filteredData = $filter('filter')(filteredData, Ctrl.filterRows);
+			if(Ctrl.orderRows !== ''){
+				var orderNum = parseInt(Ctrl.orderRows);
+				filteredData = filteredData.sort((a,b) => {
+					if(orderNum < 0){ //DESC
+						return (a[(orderNum*-1)] < b[(orderNum*-1)]) ? 1 : -1;
+					}else{
+						return (a[orderNum]      > b[orderNum]     ) ? 1 : -1;
+					};
+				});
+			};
+
+			Ctrl.load_data_len = filteredData.length;
+			Ctrl.pag_go(0);
 		};
 
 		Ctrl.getSelectedText = (Text) => {
@@ -43,9 +75,13 @@ angular.module('Entidades_GridDiagCtrl', [])
 			Ctrl.loadingGrid = true;
 			Rs.http('api/Entidades/grids-get-data', { grid_id: grid_id }).then((r) => {
 				Ctrl.Grid = r.Grid;
-				Ctrl.loadingGrid = false;
-				if(Ctrl.Grid.filtros.length > 0) Ctrl.SidenavIcons[0][2] = true;
+				Data = r.Data;
 
+				Ctrl.filterRows = '';
+				if(Ctrl.Grid.filtros.length > 0) Ctrl.SidenavIcons[0][2] = true;
+				Ctrl.loadingGrid = false;
+				
+				Ctrl.filterData();
 				//return Ctrl.triggerButton(Ctrl.Grid.Config.row_buttons[0], Ctrl.Grid.data[0]); //TEST
 				//return Ctrl.triggerButton(Ctrl.Grid.Config.main_buttons[0]); //TEST
 			});

@@ -194,20 +194,21 @@ class GridHelper
     {
     	set_time_limit(10 * 60);
 
-        if($limit) $q->limit($Grid->rowsLimit);
+        //if($limit) $q->limit($Grid->rowsLimit);
         $Grid->sql = [ 'query' => $q->toSql(), 'bindings' => $q->getBindings() ];
-        $Grid->data = CamposHelper::prepData($Grid->columnas, $q->get());
+        $Data = CamposHelper::prepData($Grid->columnas, $q->get());
 
         //Prep Filtros Opts
         if($prepOpts){
         	foreach ($Grid->filtros as $F) {
 	            if(in_array($F->Comparador,['lista','radios'])){
-	                $Ops = $Grid->data->pluck($F['columna']['header_index'])->unique()->sort()->values();
+	                $Ops = $Data->pluck($F['columna']['header_index'])->unique()->sort()->values();
 	                $F['options'] = $Ops;
 	            };
 	        }
-        }
-        
+        };
+
+        return $Data;
     }
 
     public static function getGrouper($Agrupador  = 'count', $Col)

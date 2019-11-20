@@ -3,6 +3,7 @@
 namespace App\Functions;
 use Carbon\Carbon;
 use DB;
+use App\Functions\Helper;
 use App\Functions\ConnHelper;
 use App\Functions\DB2Helper;
 use App\Functions\MySQLHelper;
@@ -98,18 +99,27 @@ class CamposHelper
     {
         if(is_null($D)) return $D;
         if($Campo['Tipo'] == 'Entero'){ return intval($D); }
+
+        if($Campo['Tipo'] == 'Fecha'){
+            $Date = Carbon::createFromFormat($Campo['Op4'], $D);
+            return $Date->toDateString();
+        }
+
         if($Campo['Tipo'] == 'Hora'){ 
             if(strlen($D) < 4) $D = str_pad($D, 4, "0", STR_PAD_LEFT);
             $Date = Carbon::createFromFormat($Campo['Op4'], $D);
             if(in_array($Campo['Op4'], ['Hi','H:i'])){ return $Date->format('H:i'); }
             return $Date->toTimeString();
         }
-        if($Campo['Tipo'] == 'Fecha'){
-            $Date = Carbon::createFromFormat($Campo['Op4'], $D);
-            return $Date->toDateString();
+
+        if($Campo['Tipo'] == 'FechaHora'){
+            $Date = Carbon::createFromFormat('Y-m-d H:i:s.u', $D);
+            return $Date->format('Y-m-d H:i');
         }
+
         if($Campo['Tipo'] == 'Texto'){ return utf8_encode(trim($D)); }
         if($Campo['Tipo'] == 'TextoLargo'){ return utf8_encode($D); }
+        if($Campo['Tipo'] == 'Dinero'){ return Helper::formatVal($D, "Moneda"); }
         return $D;
     }
 
