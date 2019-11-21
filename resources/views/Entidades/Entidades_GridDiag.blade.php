@@ -9,10 +9,10 @@
 		</md-input-container>
 
 		
-		<div layout ng-show="!loadingGrid" layout-align="center center">
-			<md-button ng-click="pag_go(-1)" class="md-icon-button focus-on-hover no-padding no-margin s30" aria-label="b"><md-icon md-font-icon="fa-chevron-left"></md-icon></md-button>
+		<div layout ng-show="!loadingGrid" layout-align="center center" class="padding-0-5">
+			<md-button ng-show="{{ pag_from > 0 }}" ng-click="pag_go(-1)" class="md-icon-button focus-on-hover no-padding no-margin s30" aria-label="b"><md-icon md-font-icon="fa-chevron-left"></md-icon></md-button>
 			<div class="text-clear text-14px" style="transform: translateY(1px);">{{ pag_from + 1 | number }} a {{ pag_to | number }} de {{ load_data_len | number }}</div>
-			<md-button ng-click="pag_go(1)" class="md-icon-button focus-on-hover no-padding no-margin s30" aria-label="b"><md-icon md-font-icon="fa-chevron-right"></md-icon></md-button>
+			<md-button ng-show="{{ pag_to < load_data_len }}" ng-click="pag_go(1)" class="md-icon-button focus-on-hover no-padding no-margin s30" aria-label="b"><md-icon md-font-icon="fa-chevron-right"></md-icon></md-button>
 		</div>
 
 		<md-button class="mh30 h30 lh30 no-margin margin-left-5 button_main" ng-repeat="B in Grid.Config.main_buttons"

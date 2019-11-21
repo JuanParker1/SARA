@@ -474,7 +474,7 @@ angular.module('appFunctions', [])
 
 
 		Rs.viewEditorDiag = (editor_id, Obj, Config) => {
-			$mdDialog.show({
+			return $mdDialog.show({
 				controller: 'Entidades_EditorDiagCtrl',
 				templateUrl: '/Frag/Entidades.Entidades_EditorDiag',
 				clickOutsideToClose: false, fullscreen: false, multiple: true,
@@ -485,7 +485,7 @@ angular.module('appFunctions', [])
 		};
 
 		Rs.viewCargadorDiag = (cargador_id) => {
-			$mdDialog.show({
+			return $mdDialog.show({
 				controller: 'Entidades_CargadorDiagCtrl',
 				templateUrl: '/Frag/Entidades.Entidades_CargadorDiag',
 				clickOutsideToClose: false, fullscreen: false, multiple: true,

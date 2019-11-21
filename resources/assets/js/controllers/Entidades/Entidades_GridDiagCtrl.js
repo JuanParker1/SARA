@@ -39,11 +39,7 @@ angular.module('Entidades_GridDiagCtrl', [])
 		};
 
 		Ctrl.filterData = () => {
-			/*Rs.http('api/Entidades/grids-reload-data', { Grid: Ctrl.Grid }).then((r) => {
-				Ctrl.Grid.sql  = r.sql;
-				Ctrl.Grid.data = r.data;
-			});*/
-			
+
 			filteredData = Data.slice();
 			if(Ctrl.filterRows.trim() !== '') filteredData = $filter('filter')(filteredData, Ctrl.filterRows);
 			if(Ctrl.orderRows !== ''){
@@ -59,6 +55,18 @@ angular.module('Entidades_GridDiagCtrl', [])
 
 			Ctrl.load_data_len = filteredData.length;
 			Ctrl.pag_go(0);
+		};
+
+		Ctrl.reloadData = () => {
+			Ctrl.loadingGrid = true;
+			Rs.http('api/Entidades/grids-reload-data', { Grid: Ctrl.Grid }).then((r) => {
+				Ctrl.Grid.sql  = r.sql;
+				Data = r.Data;
+
+				Ctrl.loadingGrid = false;
+				Ctrl.filterRows = '';
+				Ctrl.filterData();
+			});
 		};
 
 		Ctrl.getSelectedText = (Text) => {
@@ -77,10 +85,10 @@ angular.module('Entidades_GridDiagCtrl', [])
 				Ctrl.Grid = r.Grid;
 				Data = r.Data;
 
-				Ctrl.filterRows = '';
 				if(Ctrl.Grid.filtros.length > 0) Ctrl.SidenavIcons[0][2] = true;
-				Ctrl.loadingGrid = false;
 				
+				Ctrl.loadingGrid = false;
+				Ctrl.filterRows = '';
 				Ctrl.filterData();
 				//return Ctrl.triggerButton(Ctrl.Grid.Config.row_buttons[0], Ctrl.Grid.data[0]); //TEST
 				//return Ctrl.triggerButton(Ctrl.Grid.Config.main_buttons[0]); //TEST
@@ -109,7 +117,10 @@ angular.module('Entidades_GridDiagCtrl', [])
 
 			if(B.accion == 'Editor'){
 				Config = angular.extend(DefConfig, B);
-				Rs.viewEditorDiag(B.accion_element_id, Obj, Config);
+				Rs.viewEditorDiag(B.accion_element_id, Obj, Config).then((r) => {
+					if(!r) return;
+					Ctrl.reloadData();
+				});
 			};
 		};
 
