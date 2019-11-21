@@ -137,11 +137,11 @@ class GridHelper
             $CampoDestino = $Campos[$EntidadDestino->campo_llaveprim];
             
             $union = [
-            	DB::raw("{$EntidadDestino->getTableName()[2]} AS t{$tb['consec']}"),
-            	DB::raw($CampoOrigen->getColName("t{$Grid->tablas['tablas'][$tb['origen_id']]['consec']}")), '=', 
-            	DB::raw($CampoDestino->getColName("t{$tb['consec']}"))
+            	"{$EntidadDestino->getTableName()[2]} AS t{$tb['consec']}",
+            	$CampoOrigen->getColName("t{$Grid->tablas['tablas'][$tb['origen_id']]['consec']}"), '=', 
+            	$CampoDestino->getColName("t{$tb['consec']}")
             ];
-            $q->leftJoin($union[0],$union[1],$union[2],$union[3]);
+            $q->leftJoin(DB::raw($union[0]), DB::raw($union[1]),$union[2],DB::raw($union[3]));
             $uniones[] = $union; 
         };
         $Grid->uniones = $uniones;
@@ -194,7 +194,7 @@ class GridHelper
     {
     	set_time_limit(10 * 60);
 
-        //if($limit) $q->limit($Grid->rowsLimit);
+        if($limit) $q->limit($Grid->rowsLimit);
         $Grid->sql = [ 'query' => $q->toSql(), 'bindings' => $q->getBindings() ];
         $Data = CamposHelper::prepData($Grid->columnas, $q->get());
 

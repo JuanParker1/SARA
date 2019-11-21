@@ -497,7 +497,7 @@ angular.module('appFunctions', [])
 
 		Rs.openApp = (A) => {
 			//console.log('opening...', A);
-			var url = "http://sara.local/#/a/"+A.Slug;
+			var url = Rs.Usuario.Url+"#/a/"+A.Slug;
 			var w = screen.availWidth - 5; var h = screen.availHeight;
 			//$window.open(url, 'popup', `width=${w},height=${h}`);
 			

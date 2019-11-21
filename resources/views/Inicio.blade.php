@@ -10,7 +10,7 @@
 	<div layout=column class="bg-white border border-radius margin-bottom no-overflow">
 		<a class="Pointer mh40 no-underline" layout layout-align="center center"
 			ng-repeat="A in Usuario.Apps | filter:filterApps | orderBy:'Titulo' " 
-			href="http://sara.local/#/a/{{ A.Slug }}" target="_blank"
+			href="{{ Usuario.Url }}#/a/{{ A.Slug }}" target="_blank"
 			ngs-click="openApp(A)"
 			ng-class="{ 'border-bottom': !$last }">
 			<md-button class="md-icon-button no-margin" ng-click="makeFavorite(A,!Fav)" hide>
