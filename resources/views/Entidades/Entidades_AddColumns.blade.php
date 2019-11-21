@@ -13,8 +13,7 @@
 				<th md-column>Alias</th>
 				<th md-column><md-icon md-font-icon="fa-asterisk"><md-tooltip>Requerido</md-tooltip></md-icon></th>
 				<th md-column><md-icon md-font-icon="fa-eye"><md-tooltip>Visible</md-tooltip></md-icon></th>
-				<th md-column><md-icon md-font-icon="fa-edit"><md-tooltip>Editable</md-tooltip></md-icon></th>
-				<th md-column><md-icon md-font-icon="fa-search"><md-tooltip>Buscable</md-tooltip></md-icon></th>
+				<th md-column><md-icon md-font-icon="fa-fingerprint"><md-tooltip>Único</md-tooltip></md-icon></th>
 				<th md-column>Tipo</th>
 				<th md-column>Opciones</th>
 				<th md-column>Valor por Defecto</th>

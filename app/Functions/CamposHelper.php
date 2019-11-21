@@ -78,18 +78,14 @@ class CamposHelper
 
         $Conn = ConnHelper::getConn($Bdd);
         $SchemaTabla = GridHelper::getTableName($Entidad['Tabla'], $Bdd->Op3);
+        $tiposCampo = self::getTipos();
+
+        if(in_array($Bdd->Tipo, ['ODBC_DB2']))            $DBHelper = app('\App\Functions\DB2Helper');
+        if(in_array($Bdd->Tipo, ['ODBC_MySQL', 'MySQL'])) $DBHelper = app('\App\Functions\MySQLHelper');
 
         try {
-            if(in_array($Bdd->Tipo, ['ODBC_DB2'])){
-            	$newCampos = DB2Helper::getColumns($Conn, $SchemaTabla[0], $SchemaTabla[1]);
-                return DB2Helper::standarizeColumns($newCampos, $Bdd, $Entidad, $Campos);
-            };
-
-            if(in_array($Bdd->Tipo, ['ODBC_MySQL', 'MySQL'])){
-                $newCampos = DB2Helper::getColumns($Conn, $SchemaTabla[0], $SchemaTabla[1]);
-                return DB2Helper::standarizeColumns($newCampos, $Bdd, $Entidad, $Campos);
-            };
-
+            $newCampos = $DBHelper->getColumns($Conn, $SchemaTabla[0], $SchemaTabla[1]);
+            return $DBHelper->standarizeColumns($newCampos, $Bdd, $Entidad, $Campos, $tiposCampo);
         } catch(\Illuminate\Database\QueryException $ex){
             return response()->json([ 'Msg' => $ex->getMessage(), 'e' => $ex ], 512);
         };

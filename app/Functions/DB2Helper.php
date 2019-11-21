@@ -4,7 +4,7 @@ namespace App\Functions;
 
 class DB2Helper
 {
-	public static function getColumns($Conn, $Schema, $Table)
+	public function getColumns($Conn, $Schema, $Table)
 	{
 		$Columns = $Conn->table('QSYS2.SYSCOLUMNS')->where('TABLE_SCHEMA', $Schema)->where('TABLE_NAME', $Table)->limit(1000)->get();
         return collect($Columns)->transform(function($row){
@@ -12,7 +12,7 @@ class DB2Helper
         });
 	}
 
-	public static function standarizeColumns($newCampos, $Bdd, $Entidad, $Campos)
+	public function standarizeColumns($newCampos, $Bdd, $Entidad, $Campos)
     {
         $Tipos = [
             'Texto'      => ['CHAR', 'VARCHAR'],
@@ -22,7 +22,7 @@ class DB2Helper
             'Booleano'   => [],
             'Fecha'      => ['DATE'],
             'Hora'       => ['TIME'],
-            'FechaHora'  => ['TIMESTMP'],  
+            'FechaHora'  => ['TIMESTAMP', 'DATETIME'],  
         ];
 
         $ColumnasExistentes = collect($Campos)->pluck('Columna')->toArray();
