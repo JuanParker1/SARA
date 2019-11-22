@@ -39,7 +39,7 @@ class MySQLHelper
                 'Visible'   => true,
                 'Unico'     => ($R['COLUMN_KEY'] == 'PRI'),
                 'Tipo'      => $Tipo,
-                'obj' => $R
+                //'obj' => $R
             ];
 
             return array_merge($C, $tiposCampo[$Tipo]['Defaults']);
