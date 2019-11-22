@@ -21,7 +21,7 @@
 			<div ng-show="Grid.filtros.length == 0" class="text-clear">Sin filtros</div>
 			<div class="h30"></div>
 		</div>
-		<md-button class="margin md-raised" aria-label="a" ng-click="filterData()">
+		<md-button class="margin md-raised" aria-label="a" ng-click="reloadData()">
 			<md-icon md-font-icon="fa-bolt fa-fw"></md-icon>
 			Recargar Datos
 		</md-button>

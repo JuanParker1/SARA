@@ -46,15 +46,16 @@ class Handler extends ExceptionHandler
             $e = new NotFoundHttpException($e->getMessage(), $e);
         }
 
-        /*if($request->isJson()){
+        if($request->isJson() and !config('app.debug')){
+
             $json = [
                 'Msg' => $e->getMessage(),
-                'exeption' => class_basename($e),
+                'exception' => class_basename($e),
                 'file' => basename($e->getFile()),
                 'line' => $e->getLine()
             ];
-            return response()->json($json, 500);
-        }*/
+            return response()->json($json, $e->getStatusCode());
+        }
         
         return parent::render($request, $e);
     }

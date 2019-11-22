@@ -191,12 +191,13 @@ class EntidadesController extends Controller
         $Grid    = GridHelper::getGrid($DaGrid['id']);
         $q       = GridHelper::getQ($Grid->entidad);
 
+        GridHelper::addGuideCol($Grid);
         foreach ($DaGrid['columnas'] as $C) { $q->addSelect([DB::raw($C['select'])]); };
-        foreach ($DaGrid['uniones']  as $U) { $q->leftJoin($U[0],$U[1],$U[2],$U[3]); };
+        foreach ($DaGrid['uniones']  as $U) { $q->leftJoin(DB::raw($U[0]), DB::raw($U[1]),$U[2],DB::raw($U[3])); };
         GridHelper::addRestric($q, $DaGrid['filtros']);
 
-        GridHelper::getData($Grid, $q, true);
-        return $Grid;
+        $Data = GridHelper::getData($Grid, $q, true);
+        return compact('Grid', 'Data');
     }
 
     public function getGrid()

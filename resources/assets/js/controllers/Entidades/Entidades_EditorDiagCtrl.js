@@ -40,7 +40,7 @@ angular.module('Entidades_EditorDiagCtrl', [])
 			Ctrl.loading = true;
 			Rs.http('api/Entidades/editor-save', { Editor: Ctrl.Editor, Config: Ctrl.Config }).then(() => {
 				Ctrl.loading = false;
-				$mdDialog.hide();
+				$mdDialog.hide(true);
 			});
 		};
 

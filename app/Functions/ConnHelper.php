@@ -12,7 +12,7 @@ class ConnHelper
 		if(substr($BDD->Tipo,0,4) == 'ODBC'){
 			Config::set($conection_name, [
 				'driver'   => 'odbc',
-				'dsn'      => 'odbc:\\\\'.$BDD->Op1,
+				'dsn'      => 'odbc:'.$BDD->Op1,
 				'username' => $BDD->Usuario,
 				'password' => $BDD->Contraseña,
 				'host'     => $BDD->Op2,
@@ -33,9 +33,13 @@ class ConnHelper
 		};
 
 		$conn_id = 'db_'.$BDD->id;
-		$Conn = DB::connection($conn_id);
+		try{
+			$Conn = DB::connection($conn_id);
+		} catch (\Exception $e) {
+			return response()->json([ 'Msg' => "Error al crear la conexión al servidor", 'e' => $e->getMessage() ], 512);
+		}
 
-		if(substr($BDD->Tipo,0,4) == 'ODBC'){
+		if(substr($BDD->Tipo,5,3) == 'DB2'){
 			$Conn->setSchemaGrammar(new \App\Models\Core\DB2Grammar);
 		};
 

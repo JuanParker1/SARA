@@ -32,7 +32,7 @@ class CamposHelper
 
 		$TC['Fecha']['Formatos']      = [ ['Y-m-d','2019-12-31'], ['Ymd', '20191231'] ];
 		$TC['Hora']['Formatos']  	  = [ ['H:i:s',  '23:59:59'], ['His',   '235959'], ['H:i',  '23:59'], ['Hi',   '2359'] ];
-		$TC['FechaHora']['Formatos']  = [ ['Y-m-d H:i:s', '2019-12-31 23:59:59'], ['YmdHis', '20191231235959'], ['Y-m-d H:i', '2019-12-31 23:59'], ['YmdHi', '201912312359'] ];
+		$TC['FechaHora']['Formatos']  = [ ['Y-m-d H:i:s', '2019-12-31 23:59:59'], ['YmdHis', '20191231235959'], ['Y-m-d H:i', '2019-12-31 23:59'], ['YmdHi', '201912312359'], ['Y-m-d H:i:s.u', '2019-12-31 23:59:59.000000'] ];
 
         $TC['Fecha']['Comparators'] = ['=' => 'Es','>=' => 'Desde','<=' => 'Hasta','nulo' => 'Es nulo','no_nulo' => 'No es nulo'];
         $TC['Fecha']['Relatives']     = [
@@ -109,7 +109,7 @@ class CamposHelper
         }
 
         if($Campo['Tipo'] == 'FechaHora'){
-            $Date = Carbon::createFromFormat('Y-m-d H:i:s.u', $D);
+            $Date = Carbon::createFromFormat($Campo['Op4'], $D);
             return $Date->format('Y-m-d H:i');
         }
 
@@ -129,6 +129,10 @@ class CamposHelper
 
     public static function prepData($Columnas, $Datos)
     {
+        
+        //echo "<pre>".count($Columnas)."</pre>";
+        //exit();
+
         $Datos = collect($Datos)->transform(function($row) use ($Columnas){
             return collect($row)->transform(function($c,$i) use ($Columnas){
                 return self::prepDato($Columnas[$i]['campo'], $c);
