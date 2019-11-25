@@ -3,6 +3,11 @@
 	<input type="text" ng-model="C.val" name="c{{ C.id }}" ng-required="{{ C.Requerido }}">
 </md-input-container>
 
+<md-input-container class="" ng-if="C.campo.Tipo == 'TextoLargo'">
+	<label>{{ C.campo_title }}</label>
+	<textarea ng-model="C.val" rows="2" name="c{{ C.id }}" ng-required="{{ C.Requerido }}"></textarea>
+</md-input-container>
+
 <md-input-container class="" ng-if="inArray(C.campo.Tipo, ['Entero'])">
 	<label>{{ C.campo_title }}</label>
 	<input type="number" ng-model="C.val" name="c{{ C.id }}" ng-required="{{ C.Requerido }}">
@@ -17,6 +22,18 @@
 	<label>{{ C.campo_title }}</label>
 	<md-datepicker ng-model="C.val" name="c{{ C.id }}" ng-required="{{ C.Requerido }}" md-hide-icons="calendar"></md-datepicker>
 </md-input-container>
+
+<div layout ng-if="inArray(C.campo.Tipo, ['FechaHora'])">
+	<md-input-container class="" flex=50>
+		<label>{{ C.campo_title }}</label>
+		<md-datepicker ng-model="C.dateval" name="c{{ C.id }}_1" ng-required="{{ C.Requerido }}" md-hide-icons="calendar"></md-datepicker>
+	</md-input-container>
+	<md-input-container class="" flex=50>
+		<input type="time" ng-model="C.timeval" name="c{{ C.id }}_2" ng-required="{{ C.Requerido }}" 
+			list="listaHoras" class="text-14px"></input>
+	</md-input-container>
+</div>
+
 
 
 <md-input-container class="" ng-if="inArray(C.campo.Tipo, ['Lista'])">
@@ -83,6 +100,14 @@
 		</md-button>
 	</div>
 
+</div>
+
+
+<div ng-if="C.campo.Tipo == 'Booleano'" layout class="h30 lh30 text-14px">
+	<md-checkbox ng-model="C.val" aria-label="c" name="c{{ C.id }}" ng-required="{{ C.Requerido }}"
+		class="no-margin">
+		{{ C.campo_title }}
+	</md-checkbox>
 </div>
 
 <pre hide>{{ C | json }}</pre>

@@ -62,6 +62,7 @@
 					<table md-table class="md-table-short table-col-compress" md-row-select multiple ng-model="EditoresCamposSel">
 						<thead md-head ng-show="EditoresCamposCRUD.rows.length > 0">
 							<tr md-row>
+								<th md-column></th>
 								<th md-column ng-show="EditorSel.Secciones.length > 0">Seccion</th>
 								<th md-column>Campo</th>
 								<th md-column>Etiqueta</th>
@@ -71,8 +72,13 @@
 								<th md-column>Opciones</th>
 							</tr>
 						</thead>
-						<tbody md-body>
-							<tr md-row class="" ng-repeat="C in EditoresCamposCRUD.rows" ng-class="{ 'bg-yellow': C.changed }" md-select="C" md-select-id="id">
+						<tbody md-body as-sortable="dragEditorListener" ng-model="EditoresCamposCRUD.rows">
+							<tr md-row class="" ng-repeat="C in EditoresCamposCRUD.rows" ng-class="{ 'bg-yellow': C.changed }" md-select="C" md-select-id="id" as-sortable-item>
+								<td md-cell class="md-cell-compress">
+									<md-button class="md-icon-button w30 mw30 h30 mh30 no-margin no-padding drag-handle" aria-label="b" as-sortable-item-handle>
+										<md-icon md-svg-icon="md-drag-handle"></md-icon>
+									</md-button>
+								</td>
 								<td md-cell class="md-cell-compress" ng-show="EditorSel.Secciones.length > 0">
 									<md-select class="w100p" ng-model="C.seccion_id" aria-label=s ng-change="C.changed = true">
 									  <md-option ng-value="null">Ninguna</md-option>

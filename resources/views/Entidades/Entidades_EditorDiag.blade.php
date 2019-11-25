@@ -21,6 +21,22 @@
 				@include('Entidades.Entidades_EditorCampo')
 			</div>
 
+
+			<datalist id="listaHoras">
+			  <option value="07:00">
+			  <option value="08:00">
+			  <option value="09:00">
+			  <option value="10:00">
+			  <option value="11:00">
+			  <option value="12:00">
+			  <option value="13:00">
+			  <option value="14:00">
+			  <option value="15:00">
+			  <option value="16:00">
+			  <option value="17:00">
+			  <option value="18:00">
+			</datalist>
+
 		</form>
 
 		<div layout>

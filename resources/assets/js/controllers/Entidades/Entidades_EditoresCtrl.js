@@ -86,6 +86,19 @@ angular.module('Entidades_EditoresCtrl', [])
 			});
 		};
 
+
+		Ctrl.dragEditorListener = {
+			accept: function (sourceItemHandleScope, destSortableScope) { return true; },
+			orderChanged: () => {
+				angular.forEach(Ctrl.EditoresCamposCRUD.rows, (C,index) => {
+					if(C.Indice !== index){
+						C.Indice = index;
+						C.changed = true;
+					};
+				});
+			}
+		};
+
 		Ctrl.getEditores();
 
 	}

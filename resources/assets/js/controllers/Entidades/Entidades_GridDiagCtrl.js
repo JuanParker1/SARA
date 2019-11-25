@@ -91,7 +91,7 @@ angular.module('Entidades_GridDiagCtrl', [])
 				Ctrl.filterRows = '';
 				Ctrl.filterData();
 				//return Ctrl.triggerButton(Ctrl.Grid.Config.row_buttons[0], Ctrl.Grid.data[0]); //TEST
-				//return Ctrl.triggerButton(Ctrl.Grid.Config.main_buttons[0]); //TEST
+				return Ctrl.triggerButton(Ctrl.Grid.Config.main_buttons[0]); //TEST
 			});
 		};
 
