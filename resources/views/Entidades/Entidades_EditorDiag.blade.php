@@ -1,4 +1,4 @@
-<md-dialog id="EditorDiag" class="w100p" aria-label=m ng-style="{ 'max-width': Editor.Ancho }" style="max-height: 95%" layout=column>
+<md-dialog id="EditorDiag" class="w100p" aria-label=m ng-style="{ 'max-width': Editor.Ancho }" style="max-height: 100%" layout=column >
 	
 	<div ng-show="loading" class="padding-20" layout layout-align="center center">
 		<md-progress-circular md-diameter="48"></md-progress-circular>
@@ -15,26 +15,15 @@
 		</div>
 
 
-		<form id="EditorForm" flex layout=column layout-gt-xs=row layout-wrap class="overflow-y" ng-submit="enviarDatos()">
+		<form id="EditorForm" flex layout=row layout-wrap class="overflow-y" ng-submit="enviarDatos()">
 			
-			<div ng-repeat="C in Editor.campos" layout=column flex-gt-xs={{C.Ancho}} class="EditorCampo" ng-if="C.Visible">
+			<div ng-repeat="C in Editor.campos" layout=column flex=100 flex-gt-xs={{C.Ancho}} class="EditorCampo" ng-if="C.Visible">
 				@include('Entidades.Entidades_EditorCampo')
 			</div>
 
 
 			<datalist id="listaHoras">
-			  <option value="07:00">
-			  <option value="08:00">
-			  <option value="09:00">
-			  <option value="10:00">
-			  <option value="11:00">
-			  <option value="12:00">
-			  <option value="13:00">
-			  <option value="14:00">
-			  <option value="15:00">
-			  <option value="16:00">
-			  <option value="17:00">
-			  <option value="18:00">
+				<option ng-repeat="H in ['07','08','09','10','11','12','13','14','15','16','17','18']" value="{{ H }}:00">
 			</datalist>
 
 		</form>
@@ -61,6 +50,10 @@
 
 		#EditorForm .md-datepicker-input-container{
 			width: 100%;
+		}
+
+		#EditorForm .md-datepicker-input{
+			min-width: 0;
 		}
 
 		#EditorForm{

@@ -9963,6 +9963,10 @@ md-tooltip {
   font-size: 20px;
   line-height: 25px;
 }
+.lh15,
+.lh15 .md-button {
+  line-height: 15px !important;
+}
 .lh20,
 .lh20 .md-button {
   line-height: 20px !important;

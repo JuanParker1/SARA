@@ -1440,6 +1440,17 @@ angular.module('Entidades_EditorDiagCtrl', [])
 			});
 		};
 
+
+		//Fields Changed
+		Ctrl.changedField = (C) => {
+			if(C.campo.Tipo == 'FechaHora'){
+				C.val = moment(C.dateval).format('YYYY-MM-DD HH:mm');
+			};
+
+			console.log(C.val);
+		};
+
+
 	}
 ]);
 angular.module('Entidades_EditoresCtrl', [])
