@@ -243,18 +243,16 @@ class EntidadesController extends Controller
         $llaveprim_col = null;
         $llaveprim_val = null;
 
+        if($Config['modo'] != 'Crear' AND !is_null($Editor['primary_key_val']) ){ 
+            $llaveprim_val = $Editor['primary_key_val'];
+            $CampoLlavePrim = EntidadCampo::where('id', $Editor['entidad']['campo_llaveprim'])->first();
+            $llaveprim_col = CamposHelper::getColName("", $CampoLlavePrim['Columna']);
+        };
+
         foreach ($Editor['campos'] as $F) {
-
+            if($F['campo_id'] == $campo_llaveprim) continue;
             $Columna = CamposHelper::getColName("",$F['campo']['Columna']);
-
-            if($F['campo_id'] == $campo_llaveprim){ //Es Id
-                $llaveprim_col = $Columna;
-                if($Config['modo'] != 'Crear' AND !is_null($Editor['primary_key_val']) ){ 
-                    $llaveprim_val = $Editor['primary_key_val'];
-                };
-            }else{
-                $Obj[$Columna] = $F['val'];
-            };
+            $Obj[$Columna] = CamposHelper::prepDatoUp($F['campo'], $F['val']);
         };
 
         if(is_null($llaveprim_val)){ //Nuevo elemento

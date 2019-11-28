@@ -72,11 +72,14 @@ class EntidadEditor extends MyModel
 				$Valor = $Obj[$ConfigField['columna_id']]['val'];
 			};
 
+			$F->val = $Valor;
+			
 			if($TipoCampo == 'Entidad'){
-				$F->val = $Valor;
 				if($F->val) $F->selectedItem = EntidadHelper::searchElms($F->campo->Op1, $F->val);
-			}else{
-				$F->val = $Valor;
+			};
+
+			if($TipoCampo == 'Booleano'){
+				$F->val = ( $F->val == $F->campo['Op4'] ) ? $F->val : $F->campo['Op5'];
 			};
 
 			//Definir Editable

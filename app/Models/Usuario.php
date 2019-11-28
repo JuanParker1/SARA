@@ -46,7 +46,6 @@ class Usuario extends Model
         }
 
         $Secciones = DB::select($query);
-
         $this->Secciones = $Secciones;
     }
 

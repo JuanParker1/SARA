@@ -28,7 +28,46 @@
 
 	<div flex layout>
 		
-		<md-sidenav md-component-id="SectionsNav" id="SectionsNav"
+		<div class="w50 bg-white border-right" layout=column>
+			<div layout layout-align="center center" class="Seccion" ng-class="{ 'itemsel' : State.route.length < 3 }" md-ink-ripple ng-click="navTo('Home')" 
+				style="margin-bottom: 1px;">
+				<md-icon class="fa-fw fa-lg" md-font-icon="fa-home"></md-icon>
+				<md-tooltip md-direction="right">Inicio</md-tooltip>
+			</div>
+			<div ng-repeat="S in Usuario.Secciones" layout layout-align="center center"
+				class="Seccion" ng-class="{ 'itemsel' : (S.id == State.route[2] ) }" md-ink-ripple ng-click="navTo('Home.Section', { section: S.id })">
+				<md-icon class="fa-fw fa-lg" md-font-icon="{{ S.Icono }}"></md-icon>
+				<md-tooltip md-direction="right">{{ S.Seccion }}</md-tooltip>
+			</div>
+		</div>
+
+		<style type="text/css">
+			
+			#Home .Seccion{
+				position: relative;
+			    height: 40px;
+			    cursor: pointer;
+			    border-top:    1px solid transparent;
+			    border-bottom: 1px solid transparent;
+			    opacity: 0.7;
+			    transition: all 0.3s;
+			    outline: none;
+			}
+
+			#Home .Seccion:hover{
+			    opacity: 1;
+			}
+
+			#Home .Seccion.itemsel{
+			    opacity: 1;
+			    background: #eaeaea;
+			    border-top: 1px solid #e1e1e1;
+			    border-bottom: 1px solid #e1e1e1;
+			}
+
+		</style>
+
+		<!--<md-sidenav md-component-id="SectionsNav" id="SectionsNav"
 			md-is-locked-open="true" 
 			ngs-class="{ 'w50': (mainSidenavLabels || !gtsm ), 'w220': (!mainSidenavLabels && gtsm) }"
 			class="darkScroll border-right bg-white">
@@ -47,7 +86,7 @@
 	        	</md-list-item>
 	        </md-list>
 
-		</md-sidenav>
+		</md-sidenav>-->
 
 		<div id='Section' ui-view flex layout="column" class="">
 			@include('Inicio')

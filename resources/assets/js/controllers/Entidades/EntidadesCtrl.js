@@ -9,6 +9,7 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.EntidadSidenav = true;
 		Ctrl.loadingEntidad = false;
 		Ctrl.showCampos = true;
+		if(!Rs.Storage.EntidadSubseccion) Rs.Storage.EntidadSubseccion = 'General';
 
 		Ctrl.EntidadesCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades', 					order_by: ['Nombre'] });
 		Ctrl.CamposCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/campos', 			order_by: ['Indice'] });
@@ -28,7 +29,8 @@ angular.module('EntidadesCtrl', [])
 			['Cargadores', 	'fa-sign-in-alt fa-rotate-270' ],
 		];
 
-		Ctrl.navToSubsection = (subsection) => { 
+		Ctrl.navToSubsection = (subsection) => {
+			Rs.Storage.EntidadSubseccion = subsection;
 			Rs.navTo('Home.Section.Subsection', { section: 'Entidades', subsection: subsection }); 
 		};
 
@@ -44,10 +46,13 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.getEntidades = () => {
 			Ctrl.EntidadesCRUD.get().then(() => {
 				Ctrl.getFsEntidades();
-				console.log(Ctrl.EntidadesCRUD.rows);
-				Ctrl.openEntidad(Ctrl.EntidadesCRUD.rows[4]); //QUITAR
-				Ctrl.navToSubsection('General');
-				//Ctrl.navToSubsection('Grids');
+
+				if(Rs.Storage.EntidadSelId){
+					var entidad_sel_id = Rs.getIndex(Ctrl.EntidadesCRUD.rows, Rs.Storage.EntidadSelId);
+					Ctrl.openEntidad(Ctrl.EntidadesCRUD.rows[entidad_sel_id]);
+				};
+
+				Ctrl.navToSubsection(Rs.Storage.EntidadSubseccion);
 			});
 		};
 
@@ -71,10 +76,13 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.openEntidad = (E) => {
 			if(!E) return;
 			if(Ctrl.EntidadSel){ if(Ctrl.EntidadSel.id == E.id) return; }
+			Rs.Storage.EntidadSelId = E.id;
 			Ctrl.loadingEntidad = true;
 			Ctrl.EntidadSel = E;
-			Ctrl.getCampos();
-			Ctrl.getRestricciones();
+
+			//Rs.Refresh();
+
+			Ctrl.getCampos().then(Ctrl.getRestricciones);
 		}
 
 		Ctrl.addEntidad = () => {
@@ -124,7 +132,7 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.getCampos = () => {
 	
 			Ctrl.CamposCRUD.setScope('entidad', Ctrl.EntidadSel.id);
-			Ctrl.CamposCRUD.get().then(() => {
+			return Ctrl.CamposCRUD.get().then(() => {
 				Ctrl.loadingEntidad = false;
 				//Ctrl.configLista(Ctrl.CamposCRUD.rows[3]); FIX
 			});
@@ -188,7 +196,6 @@ angular.module('EntidadesCtrl', [])
 		};
 
 		Ctrl.OpsBooleano = [
-			{ Mostrar: 'Ninguno', 	Valor: null  },
 			{ Mostrar: 'Verdadero', Valor: true  },
 			{ Mostrar: 'Falso',     Valor: false },
 		];
@@ -252,7 +259,7 @@ angular.module('EntidadesCtrl', [])
 		//Restricciones
 		Ctrl.getRestricciones = () => {
 			Ctrl.RestricCRUD.setScope('entidad', Ctrl.EntidadSel.id);
-			Ctrl.RestricCRUD.get();
+			return Ctrl.RestricCRUD.get();
 		};
 
 		Ctrl.addRestriccion = () => {

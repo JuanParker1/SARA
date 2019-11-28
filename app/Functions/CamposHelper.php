@@ -109,6 +109,7 @@ class CamposHelper
         }
 
         if($Campo['Tipo'] == 'FechaHora'){
+            $D = str_limit($D, 19, '');
             $Date = Carbon::createFromFormat($Campo['Op4'], $D);
             return $Date->format('Y-m-d H:i');
         }
@@ -116,6 +117,18 @@ class CamposHelper
         if($Campo['Tipo'] == 'Texto'){ return utf8_encode(trim($D)); }
         if($Campo['Tipo'] == 'TextoLargo'){ return utf8_encode($D); }
         if($Campo['Tipo'] == 'Dinero'){ return Helper::formatVal($D, "Moneda"); }
+        return $D;
+    }
+
+    public static function prepDatoUp($Campo, $D)
+    {
+        if(is_null($D)) return $D;
+
+        if($Campo['Tipo'] == 'FechaHora'){
+            $Date = Carbon::createFromFormat('Y-m-d H:i', $D);
+            $D = $Date->format($Campo['Op4']);
+        }
+
         return $D;
     }
 
@@ -129,10 +142,6 @@ class CamposHelper
 
     public static function prepData($Columnas, $Datos)
     {
-        
-        //echo "<pre>".count($Columnas)."</pre>";
-        //exit();
-
         $Datos = collect($Datos)->transform(function($row) use ($Columnas){
             return collect($row)->transform(function($c,$i) use ($Columnas){
                 return self::prepDato($Columnas[$i]['campo'], $c);

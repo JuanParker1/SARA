@@ -98,6 +98,9 @@ angular.module('appFunctions', [])
 			return Model;
 		};
 
+		Rs.submitForm = (name) => {
+			Rs.$broadcast('makeSubmit', {formName: name});
+		};
 
 		Rs.download = function(strData, strFileName, strMimeType) {
 			var D = document,

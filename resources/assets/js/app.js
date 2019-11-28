@@ -30,6 +30,7 @@ angular.module('SARA', [
 	'hoverClass',
 	'horizontalScroll',
 	'focusOn',
+	'extSubmit',
 
 	'BasicDialogCtrl',
 	'ConfirmCtrl',

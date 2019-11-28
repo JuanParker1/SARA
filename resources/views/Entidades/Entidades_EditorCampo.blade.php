@@ -34,8 +34,6 @@
 	</md-input-container>
 </div>
 
-
-
 <md-input-container class="" ng-if="inArray(C.campo.Tipo, ['Lista'])">
 	<label>{{ C.campo_title }}</label>
 	<md-select ng-model="C.val" name="c{{ C.id }}" ng-required="{{ C.Requerido }}" class="w100p">
@@ -105,9 +103,7 @@
 
 <div ng-if="C.campo.Tipo == 'Booleano'" layout class="h30 lh30 text-14px">
 	<md-checkbox ng-model="C.val" aria-label="c" name="c{{ C.id }}" ng-required="{{ C.Requerido }}"
-		class="no-margin md-primary">
+		class="no-margin md-primary" ng-true-value="'{{ C.campo.Op4}}'" ng-false-value="'{{C.campo.Op5}}'">
 		{{ C.campo_title }}
 	</md-checkbox>
 </div>
-
-<pre hide>{{ C | json }}</pre>

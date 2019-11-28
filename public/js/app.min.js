@@ -870,6 +870,7 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.EntidadSidenav = true;
 		Ctrl.loadingEntidad = false;
 		Ctrl.showCampos = true;
+		if(!Rs.Storage.EntidadSubseccion) Rs.Storage.EntidadSubseccion = 'General';
 
 		Ctrl.EntidadesCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades', 					order_by: ['Nombre'] });
 		Ctrl.CamposCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/campos', 			order_by: ['Indice'] });
@@ -889,7 +890,8 @@ angular.module('EntidadesCtrl', [])
 			['Cargadores', 	'fa-sign-in-alt fa-rotate-270' ],
 		];
 
-		Ctrl.navToSubsection = (subsection) => { 
+		Ctrl.navToSubsection = (subsection) => {
+			Rs.Storage.EntidadSubseccion = subsection;
 			Rs.navTo('Home.Section.Subsection', { section: 'Entidades', subsection: subsection }); 
 		};
 
@@ -905,10 +907,13 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.getEntidades = () => {
 			Ctrl.EntidadesCRUD.get().then(() => {
 				Ctrl.getFsEntidades();
-				console.log(Ctrl.EntidadesCRUD.rows);
-				Ctrl.openEntidad(Ctrl.EntidadesCRUD.rows[4]); //QUITAR
-				Ctrl.navToSubsection('General');
-				//Ctrl.navToSubsection('Grids');
+
+				if(Rs.Storage.EntidadSelId){
+					var entidad_sel_id = Rs.getIndex(Ctrl.EntidadesCRUD.rows, Rs.Storage.EntidadSelId);
+					Ctrl.openEntidad(Ctrl.EntidadesCRUD.rows[entidad_sel_id]);
+				};
+
+				Ctrl.navToSubsection(Rs.Storage.EntidadSubseccion);
 			});
 		};
 
@@ -932,10 +937,13 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.openEntidad = (E) => {
 			if(!E) return;
 			if(Ctrl.EntidadSel){ if(Ctrl.EntidadSel.id == E.id) return; }
+			Rs.Storage.EntidadSelId = E.id;
 			Ctrl.loadingEntidad = true;
 			Ctrl.EntidadSel = E;
-			Ctrl.getCampos();
-			Ctrl.getRestricciones();
+
+			//Rs.Refresh();
+
+			Ctrl.getCampos().then(Ctrl.getRestricciones);
 		}
 
 		Ctrl.addEntidad = () => {
@@ -985,7 +993,7 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.getCampos = () => {
 	
 			Ctrl.CamposCRUD.setScope('entidad', Ctrl.EntidadSel.id);
-			Ctrl.CamposCRUD.get().then(() => {
+			return Ctrl.CamposCRUD.get().then(() => {
 				Ctrl.loadingEntidad = false;
 				//Ctrl.configLista(Ctrl.CamposCRUD.rows[3]); FIX
 			});
@@ -1049,7 +1057,6 @@ angular.module('EntidadesCtrl', [])
 		};
 
 		Ctrl.OpsBooleano = [
-			{ Mostrar: 'Ninguno', 	Valor: null  },
 			{ Mostrar: 'Verdadero', Valor: true  },
 			{ Mostrar: 'Falso',     Valor: false },
 		];
@@ -1113,7 +1120,7 @@ angular.module('EntidadesCtrl', [])
 		//Restricciones
 		Ctrl.getRestricciones = () => {
 			Ctrl.RestricCRUD.setScope('entidad', Ctrl.EntidadSel.id);
-			Ctrl.RestricCRUD.get();
+			return Ctrl.RestricCRUD.get();
 		};
 
 		Ctrl.addRestriccion = () => {
@@ -1382,7 +1389,22 @@ angular.module('Entidades_EditorConfigDiagCtrl', [])
 		Ctrl.getEditor = () => {
 			if(!B) return;
 			Rs.http('api/Entidades/editor-get', { editor_id: B.accion_element_id }, Ctrl, 'Editor').then(() => {
-				
+				console.log(B);
+				angular.forEach(Ctrl.Editor.campos, (C) => {
+					
+					if(typeof Ctrl.B[C.id] == 'undefined'){
+
+						if(Ctrl.B.modo == 'Crear'){
+							Ctrl.B.campos[C.id] = { tipo_valor: 'Por Defecto' };
+						};
+
+						if(Ctrl.B.modo == 'Editar'){
+							var columnas   = $filter('filter')(GridColumnas, { campo_id: C.campo_id });
+							var columna_id = (columnas.length > 0) ? columnas[0]['id'] : null;
+							Ctrl.B.campos[C.id] = { tipo_valor: 'Columna', columna_id: columna_id };
+						};
+					};
+				});
 			});
 		};
 
@@ -1403,6 +1425,7 @@ angular.module('Entidades_EditorDiagCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.Cancel = () => { $mdDialog.cancel(); };
 		Ctrl.inArray = Rs.inArray;
+		Ctrl.submitForm = Rs.submitForm;
 		Ctrl.loading = true;
 
 		var DefConfig = {
@@ -1410,11 +1433,22 @@ angular.module('Entidades_EditorDiagCtrl', [])
 		};
 
 		Ctrl.getEditor = (editor_id, Obj, Config) => {
-			//Ctrl.Obj = Obj;
 			Ctrl.Config = angular.extend(DefConfig, Config);
-			Rs.http('api/Entidades/editor-get', { editor_id: editor_id, Obj: Obj, Config: Config }, Ctrl, 'Editor').then(() => {
+			Ctrl.Config.llaveprim_val = (Ctrl.Config.modo == 'Crear') ? null : Obj.id;
+			Rs.http('api/Entidades/editor-get', { editor_id: editor_id, Obj: Obj, Config: Config }).then((Editor) => {
+				Ctrl.prepEditor(Editor);
 				Ctrl.loading = false;
 			});
+		};
+
+		Ctrl.prepEditor = (Editor) => {
+			angular.forEach(Editor.campos, (C) => {
+				if(Rs.inArray(C.campo.Tipo, ['Fecha','Hora','FechaHora'])){
+					C.dateval = (C.val == null) ? null : moment(C.val).toDate();
+				};
+			});
+
+			Ctrl.Editor = Editor;
 		};
 
 		Ctrl.searchEntidad = (C) => {
@@ -1432,7 +1466,9 @@ angular.module('Entidades_EditorDiagCtrl', [])
 			C.val = null; C.searchText = null; C.selectedItem = null;
 		};
 
-		Ctrl.enviarDatos = () => {
+		Ctrl.enviarDatos = (ev) => {
+			//return console.log(ev);
+
 			Ctrl.loading = true;
 			Rs.http('api/Entidades/editor-save', { Editor: Ctrl.Editor, Config: Ctrl.Config }).then(() => {
 				Ctrl.loading = false;
@@ -1650,8 +1686,8 @@ angular.module('Entidades_GridDiagCtrl', [])
 				Ctrl.loadingGrid = false;
 				Ctrl.filterRows = '';
 				Ctrl.filterData();
-				//return Ctrl.triggerButton(Ctrl.Grid.Config.row_buttons[0], Ctrl.Grid.data[0]); //TEST
-				return Ctrl.triggerButton(Ctrl.Grid.Config.main_buttons[0]); //TEST
+				//return Ctrl.triggerButton(Ctrl.Grid.Config.row_buttons[0], Data[0]); //TEST
+				//return Ctrl.triggerButton(Ctrl.Grid.Config.main_buttons[0]); //TEST
 			});
 		};
 
@@ -3184,6 +3220,20 @@ angular.module('enterStroke', []).directive('enterStroke',
     };
   }
 );
+angular.module('extSubmit', []).directive("extSubmit", ['$timeout',function($timeout){
+    return {
+        link: function($scope, $el, $attr) {
+            $scope.$on('makeSubmit', function(event, data){
+              if(data.formName === $attr.name) {
+                $timeout(function() {
+                  $el.triggerHandler('submit'); //<<< This is Important
+                  //$el[0].dispatchEvent(new Event('submit')) //equivalent with native event
+                }, 0, false);   
+              }
+            })
+        }
+    };
+}]);
 angular.module('fileread', [])
 .directive("fileread", [function () {
     return {
@@ -3423,6 +3473,7 @@ angular.module('SARA', [
 	'hoverClass',
 	'horizontalScroll',
 	'focusOn',
+	'extSubmit',
 
 	'BasicDialogCtrl',
 	'ConfirmCtrl',
@@ -3732,6 +3783,9 @@ angular.module('appFunctions', [])
 			return Model;
 		};
 
+		Rs.submitForm = (name) => {
+			Rs.$broadcast('makeSubmit', {formName: name});
+		};
 
 		Rs.download = function(strData, strFileName, strMimeType) {
 			var D = document,

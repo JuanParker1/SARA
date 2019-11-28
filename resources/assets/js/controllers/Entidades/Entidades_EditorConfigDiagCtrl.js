@@ -17,7 +17,22 @@ angular.module('Entidades_EditorConfigDiagCtrl', [])
 		Ctrl.getEditor = () => {
 			if(!B) return;
 			Rs.http('api/Entidades/editor-get', { editor_id: B.accion_element_id }, Ctrl, 'Editor').then(() => {
-				
+				console.log(B);
+				angular.forEach(Ctrl.Editor.campos, (C) => {
+					
+					if(typeof Ctrl.B[C.id] == 'undefined'){
+
+						if(Ctrl.B.modo == 'Crear'){
+							Ctrl.B.campos[C.id] = { tipo_valor: 'Por Defecto' };
+						};
+
+						if(Ctrl.B.modo == 'Editar'){
+							var columnas   = $filter('filter')(GridColumnas, { campo_id: C.campo_id });
+							var columna_id = (columnas.length > 0) ? columnas[0]['id'] : null;
+							Ctrl.B.campos[C.id] = { tipo_valor: 'Columna', columna_id: columna_id };
+						};
+					};
+				});
 			});
 		};
 

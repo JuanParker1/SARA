@@ -7,7 +7,7 @@
 	<div flex layout=column ng-show="!loading">
 		<div layout class="">
 			<div layout flex class="padding-left lh30" md-truncate>{{ Editor.Titulo }}</div>
-			
+			<div>{{ Obj.id }}</div>
 			<md-button class="md-icon-button s30 no-padding only-dialog" aria-label="Button" ng-click="Cancel()">
 				<md-icon md-svg-icon="md-close" class=""></md-icon>
 				<md-tooltip md-delay="500" md-direction="left">Cancelar</md-tooltip>
@@ -15,7 +15,7 @@
 		</div>
 
 
-		<form id="EditorForm" flex layout=row layout-wrap class="overflow-y" ng-submit="enviarDatos()">
+		<form ext-submit id="EditorForm" name="EditorForm" flex layout=row layout-wrap class="overflow-y" ng-submit="enviarDatos($event)">
 			
 			<div ng-repeat="C in Editor.campos" layout=column flex=100 flex-gt-xs={{C.Ancho}} class="EditorCampo" ng-if="C.Visible">
 				@include('Entidades.Entidades_EditorCampo')
@@ -31,7 +31,7 @@
 		<div layout>
 			<span flex></span>
 			<md-button class="md-raised margin-5 text-16px" ng-style="{ backgroundColor: Config.color, color: Config.textcolor }" 
-				type="submit" form="EditorForm" >{{ Config.modo }}</md-button>
+				ng-click="submitForm('EditorForm')">{{ (Config.modo == 'Crear') ? 'Crear' : 'Guardar' }}</md-button>
 		</div>
 	</div>
 

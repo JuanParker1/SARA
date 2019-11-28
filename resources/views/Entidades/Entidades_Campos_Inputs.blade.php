@@ -114,9 +114,7 @@
 
 
 	<div ng-if="inArray(C.Tipo, ['Booleano'])">
-		<md-select ng-model="C.Defecto" aria-label="s" class="w140" ng-change="markChanged(C)">
-		  <md-option ng-value="Op.Valor" ng-repeat="Op in OpsBooleano">{{ Op.Mostrar }}</md-option>
-		</md-select>
+		<md-checkbox ng-model="C.Defecto" class="w140" ng-change="markChanged(C)" aria-label="s"></md-checkbox> {{ C.Defecto | json }}
 	</div>
 
 	<div ng-if="inArray(C.Tipo, ['Lista'])">

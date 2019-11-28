@@ -7,6 +7,7 @@ angular.module('Entidades_EditorDiagCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.Cancel = () => { $mdDialog.cancel(); };
 		Ctrl.inArray = Rs.inArray;
+		Ctrl.submitForm = Rs.submitForm;
 		Ctrl.loading = true;
 
 		var DefConfig = {
@@ -14,11 +15,22 @@ angular.module('Entidades_EditorDiagCtrl', [])
 		};
 
 		Ctrl.getEditor = (editor_id, Obj, Config) => {
-			//Ctrl.Obj = Obj;
 			Ctrl.Config = angular.extend(DefConfig, Config);
-			Rs.http('api/Entidades/editor-get', { editor_id: editor_id, Obj: Obj, Config: Config }, Ctrl, 'Editor').then(() => {
+			Ctrl.Config.llaveprim_val = (Ctrl.Config.modo == 'Crear') ? null : Obj.id;
+			Rs.http('api/Entidades/editor-get', { editor_id: editor_id, Obj: Obj, Config: Config }).then((Editor) => {
+				Ctrl.prepEditor(Editor);
 				Ctrl.loading = false;
 			});
+		};
+
+		Ctrl.prepEditor = (Editor) => {
+			angular.forEach(Editor.campos, (C) => {
+				if(Rs.inArray(C.campo.Tipo, ['Fecha','Hora','FechaHora'])){
+					C.dateval = (C.val == null) ? null : moment(C.val).toDate();
+				};
+			});
+
+			Ctrl.Editor = Editor;
 		};
 
 		Ctrl.searchEntidad = (C) => {
@@ -36,7 +48,9 @@ angular.module('Entidades_EditorDiagCtrl', [])
 			C.val = null; C.searchText = null; C.selectedItem = null;
 		};
 
-		Ctrl.enviarDatos = () => {
+		Ctrl.enviarDatos = (ev) => {
+			//return console.log(ev);
+
 			Ctrl.loading = true;
 			Rs.http('api/Entidades/editor-save', { Editor: Ctrl.Editor, Config: Ctrl.Config }).then(() => {
 				Ctrl.loading = false;
