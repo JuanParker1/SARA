@@ -114,7 +114,9 @@
 
 
 	<div ng-if="inArray(C.Tipo, ['Booleano'])">
-		<md-checkbox ng-model="C.Defecto" class="w140" ng-change="markChanged(C)" aria-label="s"></md-checkbox> {{ C.Defecto | json }}
+		<md-checkbox ng-model="C.Defecto" class="w140" ng-change="markChanged(C)" aria-label="s"
+			ng-true-value="'{{ C.Op4}}'" ng-false-value="'{{C.Op5}}'"></md-checkbox>
+
 	</div>
 
 	<div ng-if="inArray(C.Tipo, ['Lista'])">

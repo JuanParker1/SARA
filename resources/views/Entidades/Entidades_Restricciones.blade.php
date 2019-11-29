@@ -29,7 +29,7 @@
 					<td md-cell class="md-cell-compress">
 						<md-input-container md-no-float>
 							<label>Agregar Restricción</label>
-							<md-select ng-model="newRestriccion" ng-change="addRestriccion()" aria-label=s>
+							<md-select ng-model="newRestriccion" ng-change="addRestriccion(newRestriccion); newRestriccion = null" aria-label=s >
 								<md-option ng-value="C.id" ng-repeat="C in CamposCRUD.rows">
 									<md-icon md-svg-icon="{{ TiposCampo[C.Tipo].Icon }}" class="s20 margin-right-5"></md-icon>
 									{{ C.Alias !== null ? C.Alias : C.Columna }}

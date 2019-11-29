@@ -262,14 +262,14 @@ angular.module('EntidadesCtrl', [])
 			return Ctrl.RestricCRUD.get();
 		};
 
-		Ctrl.addRestriccion = () => {
+		Ctrl.addRestriccion = (newRestriccion) => {
+			console.log(newRestriccion);
 			Ctrl.RestricCRUD.add({
 				entidad_id: Ctrl.EntidadSel.id,
-				campo_id:   Ctrl.newRestriccion,
+				campo_id:   newRestriccion,
 				Comparador: '=',
 				Valor:      null
 			});
-			Ctrl.newRestriccion = null;
 		};
 
 		Ctrl.removeRestriccion = (R) => {

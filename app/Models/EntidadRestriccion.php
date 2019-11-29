@@ -12,7 +12,7 @@ class EntidadRestriccion extends MyModel
 	protected $primaryKey = 'id';
     protected $casts = [];
     protected $with = ['campo'];
-    protected $appends = ['val'];
+    protected $appends = ['val', 'Valor'];
 
     public function columns()
 	{
@@ -46,10 +46,29 @@ class EntidadRestriccion extends MyModel
 		return $query->where('entidad_id', $id);
 	}
 
-
+	public function getValorAttribute()
+	{
+		$Valor = $this->attributes['Valor'];
+		if(!is_array($Valor)){
+			if(substr($Valor,0,10) == 'json_data:') $Valor = json_decode(substr($Valor,10));
+		}
+		return $Valor;
+	}
 
 	public function getValAttribute()
 	{
 		return $this->Valor;
 	}
+
+	//Eventos
+	public static function boot()
+    {
+		parent::boot();
+
+		self::saving(function($model){
+			if(is_array($model->Valor)) $model->Valor = ('json_data:'.json_encode($model->Valor));
+        });
+
+    }
+
 }

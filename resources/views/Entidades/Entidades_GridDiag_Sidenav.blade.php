@@ -30,14 +30,14 @@
 	<div flex ng-show="sidenavSel == 'Descargar'" layout=column class="padding-0-10">
 		<span flex></span>
 		<md-button class="md-raised no-margin">Descargar .CSV</md-button>
-		<div class="text-center margin-top-5 text-clear">{{ Grid.data.length }} filas</div>
+		<div class="text-center margin-top-5 text-clear">{{ load_data_len | number }} filas</div>
 		<span flex></span>
 	</div>
 
 	<div flex ng-show="sidenavSel == 'Información'" layout=column class="padding-0-10 text-15px">
 
 		<div class="margin-bottom">{{ Grid.Titulo }}</div>
-		<div class="margin-bottom">{{ Grid.data.length }} filas</div>
+		<div class="margin-bottom">{{ load_data_len | number }} filas</div>
 
 		<div class="md-subheader">SQL</div>
 		<div class="text-13px">{{ Grid.sql.query }}</div>

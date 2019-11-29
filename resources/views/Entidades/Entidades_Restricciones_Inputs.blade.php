@@ -63,3 +63,15 @@
 	</md-input-container>
 
 </div>
+
+<div ng-if="inArray(R.campo.Tipo, ['Lista'])" layout>
+	<md-input-container class="no-padding no-margin">
+		<md-select ng-model="R.Comparador" class="mw120 margin-right" aria-label="s" ng-change="markChanged(R)">
+			<md-option value="in">Es</md-option>
+			<md-option value="not_in">No Es</md-option>
+		</md-select>
+	</md-input-container>
+	<md-select ng-model="R.Valor" class="md-select-inline" flex aria-label="s" ng-change="markChanged(R)" multiple="true">
+		<md-option ng-repeat="Op in R.campo.Config.opciones" ng-value="Op.value">{{ Op.desc || Op.value }}</md-option>
+	</md-select>
+</div>

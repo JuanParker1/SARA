@@ -15,6 +15,11 @@
 			<md-button ng-show="{{ pag_to < load_data_len }}" ng-click="pag_go(1)" class="md-icon-button focus-on-hover no-padding no-margin s30" aria-label="b"><md-icon md-font-icon="fa-chevron-right"></md-icon></md-button>
 		</div>
 
+		<md-button class="md-icon-button no-margin" aria-label="b" ng-click="reloadData()">
+			<md-icon md-svg-icon="md-refresh"></md-icon>
+			<md-tooltip>Recargar Datos</md-tooltip>
+		</md-button>
+
 		<md-button class="mh30 h30 lh30 no-margin margin-left-5 button_main" ng-repeat="B in Grid.Config.main_buttons"
 			ng-style="{ backgroundColor: AppSel.Color, color: AppSel.textcolor }"
 			ng-click="triggerButton(B)">
