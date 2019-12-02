@@ -101,9 +101,9 @@ class VariablesController extends Controller
 
             $q->whereIn($ColPeriodoName, $Periodos);
             GridHelper::getGroupedData($Grid, $q, [$ColPeriodoName], [ [ $ColCalculoName, $Var['Agrupador'] ] ]);
-            GridHelper::getData($Grid, $q, false, false);
+            $Data = GridHelper::getData($Grid, $q, false, false);
 
-            foreach ($Grid->data as $d) {
+            foreach ($Data as $d) {
                 $VarVal = new VariableValor([ 'Valor' => $d[1] ]);
                 $VarVal->formatVal($Var['TipoDato'], $Var['Decimales']);
                 $Valores[$d[0]] = [ 'val' => $VarVal->val, 'Valor' => $VarVal->Valor ];
