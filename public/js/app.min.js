@@ -2544,8 +2544,14 @@ angular.module('VariablesCtrl', [])
 
 		Ctrl.getVariables = () => {
 			Ctrl.VariablesCRUD.get().then(() => {
-				Ctrl.openVariable(Ctrl.VariablesCRUD.rows[0]);
+
+				
 				Ctrl.getFs();
+
+				if(Rs.Storage.VariableSel){
+					var variable_sel_id = Rs.getIndex(Ctrl.VariablesCRUD.rows, Rs.Storage.VariableSel);
+					Ctrl.openVariable(Ctrl.VariablesCRUD.rows[variable_sel_id]);
+				};
 			});
 		};
 
@@ -2595,6 +2601,7 @@ angular.module('VariablesCtrl', [])
 			//Rs.viewVariableDiag(V.id);
 			Rs.http('/api/Variables/get-variable', { id: V.id }, Ctrl, 'VarSel').then(() => {
 				//Rs.getVariableData([Ctrl.VarSel.id]);
+				Rs.Storage.VariableSel = Ctrl.VarSel.id;
 			});
 			//Ctrl.VarSel = V;
 		};
@@ -2652,10 +2659,17 @@ angular.module('VariablesCtrl', [])
 				if(!r) return;
 				var f = Rs.prepFields(r.Fields);
 				Ctrl.VariablesCRUD.add({
-					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
-					Variable: f.Nombre,
-					Descripcion: f.Descripcion,
-					Filtros: Ctrl.VarSel.Filtros,
+					Ruta: 			Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
+					Variable: 		f.Nombre,
+					Descripcion: 	f.Descripcion,
+					TipoDato: 		Ctrl.VarSel.TipoDato,
+					Decimales: 		Ctrl.VarSel.Decimales,
+					Tipo: 			Ctrl.VarSel.Tipo,
+					grid_id: 		Ctrl.VarSel.grid_id,
+					ColPeriodo: 	Ctrl.VarSel.ColPeriodo,
+					Agrupador: 		Ctrl.VarSel.Agrupador,
+					Col: 			Ctrl.VarSel.Col,
+					Filtros: 		Ctrl.VarSel.Filtros,
 				}).then(() => { Ctrl.getFs(); });
 			});
 		};

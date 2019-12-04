@@ -101,6 +101,7 @@ class VariablesController extends Controller
 
             $q->whereIn($ColPeriodoName, $Periodos);
             GridHelper::getGroupedData($Grid, $q, [$ColPeriodoName], [ [ $ColCalculoName, $Var['Agrupador'] ] ]);
+
             $Data = GridHelper::getData($Grid, $q, false, false);
 
             foreach ($Data as $d) {

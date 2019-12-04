@@ -71,7 +71,7 @@
 			<md-option value="not_in">No Es</md-option>
 		</md-select>
 	</md-input-container>
-	<md-select ng-model="R.Valor" class="md-select-inline" flex aria-label="s" ng-change="markChanged(R)" multiple="true">
+	<md-select ng-model="R.Valor" class="md-select-inline no-margin" flex aria-label="s" ng-change="markChanged(R)" multiple="true">
 		<md-option ng-repeat="Op in R.campo.Config.opciones" ng-value="Op.value">{{ Op.desc || Op.value }}</md-option>
 	</md-select>
 </div>
