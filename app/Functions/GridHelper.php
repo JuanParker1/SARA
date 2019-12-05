@@ -191,13 +191,18 @@ class GridHelper
         };
     }
 
-    public static function getData($Grid, $q, $prepOpts = false, $limit = true)
+    public static function getData($Grid, $q, $prepOpts = false, $limit = true, $prepData = true)
     {
     	set_time_limit(10 * 60);
 
         if($limit) $q->limit($Grid->rowsLimit);
         $Grid->sql = [ 'query' => $q->toSql(), 'bindings' => $q->getBindings() ];
-        $Data = CamposHelper::prepData($Grid->columnas, $q->get());
+        
+        if($prepData){
+            $Data = CamposHelper::prepData($Grid->columnas, $q->get());
+        }else{
+            $Data = $q->get();
+        }; 
 
         //Prep Filtros Opts
         if($prepOpts){

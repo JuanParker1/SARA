@@ -23,7 +23,7 @@
 					<div flex layout layout-align="center center">
 						<div class="card_value" style="color: {{ I.valores[(Anio*100)+Mes].color }}">{{ I.valores[(Anio*100)+Mes].val }}</div>
 					</div>
-					<div class="card_subtext">Meta: {{ I.valores[(Anio*100)+Mes].meta_val }}</div>
+					<div class="card_subtext">{{ I.valores[(Anio*100)+Mes].meta_val }}</div>
 				</div>
 
 				<div ng-show="C.tipo == 'Variable'" flex layout=column class="Pointer" ng-click="viewVariableDiag(C.elemento_id)"
@@ -47,12 +47,15 @@
 
 <style type="text/css">
 	.card_title{ font-size: 0.9em; opacity: 0.5;  }
-	.card_value{ font-size: 2.3em; text-shadow: 2px 2px 4px #0000008f; font-weight: 300; }
-	.card_subtext{ text-align: right; font-size: 0.9em; opacity: 0; transition: all 0.3s; }
-	.card:hover .card_subtext{ opacity: 0.5;  }
+	.card_value{ font-size: 2.3em; text-shadow: 2px 2px 4px #0000008f; font-weight: 400; }
+	.card_subtext{ text-align: right; font-size: 0.9em; opacity: 0.5; transition: all 0.3s; }
+	.card:hover .card_subtext{ opacity: 0.8;  }
 	.scorecard{
 		/*opacity: 0;*/
 		padding: 2px 4px;
-	    animation: 400ms cubic-bezier(0.18, 1, 0.63, 1.21) 100ms 1 normal both running In_FadeScale;
+	    animation: 400ms cubic-bezier(0.18, 1, 0.63, 1.21) 100ms 1 normal both running In_FadeScale; transition: all 0.3s;
+	}
+	.card:hover .scorecard{
+		background-color: #484848 !important;
 	}
 </style>

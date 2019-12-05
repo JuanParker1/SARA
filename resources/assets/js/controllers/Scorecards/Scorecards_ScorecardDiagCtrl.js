@@ -18,6 +18,13 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 		Ctrl.Anio  = angular.copy(Rs.AnioActual);
 		Ctrl.Mes   = angular.copy(Rs.MesActual);
 		Ctrl.Modo  = 'Mes';
+		Ctrl.Modos = {
+			'Mes': ['Vista Mensual', 'md-calendar-event'],
+			'Año': ['Vista Anual', 'md-calendar'],
+		};
+		Ctrl.changeModo = () => {
+			Ctrl.Modo = (Ctrl.Modo == "Mes") ? 'Año' : 'Mes';
+		};
 
 		Ctrl.periodoAdd = (num) => {
 			var m = angular.copy(Ctrl.Mes) + num;

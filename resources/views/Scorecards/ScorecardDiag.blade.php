@@ -3,7 +3,8 @@
 	<div layout class="h30 padding-top-5" layout-align="start center">
 
 		<div flex layout>
-			<div class="text-16px margin-left" flex md-truncate>{{ Sco.Titulo }}</div>
+			<div class="text-16px margin-0-10" md-truncate>{{ Sco.Titulo }}</div>
+			<span flex></span>
 		</div>
 
 		<div layout ng-show="Modo == 'Mes'">
@@ -18,7 +19,11 @@
 		</div>
 
 		<div flex layout layout-align="end">
-			
+			<span flex></span>
+			<div layout class="Pointer padding-5-10 bg-black-3 border-rounded margin-right-5" ng-click="changeModo()">
+				<md-icon md-svg-icon="{{ Modos[Modo][1] }}" class="s15 margin-right-5"></md-icon>
+				{{ Modos[Modo][0] }}
+			</div>
 			<md-button class="md-icon-button s30 no-padding only-dialog" aria-label="Button" ng-click="Cancel()">
 				<md-icon md-svg-icon="md-close" class=""></md-icon>
 			</md-button>
