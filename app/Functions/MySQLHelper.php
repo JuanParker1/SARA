@@ -24,7 +24,7 @@ class MySQLHelper
 
         $ColumnasExistentes = collect($Campos)->pluck('Columna')->toArray();
 
-        return collect($newCampos)->transform(function($R) use ($Tipos, $tiposCampo){
+        return collect($newCampos)->transform(function($R) use ($Tipos, $tiposCampo, $Entidad){
 
             $Tipo = 'Texto';
             foreach ($Tipos as $T => $Valores) {
@@ -32,15 +32,30 @@ class MySQLHelper
             };
 
             $C = [
+                'entidad_id'=> $Entidad['id'],
                 'Columna'   => ".".$R['COLUMN_NAME'],
                 'Alias'     => $R['COLUMN_COMMENT'],
                 'Defecto'   => ($R['COLUMN_DEFAULT'] == "NULL" ? null : $R['COLUMN_DEFAULT']),
+                'Tipo'      => $Tipo,
                 'Requerido' => ($R['IS_NULLABLE'] == 'NO'),
                 'Visible'   => true,
                 'Unico'     => ($R['COLUMN_KEY'] == 'PRI'),
-                'Tipo'      => $Tipo,
+                'Editable'  => true,
+                'Buscable'  => 0,
                 //'obj' => $R
             ];
+
+            /*
+                'entidad_id'=> $Entidad['id'],
+                'Columna'   => ".".$R['COLUMN_NAME'],
+                'Alias'     => $R['COLUMN_TEXT'],
+                'Defecto'   => ($R['COLUMN_DEFAULT'] == "NULL" ? null : $R['COLUMN_DEFAULT']),
+                'Tipo'      => $Tipo,
+                'Requerido' => ($R['IS_NULLABLE']  == 'N' ? true : false),
+                'Visible'   => ($R['HIDDEN']       == 'N' ? true : false),
+                'Editable'  => ($R['IS_UPDATABLE'] == 'Y' ? true : false),
+                'Buscable'  => 0,
+             */
 
             return array_merge($C, $tiposCampo[$Tipo]['Defaults']);
 
