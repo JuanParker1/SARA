@@ -3,6 +3,7 @@
 	<md-input-container class="no-padding no-margin">
 		<md-select ng-model="R.Comparador" class="mw120" aria-label="s" ng-change="markChanged(R)">
 			<md-option value="=">Es</md-option>
+			<md-option value="!=">No Es</md-option>
 			<md-option value="like">Contiene</md-option>
 			<md-option value="like_">Empieza con</md-option>
 			<md-option value="_like">Termina con</md-option>

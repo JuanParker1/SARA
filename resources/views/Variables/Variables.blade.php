@@ -77,6 +77,10 @@
 					<textarea ng-model="VarSel.Descripcion" rows=1 placeholder="Descripción"></textarea>
 				</md-input-container>
 
+				<md-input-container class="no-margin-top margin-bottom" md-no-float>
+					<input ng-model="VarSel.Ruta"></textarea>
+				</md-input-container>
+
 				<div class="bg-white border border-radius text-14px" layout=column ng-show="VarSel.Tipo == 'Calculado de Entidad'">
 					<div class="md-subheader padding-but-bottom">Configuración de Entidad</div>
 					<div layout layout-wrap class="padding-5">
@@ -112,7 +116,7 @@
 						</md-input-container>
 
 						<div flex=100 layout=column class="padding-5 margin-top-5" ng-show="VarSel.Filtros.length > 0">
-							<div class="md-subheader border-bottom padding-bottom-5" >Filtros</div>
+							<div class="md-subheader border-bottom padding-bottom-5" >Condiciones</div>
 							<div layout ng-repeat="(kR,R) in VarSel.Filtros" class="h30 lh30 border-bottom">
 								<md-icon md-svg-icon="{{ TiposCampo[R.tipo_campo].Icon }}" class="margin-right-5 s20"></md-icon>
 								<div class="margin-right mw150">{{ R.column_title }}</div>

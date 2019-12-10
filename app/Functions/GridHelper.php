@@ -161,14 +161,14 @@ class GridHelper
     public static function addRestricRun($q, $columna_name, $Comparador, $Valor)
     {
         $columna_name = DB::raw($columna_name);
-        if($Comparador == 'nulo'){                          return $q->whereNull($columna_name);                 };
-        if($Comparador == 'no_nulo'){                       return $q->whereNotNull($columna_name);              };
-        if(in_array($Comparador, ['=','<=','<','>','>='])){ return $q->where($columna_name,$Comparador,$Valor);  };
-        if($Comparador == 'like'){                          return $q->where($columna_name, 'like', "%$Valor%"); };
-        if($Comparador == 'like_'){                         return $q->where($columna_name, 'like', "$Valor%");  };
-        if($Comparador == '_like'){                         return $q->where($columna_name, 'like', "%$Valor");  };
-        if($Comparador == 'in'){                            return $q->whereIn($columna_name, $Valor);           };
-        if($Comparador == 'not_in'){                        return $q->whereNotIn($columna_name, $Valor);           };
+        if($Comparador == 'nulo'){                               return $q->whereNull($columna_name);                 };
+        if($Comparador == 'no_nulo'){                            return $q->whereNotNull($columna_name);              };
+        if(in_array($Comparador, ['=','!=','<=','<','>','>='])){ return $q->where($columna_name,$Comparador,$Valor);  };
+        if($Comparador == 'like'){                               return $q->where($columna_name, 'like', "%$Valor%"); };
+        if($Comparador == 'like_'){                              return $q->where($columna_name, 'like', "$Valor%");  };
+        if($Comparador == '_like'){                              return $q->where($columna_name, 'like', "%$Valor");  };
+        if($Comparador == 'in'){                                 return $q->whereIn($columna_name, $Valor);           };
+        if($Comparador == 'not_in'){                             return $q->whereNotIn($columna_name, $Valor);           };
     }
 
     public static function addFilters($Filtros, $Grid, $q)

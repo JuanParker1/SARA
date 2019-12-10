@@ -19,12 +19,12 @@
 
 				<tr md-row class="md-row-hover" ng-show="S.open" ng-repeat="C in Sco.cards | filter:{ seccion_name: S.Seccion, tipo: 'Indicador' }"
 					ng-click="viewIndicadorDiag(C.elemento_id)">
-					<td md-cell class="w260" style="padding-left: 5px !important"><div layout>
+					<td md-cell class="w260" style="padding-left: 5px !important"><div layout class="text-13px">
 						<div class="w25"></div>{{ Sco.elementos.Indicador[C.elemento_id].Indicador }}
 					</div></td>
 					<td md-cell class="" ng-repeat="M in Meses">
 						<div ng-repeat="I in [ Sco.elementos.Indicador[C.elemento_id].valores[Anio+M[0]] ]">
-							<span ng-style="{ color: I.color }">{{ I.val }}</span>
+							<span ng-style="{ color: I.color }" class="text-15px">{{ I.val }}</span>
 						</div>
 					</td>
 					<td md-cell ng-repeat="I in [ Sco.elementos.Indicador[C.elemento_id] ]"> 

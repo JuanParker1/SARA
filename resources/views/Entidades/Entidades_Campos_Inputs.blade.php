@@ -1,13 +1,13 @@
 <td md-cell class="md-cell-compress ">
 	<md-input-container md-no-float class="no-padding w150">
 		<input type="text" placeholder="Columna" ng-model="C.Columna" ng-required="C.id" class="h30" ng-change="markChanged(C)"
-		@if($withSave) enter-stroke="addCampo()" id="newCampo" @endif >
+		@if($withSave) enter-stroke="addCampo(C)" id="newCampo" @endif >
 	</md-input-container>
 </td>
 <td md-cell class="md-cell-compress ">
 	<md-input-container md-no-float class="no-padding w150">
 		<input type="text" placeholder="Alias" ng-model="C.Alias" class="h30" ng-change="markChanged(C)"
-		@if($withSave) enter-stroke="addCampo()" @endif >
+		@if($withSave) enter-stroke="addCampo(C)" @endif >
 	</md-input-container>
 </td>
 <td md-cell class="md-cell-compress" ng-repeat="Op in ['Requerido','Visible','Unico']">

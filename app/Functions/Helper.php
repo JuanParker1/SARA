@@ -28,7 +28,7 @@ class Helper
         if(is_null($porc_cump)) return '#c1c1c1'; //Gris
         if($porc_cump < 0.85)   return '#ff2626'; //Rojo
         if($porc_cump < 1)      return '#ffac00'; //Amarillo
-                                return '#55de00'; //Verde
+                                return '#40d802'; //Verde
     }
 
     public static function getPeriodos($periodoIni,$periodoFin)

@@ -1025,15 +1025,15 @@ angular.module('EntidadesCtrl', [])
 			Config: []
 		};
 		
-		Ctrl.addCampo = () => {
-			Ctrl.newCampo.Columna = Ctrl.newCampo.Columna.trim();
-			if(Ctrl.newCampo.Columna == '') return Rs.showToast('Falta Columna', 'Error');
-			if(Rs.found(Ctrl.newCampo.Columna, Ctrl.CamposCRUD.rows, 'Columna')) return;
-			Ctrl.newCampo.entidad_id = Ctrl.EntidadSel.id;
-			Ctrl.newCampo.Indice = Ctrl.CamposCRUD.rows.length;
-			Ctrl.CamposCRUD.add(Ctrl.newCampo).then(() => {
-				Ctrl.newCampo = angular.copy(newCampoDef);
-				Ctrl.setTipoDefaults(Ctrl.newCampo);
+		Ctrl.addCampo = (newCampo) => {
+			newCampo.Columna = newCampo.Columna.trim();
+			if(newCampo.Columna == '') return Rs.showToast('Falta Columna', 'Error');
+			if(Rs.found(newCampo.Columna, Ctrl.CamposCRUD.rows, 'Columna')) return;
+			newCampo.entidad_id = Ctrl.EntidadSel.id;
+			newCampo.Indice = Ctrl.CamposCRUD.rows.length;
+			Ctrl.CamposCRUD.add(newCampo).then(() => {
+				newCampo = angular.copy(newCampoDef);
+				Ctrl.setTipoDefaults(newCampo);
 				setTimeout(function(){ $("#newCampo").focus(); }, 500);
 			});
 		};

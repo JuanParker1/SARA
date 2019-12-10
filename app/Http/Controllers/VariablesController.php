@@ -104,6 +104,8 @@ class VariablesController extends Controller
 
             $Data = GridHelper::getData($Grid, $q, false, false, false);
 
+            //return $Grid->sql;
+
             foreach ($Data as $d) {
                 $VarVal = new VariableValor([ 'Valor' => $d[1] ]);
                 $VarVal->formatVal($Var['TipoDato'], $Var['Decimales']);

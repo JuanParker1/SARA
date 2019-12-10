@@ -32,7 +32,7 @@
 			<tr ng-repeat="C in [newCampo]">
 				<td md-cell></td>
 				<td md-cell>
-					<md-button class="md-icon-button w30 mw30 h30 mh30 no-margin no-padding" aria-label="b" ng-click="addCampo()">
+					<md-button class="md-icon-button w30 mw30 h30 mh30 no-margin no-padding" aria-label="b" ng-click="addCampo(C)">
 						<md-icon md-svg-icon="md-plus"></md-icon>
 						<md-tooltip md-direction="left">Agregar</md-tooltip>
 					</md-button>
