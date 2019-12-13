@@ -84,7 +84,7 @@
 				<div class="bg-white border border-radius text-14px" layout=column ng-show="VarSel.Tipo == 'Calculado de Entidad'">
 					<div class="md-subheader padding-but-bottom">Configuración de Entidad</div>
 					<div layout layout-wrap class="padding-5">
-						<md-input-container class="margin-bottom-5 md-no-float" flex=50 flex-gt-sm=25 >
+						<md-input-container class="margin-bottom-5 md-no-float" flex=50 flex-gt-sm=40 >
 							<label>Entidad - Grid</label>
 							<md-select ng-model="VarSel.grid_id">
 								<md-option ng-value="Op.id" ng-repeat="Op in Grids">
@@ -92,7 +92,7 @@
 								</md-option>
 							</md-select>
 						</md-input-container>
-						<md-input-container class="margin-bottom-5" flex=50 flex-gt-sm=25>
+						<md-input-container class="margin-bottom-5" flex=50 flex-gt-sm=20>
 							<label>Columna Periodo</label>
 							<md-select ng-model="VarSel.ColPeriodo">
 								<md-option ng-value="Op.id" ng-repeat="Op in VarSel.grid.columnas | include:['Periodo','Fecha','FechaHora']:'tipo_campo' ">
@@ -100,13 +100,13 @@
 								</md-option>
 							</md-select>
 						</md-input-container>
-						<md-input-container class="margin-bottom-5" flex=50 flex-gt-sm=25>
+						<md-input-container class="margin-bottom-5" flex=50 flex-gt-sm=20>
 							<label>Agrupador</label>
 							<md-select ng-model="VarSel.Agrupador">
 								<md-option ng-value="Op.id" ng-repeat="Op in agregators">{{ Op.Nombre }}</md-option>
 							</md-select>
 						</md-input-container>
-						<md-input-container class="margin-bottom-5" flex=50 flex-gt-sm=25>
+						<md-input-container class="margin-bottom-5" flex=50 flex-gt-sm=20>
 							<label>Columna</label>
 							<md-select ng-model="VarSel.Col">
 								<md-option ng-value="Op.id" ng-repeat="Op in VarSel.grid.columnas">
