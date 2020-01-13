@@ -34,8 +34,8 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 		};
 
 		Ctrl.anioAdd = (num) => {
-			Ctrl.Anio += num;
-			Ctrl.getScorecard();
+			Ctrl.Anio = Ctrl.Anio + num;
+			Ctrl.getScorecard(Ctrl.Sco.id);
 		};
 
         Ctrl.Secciones = [];
