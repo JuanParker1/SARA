@@ -144,7 +144,7 @@
 								<th ng-repeat="M in Meses" md-numeric class="text-right padding-right">{{ M[1] }}</th>
 							</thead>
 							<tbody md-body>
-								<tr md-row class="" ng-repeat="A in [AnioActual-1, AnioActual]">
+								<tr md-row class="" ng-repeat="A in [AnioActual-2, AnioActual-1, AnioActual]">
 									<td md-cell class="w30 text-bold">{{ A }}</td>
 									<td md-cell class="text-right mw50 Pointer md-cell-hover" ng-repeat="M in Meses"
 										ng-click="editValor(A+M[0])">{{ VarSel.valores[A+M[0]].val }}</td>
