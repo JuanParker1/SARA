@@ -186,8 +186,9 @@ class GridHelper
     public static function addOrders($Grid, $q)
     {
     	if(!is_null($Grid->entidad->campo_orderby)){
-            //$CampoOrder = H::getElm($Campos, $Grid->entidad->campo_orderby);
-            //$q->orderBy($CampoOrder->getColName("t0"), $Grid->entidad->campo_orderbydir);
+            $CampoOrder = EntidadCampo::where('id', $Grid->entidad->campo_orderby)->first();
+            //dd($Grid->entidad->campo_orderbydir);
+            $q->orderBy(DB::raw($CampoOrder->getColName("t0")), $Grid->entidad->campo_orderbydir);
         };
     }
 
