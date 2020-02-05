@@ -23,17 +23,27 @@ class EntidadHelper
             if(!is_null($campo_id)){
                 $Campo = EntidadCampo::where('id', $campo_id)->first();
                 $columna_name = DB::raw(CamposHelper::getColName('t0', $Campo['Columna']));
-                
                 $q->addSelect(DB::raw("$columna_name AS C$k"));
-                if($multiple){
-                    $q->orWhere($columna_name, 'like', "%".strtoupper($searchText)."%");
-                }else{
-                    if($k == 0) $q->where($columna_name, '=', DB::raw("'$searchText'") );
-                };
             };
         };
 
-        //dd($q->toSql());
+        $q->where(function($query) use ($campos, $searchText, $multiple){
+
+            foreach ($campos as $k => $campo_id) {
+                if(!is_null($campo_id)){
+                    $Campo = EntidadCampo::where('id', $campo_id)->first();
+                    $columna_name = DB::raw(CamposHelper::getColName('t0', $Campo['Columna']));
+                    if($multiple){
+                            $query->orWhere(DB::raw("UPPER( $columna_name )"), 'like', "%".strtoupper($searchText)."%");
+                    }else{
+                        if($k == 0) $query->where($columna_name, '=', DB::raw("'$searchText'") );
+                    };
+                };
+            };
+
+        });
+
+        //dd([$q->toSql(), $q->getBindings()]);
 
         //return $Entidad;
         $res = collect($q->get())->transform(function($row){
