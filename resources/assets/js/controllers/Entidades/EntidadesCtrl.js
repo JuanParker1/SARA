@@ -35,7 +35,11 @@ angular.module('EntidadesCtrl', [])
 		};
 
 		Ctrl.getBdds = () => {
-			Rs.http('api/Bdds/all', {}, Ctrl, 'Bdds').then(() => {
+
+			Promise.all([
+				Rs.http('api/Procesos', {}, Ctrl, 'Procesos'),
+				Rs.http('api/Bdds/all', {}, Ctrl, 'Bdds')
+			]).then(() => {
 				if(Ctrl.Bdds.length > 0){
 					Ctrl.BddSel = Ctrl.Bdds[0];
 					Ctrl.getEntidades();
@@ -274,6 +278,10 @@ angular.module('EntidadesCtrl', [])
 
 		Ctrl.removeRestriccion = (R) => {
 			Ctrl.RestricCRUD.delete(R);
+		};
+
+		Ctrl.stopEv = ev => {
+			ev.stopPropagation();
 		};
 
 		//Start Up

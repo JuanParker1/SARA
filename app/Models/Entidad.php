@@ -13,7 +13,7 @@ class Entidad extends Model
     protected $casts = [
     	'config' => 'array'
     ];
-    protected $appends = [];
+    protected $appends = ['Ruta'];
 
 
     public function columns()
@@ -23,6 +23,7 @@ class Entidad extends Model
 		return [
 			[ 'id',						'id',					null, true, false, null, 100 ],
 			[ 'bdd_id',					'bdd_id',				null, true, false, null, 100 ],
+			[ 'proceso_id',				'proceso_id',			null, true, false, null, 100 ],
 			[ 'Ruta',					'Ruta',					null, true, true, null, 100 ],
 			[ 'Nombre',					'Nombre',				null, true, true, null, 100 ],
 			[ 'Tipo',					'Tipo',					null, true, false, null, 100 ],
@@ -51,6 +52,11 @@ class Entidad extends Model
 		return $this->belongsTo('\App\Models\BDD', 'bdd_id');
 	}
 
+	public function proceso()
+	{
+		return $this->belongsTo('\App\Models\Proceso', 'proceso_id');
+	}
+
 	//funciones
 	public function getTableName()
 	{
@@ -75,5 +81,10 @@ class Entidad extends Model
 		$Config = is_null($Config) ? $Default : array_merge($Default, $Config);
 
 		return $Config;
+	}
+
+	public function getRutaAttribute()
+	{
+		return $this->proceso->fullruta;
 	}
 }

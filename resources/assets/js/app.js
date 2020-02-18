@@ -74,4 +74,7 @@ angular.module('SARA', [
 
 	'AppsCtrl',
 		'App_ViewCtrl',
+
+	'FuncionesCtrl',
+	'ProcesosCtrl',
 ]);

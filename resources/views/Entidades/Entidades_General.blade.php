@@ -22,6 +22,17 @@
 					<input type="text" ng-model="EntidadSel.Tabla" required>
 				</md-input-container>
 
+				<md-input-container class="margin-bottom-5">
+					<label>Proceso</label>
+					<md-select ng-model="EntidadSel.proceso_id">
+						<md-select-header class="demo-select-header">
+							<input ng-model="ProcesoSearch" type="search" placeholder="Buscar.." class="text-15px" 
+								ng-keydown="stopEv($event)">
+						</md-select-header>
+						<md-option ng-repeat="P in Procesos | filter:{ Proceso: ProcesoSearch }" ng-value="P.id">{{ P.Proceso }}</md-option>
+					</md-select>
+				</md-input-container>
+
 			</div>
 		</div>
 

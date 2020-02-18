@@ -896,7 +896,11 @@ angular.module('EntidadesCtrl', [])
 		};
 
 		Ctrl.getBdds = () => {
-			Rs.http('api/Bdds/all', {}, Ctrl, 'Bdds').then(() => {
+
+			Promise.all([
+				Rs.http('api/Procesos', {}, Ctrl, 'Procesos'),
+				Rs.http('api/Bdds/all', {}, Ctrl, 'Bdds')
+			]).then(() => {
 				if(Ctrl.Bdds.length > 0){
 					Ctrl.BddSel = Ctrl.Bdds[0];
 					Ctrl.getEntidades();
@@ -1135,6 +1139,10 @@ angular.module('EntidadesCtrl', [])
 
 		Ctrl.removeRestriccion = (R) => {
 			Ctrl.RestricCRUD.delete(R);
+		};
+
+		Ctrl.stopEv = ev => {
+			ev.stopPropagation();
 		};
 
 		//Start Up
@@ -2057,6 +2065,19 @@ angular.module('Entidades_VerCamposCtrl', [])
 		};
 	}
 ]);
+angular.module('FuncionesCtrl', [])
+.controller('FuncionesCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('FuncionesCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.FuncionSel = null;
+		Ctrl.FuncionesNav = true;
+
+		
+	}
+]);
 angular.module('IndicadoresCtrl', [])
 .controller('IndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter',
 	function($scope, $rootScope, $injector, $filter) {
@@ -2343,6 +2364,87 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 	}
 ]);
 
+angular.module('ProcesosCtrl', [])
+.controller('ProcesosCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('ProcesosCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.ProcesoSel = null;
+		Ctrl.ProcesosNav = true;
+		Ctrl.TiposProcesos = [ 
+			{ id: 'Agrupador', 		Nombre: 'Agrupador' },
+			{ id: 'Proceso', 		Nombre: 'Proceso' },
+			{ id: 'Concesionario', 	Nombre: 'Concesionario' },
+			{ id: 'Programa', 		Nombre: 'Programa' },
+			{ id: 'Utilitario', 	Nombre: 'Utilitario' }
+		];
+
+		Ctrl.getProcesos = () => {
+			Rs.http('api/Procesos', {}, Ctrl, 'Procesos').then(() => {
+
+				Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos,'Ruta','Proceso',false,true);
+				//console.log(Ctrl.ProcesosFS);
+			});	
+		};
+
+		Ctrl.openProceso = (P) => {
+			Ctrl.ProcesoSel = P;
+		};
+
+		Ctrl.lookupProceso = (F) => {
+			var Ps = Ctrl.Procesos.filter((P) => {
+				return ( P.children > 0 && P.Ruta == F.route );
+			});
+			if(Ps.length > 0) Ctrl.openProceso(Ps[0]);
+		};
+
+		Ctrl.getProcesos();
+
+		Ctrl.updateProceso = () => {
+			Rs.http('api/Procesos/update', { Proceso: Ctrl.ProcesoSel }).then(() => {
+				Rs.showToast('Proceso Actualizado', 'Success');
+			});
+		};
+
+		Ctrl.sendCreate = (p) => {
+			Rs.http('api/Procesos/create', { Proceso: p }).then(() => {
+				Rs.showToast(p.Tipo+' Creado', 'Success');
+				Ctrl.getProcesos();
+			});
+		};
+
+		Ctrl.createSubproceso = () => {
+			Rs.BasicDialog({
+				Title: 'Crear Subproceso',
+				Fields: [
+					{ Nombre: 'Nombre',  Value: '', Required: true },
+					{ Nombre: 'Tipo',    Value: 'Proceso', Required: true, Type: 'list', List: Ctrl.TiposProcesos, Item_Val: 'id', Item_Show: 'Nombre' },
+
+				],
+			}).then((r) => {
+				Ctrl.sendCreate({
+					Proceso: r.Fields[0].Value.trim(),
+					padre_id: Ctrl.ProcesoSel.id, 
+					Tipo: r.Fields[1].Value
+				});
+			});
+		};
+
+		Ctrl.createEmpresa = () => {
+			Rs.BasicDialog({
+				Title: 'Crear Empresa',
+			}).then((r) => {
+				Ctrl.sendCreate({
+					Proceso: r.Fields[0].Value.trim(),
+					Tipo: 'Empresa'
+				});
+			});
+		};
+		
+	}
+]);
 angular.module('ScorecardsCtrl', [])
 .controller('ScorecardsCtrl', ['$scope', '$rootScope', '$injector', '$filter',
 	function($scope, $rootScope, $injector, $filter) {
@@ -3538,6 +3640,9 @@ angular.module('SARA', [
 
 	'AppsCtrl',
 		'App_ViewCtrl',
+
+	'FuncionesCtrl',
+	'ProcesosCtrl',
 ]);
 
 angular.module('appConfig', [])
@@ -4014,19 +4119,21 @@ angular.module('appFunctions', [])
 
 
 
-		Rs.FsGet = (arr, ruta, filename, defaultOpen) => {
+		Rs.FsGet = (arr, ruta, filename, defaultOpen,modeB) => {
+
 			var arr = arr.sort((a, b) => {
 				var ar = (a[ruta]+'\\'+a[filename]).toLowerCase();
 				var br = (b[ruta]+'\\'+b[filename]).toLowerCase();
 				return ar > br ? 1 : -1;
 			});
+			
 			var fs = [];
 	    	var routes = [];
-	    	var defaultOpen = defaultOpen || false;
+	    	var defaultOpen = Rs.def(defaultOpen, false);
+	    	var modeB    = Rs.def(modeB, false);
 
 	    	angular.forEach(arr, (e) => {
 	    		var r = e[ruta];
-
     			rex = r.split('\\');
     			for (var i = 0; i < rex.length; i++) {
     				for (var n = 0; n <= i; n++) {
@@ -4035,15 +4142,25 @@ angular.module('appFunctions', [])
     					if(subroute != "" && !routes.includes(subroute)){
     						routes.push(subroute);
     						var show = defaultOpen || (n == 0);
-    						fs.push({ i: fs.length, type: 'folder', name: rex[n], depth: n, open: defaultOpen, show: show, route: subroute });
+
+    						//if( !modeB || ( modeB && e.children > 0 ) ){
+    							fs.push({ i: fs.length, type: 'folder', name: rex[n], depth: n, open: defaultOpen, show: show, route: subroute });
+    						//};
+
     					};
 	    				
     				};
     			};
     			var depth = (r == "") ? 0 : (rex.length);
     			var show = defaultOpen || (depth == 0);
-    			fs.push({ i: fs.length, type: 'file', depth: depth, show: show, route: subroute, file: e });
+
+    			if( !modeB || (modeB && e.children == 0) ){
+    				fs.push({ i: fs.length, type: 'file', depth: depth, show: show, route: subroute, file: e });
+    			};
+    			
 	    	});
+
+	    	//console.log(fs);
 
 	    	return fs;
 		};

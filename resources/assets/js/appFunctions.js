@@ -307,19 +307,21 @@ angular.module('appFunctions', [])
 
 
 
-		Rs.FsGet = (arr, ruta, filename, defaultOpen) => {
+		Rs.FsGet = (arr, ruta, filename, defaultOpen,modeB) => {
+
 			var arr = arr.sort((a, b) => {
 				var ar = (a[ruta]+'\\'+a[filename]).toLowerCase();
 				var br = (b[ruta]+'\\'+b[filename]).toLowerCase();
 				return ar > br ? 1 : -1;
 			});
+			
 			var fs = [];
 	    	var routes = [];
-	    	var defaultOpen = defaultOpen || false;
+	    	var defaultOpen = Rs.def(defaultOpen, false);
+	    	var modeB    = Rs.def(modeB, false);
 
 	    	angular.forEach(arr, (e) => {
 	    		var r = e[ruta];
-
     			rex = r.split('\\');
     			for (var i = 0; i < rex.length; i++) {
     				for (var n = 0; n <= i; n++) {
@@ -328,15 +330,25 @@ angular.module('appFunctions', [])
     					if(subroute != "" && !routes.includes(subroute)){
     						routes.push(subroute);
     						var show = defaultOpen || (n == 0);
-    						fs.push({ i: fs.length, type: 'folder', name: rex[n], depth: n, open: defaultOpen, show: show, route: subroute });
+
+    						//if( !modeB || ( modeB && e.children > 0 ) ){
+    							fs.push({ i: fs.length, type: 'folder', name: rex[n], depth: n, open: defaultOpen, show: show, route: subroute });
+    						//};
+
     					};
 	    				
     				};
     			};
     			var depth = (r == "") ? 0 : (rex.length);
     			var show = defaultOpen || (depth == 0);
-    			fs.push({ i: fs.length, type: 'file', depth: depth, show: show, route: subroute, file: e });
+
+    			if( !modeB || (modeB && e.children == 0) ){
+    				fs.push({ i: fs.length, type: 'file', depth: depth, show: show, route: subroute, file: e });
+    			};
+    			
 	    	});
+
+	    	//console.log(fs);
 
 	    	return fs;
 		};
