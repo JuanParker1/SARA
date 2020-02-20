@@ -73,13 +73,23 @@
 					</md-input-container>
 				</div>
 				
-				<md-input-container class="no-margin-top margin-bottom" md-no-float>
-					<textarea ng-model="VarSel.Descripcion" rows=1 placeholder="Descripción"></textarea>
-				</md-input-container>
+				<div layout>
+					<md-input-container class=" margin-bottom" flex>
+						<textarea ng-model="VarSel.Descripcion" rows=1 placeholder="Descripción"></textarea>
+					</md-input-container>
 
-				<md-input-container class="no-margin-top margin-bottom" md-no-float>
-					<input ng-model="VarSel.Ruta"></textarea>
-				</md-input-container>
+					<md-input-container class="margin-bottom-5">
+						<md-tooltip>Proceso</md-tooltip>
+						<md-select ng-model="VarSel.proceso_id" md-no-float>
+							<md-select-header class="">
+								<input ng-model="ProcesoSearch" type="search" placeholder="Proceso" class="text-15px" 
+									ng-keydown="stopEv($event)">
+							</md-select-header>
+							<md-option ng-repeat="P in Procesos | filter:{ Proceso: ProcesoSearch }" ng-value="P.id">{{ P.Proceso }}</md-option>
+						</md-select>
+					</md-input-container>
+				</div>
+				
 
 				<div class="bg-white border border-radius text-14px" layout=column ng-show="VarSel.Tipo == 'Calculado de Entidad'">
 					<div class="md-subheader padding-but-bottom">Configuración de Entidad</div>

@@ -23,6 +23,9 @@ angular.module('VariablesCtrl', [])
 		];
 
 		Ctrl.getVariables = () => {
+
+			Rs.http('api/Procesos', {}, Ctrl, 'Procesos');
+
 			Ctrl.VariablesCRUD.get().then(() => {
 
 				

@@ -16,7 +16,7 @@ class Variable extends Model
     protected $casts = [
     	'Filtros' => 'array'
     ];
-    protected $appends = ['Filtros'];
+    protected $appends = ['Filtros', 'Ruta'];
 
     use SoftDeletes;
 
@@ -27,6 +27,7 @@ class Variable extends Model
 		return [
 			[ 'id',						'id',				null, true, false, null, 100 ],
 			[ 'Ruta',					'Ruta',				null, true, false, null, 100 ],
+			[ 'proceso_id',				'proceso_id',		null, true, false, null, 100 ],
 			[ 'Variable',				'Variable',			null, true, false, null, 100 ],
 			[ 'Descripcion',			'Descripcion',		null, true, false, null, 100 ],
 			[ 'TipoDato',				'TipoDato',			null, true, false, null, 100 ],
@@ -50,6 +51,11 @@ class Variable extends Model
 		return $this->hasMany('\App\Models\VariableValor', 'variable_id')->orderBy('Periodo');
 	}
 
+	public function proceso()
+	{
+		return $this->belongsTo('\App\Models\Proceso', 'proceso_id');
+	}
+
 	public function getFiltrosAttribute($a)
 	{
 		$Filtros = json_decode($this->attributes['Filtros'], true);
@@ -65,6 +71,11 @@ class Variable extends Model
 
 		foreach ($Filtros as &$F) { unset($F['campo']); };
 		$this->attributes['Filtros'] = json_encode($Filtros);
+	}
+
+	public function getRutaAttribute()
+	{
+		return $this->proceso->Ruta;
 	}
 
 }

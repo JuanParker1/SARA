@@ -21,10 +21,11 @@ class Proceso extends MyModel
 		return [
 			[ 'id',						'id',				null, true, false, null, 100 ],
 			[ 'Proceso',				'Proceso',			null, true, false, null, 100 ],
-			[ 'Tipo',					'Tipo',			null, true, false, null, 100 ],
+			[ 'Tipo',					'Tipo',				null, true, false, null, 100 ],
 			[ 'padre_id',				'padre_id',			null, true, false, null, 100 ],
 			[ 'responsable_id',			'responsable_id',	null, true, false, null, 100 ],
 			[ 'CDC',					'CDC',				null, true, false, null, 100 ],
+			[ 'Ruta',					'Ruta',				null, true, false, null, 100 ],
 		];
 	}
 
@@ -51,5 +52,26 @@ class Proceso extends MyModel
 			return $this->padre->fullruta .'\\'. $this->Proceso;
 		}
 	}
+
+	//Eventos
+	public static function boot()
+    {
+		parent::boot();
+
+		self::saved(function($model){
+			set_time_limit (5 * 60);
+			$Procesos = parent::all();
+
+			foreach ($Procesos as $P) {
+				$Ruta = $P->fullruta;
+				if($Ruta !== $P->Ruta){
+					$P->Ruta = $Ruta;
+					$P->save();
+				};
+			};
+
+        });
+
+    }
 
 }

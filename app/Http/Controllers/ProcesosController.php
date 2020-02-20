@@ -14,7 +14,7 @@ class ProcesosController extends Controller
 {
     public function postIndex()
     {
-    	$Procesos = Proceso::all();
+    	$Procesos = Proceso::orderBy('Ruta')->get();
 
     	foreach ($Procesos as $P) {
     		$P->children = $Procesos->filter(function ($DaP) use ($P) { return $DaP->padre_id == $P->id; })->count();

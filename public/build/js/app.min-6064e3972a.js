@@ -956,18 +956,20 @@ angular.module('EntidadesCtrl', [])
 			Rs.BasicDialog({
 				Title: 'Crear Entidad', Flex: 50,
 				Fields: [
-					{ Nombre: 'Nombre',  Value: '', Required: true, flex: 50 },
-					{ Nombre: 'Tabla',   Value: '', Required: true, flex: 50 },
-					{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.FsEntidades },
-					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
+					{ Nombre: 'Nombre',  	Value: '', Required: true, flex: 40 },
+					{ Nombre: 'Tabla',   	Value: '', Required: true, flex: 20 },
+					{ Nombre: 'Proceso',   	Value: '', Required: true, flex: 40, Type: 'list', List: Ctrl.Procesos, Item_Val: 'id', Item_Show: 'Proceso' },
+					//{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.FsEntidades },
+					//{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
 				],
 			}).then((r) => {
 				if(!r) return;
 				var f = Rs.prepFields(r.Fields);
 				Ctrl.EntidadesCRUD.add({
-					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
+					//Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
 					Nombre: f.Nombre, Tabla: f.Tabla,
-					bdd_id: Ctrl.BddSel.id, Tipo: 'Tabla'
+					bdd_id: Ctrl.BddSel.id, Tipo: 'Tabla',
+					proceso_id: f.Proceso
 				}).then(() => {
 					Ctrl.getFsEntidades();
 				});
@@ -2652,6 +2654,9 @@ angular.module('VariablesCtrl', [])
 		];
 
 		Ctrl.getVariables = () => {
+
+			Rs.http('api/Procesos', {}, Ctrl, 'Procesos');
+
 			Ctrl.VariablesCRUD.get().then(() => {
 
 				

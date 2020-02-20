@@ -85,6 +85,6 @@ class Entidad extends Model
 
 	public function getRutaAttribute()
 	{
-		return $this->proceso->fullruta;
+		return $this->proceso->Ruta;
 	}
 }

@@ -1,8 +1,8 @@
 <div flex id="Entidades" layout ng-controller="EntidadesCtrl">
 
-	<md-sidenav class="w250 no-margin bg-white border-right no-overflow" layout=column
+	<md-sidenav class="w300 no-margin bg-white border-right no-overflow" layout=column
 		md-is-locked-open="EntidadSidenav">
-	<div flex class="w250" layout=column>
+	<div flex class="w300" layout=column>
 		
 		<div layout class="border-bottom padding-left" layout-align="center center" style="height: 41px">
 			<md-select ng-model="BddSel" flex class="md-no-underline no-margin" aria-label="s">
