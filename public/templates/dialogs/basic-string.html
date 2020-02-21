@@ -13,12 +13,12 @@
 	<md-dialog-content flex class="overflow-y">
 		<div class="md-dialog-content padding" layout layout-wrap>
 
-			<md-input-container layout ng-repeat="Field in Config.Fields" class="" ng-class="Field.Class" flex=100 flex-gt-xs="{{ Field.flex ? Field.flex : 100 }}">
+			<md-input-container layout ng-repeat="(kF, Field) in Config.Fields" class="" ng-class="Field.Class" flex=100 flex-gt-xs="{{ Field.flex ? Field.flex : 100 }}">
 				<label>{{ Field.Nombre }}</label>
 				
 				<input ng-model="Field.Value" ng-required="Field.Required" class="w100p" 
 					minlength="{{Field.MinLen}}" maxlength="{{Field.MaxLen}}"  ng-if="!Field.Type || Field.Type == 'string'" 
-					name="{{ Field.Nombre }}"
+					name="{{ Field.Nombre }}" md-autofocus="kF == 0"
 					autocomplete="new-password">
 
 				<input ng-model="Field.Value" ng-required="Field.Required" class="w100p" 

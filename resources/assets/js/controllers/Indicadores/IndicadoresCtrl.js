@@ -48,21 +48,27 @@ angular.module('IndicadoresCtrl', [])
 			};
 		};
 
-		Ctrl.addIndicador = () => {
+		Ctrl.addIndicador = (route) => {
+			if(route){
+				proceso_id = Rs.def(Ctrl.Procesos.filter(e => e.Ruta == route).pop().id, null);
+			}else{
+				proceso_id = null;
+			};
 			Ctrl.getFs();
 			Rs.BasicDialog({
 				Title: 'Crear Indicador', Flex: 50,
 				Fields: [
-					{ Nombre: 'Nombre',  Value: '', Required: true },
-					{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.IndicadoresFS },
-					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
+					{ Nombre: 'Nombre',  Value: '', Required: true, flex: 60 },				
+					{ Nombre: 'Proceso', Value: proceso_id, Required: true, flex: 40, Type: 'list', List: Ctrl.Procesos, Item_Val: 'id', Item_Show: 'Proceso' },
+					//{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.IndicadoresFS },
+					//{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
 				],
 			}).then((r) => {
 				if(!r) return;
 				var f = Rs.prepFields(r.Fields);
 				Ctrl.IndicadoresCRUD.add({
-					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
-					Indicador: f.Nombre,
+					//Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
+					Indicador: f.Nombre, proceso_id: f.Proceso,
 					Filtros: []
 				}).then(() => {
 					Ctrl.getFs();
@@ -87,6 +93,7 @@ angular.module('IndicadoresCtrl', [])
 		};
 
 		Ctrl.VariablesCRUD.get().then(() => {
+			Rs.http('api/Procesos', {}, Ctrl, 'Procesos');
 			Ctrl.getIndicadores();
 		});
 

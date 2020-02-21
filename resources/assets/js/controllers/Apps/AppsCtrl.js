@@ -9,7 +9,7 @@
 
 		Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
 		Rs.http('/api/Entidades/cargadores-get', {}, Ctrl, 'Cargadores');
-		Rs.http('/api/Indicadores/scorecards-all', {}, Ctrl, 'Scorecards');
+		Rs.http('/api/Scorecards/all', {}, Ctrl, 'Scorecards');
 		Ctrl.AppsCRUD  = $injector.get('CRUD').config({ base_url: '/api/App/apps' });
 		Ctrl.PagesCRUD = $injector.get('CRUD').config({ base_url: '/api/App/pages' });
 		Ctrl.TiposPage = [

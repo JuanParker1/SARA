@@ -44,7 +44,7 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 
 		Ctrl.getScorecard = (scorecard_id) => {
 			if(!scorecard_id) return;
-            Rs.http('api/Indicadores/scorecard-get', { id: scorecard_id, Anio: Ctrl.Anio }, Ctrl, 'Sco').then(() => {
+            Rs.http('api/Scorecards/get', { id: scorecard_id, Anio: Ctrl.Anio }, Ctrl, 'Sco').then(() => {
                 Ctrl.Secciones = [{ Seccion: null, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: null }).length }]
                 angular.forEach(Ctrl.Sco.Secciones, (s) => {
                 	Ctrl.Secciones.push({ Seccion: s, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: s }).length }); 

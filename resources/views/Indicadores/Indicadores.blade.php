@@ -23,6 +23,14 @@
 				<div ng-show="F.type == 'folder'" flex layout ng-click="FsOpenFolder(IndicadoresFS, F)" class="Pointer">
 					<md-icon md-font-icon="fa-chevron-right  fa-fw transition" ng-class="{'fa-rotate-90':F.open}"></md-icon>
 					<div flex style="padding: 5px 0">{{ F.name }}</div>
+					<md-menu class="child">
+						<md-button ng-click="$mdMenu.open($event)" class="md-icon-button no-margin margin-right-5 no-padding s20" aria-label="m">
+							<md-icon md-svg-icon="md-more-h" class="s20"></md-icon>
+						</md-button>
+						<md-menu-content class="no-padding">
+							<md-menu-item><md-button ng-click="addIndicador(F.route)"><md-icon md-font-icon="fa-plus margin-right fa-fw"></md-icon>Agregar Indicador</md-button></md-menu-item>
+						</md-menu-content>
+					</md-menu>
 				</div>
 				<div ng-show="F.type == 'file'" flex layout class="Pointer" ng-click="openIndicador(F.file)" 
 					ng-class="{ 'text-bold' : F.file.id == IndSel.id }">
@@ -44,6 +52,12 @@
 				</md-button>
 				<md-input-container class="no-margin-top margin-bottom" flex>
 					<input type="text" ng-model="IndSel.Indicador" aria-label=s>
+				</md-input-container>
+				<md-input-container class="no-margin-top margin-bottom">
+					<md-tooltip>Proceso</md-tooltip>
+					<md-select ng-model="IndSel.proceso_id" md-no-float aria-label=s>
+						<md-option ng-repeat="P in Procesos | filter:{ Proceso: ProcesoSearch }" ng-value="P.id">{{ P.Proceso }}</md-option>
+					</md-select>
 				</md-input-container>
 				<md-input-container class="no-margin-top margin-bottom">
 					<md-tooltip md-direction="top">Tipo de Dato</md-tooltip>

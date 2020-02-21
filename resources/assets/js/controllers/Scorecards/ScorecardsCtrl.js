@@ -8,28 +8,77 @@ angular.module('ScorecardsCtrl', [])
 		Ctrl.ScoSel = null;
 		Ctrl.ScorecardsNav = true;
 
-		Ctrl.ScorecardsCRUD  = $injector.get('CRUD').config({ base_url: '/api/Indicadores/scorecards' });
-		Ctrl.CardsCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Indicadores/scorecards-cards' });
+		Ctrl.ScorecardsCRUD  = $injector.get('CRUD').config({ base_url: '/api/Scorecards' });
+		Ctrl.CardsCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/cards' });
+		Ctrl.NodosCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/nodos' });
 		Ctrl.IndicadoresCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores' });
 		Ctrl.VariablesCRUD 	 = $injector.get('CRUD').config({ base_url: '/api/Variables' });
 
 		Ctrl.getScorecards = () => {
 			Ctrl.ScorecardsCRUD.get().then(() => {
 				Ctrl.openScorecard(Ctrl.ScorecardsCRUD.rows[0]);
-				Ctrl.getFs();
+				//Ctrl.getFs();
 			});
 		};
 
 		Ctrl.getFs = () => {
 			Ctrl.filterScorecards = "";
-			Ctrl.ScorecardsFS = Rs.FsGet(Ctrl.ScorecardsCRUD.rows,'Ruta','Titulo');
+			Ctrl.NodosFS = Rs.FsGet(Ctrl.NodosCRUD.rows,'Ruta','Nodo',false,true);
+			angular.forEach(Ctrl.NodosFS, (F) => {
+				if(F.type == 'folder'){
+					F.file = Ctrl.NodosCRUD.rows.filter(N => { return ( N.tipo == 'Nodo' && N.Ruta == F.route ) })[0];
+				};
+			});
 		};
 
-		Ctrl.getFolderVarData = (F) => {
-			var Vars = Ctrl.ScorecardsCRUD.rows.filter((v) => {
-				return v.Ruta.startsWith(F.route);
-			}).map(v => v.id);
-			Rs.getScorecardData(Vars);
+		Ctrl.addNodo = (NodoPadre) => {
+			var Nodos = Ctrl.NodosCRUD.rows.filter(N => { return N.tipo == 'Nodo' });
+			Rs.BasicDialog({
+				Title: 'Crear Nodo', Flex: 50,
+				Fields: [
+					{ Nombre: 'Nombre',  Value: '',   			Required: true, flex: 60 },
+					{ Nombre: 'Peso',    Value: 1,    			Required: true, flex: 10, Type: 'number' },
+					{ Nombre: 'Padre',   Value: NodoPadre.id, 	Required: true, flex: 30, Type: 'list', List: Nodos, Item_Val: 'id', Item_Show: 'Nodo' },
+				],
+			}).then((r) => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				Ctrl.NodosCRUD.add({
+					scorecard_id: Ctrl.ScoSel.id, Nodo: f.Nombre, padre_id: f.Padre, Indice: 0, tipo: 'Nodo', peso: f.Peso 
+				}).then(() => {
+					Ctrl.getFs();
+				});
+			});
+		};
+
+		Ctrl.openNodo = (Nodo) => {
+			Ctrl.NodoSel = Nodo;
+			Ctrl.NodoSel.indicadores = Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo !== 'Nodo' && N.padre_id == Nodo.id) });
+		};
+
+		Ctrl.addIndicador = () => {
+			Rs.BasicDialog({
+				Title: 'Agregar Indicador', Flex: 50,
+				Fields: [
+					{ Nombre: 'Indicador', Value:null, Required: true, flex: 90, Type: 'autocomplete', 
+					opts: {
+						itemsFn: (text) => { return Ctrl.IndicadoresCRUD.rows; },
+						itemDisplay: (item) => { return item.Indicador }, itemText: 'Indicador',
+						minLength: 0, delay: 300, itemVal: false
+					}},
+					{ Nombre: 'Peso',    Value: 1,    			Required: true, flex: 10, Type: 'number' }
+				],
+			}).then(r => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				var Indice = Ctrl.NodoSel.indicadores.length + 1;
+				Ctrl.NodosCRUD.add({
+					scorecard_id: Ctrl.ScoSel.id, Nodo: null, padre_id: Ctrl.NodoSel.id, Indice: Indice, tipo: 'Indicador', elemento_id: f.Indicador.id, peso: f.Peso 
+				}).then(() => {
+					Ctrl.openNodo(Ctrl.NodoSel);
+					Ctrl.getFs();
+				});
+			});
 		};
 
 		Ctrl.searchScorecard = () => {
@@ -41,31 +90,32 @@ angular.module('ScorecardsCtrl', [])
 		};
 
 		Ctrl.addScorecard = () => {
-			Ctrl.getFs();
 			Rs.BasicDialog({
 				Title: 'Crear Scorecard', Flex: 50,
 				Fields: [
-					{ Nombre: 'Titulo',  Value: '', Required: true },
-					{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.ScorecardsFS },
-					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
+					{ Nombre: 'Titulo',  		Value: '', Required: true },
+					{ Nombre: 'Primer Nodo',    Value: '', Required: true },
 				],
 			}).then((r) => {
 				if(!r) return;
 				var f = Rs.prepFields(r.Fields);
-				Ctrl.ScorecardsCRUD.add({
-					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
-					Titulo: f.Titulo,
-					Secciones: []
-				}).then(() => {
-					Ctrl.getFs();
+				console.log(f);
+				Ctrl.ScorecardsCRUD.add({ Titulo: f.Titulo, Secciones: [] }).then(r => {
+					Ctrl.NodosCRUD.add({ scorecard_id: r.id, Nodo: r.Titulo, tipo: 'Nodo' }).then(n => {
+						Ctrl.NodosCRUD.add({ scorecard_id: r.id, Nodo: f['Primer Nodo'], tipo: 'Nodo', padre_id: n.id }).then(() => {
+							Rs.showToast('Scorecard Creado');
+						});
+					});
 				});
 			});
 		};
 
 		Ctrl.openScorecard = (V) => {
+			Ctrl.NodoSel = null;
 			Ctrl.ScoSel = V;
-			Ctrl.CardsCRUD.setScope('scorecard', Ctrl.ScoSel.id).get();
-			//Rs.viewScorecardDiag(V.id);
+			Ctrl.NodosCRUD.setScope('scorecard', Ctrl.ScoSel.id).get().then(() => {
+				Ctrl.getFs();
+			});
 		};
 
 		Ctrl.updateScorecard = () => {
@@ -111,10 +161,12 @@ angular.module('ScorecardsCtrl', [])
 		};
 
 
+		Ctrl.getProcesos = () => {
+			return Rs.http('api/Procesos', {}, Ctrl, 'Procesos');
+		};
 
 
-
-		Promise.all([Ctrl.IndicadoresCRUD.get(), Ctrl.VariablesCRUD.get()]).then(values => { 
+		Promise.all([Ctrl.IndicadoresCRUD.get(), Ctrl.VariablesCRUD.get(), Ctrl.getProcesos()]).then(values => { 
 			Ctrl.getScorecards();
 		});
 		

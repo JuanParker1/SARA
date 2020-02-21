@@ -17,14 +17,15 @@ class Indicador extends MyModel
 	protected $primaryKey = 'id';
     protected $casts = [
 	];
-    protected $appends = [];
+    protected $appends = ['Ruta'];
 
     public function columns()
 	{
 		//Name, Desc, Type, Required, Unique, Default, Width, Options
 		return [
 			[ 'id',						'id',				null, true, false, null, 100 ],
-			[ 'Ruta',					'Ruta',				null, true, false, null, 100 ],
+			//[ 'Ruta',					'Ruta',				null, true, false, null, 100 ],
+			[ 'proceso_id',				'proceso_id',	null, true, false, null, 100 ],
 			[ 'Indicador',				'Indicador',		null, true, false, null, 100 ],
 			[ 'Definicion',				'Definición',		null, true, false, null, 100 ],
 			[ 'Unidad',					'Unidad',			null, true, false, null, 100 ],
@@ -33,6 +34,11 @@ class Indicador extends MyModel
 			[ 'Formula',				'Formula',			null, true, false, null, 100 ],
 			[ 'Sentido',				'Sentido',			null, true, false, null, 100 ],
 		];
+	}
+
+	public function proceso()
+	{
+		return $this->belongsTo('\App\Models\Proceso', 'proceso_id');
 	}
 
 
@@ -129,6 +135,11 @@ class Indicador extends MyModel
 
 
 		return $valores;
+	}
+
+	public function getRutaAttribute()
+	{
+		return $this->proceso->Ruta;
 	}
 
 

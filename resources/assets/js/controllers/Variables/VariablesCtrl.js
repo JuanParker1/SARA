@@ -58,22 +58,29 @@ angular.module('VariablesCtrl', [])
 			};
 		};
 
-		Ctrl.addVariable = () => {
+		Ctrl.addVariable = (route) => {
+			if(route){
+				proceso_id = Rs.def(Ctrl.Procesos.filter(e => e.Ruta == route).pop().id, null);
+			}else{
+				proceso_id = null;
+			};
+			
 			Ctrl.getFs();
 			Rs.BasicDialog({
 				Title: 'Crear Variable', Flex: 50,
 				Fields: [
-					{ Nombre: 'Nombre',  Value: '', Required: true },
-					{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.VariablesFS },
-					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
+					{ Nombre: 'Nombre',  Value: '', 		Required: true, flex: 60 },
+					{ Nombre: 'Proceso', Value: proceso_id, Required: true, flex: 40, Type: 'list', List: Ctrl.Procesos, Item_Val: 'id', Item_Show: 'Proceso' },
+					//{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.VariablesFS },
+					//{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
 				],
 			}).then((r) => {
 				if(!r) return;
 				var f = Rs.prepFields(r.Fields);
 				Ctrl.VariablesCRUD.add({
-					Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
+					//Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
 					Variable: f.Nombre,
-					Filtros: []
+					Filtros: [], proceso_id: f.Proceso
 				}).then(() => {
 					Ctrl.getFs();
 				});
@@ -133,16 +140,18 @@ angular.module('VariablesCtrl', [])
 				Title: 'Copiar Variable', Flex: 50, clickOutsideToClose: false,
 				Confirm: { Text: 'Crear' },
 				Fields: [
-					{ Nombre: 'Nombre',  	Value: Ctrl.VarSel.Variable + ' (copia)', Required: true },
+					{ Nombre: 'Nombre',  	    Value: Ctrl.VarSel.Variable + ' (copia)', Required: true, flex: 60 },
+					{ Nombre: 'Proceso',        Value: Ctrl.VarSel.proceso_id,  Required: true, flex: 40, Type: 'list', List: Ctrl.Procesos, Item_Val: 'id', Item_Show: 'Proceso' },
 					{ Nombre: 'Descripcion',  	Value: Ctrl.VarSel.Descripcion, Required: true },
-					{ Nombre: 'Ruta',       Value: Ctrl.VarSel.Ruta, flex: 70, Type: 'fsroute', List: Ctrl.VariablesFS },
-					{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
+					//{ Nombre: 'Ruta',       Value: Ctrl.VarSel.Ruta, flex: 70, Type: 'fsroute', List: Ctrl.VariablesFS },
+					//{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
 				]
 			}).then((r) => {
 				if(!r) return;
 				var f = Rs.prepFields(r.Fields);
 				Ctrl.VariablesCRUD.add({
-					Ruta: 			Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
+					//Ruta: 			Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
+					proceso_id:     f.Proceso, 
 					Variable: 		f.Nombre,
 					Descripcion: 	f.Descripcion,
 					TipoDato: 		Ctrl.VarSel.TipoDato,

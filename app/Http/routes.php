@@ -29,6 +29,7 @@ Route::controller('/api/Bdds',     		'BddsController');
 Route::controller('/api/Entidades',     'EntidadesController');
 Route::controller('/api/Variables',     'VariablesController');
 Route::controller('/api/Indicadores',   'IndicadoresController');
+Route::controller('/api/Scorecards',   	'ScorecardsController');
 Route::controller('/api/Procesos',   	'ProcesosController');
 
 

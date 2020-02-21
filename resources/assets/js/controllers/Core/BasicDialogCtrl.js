@@ -21,6 +21,15 @@ angular.module('BasicDialogCtrl', [])
 			$mdDialog.hide(Ctrl.Config);
 		}
 
+		Ctrl.selectItem = (Field, item) => {
+			if(!Field.opts.itemVal){
+				Field.Value = item;
+			}else{
+				Field.Value = item[Field.opts.itemVal];
+			}
+			
+		};
+
 		Ctrl.Delete = function(ev) {
 			if(Config.HasDelete){
 				Config.HasDeleteConf = true;
