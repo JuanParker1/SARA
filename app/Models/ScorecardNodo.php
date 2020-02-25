@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Core\MyModel;
+use App\Functions\Helper;
 
 class ScorecardNodo extends MyModel
 {
@@ -14,7 +15,7 @@ class ScorecardNodo extends MyModel
     protected $casts = [
     	'peso' => 'real'
 	];
-    protected $appends = ['elemento','Nodo','Ruta','children'];
+    protected $appends = ['elemento','Nodo','children'];
 
     public function columns()
 	{
@@ -48,6 +49,11 @@ class ScorecardNodo extends MyModel
 		return $this->belongsTo('\App\Models\ScorecardNodo', 'padre_id');
 	}
 
+	public function nodos()
+	{
+		return $this->hasMany('\App\Models\ScorecardNodo', 'padre_id');
+	}
+
 	public function getElementoAttribute()
 	{
 		if($this->tipo == 'Indicador'){
@@ -66,17 +72,17 @@ class ScorecardNodo extends MyModel
 	}
 
 
-	public function getRutaAttribute()
+
+	public function getRuta()
 	{
 		if(is_null($this->padre_id)){
-			//return $this->Nodo;
-			return '';
+			$this->Ruta = '';
 		}else if($this->tipo == 'Nodo'){
 			$RutaPadre = $this->nodo_padre->Ruta;
 			if($RutaPadre !== '') $RutaPadre .= '\\';
-			return $RutaPadre . $this->Nodo;
+			$this->Ruta = $RutaPadre . $this->Nodo;
 		}else{
-			return $this->nodo_padre->Ruta;
+			$this->Ruta = $this->nodo_padre->Ruta;
 		}
 	}
 
@@ -84,4 +90,68 @@ class ScorecardNodo extends MyModel
 	{
 		return $this->tipo == 'Nodo' ? 1 : 0;
 	}
+
+	public function getChildren($Cascade = false)
+	{
+		$this->nodos_cant = $this->nodos->count();
+		if($Cascade){
+			foreach ($this->nodos as $nodo) {
+				$nodo->getChildren(true);
+			}
+		}
+	}
+
+	public function calculate($Periodos)
+	{
+		foreach ($this->nodos as $nodo) {
+			$nodo->calculate($Periodos);	
+		}
+
+		$this->puntos_totales = $this->nodos->sum('peso');
+
+		if($this->tipo == 'Indicador') $this->valores = $this->elemento->calcVals(round($Periodos[0]/100));
+		if($this->tipo == 'Nodo'){
+			$calc = array_fill_keys($Periodos, [ 'puntos' => 0, 'incalculables' => 0 ]);
+			foreach ($this->nodos as $subnodo) {
+				if($subnodo->tipo == 'Indicador'){
+					foreach ($subnodo->valores as $per => $val) {
+						if($val['calculable']){
+							$calc[$per]['puntos'] += $subnodo->peso * $val['cump_porc'];
+						}else{
+							$calc[$per]['incalculables']++;
+						}
+					}
+				}
+
+				if($subnodo->tipo == 'Nodo'){
+					foreach ($subnodo->calc as $per => $cal) {
+						$calc[$per]['puntos'] += $subnodo->peso * $cal['cump'];
+					}
+				}
+			}
+
+			foreach ($calc as &$c) {
+				$c['cump'] = $this->puntos_totales > 0 ? round($c['puntos'] / $this->puntos_totales, 3) : 0;
+				$c['cump_val'] = Helper::formatVal($c['cump'], 'Porcentaje', 1);
+				$c['color'] = Helper::getIndicatorColor($c['cump'], 'B');
+			}
+
+			$this->calc = $calc;
+		}
+		
+	}
+
+	public function flatten(&$NodosFlat, $Nivel)
+	{
+		$NodosFlat[] = [
+			'id' => $this->id, 'Nodo' => $this->Nodo, 
+			'Nivel' => $Nivel, 'tipo' => $this->tipo, 'nodos_cant' => $this->nodos_cant, 
+			'calc' => $this->calc, 'valores' => $this->valores
+		];
+		$Nivel++;
+		foreach ($this->nodos as $nodo) {
+			$nodo->flatten($NodosFlat, $Nivel);
+		}
+	}
+
 }

@@ -52,7 +52,7 @@
 					<md-icon md-svg-icon="md-bars" class=""></md-icon>
 				</md-button>
 				<md-input-container class="no-margin-top no-margin-bottom" flex>
-					<input type="text" ng-model="ScoSel.Titulo" aria-label=s>
+					<input type="text" ng-model="ScoSel.Titulo" aria-label=s ng-change="ScoSel.changed = true">
 				</md-input-container>
 			</div>
 
@@ -61,12 +61,19 @@
 				<div layout class="">
 					<div class="text-clear" style="padding: 8px 5px 0 6px;">Nodo</div>
 					<md-input-container class="no-margin-top no-margin-bottom" flex>
-						<input type="text" ng-model="NodoSel.Nodo" aria-label=s>
+						<input type="text" ng-model="NodoSel.Nodo" aria-label=s ng-change="NodoSel.changed = true">
 					</md-input-container>
 					<md-input-container class="no-margin-top no-margin-bottom w50 text-right">
 						<md-tooltip>Peso</md-tooltip>
-						<input type="number" ng-model="NodoSel.peso" aria-label=s>
+						<input type="number" ng-model="NodoSel.peso" aria-label=s ng-change="NodoSel.changed = true">
 					</md-input-container>
+
+					<div class="w20"></div>
+					<md-select class="no-margin" ng-model="NodoSel.padre_id" ng-change="NodoSel.changed = true">
+						<md-tooltip md-direction=left>Padre</md-tooltip>
+						<md-option ng-repeat="Op in NodosCRUD.rows | filter:{tipo:'Nodo'}" ng-value="Op.id" ng-if="Op.id !== NodoSel.id">{{ Op.Nodo }}</md-option>
+					</md-select>
+
 				</div>
 
 				<div class="bg-white border border-radius margin-top">
@@ -99,13 +106,17 @@
 										  <md-option ng-value="Op.id" ng-repeat="Op in VariablesCRUD.rows">{{ Op.Variable }}</md-option>
 										</md-select>
 									</td>
-									<td md-cell class="" layout>
+									<td md-cell class="h30" layout>
 										<span flex></span>
-										<md-input-container class="no-margin w50  md-no-underline">
+										<md-input-container class="no-margin w50  md-no-underline no-padding h30">
+											<md-tooltip md-direction=left>Indice</md-tooltip>
+											<input type="number" ng-model="C.Indice" aria-label="s" class="text-right" ng-change="C.changed = true">
+										</md-input-container>
+										<md-input-container class="no-margin w50  md-no-underline no-padding h30">
 											<md-tooltip md-direction=left>Peso</md-tooltip>
 											<input type="number" ng-model="C.peso" aria-label="s" class="text-right" ng-change="C.changed = true">
 										</md-input-container>
-										<md-button class="md-icon-button no-margin no-padding s30 focus-on-hover" aria-label="b" ng-click="delCard(C)">
+										<md-button class="md-icon-button no-margin no-padding s30 focus-on-hover" aria-label="b" ng-click="delIndicador(C)">
 											<md-tooltip md-direction=left>Eliminar</md-tooltip>
 											<md-icon md-svg-icon="md-close"></md-icon>
 										</md-button>
@@ -117,8 +128,6 @@
 				</div>
 
 			</div>
-
-
 
 
 			<div class="h50"></div>

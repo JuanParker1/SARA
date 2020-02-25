@@ -1,6 +1,6 @@
 angular.module('Scorecards_ScorecardDiagCtrl', [])
-.controller('Scorecards_ScorecardDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout',
-	function($scope, $rootScope, $mdDialog, $filter, $timeout) {
+.controller('Scorecards_ScorecardDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', '$localStorage',
+	function($scope, $rootScope, $mdDialog, $filter, $timeout, $localStorage) {
 
 		console.info('Scorecards_ScorecardDiagCtrl');
 		var Ctrl = $scope;
@@ -17,13 +17,15 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 
 		Ctrl.Anio  = angular.copy(Rs.AnioActual);
 		Ctrl.Mes   = angular.copy(Rs.MesActual);
-		Ctrl.Modo  = 'Mes';
+		if(!$localStorage['ScorecardModo']) $localStorage['ScorecardModo'] = 'Mes';
+		Ctrl.Modo  = $localStorage['ScorecardModo'];
 		Ctrl.Modos = {
 			'Mes': ['Vista Mensual', 'md-calendar-event'],
 			'Año': ['Vista Anual', 'md-calendar'],
 		};
 		Ctrl.changeModo = () => {
 			Ctrl.Modo = (Ctrl.Modo == "Mes") ? 'Año' : 'Mes';
+			$localStorage['ScorecardModo'] = Ctrl.Modo;
 		};
 
 		Ctrl.periodoAdd = (num) => {
@@ -45,10 +47,10 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 		Ctrl.getScorecard = (scorecard_id) => {
 			if(!scorecard_id) return;
             Rs.http('api/Scorecards/get', { id: scorecard_id, Anio: Ctrl.Anio }, Ctrl, 'Sco').then(() => {
-                Ctrl.Secciones = [{ Seccion: null, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: null }).length }]
-                angular.forEach(Ctrl.Sco.Secciones, (s) => {
+                //Ctrl.Secciones = [{ Seccion: null, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: null }).length }]
+                /*angular.forEach(Ctrl.Sco.Secciones, (s) => {
                 	Ctrl.Secciones.push({ Seccion: s, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: s }).length }); 
-                });
+                });*/
             });
 		};
 

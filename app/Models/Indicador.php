@@ -115,7 +115,7 @@ class Indicador extends MyModel
 					$cump_porc = ($v['cump'] == 1) ? 1 : $v['Valor']/($v['meta_Valor'] ?: 1);
 				}else if($this->Sentido == 'DES'){
 					$v['cump'] = ($v['Valor'] <= $v['meta_Valor']) ? 1:0;
-					$cump_porc = ($v['cump'] == 1) ? 1 : $v['meta_Valor']/($v['Valor'] ?: 1);
+					$cump_porc = ($v['cump'] == 1) ? 1 : ((1 - ( ( $v['Valor'] - $v['meta_Valor'] ) / $v['meta_Valor'] )) ?: 1);
 				}else if($this->Sentido == 'RAN' AND !is_null($v['meta2_Valor'])){
 					$v['cump'] = ($v['Valor'] >= $v['meta_Valor'] AND $v['Valor'] <= $v['meta2_Valor']) ? 1:0;
 					if($v['cump'] == 1){
@@ -123,7 +123,7 @@ class Indicador extends MyModel
 					}else if($v['Valor'] < $v['meta_Valor']){
 						$cump_porc = $v['Valor']/($v['meta_Valor'] ?: 1);
 					}else if($v['Valor'] > $v['meta2_Valor']){
-						$cump_porc = $v['meta2_Valor']/($v['Valor'] ?: 1);
+						$cump_porc = ((1 - ( ( $v['Valor'] - $v['meta_Valor'] ) / $v['meta_Valor'] )) ?: 1);
 					}
 				};
 

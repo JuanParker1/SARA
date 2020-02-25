@@ -10,7 +10,7 @@ angular.module('ScorecardsCtrl', [])
 
 		Ctrl.ScorecardsCRUD  = $injector.get('CRUD').config({ base_url: '/api/Scorecards' });
 		Ctrl.CardsCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/cards' });
-		Ctrl.NodosCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/nodos' });
+		Ctrl.NodosCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/nodos', query_call: [['getRuta',null]] });
 		Ctrl.IndicadoresCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores' });
 		Ctrl.VariablesCRUD 	 = $injector.get('CRUD').config({ base_url: '/api/Variables' });
 
@@ -71,7 +71,7 @@ angular.module('ScorecardsCtrl', [])
 			}).then(r => {
 				if(!r) return;
 				var f = Rs.prepFields(r.Fields);
-				var Indice = Ctrl.NodoSel.indicadores.length + 1;
+				var Indice = Ctrl.NodoSel.indicadores.length;
 				Ctrl.NodosCRUD.add({
 					scorecard_id: Ctrl.ScoSel.id, Nodo: null, padre_id: Ctrl.NodoSel.id, Indice: Indice, tipo: 'Indicador', elemento_id: f.Indicador.id, peso: f.Peso 
 				}).then(() => {
@@ -110,20 +110,50 @@ angular.module('ScorecardsCtrl', [])
 			});
 		};
 
-		Ctrl.openScorecard = (V) => {
-			Ctrl.NodoSel = null;
+		Ctrl.openScorecard = (V, Nodo) => {
 			Ctrl.ScoSel = V;
+			Ctrl.NodoSel = Rs.def(Nodo, null);
 			Ctrl.NodosCRUD.setScope('scorecard', Ctrl.ScoSel.id).get().then(() => {
 				Ctrl.getFs();
 			});
 		};
 
 		Ctrl.updateScorecard = () => {
-			Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel).then(() => {
+
+			if(Ctrl.ScoSel.changed){  
+				Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel); 
+				Rs.showToast('Scorecard Actualizado', 'Success');
+				Ctrl.ScoSel.changed = false;
+			}
+
+			if(Ctrl.NodoSel.changed){ 
+				Ctrl.NodosCRUD.update(Ctrl.NodoSel).then(() => { Ctrl.openScorecard(Ctrl.ScoSel, Ctrl.NodoSel); }); 
+				Rs.showToast('Nodo Actualizado', 'Success');
+				Ctrl.NodoSel.changed = false; 
+			}
+
+			var IndicadoresChanged = Ctrl.NodoSel.indicadores.filter(i => { return (i.changed == true); });
+			if(IndicadoresChanged.length > 0){
+				Ctrl.NodosCRUD.updateMultiple(IndicadoresChanged).then(() => {
+					Rs.showToast('Indicadores Actualizados', 'Success');
+					angular.forEach(Ctrl.NodoSel.indicadores, I => {
+						I.changed = false;
+					});
+				});
+			}
+			
+			/*Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel).then(() => {
 				Rs.showToast('Scorecard Actualizada', 'Success');
 				Ctrl.saveCards();
-			});
+			});*/
 		};
+
+		Ctrl.delIndicador = (I) => {
+			Ctrl.NodosCRUD.delete(I).then(() => {
+				Ctrl.openNodo(Ctrl.NodoSel);
+			});
+
+		}
 
 
 		//Cards

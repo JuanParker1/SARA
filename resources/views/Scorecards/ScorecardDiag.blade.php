@@ -18,6 +18,8 @@
 			<md-button ng-click="anioAdd( 1)" class="no-margin s30 no-padding md-icon-button"><md-icon class="s30" md-font-icon="fa-fw fa-chevron-right"></md-icon></md-button>
 		</div>
 
+		
+
 		<div flex layout layout-align="end">
 			<span flex></span>
 			<div layout class="Pointer padding-5-10 bg-black-3 border-rounded margin-right-5" ng-click="changeModo()">

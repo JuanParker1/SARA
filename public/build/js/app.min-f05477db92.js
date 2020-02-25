@@ -245,142 +245,6 @@ angular.module('App_ViewCtrl', [])
 
 	}
 ]);
-angular.module('BDDCtrl', [])
-.controller('BDDCtrl', ['$scope', '$rootScope', '$injector',
-	function($scope, $rootScope, $injector) {
-
-		console.info('BDDCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.BDDSidenav = true;
-		Ctrl.BDDFavSidenav = false;
-
-		Ctrl.BDDsCRUD = $injector.get('CRUD').config({ base_url: '/api/Bdds' });
-
-		Ctrl.BDDsCRUD.get().then(() => {
-			if(Ctrl.BDDsCRUD.rows.length > 0){
-				Ctrl.openBDD(Ctrl.BDDsCRUD.rows[0]);
-			};
-		});
-
-		Ctrl.openBDD = (B) => {
-			Ctrl.BDDSel = B;
-			Ctrl.getFavoritos();
-			//Ctrl.executeQuery(); //REmove
-		};
-
-		Ctrl.TiposBDD = {
-			ODBC_DB2:     { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			ODBC_MySQL:   { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			MySQL:  	  { Op1: false, Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			SQLite: 	  { Op1: false, Op2: 'Ruta al Archivo', Op3: 'Base de Datos', Op4: false, Op5: false },
-		};
-
-		Ctrl.addBDD = () => {
-			Rs.BasicDialog({
-				Title: 'Crear Conexión a Base de Datos'
-			}).then((r) => {
-				var Nombre = r.Fields[0].Value.trim();
-				if(Rs.found(Nombre, Ctrl.BDDsCRUD.rows, 'Nombre')) return;
-
-				Ctrl.BDDsCRUD.add({
-					Nombre: Nombre,
-					Tipo: 'ODBC'
-				});
-			});
-		};
-
-		Ctrl.updateBDD = () => {
-			Ctrl.BDDsCRUD.update(Ctrl.BDDSel).then(() => {
-				Rs.showToast('Actualizado', 'Success', 5000, 'bottom right');
-			});
-		};
-
-		Ctrl.removeBDD = () => {
-			Rs.confirmDelete({
-				Title: '¿Borrar la Conexión a la Base de Datos "'+Ctrl.BDDSel.Nombre+'"?'
-			}).then((del) => {
-				if(!del) return;
-				Ctrl.BDDsCRUD.delete(Ctrl.BDDSel).then(() => {
-					Ctrl.BDDSel = null;
-				});
-			});
-		};
-
-		Ctrl.testBDD = () => {
-			Rs.http('/api/Bdds/probar', { BDD: Ctrl.BDDSel }).then((r) => {
-				Rs.showToast('Conexión Exitosa', 'Success', 5000, 'bottom right');
-			});
-		};
-
-		//Panel de Consultas SQL
-		Ctrl.SQLQuery = "";
-		Ctrl.executingQuery = false;
-		Ctrl.QueryRows = null;
-		Ctrl.executeQuery = () => {
-			if(Ctrl.SQLQuery == "" || Ctrl.executingQuery) return;
-			Ctrl.executingQuery = true;
-
-			Rs.http('/api/Bdds/query', { BDD: Ctrl.BDDSel, Query: Ctrl.SQLQuery }).then((r) => {
-				Ctrl.QueryRows = r;
-			}).finally(() => {
-				Ctrl.executingQuery = false;
-			});
-		};
-
-
-
-		//Panel de Favoritos
-		Ctrl.FavsCRUD = $injector.get('CRUD').config({ 
-			base_url: '/api/Bdds/favoritos',
-			query_scopes: [
-				[ 'mine', true ]
-			]
-		});
-
-		Ctrl.getFavoritos = () => {
-			Ctrl.FavsCRUD.setScope('bddid', Ctrl.BDDSel.id);
-			Ctrl.FavsCRUD.get();
-		};
-
-		Ctrl.useFav = (F) => {
-			if(Ctrl.executingQuery) return;
-
-			Ctrl.SQLQuery = F.Consulta;
-
-			if(F.EjecutarAutom == 'S'){
-				Ctrl.executeQuery();
-			};
-		};
-
-		Ctrl.addFav = () => {
-			Ctrl.FavsCRUD.dialog({
-				Consulta: angular.copy(Ctrl.SQLQuery),
-				EjecutarAutom: 'N',
-				bdd_id: Ctrl.BDDSel.id,
-				usuario_id: Rs.Usuario.id
-			}, {
-				title: 'Crear Favorito',
-				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
-			}).then((R) => {
-				if(!R) return;
-				Ctrl.FavsCRUD.add(R);
-			});
-		};
-
-		Ctrl.editFav = (F) => {
-			Ctrl.FavsCRUD.dialog(angular.copy(F), {
-				title: 'Favorito: ' + F.Nombre,
-				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
-			}).then((R) => {
-				if(!R) return;
-				if(R == 'DELETE') return Ctrl.FavsCRUD.delete(F);
-				Ctrl.FavsCRUD.update(R);
-			});
-		};
-
-	}
-]);
 angular.module('BasicDialogCtrl', [])
 .controller(   'BasicDialogCtrl', ['$scope', 'Config', '$mdDialog', 
 	function ($scope, Config, $mdDialog) {
@@ -2382,6 +2246,142 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 	}
 ]);
 
+angular.module('BDDCtrl', [])
+.controller('BDDCtrl', ['$scope', '$rootScope', '$injector',
+	function($scope, $rootScope, $injector) {
+
+		console.info('BDDCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.BDDSidenav = true;
+		Ctrl.BDDFavSidenav = false;
+
+		Ctrl.BDDsCRUD = $injector.get('CRUD').config({ base_url: '/api/Bdds' });
+
+		Ctrl.BDDsCRUD.get().then(() => {
+			if(Ctrl.BDDsCRUD.rows.length > 0){
+				Ctrl.openBDD(Ctrl.BDDsCRUD.rows[0]);
+			};
+		});
+
+		Ctrl.openBDD = (B) => {
+			Ctrl.BDDSel = B;
+			Ctrl.getFavoritos();
+			//Ctrl.executeQuery(); //REmove
+		};
+
+		Ctrl.TiposBDD = {
+			ODBC_DB2:     { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			ODBC_MySQL:   { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			MySQL:  	  { Op1: false, Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			SQLite: 	  { Op1: false, Op2: 'Ruta al Archivo', Op3: 'Base de Datos', Op4: false, Op5: false },
+		};
+
+		Ctrl.addBDD = () => {
+			Rs.BasicDialog({
+				Title: 'Crear Conexión a Base de Datos'
+			}).then((r) => {
+				var Nombre = r.Fields[0].Value.trim();
+				if(Rs.found(Nombre, Ctrl.BDDsCRUD.rows, 'Nombre')) return;
+
+				Ctrl.BDDsCRUD.add({
+					Nombre: Nombre,
+					Tipo: 'ODBC'
+				});
+			});
+		};
+
+		Ctrl.updateBDD = () => {
+			Ctrl.BDDsCRUD.update(Ctrl.BDDSel).then(() => {
+				Rs.showToast('Actualizado', 'Success', 5000, 'bottom right');
+			});
+		};
+
+		Ctrl.removeBDD = () => {
+			Rs.confirmDelete({
+				Title: '¿Borrar la Conexión a la Base de Datos "'+Ctrl.BDDSel.Nombre+'"?'
+			}).then((del) => {
+				if(!del) return;
+				Ctrl.BDDsCRUD.delete(Ctrl.BDDSel).then(() => {
+					Ctrl.BDDSel = null;
+				});
+			});
+		};
+
+		Ctrl.testBDD = () => {
+			Rs.http('/api/Bdds/probar', { BDD: Ctrl.BDDSel }).then((r) => {
+				Rs.showToast('Conexión Exitosa', 'Success', 5000, 'bottom right');
+			});
+		};
+
+		//Panel de Consultas SQL
+		Ctrl.SQLQuery = "";
+		Ctrl.executingQuery = false;
+		Ctrl.QueryRows = null;
+		Ctrl.executeQuery = () => {
+			if(Ctrl.SQLQuery == "" || Ctrl.executingQuery) return;
+			Ctrl.executingQuery = true;
+
+			Rs.http('/api/Bdds/query', { BDD: Ctrl.BDDSel, Query: Ctrl.SQLQuery }).then((r) => {
+				Ctrl.QueryRows = r;
+			}).finally(() => {
+				Ctrl.executingQuery = false;
+			});
+		};
+
+
+
+		//Panel de Favoritos
+		Ctrl.FavsCRUD = $injector.get('CRUD').config({ 
+			base_url: '/api/Bdds/favoritos',
+			query_scopes: [
+				[ 'mine', true ]
+			]
+		});
+
+		Ctrl.getFavoritos = () => {
+			Ctrl.FavsCRUD.setScope('bddid', Ctrl.BDDSel.id);
+			Ctrl.FavsCRUD.get();
+		};
+
+		Ctrl.useFav = (F) => {
+			if(Ctrl.executingQuery) return;
+
+			Ctrl.SQLQuery = F.Consulta;
+
+			if(F.EjecutarAutom == 'S'){
+				Ctrl.executeQuery();
+			};
+		};
+
+		Ctrl.addFav = () => {
+			Ctrl.FavsCRUD.dialog({
+				Consulta: angular.copy(Ctrl.SQLQuery),
+				EjecutarAutom: 'N',
+				bdd_id: Ctrl.BDDSel.id,
+				usuario_id: Rs.Usuario.id
+			}, {
+				title: 'Crear Favorito',
+				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
+			}).then((R) => {
+				if(!R) return;
+				Ctrl.FavsCRUD.add(R);
+			});
+		};
+
+		Ctrl.editFav = (F) => {
+			Ctrl.FavsCRUD.dialog(angular.copy(F), {
+				title: 'Favorito: ' + F.Nombre,
+				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
+			}).then((R) => {
+				if(!R) return;
+				if(R == 'DELETE') return Ctrl.FavsCRUD.delete(F);
+				Ctrl.FavsCRUD.update(R);
+			});
+		};
+
+	}
+]);
 angular.module('ProcesosCtrl', [])
 .controller('ProcesosCtrl', ['$scope', '$rootScope', '$injector', '$filter',
 	function($scope, $rootScope, $injector, $filter) {
@@ -2475,7 +2475,7 @@ angular.module('ScorecardsCtrl', [])
 
 		Ctrl.ScorecardsCRUD  = $injector.get('CRUD').config({ base_url: '/api/Scorecards' });
 		Ctrl.CardsCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/cards' });
-		Ctrl.NodosCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/nodos' });
+		Ctrl.NodosCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/nodos', query_call: [['getRuta',null]] });
 		Ctrl.IndicadoresCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores' });
 		Ctrl.VariablesCRUD 	 = $injector.get('CRUD').config({ base_url: '/api/Variables' });
 
@@ -2536,7 +2536,7 @@ angular.module('ScorecardsCtrl', [])
 			}).then(r => {
 				if(!r) return;
 				var f = Rs.prepFields(r.Fields);
-				var Indice = Ctrl.NodoSel.indicadores.length + 1;
+				var Indice = Ctrl.NodoSel.indicadores.length;
 				Ctrl.NodosCRUD.add({
 					scorecard_id: Ctrl.ScoSel.id, Nodo: null, padre_id: Ctrl.NodoSel.id, Indice: Indice, tipo: 'Indicador', elemento_id: f.Indicador.id, peso: f.Peso 
 				}).then(() => {
@@ -2575,20 +2575,50 @@ angular.module('ScorecardsCtrl', [])
 			});
 		};
 
-		Ctrl.openScorecard = (V) => {
-			Ctrl.NodoSel = null;
+		Ctrl.openScorecard = (V, Nodo) => {
 			Ctrl.ScoSel = V;
+			Ctrl.NodoSel = Rs.def(Nodo, null);
 			Ctrl.NodosCRUD.setScope('scorecard', Ctrl.ScoSel.id).get().then(() => {
 				Ctrl.getFs();
 			});
 		};
 
 		Ctrl.updateScorecard = () => {
-			Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel).then(() => {
+
+			if(Ctrl.ScoSel.changed){  
+				Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel); 
+				Rs.showToast('Scorecard Actualizado', 'Success');
+				Ctrl.ScoSel.changed = false;
+			}
+
+			if(Ctrl.NodoSel.changed){ 
+				Ctrl.NodosCRUD.update(Ctrl.NodoSel).then(() => { Ctrl.openScorecard(Ctrl.ScoSel, Ctrl.NodoSel); }); 
+				Rs.showToast('Nodo Actualizado', 'Success');
+				Ctrl.NodoSel.changed = false; 
+			}
+
+			var IndicadoresChanged = Ctrl.NodoSel.indicadores.filter(i => { return (i.changed == true); });
+			if(IndicadoresChanged.length > 0){
+				Ctrl.NodosCRUD.updateMultiple(IndicadoresChanged).then(() => {
+					Rs.showToast('Indicadores Actualizados', 'Success');
+					angular.forEach(Ctrl.NodoSel.indicadores, I => {
+						I.changed = false;
+					});
+				});
+			}
+			
+			/*Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel).then(() => {
 				Rs.showToast('Scorecard Actualizada', 'Success');
 				Ctrl.saveCards();
-			});
+			});*/
 		};
+
+		Ctrl.delIndicador = (I) => {
+			Ctrl.NodosCRUD.delete(I).then(() => {
+				Ctrl.openNodo(Ctrl.NodoSel);
+			});
+
+		}
 
 
 		//Cards
@@ -2640,8 +2670,8 @@ angular.module('ScorecardsCtrl', [])
 	}
 ]);
 angular.module('Scorecards_ScorecardDiagCtrl', [])
-.controller('Scorecards_ScorecardDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout',
-	function($scope, $rootScope, $mdDialog, $filter, $timeout) {
+.controller('Scorecards_ScorecardDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', '$localStorage',
+	function($scope, $rootScope, $mdDialog, $filter, $timeout, $localStorage) {
 
 		console.info('Scorecards_ScorecardDiagCtrl');
 		var Ctrl = $scope;
@@ -2658,13 +2688,15 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 
 		Ctrl.Anio  = angular.copy(Rs.AnioActual);
 		Ctrl.Mes   = angular.copy(Rs.MesActual);
-		Ctrl.Modo  = 'Mes';
+		if(!$localStorage['ScorecardModo']) $localStorage['ScorecardModo'] = 'Mes';
+		Ctrl.Modo  = $localStorage['ScorecardModo'];
 		Ctrl.Modos = {
 			'Mes': ['Vista Mensual', 'md-calendar-event'],
 			'Año': ['Vista Anual', 'md-calendar'],
 		};
 		Ctrl.changeModo = () => {
 			Ctrl.Modo = (Ctrl.Modo == "Mes") ? 'Año' : 'Mes';
+			$localStorage['ScorecardModo'] = Ctrl.Modo;
 		};
 
 		Ctrl.periodoAdd = (num) => {
@@ -2686,10 +2718,10 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 		Ctrl.getScorecard = (scorecard_id) => {
 			if(!scorecard_id) return;
             Rs.http('api/Scorecards/get', { id: scorecard_id, Anio: Ctrl.Anio }, Ctrl, 'Sco').then(() => {
-                Ctrl.Secciones = [{ Seccion: null, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: null }).length }]
-                angular.forEach(Ctrl.Sco.Secciones, (s) => {
+                //Ctrl.Secciones = [{ Seccion: null, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: null }).length }]
+                /*angular.forEach(Ctrl.Sco.Secciones, (s) => {
                 	Ctrl.Secciones.push({ Seccion: s, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: s }).length }); 
-                });
+                });*/
             });
 		};
 

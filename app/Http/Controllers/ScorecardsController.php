@@ -42,7 +42,7 @@ class ScorecardsController extends Controller
         return $CRUD->call(request()->fn, request()->ops);
     }
 
-    public function postGet()
+    /*public function postGet()
     {
         $Anio = request('Anio');
         $Sco = Scorecard::where('id', request('id'))->first();
@@ -83,14 +83,29 @@ class ScorecardsController extends Controller
         $Sco->elementos = $elementos;
 
         return $Sco;
+    }*/
+
+    public function postGet()
+    {
+        $Anio = request('Anio');
+        $Sco = Scorecard::where('id', 1)->first();
+        $Nodo = ScorecardNodo::scorecard($Sco->id)->whereNull('padre_id')->first();
+
+        $Periodos = Helper::getPeriodos(($Anio*100)+01,($Anio*100)+12);
+        $NodosFlat = [];
+
+        $Nodo->getChildren(true);
+        $Nodo->calculate($Periodos);
+        $Nodo->flatten($NodosFlat, 0);
+
+        $Sco->nodo = $Nodo;
+        $Sco->nodos_flat = $NodosFlat;
+
+        return $Sco;
     }
 
     public function getTest()
     {
-        $Sco = Scorecard::where('id', 1)->first();
-
-        $Nodos = ScorecardNodo::scorecard($Sco->id)->get();
-
-        return $Nodos;
+        return $this->postGet();
     }
 }
