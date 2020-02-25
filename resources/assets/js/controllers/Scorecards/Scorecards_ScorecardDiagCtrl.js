@@ -17,7 +17,7 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 
 		Ctrl.Anio  = angular.copy(Rs.AnioActual);
 		Ctrl.Mes   = angular.copy(Rs.MesActual);
-		if(!$localStorage['ScorecardModo']) $localStorage['ScorecardModo'] = 'Mes';
+		if(!$localStorage['ScorecardModo']) $localStorage['ScorecardModo'] = 'Año';
 		Ctrl.Modo  = $localStorage['ScorecardModo'];
 		Ctrl.Modos = {
 			'Mes': ['Vista Mensual', 'md-calendar-event'],
@@ -52,6 +52,14 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
                 	Ctrl.Secciones.push({ Seccion: s, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: s }).length }); 
                 });*/
             });
+		};
+
+		Ctrl.decideAction = (N) => {
+			if(N.tipo == 'Indicador'){
+				Rs.viewIndicadorDiag(N.elemento.id);
+			}else if(N.tipo == 'Variable'){
+				Rs.viewVariableDiag(N.elemento.id);
+			}
 		};
 
         //Ctrl.getScorecard();

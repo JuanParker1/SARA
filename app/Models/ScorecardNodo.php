@@ -78,10 +78,12 @@ class ScorecardNodo extends MyModel
 		if(is_null($this->padre_id)){
 			$this->Ruta = '';
 		}else if($this->tipo == 'Nodo'){
+			$this->nodo_padre->getRuta();
 			$RutaPadre = $this->nodo_padre->Ruta;
 			if($RutaPadre !== '') $RutaPadre .= '\\';
 			$this->Ruta = $RutaPadre . $this->Nodo;
 		}else{
+			$this->nodo_padre->getRuta();
 			$this->Ruta = $this->nodo_padre->Ruta;
 		}
 	}
@@ -125,7 +127,11 @@ class ScorecardNodo extends MyModel
 
 				if($subnodo->tipo == 'Nodo'){
 					foreach ($subnodo->calc as $per => $cal) {
-						$calc[$per]['puntos'] += $subnodo->peso * $cal['cump'];
+						if($cal['calculable']){
+							$calc[$per]['puntos'] += $subnodo->peso * $cal['cump'];
+						}else{
+							$calc[$per]['incalculables']++;
+						}
 					}
 				}
 			}
@@ -134,6 +140,7 @@ class ScorecardNodo extends MyModel
 				$c['cump'] = $this->puntos_totales > 0 ? round($c['puntos'] / $this->puntos_totales, 3) : 0;
 				$c['cump_val'] = Helper::formatVal($c['cump'], 'Porcentaje', 1);
 				$c['color'] = Helper::getIndicatorColor($c['cump'], 'B');
+				$c['calculable'] = $c['incalculables'] < $this->nodos_cant;
 			}
 
 			$this->calc = $calc;
@@ -146,7 +153,7 @@ class ScorecardNodo extends MyModel
 		$NodosFlat[] = [
 			'id' => $this->id, 'Nodo' => $this->Nodo, 
 			'Nivel' => $Nivel, 'tipo' => $this->tipo, 'nodos_cant' => $this->nodos_cant, 
-			'calc' => $this->calc, 'valores' => $this->valores
+			'calc' => $this->calc, 'valores' => $this->valores, 'elemento' => $this->elemento, 'open' => true
 		];
 		$Nivel++;
 		foreach ($this->nodos as $nodo) {

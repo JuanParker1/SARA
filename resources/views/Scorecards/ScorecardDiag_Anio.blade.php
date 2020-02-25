@@ -10,10 +10,13 @@
 				</tr>
 			</thead>
 			<tbody md-body class="text-14px Pointer" >
-				<tr md-row ng-repeat="N in Sco.nodos_flat" class="md-row-hover">
-					<td md-cell class="">
+				<tr md-row ng-repeat="N in Sco.nodos_flat" class="md-row-hover Pointer" ng-click="decideAction(N)">
+					<td md-cell style="padding: 0 !important">
 						<div class="w100p" layout>
-							<div ng-style="{ width: 15 * N.Nivel }"></div>
+							<div ng-style="{ width: 10 * N.Nivel }"></div>
+							<md-icon md-font-icon="fa-chevron-right fa-fw s20 transition margin-right-5" ng-if="N.tipo == 'Nodo'"
+								ng-class="{'fa-rotate-90':N.open}"></md-icon>
+							<md-icon md-font-icon="fa-chart-line fa-fw s20 margin-right-5" ng-if="N.tipo == 'Indicador'"></md-icon>
 							<div class="padding-5-0 mw160" flex>{{ N.Nodo }}</div>
 						</div>
 					</td>
@@ -22,7 +25,7 @@
 							ng-style="{ color: E['color'] }">
 
 							<span hide ng-if="E['incalculables'] < N['nodos_cant']">{{ E['cump_val'] }}</span>
-							<span ng-if="E['incalculables'] < N['nodos_cant']">{{ E['incalculables'] }}/{{ N['nodos_cant'] }}</span>
+							<span ng-if="E['calculable']">{{ E['cump_val'] }}</span>
 						</div>
 
 						<div class="w100p" ng-if="N.tipo == 'Indicador'" ng-repeat="E in [ N.valores[Anio+M[0]] ] "
@@ -33,8 +36,8 @@
 					<td md-cell>
 						<div class="w100p" ng-if="N.tipo == 'Indicador'" ng-repeat="E in [ N.valores[Anio+'12'] ] ">
 							{{ E.meta_val }}
-							<md-icon class="s15 margin-left-5" md-font-icon="{{ Sentidos[I.Sentido].icon}} fa-fw">
-								<md-tooltip md-direction=left>{{ Sentidos[I.Sentido].desc }}</md-tooltip>
+							<md-icon class="s15 margin-left-5" md-font-icon="{{ Sentidos[N.elemento.Sentido].icon}} fa-fw">
+								<md-tooltip md-direction=left>{{ Sentidos[N.elemento.Sentido].desc }}</md-tooltip>
 							</md-icon>
 						</div>
 					</td>
