@@ -101,12 +101,15 @@ class Indicador extends MyModel
 			//Obtener metas
 			if(!empty($this->metas)){
 				$Meta = $this->metas->filter(function($m) use ($target_per){ return $m['PeriodoDesde'] <= $target_per; })->first();
-				$v['meta_Valor'] = $Meta['Meta'];
-				$v['meta_val'] = Helper::formatVal($Meta['Meta'], $this->TipoDato, $this->Decimales);
-				if($this->Sentido == 'RAN'){
-					$v['meta2_Valor'] = $Meta['Meta2'];
-					$v['meta_val'] .= " - " . Helper::formatVal($Meta['Meta2'], $this->TipoDato, $this->Decimales);
-				};
+
+				if($Meta){
+					$v['meta_Valor'] = $Meta['Meta'];
+					$v['meta_val'] = Helper::formatVal($Meta['Meta'], $this->TipoDato, $this->Decimales);
+					if($this->Sentido == 'RAN'){
+						$v['meta2_Valor'] = $Meta['Meta2'];
+						$v['meta_val'] .= " - " . Helper::formatVal($Meta['Meta2'], $this->TipoDato, $this->Decimales);
+					};
+				}
 			};
 
 			//Evaluar Cumplimiento

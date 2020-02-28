@@ -6,14 +6,14 @@
 				<tr md-row class="">
 					<th md-column></th>
 					<th md-column md-numeric ng-repeat="M in Meses" class="mw45">{{ M[1] }}</th>
-					<th md-column  md-numeric>Meta</th>
+					<th md-column md-numeric>Meta</th>
 				</tr>
 			</thead>
 			<tbody md-body class="text-14px Pointer" >
-				<tr md-row ng-repeat="N in Sco.nodos_flat" class="md-row-hover Pointer" ng-click="decideAction(N)">
+				<tr md-row ng-repeat="N in Sco.nodos_flat" class="md-row-hover Pointer" ng-click="decideAction(N)" ng-show="N.show">
 					<td md-cell style="padding: 0 !important">
-						<div class="w100p" layout>
-							<div ng-style="{ width: 10 * N.Nivel }"></div>
+						<div class="w100p Pointer" layout ng-click="openFlatLevel(N, $event)">
+							<div ng-style="{ width: 10 * N.depth }"></div>
 							<md-icon md-font-icon="fa-chevron-right fa-fw s20 transition margin-right-5" ng-if="N.tipo == 'Nodo'"
 								ng-class="{'fa-rotate-90':N.open}"></md-icon>
 							<md-icon md-font-icon="fa-chart-line fa-fw s20 margin-right-5" ng-if="N.tipo == 'Indicador'"></md-icon>

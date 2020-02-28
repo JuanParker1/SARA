@@ -93,6 +93,142 @@ angular.module('LoginCtrl', [])
 		};
 	}
 ]);
+angular.module('BDDCtrl', [])
+.controller('BDDCtrl', ['$scope', '$rootScope', '$injector',
+	function($scope, $rootScope, $injector) {
+
+		console.info('BDDCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.BDDSidenav = true;
+		Ctrl.BDDFavSidenav = false;
+
+		Ctrl.BDDsCRUD = $injector.get('CRUD').config({ base_url: '/api/Bdds' });
+
+		Ctrl.BDDsCRUD.get().then(() => {
+			if(Ctrl.BDDsCRUD.rows.length > 0){
+				Ctrl.openBDD(Ctrl.BDDsCRUD.rows[0]);
+			};
+		});
+
+		Ctrl.openBDD = (B) => {
+			Ctrl.BDDSel = B;
+			Ctrl.getFavoritos();
+			//Ctrl.executeQuery(); //REmove
+		};
+
+		Ctrl.TiposBDD = {
+			ODBC_DB2:     { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			ODBC_MySQL:   { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			MySQL:  	  { Op1: false, Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			SQLite: 	  { Op1: false, Op2: 'Ruta al Archivo', Op3: 'Base de Datos', Op4: false, Op5: false },
+		};
+
+		Ctrl.addBDD = () => {
+			Rs.BasicDialog({
+				Title: 'Crear Conexión a Base de Datos'
+			}).then((r) => {
+				var Nombre = r.Fields[0].Value.trim();
+				if(Rs.found(Nombre, Ctrl.BDDsCRUD.rows, 'Nombre')) return;
+
+				Ctrl.BDDsCRUD.add({
+					Nombre: Nombre,
+					Tipo: 'ODBC'
+				});
+			});
+		};
+
+		Ctrl.updateBDD = () => {
+			Ctrl.BDDsCRUD.update(Ctrl.BDDSel).then(() => {
+				Rs.showToast('Actualizado', 'Success', 5000, 'bottom right');
+			});
+		};
+
+		Ctrl.removeBDD = () => {
+			Rs.confirmDelete({
+				Title: '¿Borrar la Conexión a la Base de Datos "'+Ctrl.BDDSel.Nombre+'"?'
+			}).then((del) => {
+				if(!del) return;
+				Ctrl.BDDsCRUD.delete(Ctrl.BDDSel).then(() => {
+					Ctrl.BDDSel = null;
+				});
+			});
+		};
+
+		Ctrl.testBDD = () => {
+			Rs.http('/api/Bdds/probar', { BDD: Ctrl.BDDSel }).then((r) => {
+				Rs.showToast('Conexión Exitosa', 'Success', 5000, 'bottom right');
+			});
+		};
+
+		//Panel de Consultas SQL
+		Ctrl.SQLQuery = "";
+		Ctrl.executingQuery = false;
+		Ctrl.QueryRows = null;
+		Ctrl.executeQuery = () => {
+			if(Ctrl.SQLQuery == "" || Ctrl.executingQuery) return;
+			Ctrl.executingQuery = true;
+
+			Rs.http('/api/Bdds/query', { BDD: Ctrl.BDDSel, Query: Ctrl.SQLQuery }).then((r) => {
+				Ctrl.QueryRows = r;
+			}).finally(() => {
+				Ctrl.executingQuery = false;
+			});
+		};
+
+
+
+		//Panel de Favoritos
+		Ctrl.FavsCRUD = $injector.get('CRUD').config({ 
+			base_url: '/api/Bdds/favoritos',
+			query_scopes: [
+				[ 'mine', true ]
+			]
+		});
+
+		Ctrl.getFavoritos = () => {
+			Ctrl.FavsCRUD.setScope('bddid', Ctrl.BDDSel.id);
+			Ctrl.FavsCRUD.get();
+		};
+
+		Ctrl.useFav = (F) => {
+			if(Ctrl.executingQuery) return;
+
+			Ctrl.SQLQuery = F.Consulta;
+
+			if(F.EjecutarAutom == 'S'){
+				Ctrl.executeQuery();
+			};
+		};
+
+		Ctrl.addFav = () => {
+			Ctrl.FavsCRUD.dialog({
+				Consulta: angular.copy(Ctrl.SQLQuery),
+				EjecutarAutom: 'N',
+				bdd_id: Ctrl.BDDSel.id,
+				usuario_id: Rs.Usuario.id
+			}, {
+				title: 'Crear Favorito',
+				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
+			}).then((R) => {
+				if(!R) return;
+				Ctrl.FavsCRUD.add(R);
+			});
+		};
+
+		Ctrl.editFav = (F) => {
+			Ctrl.FavsCRUD.dialog(angular.copy(F), {
+				title: 'Favorito: ' + F.Nombre,
+				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
+			}).then((R) => {
+				if(!R) return;
+				if(R == 'DELETE') return Ctrl.FavsCRUD.delete(F);
+				Ctrl.FavsCRUD.update(R);
+			});
+		};
+
+	}
+]);
  angular.module('AppsCtrl', [])
 .controller('AppsCtrl', ['$scope', '$rootScope', '$injector', '$http', '$filter', '$window',
 	function($scope, $rootScope, $injector, $http, $filter, $window) {
@@ -242,142 +378,6 @@ angular.module('App_ViewCtrl', [])
 				Ctrl.openPage(Ctrl.AppSel.pages[0]);
 			});
 		});
-
-	}
-]);
-angular.module('BDDCtrl', [])
-.controller('BDDCtrl', ['$scope', '$rootScope', '$injector',
-	function($scope, $rootScope, $injector) {
-
-		console.info('BDDCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.BDDSidenav = true;
-		Ctrl.BDDFavSidenav = false;
-
-		Ctrl.BDDsCRUD = $injector.get('CRUD').config({ base_url: '/api/Bdds' });
-
-		Ctrl.BDDsCRUD.get().then(() => {
-			if(Ctrl.BDDsCRUD.rows.length > 0){
-				Ctrl.openBDD(Ctrl.BDDsCRUD.rows[0]);
-			};
-		});
-
-		Ctrl.openBDD = (B) => {
-			Ctrl.BDDSel = B;
-			Ctrl.getFavoritos();
-			//Ctrl.executeQuery(); //REmove
-		};
-
-		Ctrl.TiposBDD = {
-			ODBC_DB2:     { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			ODBC_MySQL:   { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			MySQL:  	  { Op1: false, Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			SQLite: 	  { Op1: false, Op2: 'Ruta al Archivo', Op3: 'Base de Datos', Op4: false, Op5: false },
-		};
-
-		Ctrl.addBDD = () => {
-			Rs.BasicDialog({
-				Title: 'Crear Conexión a Base de Datos'
-			}).then((r) => {
-				var Nombre = r.Fields[0].Value.trim();
-				if(Rs.found(Nombre, Ctrl.BDDsCRUD.rows, 'Nombre')) return;
-
-				Ctrl.BDDsCRUD.add({
-					Nombre: Nombre,
-					Tipo: 'ODBC'
-				});
-			});
-		};
-
-		Ctrl.updateBDD = () => {
-			Ctrl.BDDsCRUD.update(Ctrl.BDDSel).then(() => {
-				Rs.showToast('Actualizado', 'Success', 5000, 'bottom right');
-			});
-		};
-
-		Ctrl.removeBDD = () => {
-			Rs.confirmDelete({
-				Title: '¿Borrar la Conexión a la Base de Datos "'+Ctrl.BDDSel.Nombre+'"?'
-			}).then((del) => {
-				if(!del) return;
-				Ctrl.BDDsCRUD.delete(Ctrl.BDDSel).then(() => {
-					Ctrl.BDDSel = null;
-				});
-			});
-		};
-
-		Ctrl.testBDD = () => {
-			Rs.http('/api/Bdds/probar', { BDD: Ctrl.BDDSel }).then((r) => {
-				Rs.showToast('Conexión Exitosa', 'Success', 5000, 'bottom right');
-			});
-		};
-
-		//Panel de Consultas SQL
-		Ctrl.SQLQuery = "";
-		Ctrl.executingQuery = false;
-		Ctrl.QueryRows = null;
-		Ctrl.executeQuery = () => {
-			if(Ctrl.SQLQuery == "" || Ctrl.executingQuery) return;
-			Ctrl.executingQuery = true;
-
-			Rs.http('/api/Bdds/query', { BDD: Ctrl.BDDSel, Query: Ctrl.SQLQuery }).then((r) => {
-				Ctrl.QueryRows = r;
-			}).finally(() => {
-				Ctrl.executingQuery = false;
-			});
-		};
-
-
-
-		//Panel de Favoritos
-		Ctrl.FavsCRUD = $injector.get('CRUD').config({ 
-			base_url: '/api/Bdds/favoritos',
-			query_scopes: [
-				[ 'mine', true ]
-			]
-		});
-
-		Ctrl.getFavoritos = () => {
-			Ctrl.FavsCRUD.setScope('bddid', Ctrl.BDDSel.id);
-			Ctrl.FavsCRUD.get();
-		};
-
-		Ctrl.useFav = (F) => {
-			if(Ctrl.executingQuery) return;
-
-			Ctrl.SQLQuery = F.Consulta;
-
-			if(F.EjecutarAutom == 'S'){
-				Ctrl.executeQuery();
-			};
-		};
-
-		Ctrl.addFav = () => {
-			Ctrl.FavsCRUD.dialog({
-				Consulta: angular.copy(Ctrl.SQLQuery),
-				EjecutarAutom: 'N',
-				bdd_id: Ctrl.BDDSel.id,
-				usuario_id: Rs.Usuario.id
-			}, {
-				title: 'Crear Favorito',
-				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
-			}).then((R) => {
-				if(!R) return;
-				Ctrl.FavsCRUD.add(R);
-			});
-		};
-
-		Ctrl.editFav = (F) => {
-			Ctrl.FavsCRUD.dialog(angular.copy(F), {
-				title: 'Favorito: ' + F.Nombre,
-				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
-			}).then((R) => {
-				if(!R) return;
-				if(R == 'DELETE') return Ctrl.FavsCRUD.delete(F);
-				Ctrl.FavsCRUD.update(R);
-			});
-		};
 
 	}
 ]);
@@ -2089,6 +2089,87 @@ angular.module('FuncionesCtrl', [])
 		
 	}
 ]);
+angular.module('ProcesosCtrl', [])
+.controller('ProcesosCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('ProcesosCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.ProcesoSel = null;
+		Ctrl.ProcesosNav = true;
+		Ctrl.TiposProcesos = [ 
+			{ id: 'Agrupador', 		Nombre: 'Agrupador' },
+			{ id: 'Proceso', 		Nombre: 'Proceso' },
+			{ id: 'Concesionario', 	Nombre: 'Concesionario' },
+			{ id: 'Programa', 		Nombre: 'Programa' },
+			{ id: 'Utilitario', 	Nombre: 'Utilitario' }
+		];
+
+		Ctrl.getProcesos = () => {
+			Rs.http('api/Procesos', {}, Ctrl, 'Procesos').then(() => {
+
+				Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos,'Ruta','Proceso',false,true);
+				//console.log(Ctrl.ProcesosFS);
+			});	
+		};
+
+		Ctrl.openProceso = (P) => {
+			Ctrl.ProcesoSel = P;
+		};
+
+		Ctrl.lookupProceso = (F) => {
+			var Ps = Ctrl.Procesos.filter((P) => {
+				return ( P.children > 0 && P.Ruta == F.route );
+			});
+			if(Ps.length > 0) Ctrl.openProceso(Ps[0]);
+		};
+
+		Ctrl.getProcesos();
+
+		Ctrl.updateProceso = () => {
+			Rs.http('api/Procesos/update', { Proceso: Ctrl.ProcesoSel }).then(() => {
+				Rs.showToast('Proceso Actualizado', 'Success');
+			});
+		};
+
+		Ctrl.sendCreate = (p) => {
+			Rs.http('api/Procesos/create', { Proceso: p }).then(() => {
+				Rs.showToast(p.Tipo+' Creado', 'Success');
+				Ctrl.getProcesos();
+			});
+		};
+
+		Ctrl.createSubproceso = () => {
+			Rs.BasicDialog({
+				Title: 'Crear Subproceso',
+				Fields: [
+					{ Nombre: 'Nombre',  Value: '', Required: true },
+					{ Nombre: 'Tipo',    Value: 'Proceso', Required: true, Type: 'list', List: Ctrl.TiposProcesos, Item_Val: 'id', Item_Show: 'Nombre' },
+
+				],
+			}).then((r) => {
+				Ctrl.sendCreate({
+					Proceso: r.Fields[0].Value.trim(),
+					padre_id: Ctrl.ProcesoSel.id, 
+					Tipo: r.Fields[1].Value
+				});
+			});
+		};
+
+		Ctrl.createEmpresa = () => {
+			Rs.BasicDialog({
+				Title: 'Crear Empresa',
+			}).then((r) => {
+				Ctrl.sendCreate({
+					Proceso: r.Fields[0].Value.trim(),
+					Tipo: 'Empresa'
+				});
+			});
+		};
+		
+	}
+]);
 angular.module('IndicadoresCtrl', [])
 .controller('IndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter',
 	function($scope, $rootScope, $injector, $filter) {
@@ -2172,7 +2253,7 @@ angular.module('IndicadoresCtrl', [])
 			Ctrl.IndicadoresVarsCRUD.setScope('indicador', Ctrl.IndSel.id).get();
 			Ctrl.MetasCRUD.setScope('indicador', Ctrl.IndSel.id).get();
 
-			//Rs.viewIndicadorDiag(Ctrl.IndSel.id); //FIX
+			Rs.viewIndicadorDiag(Ctrl.IndSel.id); //FIX
 		};
 
 		Ctrl.updateIndicador = () => {
@@ -2379,90 +2460,18 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
             if(comp.Tipo == 'Variable')  return Rs.viewVariableDiag(comp.variable_id);
             if(comp.Tipo == 'Indicador') return Rs.viewIndicadorDiag(comp.variable_id);
         };
+
+
+        Ctrl.Comentarios = [
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed urna nulla. Sed sem arcu",
+            "Curabitur posuere auctor dolor non maximus. Ut volutpat tortor a varius eleifend.",
+            "Fusce fringilla facilisis nibh nec porta. Proin molestie"
+        ];
+
+
 	}
 ]);
 
-angular.module('ProcesosCtrl', [])
-.controller('ProcesosCtrl', ['$scope', '$rootScope', '$injector', '$filter',
-	function($scope, $rootScope, $injector, $filter) {
-
-		console.info('ProcesosCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.ProcesoSel = null;
-		Ctrl.ProcesosNav = true;
-		Ctrl.TiposProcesos = [ 
-			{ id: 'Agrupador', 		Nombre: 'Agrupador' },
-			{ id: 'Proceso', 		Nombre: 'Proceso' },
-			{ id: 'Concesionario', 	Nombre: 'Concesionario' },
-			{ id: 'Programa', 		Nombre: 'Programa' },
-			{ id: 'Utilitario', 	Nombre: 'Utilitario' }
-		];
-
-		Ctrl.getProcesos = () => {
-			Rs.http('api/Procesos', {}, Ctrl, 'Procesos').then(() => {
-
-				Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos,'Ruta','Proceso',false,true);
-				//console.log(Ctrl.ProcesosFS);
-			});	
-		};
-
-		Ctrl.openProceso = (P) => {
-			Ctrl.ProcesoSel = P;
-		};
-
-		Ctrl.lookupProceso = (F) => {
-			var Ps = Ctrl.Procesos.filter((P) => {
-				return ( P.children > 0 && P.Ruta == F.route );
-			});
-			if(Ps.length > 0) Ctrl.openProceso(Ps[0]);
-		};
-
-		Ctrl.getProcesos();
-
-		Ctrl.updateProceso = () => {
-			Rs.http('api/Procesos/update', { Proceso: Ctrl.ProcesoSel }).then(() => {
-				Rs.showToast('Proceso Actualizado', 'Success');
-			});
-		};
-
-		Ctrl.sendCreate = (p) => {
-			Rs.http('api/Procesos/create', { Proceso: p }).then(() => {
-				Rs.showToast(p.Tipo+' Creado', 'Success');
-				Ctrl.getProcesos();
-			});
-		};
-
-		Ctrl.createSubproceso = () => {
-			Rs.BasicDialog({
-				Title: 'Crear Subproceso',
-				Fields: [
-					{ Nombre: 'Nombre',  Value: '', Required: true },
-					{ Nombre: 'Tipo',    Value: 'Proceso', Required: true, Type: 'list', List: Ctrl.TiposProcesos, Item_Val: 'id', Item_Show: 'Nombre' },
-
-				],
-			}).then((r) => {
-				Ctrl.sendCreate({
-					Proceso: r.Fields[0].Value.trim(),
-					padre_id: Ctrl.ProcesoSel.id, 
-					Tipo: r.Fields[1].Value
-				});
-			});
-		};
-
-		Ctrl.createEmpresa = () => {
-			Rs.BasicDialog({
-				Title: 'Crear Empresa',
-			}).then((r) => {
-				Ctrl.sendCreate({
-					Proceso: r.Fields[0].Value.trim(),
-					Tipo: 'Empresa'
-				});
-			});
-		};
-		
-	}
-]);
 angular.module('ScorecardsCtrl', [])
 .controller('ScorecardsCtrl', ['$scope', '$rootScope', '$injector', '$filter',
 	function($scope, $rootScope, $injector, $filter) {
@@ -2724,6 +2733,39 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
                 });*/
             });
 		};
+
+		Ctrl.openFlatLevel = (N, ev) => {
+			ev.stopPropagation();
+			if(N.tipo !== 'Nodo') return Ctrl.decideAction(N);
+
+			N.open = !N.open;
+
+			//var cont = true;
+			angular.forEach(Ctrl.Sco.nodos_flat, (nodo) => {
+
+				var hijo = nodo.ruta.startsWith(N.ruta) && nodo.depth > N.depth;
+
+				if(hijo){
+					if(nodo.depth == N.depth + 1){ nodo.show = N.open; nodo.open = false; }
+					else{
+						nodo.show = nodo.open = false;
+					}
+				}
+
+				/*if(cont){
+					if(nodo.i > N.i){
+						
+						nodo.show = N.open;
+
+						//if(nodo.depth == N.depth + 1) nodo.show = N.open;
+						//if(nodo.depth > N.depth + 1){ nodo.show = false; nodo.open = false; }
+						//if(nodo.type == 'Nodo' && nodo.depth >= N.depth + 1){ nodo.open = false; }
+						
+						if(nodo.type == 'Nodo' && nodo.depth == N.depth) cont = false;
+					};
+				};*/
+			});
+		}
 
 		Ctrl.decideAction = (N) => {
 			if(N.tipo == 'Indicador'){

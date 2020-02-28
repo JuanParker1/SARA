@@ -73,10 +73,10 @@ class ScorecardNodo extends MyModel
 
 
 
-	public function getRuta()
+	public function getRuta($Base = false)
 	{
 		if(is_null($this->padre_id)){
-			$this->Ruta = '';
+			$this->Ruta = ($Base) ? $Base : '';
 		}else if($this->tipo == 'Nodo'){
 			$this->nodo_padre->getRuta();
 			$RutaPadre = $this->nodo_padre->Ruta;
@@ -93,12 +93,17 @@ class ScorecardNodo extends MyModel
 		return $this->tipo == 'Nodo' ? 1 : 0;
 	}
 
-	public function getChildren($Cascade = false)
+	public function getChildren($Cascade = false, $Ruta = '')
 	{
 		$this->nodos_cant = $this->nodos->count();
+		$this->open = true;
+
 		if($Cascade){
+			if($Ruta !== '') $Ruta .= '\\';
+			$Ruta .= $this->Nodo;
+			$this->ruta = $Ruta;
 			foreach ($this->nodos as $nodo) {
-				$nodo->getChildren(true);
+				$nodo->getChildren(true, $Ruta);
 			}
 		}
 	}
@@ -148,16 +153,17 @@ class ScorecardNodo extends MyModel
 		
 	}
 
-	public function flatten(&$NodosFlat, $Nivel)
+	public function flatten(&$NodosFlat, $depth)
 	{
 		$NodosFlat[] = [
 			'id' => $this->id, 'Nodo' => $this->Nodo, 
-			'Nivel' => $Nivel, 'tipo' => $this->tipo, 'nodos_cant' => $this->nodos_cant, 
-			'calc' => $this->calc, 'valores' => $this->valores, 'elemento' => $this->elemento, 'open' => true
+			'depth' => $depth, 'tipo' => $this->tipo, 'nodos_cant' => $this->nodos_cant, 
+			'calc' => $this->calc, 'valores' => $this->valores, 'elemento' => $this->elemento, 'open' => true, 'show' => true,
+			'ruta' => $this->ruta
 		];
-		$Nivel++;
+		$depth++;
 		foreach ($this->nodos as $nodo) {
-			$nodo->flatten($NodosFlat, $Nivel);
+			$nodo->flatten($NodosFlat, $depth);
 		}
 	}
 

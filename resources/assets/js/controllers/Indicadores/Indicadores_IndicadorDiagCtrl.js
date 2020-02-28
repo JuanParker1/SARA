@@ -110,5 +110,14 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
             if(comp.Tipo == 'Variable')  return Rs.viewVariableDiag(comp.variable_id);
             if(comp.Tipo == 'Indicador') return Rs.viewIndicadorDiag(comp.variable_id);
         };
+
+
+        Ctrl.Comentarios = [
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed urna nulla. Sed sem arcu",
+            "Curabitur posuere auctor dolor non maximus. Ut volutpat tortor a varius eleifend.",
+            "Fusce fringilla facilisis nibh nec porta. Proin molestie"
+        ];
+
+
 	}
 ]);

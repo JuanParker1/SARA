@@ -54,6 +54,39 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
             });
 		};
 
+		Ctrl.openFlatLevel = (N, ev) => {
+			ev.stopPropagation();
+			if(N.tipo !== 'Nodo') return Ctrl.decideAction(N);
+
+			N.open = !N.open;
+
+			//var cont = true;
+			angular.forEach(Ctrl.Sco.nodos_flat, (nodo) => {
+
+				var hijo = nodo.ruta.startsWith(N.ruta) && nodo.depth > N.depth;
+
+				if(hijo){
+					if(nodo.depth == N.depth + 1){ nodo.show = N.open; nodo.open = false; }
+					else{
+						nodo.show = nodo.open = false;
+					}
+				}
+
+				/*if(cont){
+					if(nodo.i > N.i){
+						
+						nodo.show = N.open;
+
+						//if(nodo.depth == N.depth + 1) nodo.show = N.open;
+						//if(nodo.depth > N.depth + 1){ nodo.show = false; nodo.open = false; }
+						//if(nodo.type == 'Nodo' && nodo.depth >= N.depth + 1){ nodo.open = false; }
+						
+						if(nodo.type == 'Nodo' && nodo.depth == N.depth) cont = false;
+					};
+				};*/
+			});
+		}
+
 		Ctrl.decideAction = (N) => {
 			if(N.tipo == 'Indicador'){
 				Rs.viewIndicadorDiag(N.elemento.id);

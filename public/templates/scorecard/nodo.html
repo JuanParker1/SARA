@@ -1,16 +1,12 @@
 <div layout=column ng-if="$ctrl.nodo.tipo == 'Nodo'" flex=100>
-	<div layout class="Pointer padding-10-0">
+	<div layout class="Pointer padding-10-0" ng-click="$ctrl.nodo.open = !$ctrl.nodo.open">
 		<md-icon md-font-icon="fa-chevron-right fa-fw s20 transition margin-right-5" 
-			 ng-class="{'fa-rotate-90':!N.open}"></md-icon>
+			 ng-class="{'fa-rotate-90':$ctrl.nodo.open}"></md-icon>
 		<div class="margin-right">{{ $ctrl.nodo.Nodo }}</div>
 		<div ng-style="{ color: $ctrl.nodo.calc[$ctrl.periodo].color }">{{ $ctrl.nodo.calc[$ctrl.periodo].val }}</div>
 		<span flex></span>
 	</div>
-	<div layout layout-wrap class="padding-left">
-		<!--<div ng-repeat="N in $ctrl.nodo.nodos" layout layout-wrap>
-			<scorecard-nodo nodo="N" periodo="$ctrl.periodo" ng-if="N.tipo == 'Nodo'"  flex=100></scorecard-nodo>
-			<scorecard-nodo nodo="N" periodo="$ctrl.periodo" ng-if="N.tipo !== 'Nodo'" flex=20></scorecard-nodo>
-		</div>-->
+	<div layout layout-wrap class="padding-left" ng-show="$ctrl.nodo.open">
 		<scorecard-nodo nodo="N" periodo="$ctrl.periodo" ng-repeat="N in $ctrl.nodo.nodos | filter:{ tipo:'Nodo' }" flex=100></scorecard-nodo>
 		<scorecard-nodo nodo="N" periodo="$ctrl.periodo" ng-repeat="N in $ctrl.nodo.nodos | exclude:['Nodo']:'tipo' "
 			flex=100 flex-gt-xs=50 flex-gt-sm=33 flex-gt-md=20 class="card"></scorecard-nodo>

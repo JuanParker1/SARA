@@ -98,6 +98,8 @@ class ScorecardsController extends Controller
         $Nodo->calculate($Periodos);
         $Nodo->flatten($NodosFlat, 0);
 
+        foreach ($NodosFlat as $i => &$N) { $N['i'] = $i; };
+
         $Sco->nodo = $Nodo;
         $Sco->nodos_flat = $NodosFlat;
 

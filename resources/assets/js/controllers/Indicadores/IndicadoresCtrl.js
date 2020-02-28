@@ -81,7 +81,7 @@ angular.module('IndicadoresCtrl', [])
 			Ctrl.IndicadoresVarsCRUD.setScope('indicador', Ctrl.IndSel.id).get();
 			Ctrl.MetasCRUD.setScope('indicador', Ctrl.IndSel.id).get();
 
-			//Rs.viewIndicadorDiag(Ctrl.IndSel.id); //FIX
+			Rs.viewIndicadorDiag(Ctrl.IndSel.id); //FIX
 		};
 
 		Ctrl.updateIndicador = () => {
