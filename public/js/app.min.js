@@ -3686,6 +3686,13 @@ angular.module('printThis', []).directive('printThis',
     };
   }
 );
+angular.module('scorecardNodo', []).component('scorecardNodo', {
+  templateUrl: 'templates/scorecard/nodo.html',
+  bindings: {
+    nodo: '=',
+    periodo: '<'
+  }
+});
 angular.module('SARA', [
 	'ui.router',
 
@@ -3703,6 +3710,8 @@ angular.module('SARA', [
 	'as.sortable',
 	'ngCsv',
 	'angular-img-cropper',
+
+	'scorecardNodo',
 
 	'appRoutes',
 	'appConfig',

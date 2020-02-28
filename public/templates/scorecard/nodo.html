@@ -1,0 +1,39 @@
+<div layout=column ng-if="$ctrl.nodo.tipo == 'Nodo'" flex=100>
+	<div layout class="Pointer padding-10-0">
+		<md-icon md-font-icon="fa-chevron-right fa-fw s20 transition margin-right-5" 
+			 ng-class="{'fa-rotate-90':!N.open}"></md-icon>
+		<div class="margin-right">{{ $ctrl.nodo.Nodo }}</div>
+		<div ng-style="{ color: $ctrl.nodo.calc[$ctrl.periodo].color }">{{ $ctrl.nodo.calc[$ctrl.periodo].val }}</div>
+		<span flex></span>
+	</div>
+	<div layout layout-wrap class="padding-left">
+		<!--<div ng-repeat="N in $ctrl.nodo.nodos" layout layout-wrap>
+			<scorecard-nodo nodo="N" periodo="$ctrl.periodo" ng-if="N.tipo == 'Nodo'"  flex=100></scorecard-nodo>
+			<scorecard-nodo nodo="N" periodo="$ctrl.periodo" ng-if="N.tipo !== 'Nodo'" flex=20></scorecard-nodo>
+		</div>-->
+		<scorecard-nodo nodo="N" periodo="$ctrl.periodo" ng-repeat="N in $ctrl.nodo.nodos | filter:{ tipo:'Nodo' }" flex=100></scorecard-nodo>
+		<scorecard-nodo nodo="N" periodo="$ctrl.periodo" ng-repeat="N in $ctrl.nodo.nodos | exclude:['Nodo']:'tipo' "
+			flex=100 flex-gt-xs=50 flex-gt-sm=33 flex-gt-md=20 class="card"></scorecard-nodo>
+	</div>
+</div>
+
+
+<div ng-if="$ctrl.nodo.tipo !== 'Nodo'" layout=column class="mh120 bg-black-3 margin-5 relative border-radius scorecard" md-whiteframe=2 md-ink-ripple layout=column>
+	<div flex ng-show="$ctrl.nodo.tipo == 'Indicador'" layout=column class="Pointer" ng-click="viewIndicadorDiag($ctrl.nodo.elemento_id)">
+		<div class="card_title" layout>
+			<div flex>{{ $ctrl.nodo.Nodo }}</div>
+			<!--<md-icon class="s15" md-font-icon="{{Sentidos[I.Sentido].icon}} fa-fw">
+				<md-tooltip md-direction=left>{{ Sentidos[I.Sentido].desc }}</md-tooltip>
+			</md-icon>
+			
+			-->
+		</div>
+		<div flex layout layout-align="center center">
+			<div class="card_value" style="color: {{ $ctrl.nodo.valores[$ctrl.periodo].color }}"
+				>{{ $ctrl.nodo.valores[$ctrl.periodo].val }}</div>
+		</div>
+		<div class="card_subtext">{{ $ctrl.nodo.valores[$ctrl.periodo].meta_val }}</div>
+	</div>
+</div>
+
+

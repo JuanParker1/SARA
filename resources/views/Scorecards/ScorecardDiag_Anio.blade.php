@@ -23,9 +23,7 @@
 					<td md-cell ng-repeat="M in Meses" class="scorecard_mescell">
 						<div class="w100p" ng-if="N.tipo == 'Nodo'" ng-repeat="E in [ N.calc[Anio+M[0]] ] "
 							ng-style="{ color: E['color'] }">
-
-							<span hide ng-if="E['incalculables'] < N['nodos_cant']">{{ E['cump_val'] }}</span>
-							<span ng-if="E['calculable']">{{ E['cump_val'] }}</span>
+							<span ng-if="E['calculable']">{{ E['val'] }}</span>
 						</div>
 
 						<div class="w100p" ng-if="N.tipo == 'Indicador'" ng-repeat="E in [ N.valores[Anio+M[0]] ] "

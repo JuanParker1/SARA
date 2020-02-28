@@ -25,6 +25,7 @@ elixir(function (mix) {
       'services/**/*.js',
       'filters/**/*.js',
       'directives/**/*.js',
+      'components/**/*.js',
       
       '*.js',
 

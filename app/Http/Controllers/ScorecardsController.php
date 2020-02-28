@@ -88,7 +88,7 @@ class ScorecardsController extends Controller
     public function postGet()
     {
         $Anio = request('Anio');
-        $Sco = Scorecard::where('id', 1)->first();
+        $Sco = Scorecard::where('id', request('id'))->first();
         $Nodo = ScorecardNodo::scorecard($Sco->id)->whereNull('padre_id')->first();
 
         $Periodos = Helper::getPeriodos(($Anio*100)+01,($Anio*100)+12);

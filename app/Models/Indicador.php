@@ -67,8 +67,9 @@ class Indicador extends MyModel
 				$c->variable_name = $Var->Variable;
 			}else if($c->Tipo == 'Indicador'){
 				$Ind = self::where('id',$c->variable_id)->first();
-				$c->valores = $Ind::calcVals($Anio,$mesIni,$mesFin);
+				$c->valores = collect($Ind->calcVals($Anio,$mesIni,$mesFin));
 				$c->variable_name = $Ind->Indicador;
+
 			};
 		};
 

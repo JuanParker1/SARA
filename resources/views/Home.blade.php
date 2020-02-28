@@ -15,13 +15,32 @@
 				<input flex type="search" placeholder="Buscar..." ng-model="a" class="no-padding w100">
 			</div>
 
-			<!--<div class="w35 h35 bg-lightgrey border-rounded margin-right-5 border" hide
-				style="background-image: url({{ 'http://sec.comfamiliar.com/images/fotosEmpleados/' + Usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>-->
-			<div class="text-16px" hide-xs>{{ Usuario.Nombres }}</div>
-			<md-button class="md-icon-button no-margin" aria-label="Button" ng-click="Logout()">
-				<md-icon md-font-icon="fa-power-off"></md-icon>
-				<md-tooltip md-direction="bottom">Salir</md-tooltip>
-			</md-button>
+			
+			<md-menu md-position-mode="target-right target">
+
+				<div class="Pointer padding-right" layout layout-align="center center" ng-click="$mdMenu.open($event)">
+					<div class="s30 bg-lightgrey border-rounded margin-right-5 border" 
+						style="background-image: url({{ 'http://sec.comfamiliar.com/images/fotosEmpleados/' + Usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>
+					<div class="text-16px" hide-xs>{{ Usuario.Nombres }}</div>
+					<md-button class="md-icon-button no-margin" aria-label="Button">
+						<md-icon md-font-icon="fa-chevron-down fa-fw"></md-icon>
+					</md-button>
+				</div>
+
+				
+				<md-menu-content class="w170 no-margin">
+					<div class="s120 bg-lightgrey border-rounded margin-0-auto" md-whiteframe=1 
+						style="background-image: url({{ 'http://sec.comfamiliar.com/images/fotosEmpleados/' + Usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>
+
+					<h3 class="md-title margin text-center">{{ Usuario.Nombres }}</h3>
+					<md-menu-item>
+						<md-button ng-click="Logout()">
+							<md-icon md-font-icon="fa-power-off no-margin"></md-icon>Salir
+						</md-button>
+					</md-menu-item>
+				</md-menu-content>
+			</md-menu>
+			
 			
 		</div>
 	</md-toolbar>
@@ -34,11 +53,12 @@
 				<md-icon class="fa-fw fa-lg" md-font-icon="fa-home"></md-icon>
 				<md-tooltip md-direction="right">Inicio</md-tooltip>
 			</div>
-			<div ng-repeat="S in Usuario.Secciones" layout layout-align="center center"
-				class="Seccion" ng-class="{ 'itemsel' : (S.id == State.route[2] ) }" md-ink-ripple ng-click="navTo('Home.Section', { section: S.id })">
+			<a ng-repeat="S in Usuario.Secciones" layout layout-align="center center" 
+				class="Seccion no-underline" ng-class="{ 'itemsel' : (S.id == State.route[2] ) }" md-ink-ripple 
+				href="{{ Usuario.Url }}#/Home/{{S.id}}" target="_self">
 				<md-icon class="fa-fw fa-lg" md-font-icon="{{ S.Icono }}"></md-icon>
-				<md-tooltip md-direction="right">{{ S.Seccion }}</md-tooltip>
-			</div>
+				<md-tooltip md-direction="right">{{ S.Seccion }}</md-tooltip>	
+			</a>
 			<div class="h20"></div>
 		</div>
 

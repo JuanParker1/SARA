@@ -16,6 +16,8 @@ angular.module('SARA', [
 	'ngCsv',
 	'angular-img-cropper',
 
+	'scorecardNodo',
+
 	'appRoutes',
 	'appConfig',
 	'appFunctions',

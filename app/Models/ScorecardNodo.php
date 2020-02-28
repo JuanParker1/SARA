@@ -128,7 +128,7 @@ class ScorecardNodo extends MyModel
 				if($subnodo->tipo == 'Nodo'){
 					foreach ($subnodo->calc as $per => $cal) {
 						if($cal['calculable']){
-							$calc[$per]['puntos'] += $subnodo->peso * $cal['cump'];
+							$calc[$per]['puntos'] += $subnodo->peso * $cal['Valor'];
 						}else{
 							$calc[$per]['incalculables']++;
 						}
@@ -137,9 +137,9 @@ class ScorecardNodo extends MyModel
 			}
 
 			foreach ($calc as &$c) {
-				$c['cump'] = $this->puntos_totales > 0 ? round($c['puntos'] / $this->puntos_totales, 3) : 0;
-				$c['cump_val'] = Helper::formatVal($c['cump'], 'Porcentaje', 1);
-				$c['color'] = Helper::getIndicatorColor($c['cump'], 'B');
+				$c['Valor'] = $this->puntos_totales > 0 ? round($c['puntos'] / $this->puntos_totales, 3) : 0;
+				$c['val'] = Helper::formatVal($c['Valor'], 'Porcentaje', 1);
+				$c['color'] = Helper::getIndicatorColor($c['Valor'], 'B');
 				$c['calculable'] = $c['incalculables'] < $this->nodos_cant;
 			}
 
