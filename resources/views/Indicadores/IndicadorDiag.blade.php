@@ -107,10 +107,8 @@
 				<div class="padding-0-10" flex>
 					<div ng-repeat="C in Comentarios" class="comment">{{ C }}</div>
 				</div>
-				<div layout>
-					<md-input-container flex class="">
-						<textarea ng-model="a" rows="2"></textarea>
-					</md-input-container>
+				<div layout=column>
+					<md-button class="md-raised">Agregar Comentario</md-button>
 				</div>
 		  </md-sidenav>
 
