@@ -10387,11 +10387,17 @@ md-select-menu .opt-img {
 .margin-0-10 {
   margin: 0 10px !important;
 }
+.margin-0-20 {
+  margin: 0 20px !important;
+}
 .margin-0-5 {
   margin: 0 5px !important;
 }
 .margin-5-0 {
   margin: 5px 0 !important;
+}
+.margin-5-10 {
+  margin: 5px 10px !important;
 }
 .margin-5 {
   margin: 5px !important;

@@ -13,6 +13,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 		Ctrl.Anio  = angular.copy(Rs.AnioActual);
 		Ctrl.anioAdd = (num) => { Ctrl.Anio += num; Ctrl.getIndicadores(); };
 		Ctrl.Sentidos = Rs.Sentidos;
+        Ctrl.Usuario = Rs.Usuario;
 
         Ctrl.modoComparativo = false;
 
@@ -111,11 +112,23 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
             if(comp.Tipo == 'Indicador') return Rs.viewIndicadorDiag(comp.variable_id);
         };
 
+        //Sidenav
+        Ctrl.showSidenav = true;
+
+        Ctrl.toogleSidenav = () => {
+            Ctrl.showSidenav = !Ctrl.showSidenav;
+            $timeout(() => {
+                Ctrl.updateChart();
+            }, 300);        
+        }
 
         Ctrl.Comentarios = [
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed urna nulla. Sed sem arcu",
             "Curabitur posuere auctor dolor non maximus. Ut volutpat tortor a varius eleifend.",
-            "Fusce fringilla facilisis nibh nec porta. Proin molestie"
+            "Fusce fringilla facilisis nibh nec porta. Proin molestie",
+            "Fusce fringilla facilisis nibh nec porta. Ut volutpat tortor a varius eleifend.",
+            "Fusce fringilla facilisis nibh nec porta. consectetur adipiscing elit.",
+            "Fusce fringilla facilisis nibh nec porta. Proin molestie 2"
         ];
 
 

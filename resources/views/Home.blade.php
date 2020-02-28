@@ -19,8 +19,8 @@
 			<md-menu md-position-mode="target-right target">
 
 				<div class="Pointer padding-right" layout layout-align="center center" ng-click="$mdMenu.open($event)">
-					<!--<div class="s30 bg-lightgrey border-rounded margin-right-5 border" 
-						style="background-image: url({{ 'http://sec.comfamiliar.com/images/fotosEmpleados/' + Usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>-->
+					<div class="s30 bg-lightgrey border-rounded margin-right-5 border" 
+						style="background-image: url({{ 'http://sec.comfamiliar.com/images/fotosEmpleados/' + Usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>
 					<div class="text-16px" hide-xs>{{ Usuario.Nombres }}</div>
 					<md-button class="md-icon-button no-margin" aria-label="Button">
 						<md-icon md-font-icon="fa-chevron-down fa-fw"></md-icon>
@@ -29,8 +29,8 @@
 
 				
 				<md-menu-content class="w170 no-margin">
-					<!--<div class="s120 bg-lightgrey border-rounded margin-0-auto" md-whiteframe=1 
-						style="background-image: url({{ 'http://sec.comfamiliar.com/images/fotosEmpleados/' + Usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>-->
+					<div class="s120 bg-lightgrey border-rounded margin-0-auto" md-whiteframe=1 
+						style="background-image: url({{ 'http://sec.comfamiliar.com/images/fotosEmpleados/' + Usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>
 
 					<h3 class="md-title margin text-center">{{ Usuario.Nombres }}</h3>
 					<md-menu-item>

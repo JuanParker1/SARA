@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: localhost
--- Tiempo de generación: 21-02-2020 a las 18:29:47
+-- Tiempo de generación: 28-02-2020 a las 17:11:59
 -- Versión del servidor: 5.5.47-0ubuntu0.14.04.1
 -- Versión de PHP: 5.5.9-1ubuntu4.26
 
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `sara_apps` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=12 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;
 
 --
 -- Volcado de datos para la tabla `sara_apps`
@@ -56,7 +56,8 @@ INSERT INTO `sara_apps` (`id`, `Titulo`, `Desc`, `Slug`, `Icono`, `Color`, `Nave
 (8, 'Hospitalización en Casa', NULL, '4HD9N', 'fas fa-home', '#c8fdd1', 'Superior', 30, 0, '2020-02-06 09:16:22', '2020-02-06 09:17:35'),
 (9, 'ComSentido', NULL, 'B9E6J', 'fas fa-baby', '#f7d6f8', 'Superior', 30, 0, '2020-02-06 11:29:07', '2020-02-06 11:30:01'),
 (10, 'Referencia y Contrareferencia', NULL, 'D3NQY', 'fas fa-star-of-life', '#09bac4', 'Superior', 30, 0, '2020-02-18 15:04:02', '2020-02-18 15:05:36'),
-(11, 'Encuestas Satisfacción', NULL, 'P45ZJ', 'fas fa-poll-h', '#ddf5dc', 'Superior', 30, 0, '2020-02-20 15:37:30', '2020-02-20 15:57:58');
+(11, 'Encuestas Satisfacción', NULL, 'P45ZJ', 'fas fa-poll-h', '#ddf5dc', 'Superior', 30, 0, '2020-02-20 15:37:30', '2020-02-20 15:57:58'),
+(12, 'Acreditación', NULL, 'ND3CP', 'fas fa-hospital', '#134ea6', 'Superior', 30, 0, '2020-02-28 11:00:24', '2020-02-28 11:01:22');
 
 -- --------------------------------------------------------
 
@@ -74,7 +75,7 @@ CREATE TABLE IF NOT EXISTS `sara_apps_pages` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=25 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=27 ;
 
 --
 -- Volcado de datos para la tabla `sara_apps_pages`
@@ -102,7 +103,9 @@ INSERT INTO `sara_apps_pages` (`id`, `app_id`, `Indice`, `Titulo`, `Tipo`, `Conf
 (21, 6, 2, 'Estadística', 'ExternalUrl', '{"url":"https:\\/\\/app.powerbi.com\\/view?r=eyJrIjoiODU0ZjZhMzItOGU0Yy00MmExLTkyNDctZjk2NWY2YWRkNWM0IiwidCI6ImEzOTI1M2I3LTgxNzktNGY0ZC04YzdhLWIzMWJlMjc5OTliOSIsImMiOjR9","element_id":null,"elements_ids":[],"buttons_main":[],"buttons_grid":[]}', '2020-02-10 09:34:41', '2020-02-10 09:34:45'),
 (22, 2, 1, 'Perfil de Mortalidad', 'ExternalUrl', '{"url":"https:\\/\\/app.powerbi.com\\/view?r=eyJrIjoiZWFhOTRhM2ItNzI5MS00YWUzLWE0OTktZDdmYjdmYmYxZjcxIiwidCI6ImEzOTI1M2I3LTgxNzktNGY0ZC04YzdhLWIzMWJlMjc5OTliOSIsImMiOjR9","element_id":null,"elements_ids":[],"buttons_main":[],"buttons_grid":[]}', '2020-02-13 10:22:24', '2020-02-13 10:22:27'),
 (23, 10, 0, 'Referencia', 'Grid', '{"url":"","element_id":25,"elements_ids":[],"buttons_main":[],"buttons_grid":[]}', '2020-02-18 15:05:15', '2020-02-18 15:05:20'),
-(24, 11, 0, 'Salud', 'Grid', '{"url":"","element_id":26,"elements_ids":[],"buttons_main":[],"buttons_grid":[]}', '2020-02-20 15:37:43', '2020-02-20 15:37:48');
+(24, 11, 0, 'Salud', 'Grid', '{"url":"","element_id":26,"elements_ids":[],"buttons_main":[],"buttons_grid":[]}', '2020-02-20 15:37:43', '2020-02-20 15:37:48'),
+(25, 12, 0, 'Tareas', 'Grid', '{"url":"","element_id":27,"elements_ids":[],"buttons_main":[],"buttons_grid":[]}', '2020-02-28 11:01:13', '2020-02-28 11:01:18'),
+(26, 12, 1, 'Reporte', 'ExternalUrl', '{"url":"https:\\/\\/app.powerbi.com\\/view?r=eyJrIjoiMGNmMDBlYmQtMjQ1NC00ZGNmLTk2ZjMtOWVhODljZmM2NTVmIiwidCI6ImEzOTI1M2I3LTgxNzktNGY0ZC04YzdhLWIzMWJlMjc5OTliOSIsImMiOjR9","element_id":null,"elements_ids":[],"buttons_main":[],"buttons_grid":[]}', '2020-02-28 14:25:14', '2020-02-28 14:25:21');
 
 -- --------------------------------------------------------
 
@@ -187,7 +190,7 @@ CREATE TABLE IF NOT EXISTS `sara_entidades` (
   PRIMARY KEY (`id`),
   KEY `bdd_id` (`bdd_id`),
   KEY `proceso_id` (`proceso_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=44 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=45 ;
 
 --
 -- Volcado de datos para la tabla `sara_entidades`
@@ -228,7 +231,9 @@ INSERT INTO `sara_entidades` (`id`, `bdd_id`, `proceso_id`, `Ruta`, `Nombre`, `T
 (39, 1, 84, 'Comfamiliar Risaralda\\Subdirección Salud', 'ComSentido - Pacientes', 'Tabla', 'BDSALUD.TBSRREHNEU', 671, 671, 'DESC', 99999, '{"campo_desc1":null,"campo_desc2":null,"campo_desc3":null,"campo_desc4":null,"campo_desc5":null,"search_minlen":0,"search_elms":0}', '2020-02-06 11:16:51', '2020-02-18 18:20:10'),
 (40, 1, 47, 'Comfamiliar Risaralda\\Subdirección Salud', 'Referencia de Pacientes', 'Tabla', 'BDSALUD.TBSRREFER', 692, 693, 'DESC', 10000, '{"campo_desc1":null,"campo_desc2":null,"campo_desc3":null,"campo_desc4":null,"campo_desc5":null,"search_minlen":0,"search_elms":0}', '2020-02-18 14:50:43', '2020-02-18 18:21:56'),
 (41, 1, 20, 'Comfamiliar Risaralda\\Subdirección Administrativa\\Gestión de la Calidad e Innovación', 'Encuestas Satisfacción Salud', 'Tabla', 'BDSALUD.TBSRENCSAS', 712, 712, 'DESC', 99999, '{"campo_desc1":null,"campo_desc2":null,"campo_desc3":null,"campo_desc4":null,"campo_desc5":null,"search_minlen":0,"search_elms":0}', '2020-02-20 15:01:21', '2020-02-20 15:35:29'),
-(42, 1, 78, 'Comfamiliar Risaralda\\Subdirección Salud\\Utils', 'Centros Atencion', 'Tabla', 'BDSALUD.TBBDCENATE', 757, 757, 'DESC', 10000, '{"campo_desc1":758,"campo_desc2":757,"campo_desc3":null,"campo_desc4":null,"campo_desc5":null,"search_minlen":0,"search_elms":10}', '2020-02-20 15:40:22', '2020-02-20 15:42:04');
+(42, 1, 78, 'Comfamiliar Risaralda\\Subdirección Salud\\Utils', 'Centros Atencion', 'Tabla', 'BDSALUD.TBBDCENATE', 757, 757, 'DESC', 10000, '{"campo_desc1":758,"campo_desc2":757,"campo_desc3":null,"campo_desc4":null,"campo_desc5":null,"search_minlen":0,"search_elms":10}', '2020-02-20 15:40:22', '2020-02-20 15:42:04'),
+(43, 1, 78, '', 'Usuarios', 'Tabla', 'BDUTIL.TBSGUSU', NULL, NULL, 'DESC', 100, '', '2020-02-28 10:46:34', '2020-02-28 10:46:34'),
+(44, 1, 43, 'Comfamiliar Risaralda\\Subdirección Salud\\Calidad en Salud', 'Acreditación - Tareas', 'Tabla', 'BDSALUD.TBSRACREDT', 760, 760, 'DESC', 9999, '{"campo_desc1":null,"campo_desc2":null,"campo_desc3":null,"campo_desc4":null,"campo_desc5":null,"search_minlen":0,"search_elms":0}', '2020-02-28 10:52:28', '2020-02-28 11:02:08');
 
 -- --------------------------------------------------------
 
@@ -259,7 +264,7 @@ CREATE TABLE IF NOT EXISTS `sara_entidades_campos` (
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `entidad_id` (`entidad_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=760 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=776 ;
 
 --
 -- Volcado de datos para la tabla `sara_entidades_campos`
@@ -774,7 +779,23 @@ INSERT INTO `sara_entidades_campos` (`id`, `entidad_id`, `Indice`, `Columna`, `A
 (756, 41, 44, '.AUESTADO', 'Aud. Estado', 'Texto', 'A', 0, 1, 0, 1, 0, NULL, 1, NULL, NULL, NULL, '', '2020-02-20 15:05:02', '2020-02-20 15:35:11'),
 (757, 42, 0, '.CACODCENAT', 'Cod. Centro', 'Texto', '', 1, 1, 0, 1, 0, NULL, 3, NULL, NULL, NULL, '', '2020-02-20 15:41:31', '2020-02-20 15:42:04'),
 (758, 42, 1, '.CADESCENAT', 'Centro', 'Texto', '', 0, 1, 0, 1, 0, NULL, 30, NULL, NULL, NULL, '', '2020-02-20 15:41:31', '2020-02-20 15:42:04'),
-(759, 42, 2, '.CACODESTAD', 'Aud. Estado', 'Texto', '', 0, 1, 0, 1, 0, NULL, 1, NULL, NULL, NULL, '', '2020-02-20 15:42:15', '2020-02-20 15:42:22');
+(759, 42, 2, '.CACODESTAD', 'Aud. Estado', 'Texto', '', 0, 1, 0, 1, 0, NULL, 1, NULL, NULL, NULL, '', '2020-02-20 15:42:15', '2020-02-20 15:42:22'),
+(760, 44, 0, '.ID', 'Id', 'Entero', NULL, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, '', '2020-02-28 10:52:44', '2020-02-28 10:57:02'),
+(761, 44, 1, '.GRUPO', 'Grupo', 'Lista', '', 0, 1, 0, 1, 0, NULL, NULL, NULL, '[]', NULL, '{"opciones":[{"value":"Direccionamiento y Gerencia","desc":"","color":"#ffffff","icono":null},{"value":"Talento Humano","desc":"","color":"#ffffff","icono":null},{"value":"Ambiente Fisico","desc":"","color":"#ffffff","icono":null},{"value":"Tecnologia","desc":"","color":"#ffffff","icono":null},{"value":"Informacion","desc":"","color":"#ffffff","icono":null},{"value":"Mejoramiento","desc":"","color":"#ffffff","icono":null},{"value":"PACAS","desc":"","color":"#ffffff","icono":null}]}', '2020-02-28 10:52:44', '2020-02-28 10:57:02'),
+(762, 44, 2, '.TEMA', 'Tema', 'Texto', NULL, 0, 1, 0, 1, 0, NULL, 100, NULL, NULL, NULL, '', '2020-02-28 10:52:44', '2020-02-28 10:57:02'),
+(763, 44, 3, '.TAREA', 'Tarea', 'TextoLargo', NULL, 1, 1, 0, 1, 0, 1000, NULL, NULL, NULL, NULL, '', '2020-02-28 10:52:44', '2020-02-28 11:02:08'),
+(764, 44, 4, '.FUENTE', 'Fuente', 'Texto', NULL, 0, 1, 0, 1, 0, NULL, NULL, NULL, NULL, NULL, '', '2020-02-28 10:52:44', '2020-02-28 10:57:02'),
+(765, 44, 5, '.RESPONSA', 'Responsable', 'Entidad', NULL, 1, 1, 0, 1, 0, 1, NULL, NULL, NULL, NULL, '', '2020-02-28 10:52:44', '2020-02-28 10:52:44'),
+(766, 44, 6, '.FECHAASIG', 'Asignado', 'Fecha', '', 1, 1, 0, 1, 0, NULL, NULL, NULL, 'Y-m-d', NULL, '', '2020-02-28 10:52:44', '2020-02-28 10:52:44'),
+(767, 44, 7, '.FECHACOMP', 'Compromiso', 'Fecha', '', 1, 1, 0, 1, 0, NULL, NULL, NULL, 'Y-m-d', NULL, '', '2020-02-28 10:52:44', '2020-02-28 10:52:44'),
+(768, 44, 8, '.FECHAULTS', 'Ult. Seguimiento', 'Fecha', NULL, 0, 1, 0, 1, 0, NULL, NULL, NULL, 'Y-m-d', NULL, '', '2020-02-28 10:52:44', '2020-02-28 10:52:44'),
+(769, 44, 9, '.PORC', 'Cumplimiento', 'Entero', '0', 0, 1, 0, 1, 0, 0, 100, NULL, NULL, NULL, '', '2020-02-28 10:52:44', '2020-02-28 10:52:44'),
+(770, 44, 10, '.ENTREGA', 'Entrega', 'Texto', '', 0, 1, 0, 1, 0, NULL, 100, NULL, NULL, NULL, '', '2020-02-28 10:52:44', '2020-02-28 10:59:10'),
+(771, 44, 11, '.OBS', 'Observación', 'TextoLargo', NULL, 0, 1, 0, 1, 0, 1000, NULL, NULL, NULL, NULL, '', '2020-02-28 10:52:44', '2020-02-28 10:52:44'),
+(772, 44, 12, '.AUESTADO', 'Aud. Estado', 'Texto', 'A', 0, 1, 0, 1, 0, NULL, 1, NULL, NULL, NULL, '', '2020-02-28 10:52:44', '2020-02-28 10:52:44'),
+(773, 44, 13, '.AUFECING', '', 'Texto', 'CURRENT_TIMESTAMP', 1, 1, 0, 1, 0, NULL, 10, NULL, NULL, NULL, '', '2020-02-28 10:52:44', '2020-02-28 10:52:44'),
+(774, 44, 14, '.AUFECMOD', '', 'Texto', '', 1, 1, 0, 1, 0, NULL, 10, NULL, NULL, NULL, '', '2020-02-28 10:52:44', '2020-02-28 10:52:44'),
+(775, 44, 15, '.AUCODUSU', '', 'Texto', NULL, 0, 1, 0, 1, 0, NULL, 10, NULL, NULL, NULL, '', '2020-02-28 10:52:44', '2020-02-28 10:52:44');
 
 -- --------------------------------------------------------
 
@@ -791,7 +812,7 @@ CREATE TABLE IF NOT EXISTS `sara_entidades_cargadores` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
 
 --
 -- Volcado de datos para la tabla `sara_entidades_cargadores`
@@ -803,7 +824,8 @@ INSERT INTO `sara_entidades_cargadores` (`id`, `entidad_id`, `Titulo`, `Plantill
 (3, 21, 'Cargar RIPS Consultas (AC)', NULL, '{"tipo_archivo":"csv","delimiter":",","with_headers":false,"campos":{"383":{"campo_id":383,"tipo_valor":"Sin Valor","Defecto":null},"384":{"campo_id":384,"tipo_valor":"Columna","Defecto":1},"385":{"campo_id":385,"tipo_valor":"Columna","Defecto":2},"386":{"campo_id":386,"tipo_valor":"Columna","Defecto":3},"387":{"campo_id":387,"tipo_valor":"Columna","Defecto":4},"388":{"campo_id":388,"tipo_valor":"Columna","Defecto":5,"formato_fecha":"d\\/m\\/Y","formato":"d\\/m\\/Y"},"389":{"campo_id":389,"tipo_valor":"Columna","Defecto":6},"390":{"campo_id":390,"tipo_valor":"Columna","Defecto":7},"391":{"campo_id":391,"tipo_valor":"Columna","Defecto":10},"392":{"campo_id":392,"tipo_valor":"Columna","Defecto":11},"393":{"campo_id":393,"tipo_valor":"Columna","Defecto":12},"394":{"campo_id":394,"tipo_valor":"Columna","Defecto":13},"395":{"campo_id":395,"tipo_valor":"Columna","Defecto":15},"396":{"campo_id":396,"tipo_valor":"Columna","Defecto":16},"397":{"campo_id":397,"tipo_valor":"Columna","Defecto":17},"398":{"campo_id":398,"tipo_valor":"Variable de Sistema","Defecto":"Usuario Logueado"},"399":{"campo_id":399,"tipo_valor":"Sin Valor","Defecto":"FechaHora Actual"}}}', '2019-11-08 10:04:07', '2019-11-12 15:58:26'),
 (4, 21, 'Cargar RIPS Procedimientos (AP)', NULL, '{"tipo_archivo":"csv","delimiter":",","with_headers":false,"campos":{"383":{"campo_id":383,"tipo_valor":"Sin Valor","Defecto":null},"384":{"campo_id":384,"tipo_valor":"Columna","Defecto":1},"385":{"campo_id":385,"tipo_valor":"Columna","Defecto":2},"386":{"campo_id":386,"tipo_valor":"Columna","Defecto":3},"387":{"campo_id":387,"tipo_valor":"Columna","Defecto":4},"388":{"campo_id":388,"tipo_valor":"Columna","Defecto":5,"formato_fecha":"d\\/m\\/Y","formato":"d\\/m\\/Y"},"389":{"campo_id":389,"tipo_valor":"Columna","Defecto":6},"390":{"campo_id":390,"tipo_valor":"Columna","Defecto":7},"391":{"campo_id":391,"tipo_valor":"Columna","Defecto":11},"392":{"campo_id":392,"tipo_valor":"Columna","Defecto":12},"393":{"campo_id":393,"tipo_valor":"Sin Valor","Defecto":null},"394":{"campo_id":394,"tipo_valor":"Sin Valor","Defecto":null},"395":{"campo_id":395,"tipo_valor":"Columna","Defecto":15},"396":{"campo_id":396,"tipo_valor":"Sin Valor","Defecto":null},"397":{"campo_id":397,"tipo_valor":"Columna","Defecto":15},"398":{"campo_id":398,"tipo_valor":"Variable de Sistema","Defecto":"Usuario Logueado"},"399":{"campo_id":399,"tipo_valor":"Sin Valor","Defecto":"FechaHora Actual"}}}', '2019-11-08 10:04:21', '2019-11-12 15:58:30'),
 (5, 29, 'Cargador de Analisis de Reingresos', NULL, '{"tipo_archivo":"excel","delimiter":";","with_headers":true,"campos":{"534":{"campo_id":534,"tipo_valor":"Columna","Defecto":1},"535":{"campo_id":535,"tipo_valor":"Columna","Defecto":2},"536":{"campo_id":536,"tipo_valor":"Columna","Defecto":3},"537":{"campo_id":537,"tipo_valor":"Columna","Defecto":4},"538":{"campo_id":538,"tipo_valor":"Columna","Defecto":5},"539":{"campo_id":539,"tipo_valor":"Columna","Defecto":6}}}', '2019-12-10 10:44:24', '2019-12-10 10:48:03'),
-(6, 36, 'Cargar Pacientes RCV', NULL, '{"tipo_archivo":"csv","delimiter":",","with_headers":false,"campos":{"647":{"campo_id":647,"tipo_valor":"Columna","Defecto":1}}}', '2020-01-29 14:07:13', '2020-01-29 14:07:24');
+(6, 36, 'Cargar Pacientes RCV', NULL, '{"tipo_archivo":"csv","delimiter":",","with_headers":false,"campos":{"647":{"campo_id":647,"tipo_valor":"Columna","Defecto":1}}}', '2020-01-29 14:07:13', '2020-01-29 14:07:24'),
+(7, 44, 'Acreditación - Tareas', NULL, '{"tipo_archivo":"csv","delimiter":";","with_headers":true,"campos":{"760":{"campo_id":760,"tipo_valor":"Sin Valor","Defecto":null},"761":{"campo_id":761,"tipo_valor":"Columna","Defecto":1},"762":{"campo_id":762,"tipo_valor":"Columna","Defecto":2},"763":{"campo_id":763,"tipo_valor":"Columna","Defecto":3},"764":{"campo_id":764,"tipo_valor":"Columna","Defecto":4},"765":{"campo_id":765,"tipo_valor":"Columna","Defecto":5},"766":{"campo_id":766,"tipo_valor":"Columna","Defecto":6,"formato":"Y\\/m\\/d"},"767":{"campo_id":767,"tipo_valor":"Columna","Defecto":7,"formato":"Y\\/m\\/d"},"768":{"campo_id":768,"tipo_valor":"Columna","Defecto":8,"formato":"Y\\/m\\/d"},"769":{"campo_id":769,"tipo_valor":"Columna","Defecto":9},"770":{"campo_id":770,"tipo_valor":"Columna","Defecto":10},"771":{"campo_id":771,"tipo_valor":"Columna","Defecto":11},"772":{"campo_id":772,"tipo_valor":"Sin Valor","Defecto":null},"773":{"campo_id":773,"tipo_valor":"Sin Valor","Defecto":null},"774":{"campo_id":774,"tipo_valor":"Sin Valor","Defecto":null},"775":{"campo_id":775,"tipo_valor":"Sin Valor","Defecto":null}}}', '2020-02-28 11:37:29', '2020-02-28 11:57:52');
 
 -- --------------------------------------------------------
 
@@ -820,7 +842,7 @@ CREATE TABLE IF NOT EXISTS `sara_entidades_editores` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=14 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 ;
 
 --
 -- Volcado de datos para la tabla `sara_entidades_editores`
@@ -839,7 +861,8 @@ INSERT INTO `sara_entidades_editores` (`id`, `entidad_id`, `Titulo`, `Ancho`, `S
 (10, 38, 'Home Care - Atenciones', 800, '[]', '2020-02-06 09:13:08', '2020-02-06 09:13:19'),
 (11, 39, 'ComSentido - Pacientes', 800, '[]', '2020-02-06 11:28:35', '2020-02-06 11:28:47'),
 (12, 40, 'Referencia de Pacientes', 800, '[]', '2020-02-18 15:01:25', '2020-02-18 15:02:09'),
-(13, 41, 'Encuestas Satisfacción Salud', 800, '[]', '2020-02-20 15:36:19', '2020-02-20 15:36:39');
+(13, 41, 'Encuestas Satisfacción Salud', 800, '[]', '2020-02-20 15:36:19', '2020-02-20 15:36:39'),
+(14, 44, 'Acreditación - Tareas', 500, '[]', '2020-02-28 10:59:29', '2020-02-28 10:59:42');
 
 -- --------------------------------------------------------
 
@@ -866,7 +889,7 @@ CREATE TABLE IF NOT EXISTS `sara_entidades_editores_campos` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=258 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=273 ;
 
 --
 -- Volcado de datos para la tabla `sara_entidades_editores_campos`
@@ -1056,7 +1079,18 @@ INSERT INTO `sara_entidades_editores_campos` (`id`, `editor_id`, `seccion_id`, `
 (253, 13, NULL, 41, NULL, 752, NULL, 65, 1, 1, NULL, NULL, NULL, NULL, NULL, '2020-02-20 15:36:28', '2020-02-20 15:51:18'),
 (254, 13, NULL, 42, NULL, 753, NULL, 35, 1, 1, NULL, NULL, NULL, NULL, NULL, '2020-02-20 15:36:28', '2020-02-20 15:51:18'),
 (255, 13, NULL, 43, NULL, 754, NULL, 65, 1, 1, NULL, NULL, NULL, NULL, NULL, '2020-02-20 15:36:28', '2020-02-20 15:51:18'),
-(256, 13, NULL, 44, NULL, 755, NULL, 100, 1, 1, NULL, NULL, NULL, NULL, NULL, '2020-02-20 15:36:28', '2020-02-20 15:36:28');
+(256, 13, NULL, 44, NULL, 755, NULL, 100, 1, 1, NULL, NULL, NULL, NULL, NULL, '2020-02-20 15:36:28', '2020-02-20 15:36:28'),
+(258, 14, NULL, 0, NULL, 761, NULL, 33, 1, 1, NULL, NULL, NULL, NULL, NULL, '2020-02-28 10:59:38', '2020-02-28 11:02:46'),
+(259, 14, NULL, 1, NULL, 762, NULL, 33, 1, 1, NULL, NULL, NULL, NULL, NULL, '2020-02-28 10:59:38', '2020-02-28 11:02:46'),
+(260, 14, NULL, 3, NULL, 763, NULL, 100, 1, 1, NULL, NULL, NULL, NULL, NULL, '2020-02-28 10:59:38', '2020-02-28 11:02:46'),
+(261, 14, NULL, 2, NULL, 764, NULL, 33, 1, 1, NULL, NULL, NULL, NULL, NULL, '2020-02-28 10:59:38', '2020-02-28 11:02:46'),
+(262, 14, NULL, 4, NULL, 765, NULL, 100, 1, 1, NULL, NULL, NULL, NULL, NULL, '2020-02-28 10:59:38', '2020-02-28 11:02:46'),
+(263, 14, NULL, 5, NULL, 766, NULL, 33, 1, 1, NULL, NULL, NULL, NULL, NULL, '2020-02-28 10:59:38', '2020-02-28 11:03:00'),
+(264, 14, NULL, 6, NULL, 767, NULL, 33, 1, 1, NULL, NULL, NULL, NULL, NULL, '2020-02-28 10:59:38', '2020-02-28 11:03:00'),
+(265, 14, NULL, 7, NULL, 768, NULL, 33, 1, 1, NULL, NULL, NULL, NULL, NULL, '2020-02-28 10:59:38', '2020-02-28 11:03:00'),
+(266, 14, NULL, 8, NULL, 769, NULL, 30, 1, 1, NULL, NULL, NULL, NULL, NULL, '2020-02-28 10:59:38', '2020-02-28 11:03:08'),
+(267, 14, NULL, 9, NULL, 770, NULL, 70, 1, 1, NULL, NULL, NULL, NULL, NULL, '2020-02-28 10:59:38', '2020-02-28 11:03:08'),
+(268, 14, NULL, 10, NULL, 771, NULL, 100, 1, 1, NULL, NULL, NULL, NULL, NULL, '2020-02-28 10:59:38', '2020-02-28 11:02:46');
 
 -- --------------------------------------------------------
 
@@ -1073,7 +1107,7 @@ CREATE TABLE IF NOT EXISTS `sara_entidades_grids` (
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `entidad_id` (`entidad_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=27 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=28 ;
 
 --
 -- Volcado de datos para la tabla `sara_entidades_grids`
@@ -1082,7 +1116,7 @@ CREATE TABLE IF NOT EXISTS `sara_entidades_grids` (
 INSERT INTO `sara_entidades_grids` (`id`, `entidad_id`, `Titulo`, `Config`, `created_at`, `updated_at`) VALUES
 (1, 5, 'Citas Recientes', NULL, '2019-06-06 17:45:23', '2019-06-26 15:02:54'),
 (2, 5, 'Citas Gen', NULL, '2019-08-26 16:27:25', '2019-08-26 16:27:25'),
-(3, 12, 'General', NULL, '2019-09-06 16:09:34', '2019-09-06 16:09:34'),
+(3, 12, 'General', '{"main_buttons":[],"row_buttons":[]}', '2019-09-06 16:09:34', '2020-02-26 10:18:15'),
 (4, 13, 'General', NULL, '2019-09-18 16:18:31', '2019-09-18 16:18:31'),
 (5, 15, 'Relación: Actividades y Servicios', '{"main_buttons":[{"icono":"fas fa-link","texto":"Nueva Relaci\\u00f3n","accion":"Editor","accion_element":"Relaci\\u00f3n: Actividades - Servicios","accion_element_id":1,"campos":{"8":{"tipo_valor":"Sin Valor","columna_id":256},"9":{"tipo_valor":"Sin Valor","columna_id":252}},"modo":"Crear"}],"row_buttons":[{"icono":"fas fa-pencil-alt","texto":"Editar","accion":"Editor","accion_element":"Relaci\\u00f3n: Actividades - Servicios","accion_element_id":1,"campos":{"8":{"tipo_valor":"Columna","columna_id":292},"9":{"tipo_valor":"Columna","columna_id":252}},"modo":"Editar"}]}', '2019-10-02 11:51:12', '2019-11-14 15:59:53'),
 (6, 16, 'Tipos Servicio', NULL, '2019-10-02 11:54:25', '2019-10-02 11:54:25'),
@@ -1105,7 +1139,8 @@ INSERT INTO `sara_entidades_grids` (`id`, `entidad_id`, `Titulo`, `Config`, `cre
 (23, 38, 'Home Care - Atenciones', '{"main_buttons":[{"icono":"fa-plus","texto":"Nuevo","accion":"Editor","modo":"Crear","accion_element":"Home Care - Atenciones","accion_element_id":10,"campos":[]}],"row_buttons":[{"icono":"fa-pencil-alt","texto":"Editar","accion":"Editor","modo":"Editar","accion_element":"Home Care - Atenciones","accion_element_id":10,"campos":[]}]}', '2020-02-06 09:12:21', '2020-02-06 09:18:52'),
 (24, 39, 'ComSentido - Pacientes', '{"main_buttons":[{"icono":"fa-plus","texto":"Nuevo","accion":"Editor","modo":"Crear","accion_element":"ComSentido - Pacientes","accion_element_id":11,"campos":{"134":{"tipo_valor":"Por Defecto"},"135":{"tipo_valor":"Por Defecto"},"136":{"tipo_valor":"Por Defecto"},"137":{"tipo_valor":"Por Defecto"},"138":{"tipo_valor":"Por Defecto"},"139":{"tipo_valor":"Por Defecto"},"140":{"tipo_valor":"Por Defecto"},"141":{"tipo_valor":"Por Defecto"},"142":{"tipo_valor":"Por Defecto"},"143":{"tipo_valor":"Por Defecto"},"144":{"tipo_valor":"Por Defecto"},"145":{"tipo_valor":"Por Defecto"},"146":{"tipo_valor":"Por Defecto"},"147":{"tipo_valor":"Por Defecto"},"148":{"tipo_valor":"Por Defecto"},"149":{"tipo_valor":"Por Defecto"},"150":{"tipo_valor":"Por Defecto"},"151":{"tipo_valor":"Por Defecto"}}}],"row_buttons":[{"icono":"fa-pencil-alt","texto":"Editar","accion":"Editor","modo":"Editar","accion_element":"ComSentido - Pacientes","accion_element_id":11,"campos":{"134":{"tipo_valor":"Columna","columna_id":546},"135":{"tipo_valor":"Columna","columna_id":547},"136":{"tipo_valor":"Columna","columna_id":548},"137":{"tipo_valor":"Columna","columna_id":549},"138":{"tipo_valor":"Columna","columna_id":550},"139":{"tipo_valor":"Columna","columna_id":551},"140":{"tipo_valor":"Columna","columna_id":552},"141":{"tipo_valor":"Columna","columna_id":553},"142":{"tipo_valor":"Columna","columna_id":554},"143":{"tipo_valor":"Columna","columna_id":555},"144":{"tipo_valor":"Columna","columna_id":556},"145":{"tipo_valor":"Columna","columna_id":557},"146":{"tipo_valor":"Columna","columna_id":558},"147":{"tipo_valor":"Columna","columna_id":559},"148":{"tipo_valor":"Columna","columna_id":560},"149":{"tipo_valor":"Columna","columna_id":561},"150":{"tipo_valor":"Columna","columna_id":562},"151":{"tipo_valor":"Columna","columna_id":563}}}]}', '2020-02-06 11:28:11', '2020-02-06 11:40:01'),
 (25, 40, 'Referencia de Pacientes', '{"main_buttons":[{"icono":"fa-plus","texto":"Nuevo","accion":"Editor","modo":"Crear","accion_element":"Referencia de Pacientes","accion_element_id":12,"campos":{"195":{"tipo_valor":"Por Defecto"},"196":{"tipo_valor":"Por Defecto"},"197":{"tipo_valor":"Por Defecto"},"198":{"tipo_valor":"Por Defecto"},"199":{"tipo_valor":"Por Defecto"},"200":{"tipo_valor":"Por Defecto"},"201":{"tipo_valor":"Por Defecto"},"202":{"tipo_valor":"Por Defecto"},"203":{"tipo_valor":"Por Defecto"},"204":{"tipo_valor":"Por Defecto"},"205":{"tipo_valor":"Por Defecto"},"206":{"tipo_valor":"Por Defecto"},"207":{"tipo_valor":"Por Defecto"},"208":{"tipo_valor":"Por Defecto"},"209":{"tipo_valor":"Por Defecto"},"210":{"tipo_valor":"Por Defecto"},"211":{"tipo_valor":"Por Defecto"}}}],"row_buttons":[{"icono":"fa-pencil-alt","texto":"Editar","accion":"Editor","modo":"Editar","accion_element":"Referencia de Pacientes","accion_element_id":12,"campos":{"195":{"tipo_valor":"Columna","columna_id":573},"196":{"tipo_valor":"Columna","columna_id":574},"197":{"tipo_valor":"Columna","columna_id":575},"198":{"tipo_valor":"Columna","columna_id":576},"199":{"tipo_valor":"Columna","columna_id":577},"200":{"tipo_valor":"Columna","columna_id":578},"201":{"tipo_valor":"Columna","columna_id":579},"202":{"tipo_valor":"Columna","columna_id":580},"203":{"tipo_valor":"Columna","columna_id":581},"204":{"tipo_valor":"Columna","columna_id":582},"205":{"tipo_valor":"Columna","columna_id":583},"206":{"tipo_valor":"Columna","columna_id":584},"207":{"tipo_valor":"Columna","columna_id":585},"208":{"tipo_valor":"Columna","columna_id":586},"209":{"tipo_valor":"Columna","columna_id":587},"210":{"tipo_valor":"Columna","columna_id":588},"211":{"tipo_valor":"Columna","columna_id":589}}}]}', '2020-02-18 15:00:28', '2020-02-18 15:12:22'),
-(26, 41, 'Encuestas Satisfacción Salud', '{"main_buttons":[{"icono":"fa-plus","texto":"Nuevo","accion":"Editor","modo":"Crear","accion_element":"Encuestas Satisfacci\\u00f3n Salud","accion_element_id":13,"campos":{"214":{"tipo_valor":"Por Defecto"},"215":{"tipo_valor":"Por Defecto"},"216":{"tipo_valor":"Por Defecto"},"217":{"tipo_valor":"Por Defecto"},"218":{"tipo_valor":"Por Defecto"},"219":{"tipo_valor":"Por Defecto"},"220":{"tipo_valor":"Por Defecto"},"221":{"tipo_valor":"Por Defecto"},"222":{"tipo_valor":"Por Defecto"},"223":{"tipo_valor":"Por Defecto"},"224":{"tipo_valor":"Por Defecto"},"225":{"tipo_valor":"Por Defecto"},"226":{"tipo_valor":"Por Defecto"},"227":{"tipo_valor":"Por Defecto"},"228":{"tipo_valor":"Por Defecto"},"229":{"tipo_valor":"Por Defecto"},"230":{"tipo_valor":"Por Defecto"},"231":{"tipo_valor":"Por Defecto"},"232":{"tipo_valor":"Por Defecto"},"233":{"tipo_valor":"Por Defecto"},"234":{"tipo_valor":"Por Defecto"},"235":{"tipo_valor":"Por Defecto"},"236":{"tipo_valor":"Por Defecto"},"237":{"tipo_valor":"Por Defecto"},"238":{"tipo_valor":"Por Defecto"},"239":{"tipo_valor":"Por Defecto"},"240":{"tipo_valor":"Por Defecto"},"241":{"tipo_valor":"Por Defecto"},"242":{"tipo_valor":"Por Defecto"},"243":{"tipo_valor":"Por Defecto"},"244":{"tipo_valor":"Por Defecto"},"245":{"tipo_valor":"Por Defecto"},"246":{"tipo_valor":"Por Defecto"},"247":{"tipo_valor":"Por Defecto"},"248":{"tipo_valor":"Por Defecto"},"249":{"tipo_valor":"Por Defecto"},"250":{"tipo_valor":"Por Defecto"},"251":{"tipo_valor":"Por Defecto"},"252":{"tipo_valor":"Por Defecto"},"253":{"tipo_valor":"Por Defecto"},"254":{"tipo_valor":"Por Defecto"},"255":{"tipo_valor":"Por Defecto"},"256":{"tipo_valor":"Por Defecto"}}}],"row_buttons":[{"icono":"fa-pencil-alt","texto":"Editar","accion":"Editor","modo":"Editar","accion_element":"Encuestas Satisfacci\\u00f3n Salud","accion_element_id":13,"campos":{"214":{"tipo_valor":"Columna","columna_id":596},"215":{"tipo_valor":"Columna","columna_id":597},"216":{"tipo_valor":"Columna","columna_id":598},"217":{"tipo_valor":"Columna","columna_id":599},"218":{"tipo_valor":"Columna","columna_id":600},"219":{"tipo_valor":"Columna","columna_id":601},"220":{"tipo_valor":"Columna","columna_id":602},"221":{"tipo_valor":"Columna","columna_id":603},"222":{"tipo_valor":"Columna","columna_id":604},"223":{"tipo_valor":"Columna","columna_id":605},"224":{"tipo_valor":"Columna","columna_id":606},"225":{"tipo_valor":"Columna","columna_id":607},"226":{"tipo_valor":"Columna","columna_id":608},"227":{"tipo_valor":"Columna","columna_id":609},"228":{"tipo_valor":"Columna","columna_id":610},"229":{"tipo_valor":"Columna","columna_id":611},"230":{"tipo_valor":"Columna","columna_id":612},"231":{"tipo_valor":"Columna","columna_id":613},"232":{"tipo_valor":"Columna","columna_id":614},"233":{"tipo_valor":"Columna","columna_id":615},"234":{"tipo_valor":"Columna","columna_id":616},"235":{"tipo_valor":"Columna","columna_id":617},"236":{"tipo_valor":"Columna","columna_id":618},"237":{"tipo_valor":"Columna","columna_id":619},"238":{"tipo_valor":"Columna","columna_id":620},"239":{"tipo_valor":"Columna","columna_id":621},"240":{"tipo_valor":"Columna","columna_id":622},"241":{"tipo_valor":"Columna","columna_id":623},"242":{"tipo_valor":"Columna","columna_id":624},"243":{"tipo_valor":"Columna","columna_id":625},"244":{"tipo_valor":"Columna","columna_id":626},"245":{"tipo_valor":"Columna","columna_id":627},"246":{"tipo_valor":"Columna","columna_id":628},"247":{"tipo_valor":"Columna","columna_id":629},"248":{"tipo_valor":"Columna","columna_id":630},"249":{"tipo_valor":"Columna","columna_id":631},"250":{"tipo_valor":"Columna","columna_id":632},"251":{"tipo_valor":"Columna","columna_id":633},"252":{"tipo_valor":"Columna","columna_id":634},"253":{"tipo_valor":"Columna","columna_id":635},"254":{"tipo_valor":"Columna","columna_id":636},"255":{"tipo_valor":"Columna","columna_id":637},"256":{"tipo_valor":"Columna","columna_id":638}}}]}', '2020-02-20 15:35:48', '2020-02-20 15:52:13');
+(26, 41, 'Encuestas Satisfacción Salud', '{"main_buttons":[{"icono":"fa-plus","texto":"Nuevo","accion":"Editor","modo":"Crear","accion_element":"Encuestas Satisfacci\\u00f3n Salud","accion_element_id":13,"campos":{"214":{"tipo_valor":"Por Defecto"},"215":{"tipo_valor":"Por Defecto"},"216":{"tipo_valor":"Por Defecto"},"217":{"tipo_valor":"Por Defecto"},"218":{"tipo_valor":"Por Defecto"},"219":{"tipo_valor":"Por Defecto"},"220":{"tipo_valor":"Por Defecto"},"221":{"tipo_valor":"Por Defecto"},"222":{"tipo_valor":"Por Defecto"},"223":{"tipo_valor":"Por Defecto"},"224":{"tipo_valor":"Por Defecto"},"225":{"tipo_valor":"Por Defecto"},"226":{"tipo_valor":"Por Defecto"},"227":{"tipo_valor":"Por Defecto"},"228":{"tipo_valor":"Por Defecto"},"229":{"tipo_valor":"Por Defecto"},"230":{"tipo_valor":"Por Defecto"},"231":{"tipo_valor":"Por Defecto"},"232":{"tipo_valor":"Por Defecto"},"233":{"tipo_valor":"Por Defecto"},"234":{"tipo_valor":"Por Defecto"},"235":{"tipo_valor":"Por Defecto"},"236":{"tipo_valor":"Por Defecto"},"237":{"tipo_valor":"Por Defecto"},"238":{"tipo_valor":"Por Defecto"},"239":{"tipo_valor":"Por Defecto"},"240":{"tipo_valor":"Por Defecto"},"241":{"tipo_valor":"Por Defecto"},"242":{"tipo_valor":"Por Defecto"},"243":{"tipo_valor":"Por Defecto"},"244":{"tipo_valor":"Por Defecto"},"245":{"tipo_valor":"Por Defecto"},"246":{"tipo_valor":"Por Defecto"},"247":{"tipo_valor":"Por Defecto"},"248":{"tipo_valor":"Por Defecto"},"249":{"tipo_valor":"Por Defecto"},"250":{"tipo_valor":"Por Defecto"},"251":{"tipo_valor":"Por Defecto"},"252":{"tipo_valor":"Por Defecto"},"253":{"tipo_valor":"Por Defecto"},"254":{"tipo_valor":"Por Defecto"},"255":{"tipo_valor":"Por Defecto"},"256":{"tipo_valor":"Por Defecto"}}}],"row_buttons":[{"icono":"fa-pencil-alt","texto":"Editar","accion":"Editor","modo":"Editar","accion_element":"Encuestas Satisfacci\\u00f3n Salud","accion_element_id":13,"campos":{"214":{"tipo_valor":"Columna","columna_id":596},"215":{"tipo_valor":"Columna","columna_id":597},"216":{"tipo_valor":"Columna","columna_id":598},"217":{"tipo_valor":"Columna","columna_id":599},"218":{"tipo_valor":"Columna","columna_id":600},"219":{"tipo_valor":"Columna","columna_id":601},"220":{"tipo_valor":"Columna","columna_id":602},"221":{"tipo_valor":"Columna","columna_id":603},"222":{"tipo_valor":"Columna","columna_id":604},"223":{"tipo_valor":"Columna","columna_id":605},"224":{"tipo_valor":"Columna","columna_id":606},"225":{"tipo_valor":"Columna","columna_id":607},"226":{"tipo_valor":"Columna","columna_id":608},"227":{"tipo_valor":"Columna","columna_id":609},"228":{"tipo_valor":"Columna","columna_id":610},"229":{"tipo_valor":"Columna","columna_id":611},"230":{"tipo_valor":"Columna","columna_id":612},"231":{"tipo_valor":"Columna","columna_id":613},"232":{"tipo_valor":"Columna","columna_id":614},"233":{"tipo_valor":"Columna","columna_id":615},"234":{"tipo_valor":"Columna","columna_id":616},"235":{"tipo_valor":"Columna","columna_id":617},"236":{"tipo_valor":"Columna","columna_id":618},"237":{"tipo_valor":"Columna","columna_id":619},"238":{"tipo_valor":"Columna","columna_id":620},"239":{"tipo_valor":"Columna","columna_id":621},"240":{"tipo_valor":"Columna","columna_id":622},"241":{"tipo_valor":"Columna","columna_id":623},"242":{"tipo_valor":"Columna","columna_id":624},"243":{"tipo_valor":"Columna","columna_id":625},"244":{"tipo_valor":"Columna","columna_id":626},"245":{"tipo_valor":"Columna","columna_id":627},"246":{"tipo_valor":"Columna","columna_id":628},"247":{"tipo_valor":"Columna","columna_id":629},"248":{"tipo_valor":"Columna","columna_id":630},"249":{"tipo_valor":"Columna","columna_id":631},"250":{"tipo_valor":"Columna","columna_id":632},"251":{"tipo_valor":"Columna","columna_id":633},"252":{"tipo_valor":"Columna","columna_id":634},"253":{"tipo_valor":"Columna","columna_id":635},"254":{"tipo_valor":"Columna","columna_id":636},"255":{"tipo_valor":"Columna","columna_id":637},"256":{"tipo_valor":"Columna","columna_id":638}}}]}', '2020-02-20 15:35:48', '2020-02-20 15:52:13'),
+(27, 44, 'Acreditación - Tareas', '{"main_buttons":[{"icono":"fa-plus","texto":"Nuevo","accion":"Editor","modo":"Crear","accion_element":"Acreditaci\\u00f3n - Tareas","accion_element_id":14,"campos":{"258":{"tipo_valor":"Columna","columna_id":645},"259":{"tipo_valor":"Columna","columna_id":646},"260":{"tipo_valor":"Columna","columna_id":647},"261":{"tipo_valor":"Columna","columna_id":648},"262":{"tipo_valor":"Columna","columna_id":649},"263":{"tipo_valor":"Columna","columna_id":650},"264":{"tipo_valor":"Columna","columna_id":651},"265":{"tipo_valor":"Columna","columna_id":652},"266":{"tipo_valor":"Columna","columna_id":653},"267":{"tipo_valor":"Columna","columna_id":654},"268":{"tipo_valor":"Columna","columna_id":655}}}],"row_buttons":[{"icono":"fa-pencil-alt","texto":"Editar","accion":"Editor","modo":"Editar","accion_element":"Acreditaci\\u00f3n - Tareas","accion_element_id":14,"campos":{"258":{"tipo_valor":"Columna","columna_id":645},"259":{"tipo_valor":"Columna","columna_id":646},"260":{"tipo_valor":"Columna","columna_id":647},"261":{"tipo_valor":"Columna","columna_id":648},"262":{"tipo_valor":"Columna","columna_id":649},"263":{"tipo_valor":"Columna","columna_id":650},"264":{"tipo_valor":"Columna","columna_id":651},"265":{"tipo_valor":"Columna","columna_id":652},"266":{"tipo_valor":"Columna","columna_id":653},"267":{"tipo_valor":"Columna","columna_id":654},"268":{"tipo_valor":"Columna","columna_id":655}}}]}', '2020-02-28 10:58:05', '2020-02-28 11:00:10');
 
 -- --------------------------------------------------------
 
@@ -1128,7 +1163,7 @@ CREATE TABLE IF NOT EXISTS `sara_entidades_grids_columnas` (
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `grid_id` (`grid_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=640 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=662 ;
 
 --
 -- Volcado de datos para la tabla `sara_entidades_grids_columnas`
@@ -1177,9 +1212,9 @@ INSERT INTO `sara_entidades_grids_columnas` (`id`, `grid_id`, `Indice`, `Cabecer
 (208, 3, 16, NULL, 'Campo', '[12]', '[null]', 1, 325, NULL, '2019-09-06 16:40:45', '2019-09-06 16:40:45'),
 (209, 3, 17, NULL, 'Campo', '[12]', '[null]', 1, 326, NULL, '2019-09-06 16:40:46', '2019-09-06 16:40:46'),
 (210, 3, 18, NULL, 'Campo', '[12]', '[null]', 1, 327, NULL, '2019-09-06 16:40:48', '2019-09-06 16:40:48'),
-(211, 3, 19, NULL, 'Campo', '[12]', '[null]', 1, 329, NULL, '2019-09-06 16:40:50', '2019-09-06 16:40:50'),
-(212, 3, 20, NULL, 'Campo', '[12]', '[null]', 1, 331, NULL, '2019-09-06 16:40:52', '2019-09-06 16:40:52'),
-(213, 3, 21, NULL, 'Campo', '[12]', '[null]', 1, 333, NULL, '2019-09-06 16:40:54', '2019-09-06 16:40:54'),
+(211, 3, 20, NULL, 'Campo', '[12]', '[null]', 1, 329, NULL, '2019-09-06 16:40:50', '2020-02-26 15:49:06'),
+(212, 3, 21, NULL, 'Campo', '[12]', '[null]', 1, 331, NULL, '2019-09-06 16:40:52', '2020-02-26 15:49:06'),
+(213, 3, 22, NULL, 'Campo', '[12]', '[null]', 1, 333, NULL, '2019-09-06 16:40:54', '2020-02-26 15:49:06'),
 (215, 3, 24, NULL, 'Campo', '[12]', '[null]', 1, 293, NULL, '2019-09-06 16:41:00', '2019-09-13 14:04:23'),
 (216, 3, 25, NULL, 'Campo', '[12]', '[null]', 1, 294, NULL, '2019-09-06 16:41:02', '2019-09-13 14:04:24'),
 (217, 3, 26, NULL, 'Campo', '[12]', '[null]', 1, 296, NULL, '2019-09-06 16:41:04', '2019-09-13 14:04:24'),
@@ -1192,7 +1227,6 @@ INSERT INTO `sara_entidades_grids_columnas` (`id`, `grid_id`, `Indice`, `Cabecer
 (224, 3, 33, NULL, 'Campo', '[12]', '[null]', 1, 340, NULL, '2019-09-06 16:41:26', '2019-09-13 14:04:24'),
 (225, 3, 34, NULL, 'Campo', '[12]', '[null]', 1, 342, NULL, '2019-09-06 16:41:28', '2019-09-13 14:04:24'),
 (226, 3, 35, NULL, 'Campo', '[12]', '[null]', 1, 343, NULL, '2019-09-06 16:41:31', '2019-09-13 14:04:24'),
-(227, 3, 23, NULL, 'Campo', '[12,10]', '[null,288,210]', 1, 210, NULL, '2019-09-13 14:04:08', '2019-09-13 14:04:23'),
 (228, 4, 0, NULL, 'Campo', '[13]', '[null]', 1, 344, NULL, '2019-09-18 16:18:33', '2019-09-18 16:18:33'),
 (229, 4, 1, NULL, 'Campo', '[13]', '[null]', 1, 345, NULL, '2019-09-18 16:18:33', '2019-09-18 16:18:33'),
 (230, 4, 2, NULL, 'Campo', '[13]', '[null]', 1, 346, NULL, '2019-09-18 16:18:33', '2019-09-18 16:18:33'),
@@ -1545,7 +1579,24 @@ INSERT INTO `sara_entidades_grids_columnas` (`id`, `grid_id`, `Indice`, `Cabecer
 (636, 26, 41, NULL, 'Campo', '[41]', '[null]', 1, 753, NULL, '2020-02-20 15:35:51', '2020-02-20 15:35:51'),
 (637, 26, 42, NULL, 'Campo', '[41]', '[null]', 1, 754, NULL, '2020-02-20 15:35:51', '2020-02-20 15:35:51'),
 (638, 26, 43, NULL, 'Campo', '[41]', '[null]', 1, 755, NULL, '2020-02-20 15:35:51', '2020-02-20 15:35:51'),
-(639, 26, 44, NULL, 'Campo', '[41]', '[null]', 1, 756, NULL, '2020-02-20 15:35:51', '2020-02-20 15:35:51');
+(639, 26, 44, NULL, 'Campo', '[41]', '[null]', 1, 756, NULL, '2020-02-20 15:35:51', '2020-02-20 15:35:51'),
+(640, 3, 19, NULL, 'Campo', '[12]', '[null]', 1, 328, NULL, '2020-02-26 15:48:42', '2020-02-26 15:48:42'),
+(641, 3, 36, NULL, 'Campo', '[12]', '[null]', 1, 333, NULL, '2020-02-26 15:49:58', '2020-02-26 15:49:58'),
+(642, 3, 37, NULL, 'Campo', '[12]', '[null]', 1, 292, NULL, '2020-02-26 15:50:54', '2020-02-26 15:50:54'),
+(643, 3, 38, NULL, 'Campo', '[12]', '[null]', 1, 339, NULL, '2020-02-26 15:53:06', '2020-02-26 15:53:06'),
+(645, 27, 1, NULL, 'Campo', '[44]', '[null]', 1, 761, NULL, '2020-02-28 10:58:10', '2020-02-28 10:58:10'),
+(646, 27, 2, NULL, 'Campo', '[44]', '[null]', 1, 762, NULL, '2020-02-28 10:58:10', '2020-02-28 10:58:10'),
+(647, 27, 3, NULL, 'Campo', '[44]', '[null]', 1, 763, NULL, '2020-02-28 10:58:10', '2020-02-28 10:58:10'),
+(648, 27, 4, NULL, 'Campo', '[44]', '[null]', 1, 764, NULL, '2020-02-28 10:58:10', '2020-02-28 10:58:10'),
+(649, 27, 5, NULL, 'Campo', '[44]', '[null]', 0, 765, NULL, '2020-02-28 10:58:10', '2020-02-28 12:01:48'),
+(650, 27, 7, NULL, 'Campo', '[44]', '[null]', 1, 766, NULL, '2020-02-28 10:58:10', '2020-02-28 12:01:48'),
+(651, 27, 8, NULL, 'Campo', '[44]', '[null]', 1, 767, NULL, '2020-02-28 10:58:10', '2020-02-28 12:01:48'),
+(652, 27, 9, NULL, 'Campo', '[44]', '[null]', 1, 768, NULL, '2020-02-28 10:58:10', '2020-02-28 12:01:48'),
+(653, 27, 10, NULL, 'Campo', '[44]', '[null]', 1, 769, NULL, '2020-02-28 10:58:10', '2020-02-28 12:01:48'),
+(654, 27, 11, NULL, 'Campo', '[44]', '[null]', 1, 770, NULL, '2020-02-28 10:58:10', '2020-02-28 12:01:48'),
+(655, 27, 12, NULL, 'Campo', '[44]', '[null]', 1, 771, NULL, '2020-02-28 10:58:10', '2020-02-28 12:01:48'),
+(660, 27, 0, NULL, 'Campo', '[44]', '[null]', 1, 760, NULL, '2020-02-28 11:07:09', '2020-02-28 11:07:13'),
+(661, 27, 6, 'Responsable', 'Campo', '[44,1]', '[null,765,150]', 1, 150, NULL, '2020-02-28 12:01:30', '2020-02-28 12:01:48');
 
 -- --------------------------------------------------------
 
@@ -1578,7 +1629,7 @@ INSERT INTO `sara_entidades_grids_filtros` (`id`, `grid_id`, `columna_id`, `Indi
 (15, 1, 61, 0, '=', 'yesterday', 'rel', '', 0, '2019-06-28 16:01:53', '2019-07-03 09:30:24'),
 (18, 1, 86, 2, 'lista', NULL, '', '', 0, '2019-06-28 16:58:29', '2019-08-26 16:18:14'),
 (19, 1, 91, 3, 'lista', NULL, '', '', 0, '2019-07-04 11:22:31', '2019-08-26 16:18:14'),
-(22, 3, 195, 0, '=', '-1 month', 'rel', '', 0, '2019-09-06 16:41:59', '2019-09-06 16:42:14'),
+(22, 3, 195, 0, '=', '-2 month', 'rel', '', 0, '2019-09-06 16:41:59', '2020-02-26 10:18:15'),
 (23, 11, 333, 0, '>=', 'first day of last month', 'rel', '', 0, '2019-12-04 13:36:55', '2019-12-04 13:37:16'),
 (24, 15, 386, 0, '>=', 'first day of last month', 'rel', '', 0, '2019-12-10 11:26:13', '2019-12-10 11:29:52'),
 (25, 25, 586, 0, '', NULL, '', '', 0, '2020-02-18 15:40:31', '2020-02-18 15:40:31');
@@ -3221,7 +3272,7 @@ CREATE TABLE IF NOT EXISTS `sara_indicadores` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=23 ;
 
 --
 -- Volcado de datos para la tabla `sara_indicadores`
@@ -3239,7 +3290,17 @@ INSERT INTO `sara_indicadores` (`id`, `Ruta`, `proceso_id`, `Indicador`, `Defini
 (9, 'Salud\\PGPSOS', 79, '07. Gestión de Eventos Adversos', '', 'Porcentaje', 0, 'a / b', 'ASC', '2019-12-10 12:40:08', '2019-12-11 11:32:51'),
 (10, 'Salud\\PGPSOS', 79, '08. Giro Cama Hospitalario', '', 'Numero', 1, 'a / b', 'ASC', '2019-12-10 14:30:09', '2019-12-10 14:31:45'),
 (11, 'Salud\\PGPSOS', 79, '09. Giro Cama UCI', '', 'Numero', 1, 'a / b', 'ASC', '2019-12-10 16:40:47', '2019-12-10 16:42:09'),
-(12, 'Salud\\Hospitalaria', 54, 'Giro Cama Global', '', 'Numero', 1, 'a / 210', 'ASC', '2019-12-11 08:45:21', '2020-02-21 11:27:54');
+(12, 'Salud\\Hospitalaria', 54, 'Giro Cama Global', '', 'Numero', 1, 'a / 210', 'ASC', '2019-12-11 08:45:21', '2020-02-21 11:27:54'),
+(13, '', 79, '10. Satisfacción Global Hospitalaria', 'Porcentaje de pacientes hospitalarios encuestados que se consideraron satisfechos', 'Porcentaje', 0, 'a / b', 'ASC', '2020-02-26 14:44:34', '2020-02-26 14:48:10'),
+(14, '', 79, '11. Calidad en Registro Historia Clínica', '', 'Porcentaje', 0, 'a / b', 'ASC', '2020-02-26 15:00:17', '2020-02-26 15:00:17'),
+(15, '', 79, '12.1 Oportunidad Citas Pediatría', '', 'Numero', 1, 'a / b', 'DES', '2020-02-26 16:11:26', '2020-02-26 16:12:22'),
+(16, '', 79, '12. Oportunidad de Citas', '', 'Porcentaje', 1, 'a / b', 'ASC', '2020-02-26 16:13:23', '2020-02-26 16:20:58'),
+(17, '', 79, '12.2 Oportunidad Citas Medicina General', '', 'Numero', 1, 'a / b', 'DES', '2020-02-26 16:40:35', '2020-02-26 16:53:44'),
+(18, '', 79, '12.3 Oportunidad Citas Internista', '', 'Numero', 1, 'a / b', 'DES', '2020-02-26 16:53:10', '2020-02-26 16:53:31'),
+(19, '', 79, '12.4 Oportunidad Citas Cirugía General', '', 'Numero', 1, 'a / b', 'DES', '2020-02-27 08:51:54', '2020-02-27 08:52:52'),
+(20, '', 79, '12.5 Oportunidad Citas Ginecología', '', 'Numero', 1, 'a / b', 'DES', '2020-02-27 09:06:24', '2020-02-27 09:09:14'),
+(21, '', 79, '12.6 Oportunidad Citas Obstetricia', '', 'Numero', 1, 'a / b', 'DES', '2020-02-27 09:39:58', '2020-02-27 09:40:48'),
+(22, '', 79, '12.7 Oportunidad Citas Odontología', '', 'Numero', 1, 'a / b', 'DES', '2020-02-27 10:01:14', '2020-02-27 10:01:58');
 
 -- --------------------------------------------------------
 
@@ -3256,7 +3317,7 @@ CREATE TABLE IF NOT EXISTS `sara_indicadores_metas` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=31 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=47 ;
 
 --
 -- Volcado de datos para la tabla `sara_indicadores_metas`
@@ -3264,7 +3325,6 @@ CREATE TABLE IF NOT EXISTS `sara_indicadores_metas` (
 
 INSERT INTO `sara_indicadores_metas` (`id`, `indicador_id`, `PeriodoDesde`, `Meta`, `Meta2`, `created_at`, `updated_at`) VALUES
 (16, 1, 201803, 0.0550, NULL, '2019-09-25 14:29:11', '2019-09-25 14:29:11'),
-(20, 1, 201901, 0.0450, NULL, '2019-09-26 11:27:17', '2019-09-26 11:27:17'),
 (21, 3, 201810, 30.0000, NULL, '2019-12-04 15:05:05', '2019-12-04 15:05:05'),
 (22, 4, 201810, 0.0500, NULL, '2019-12-04 16:13:47', '2019-12-04 16:13:47'),
 (23, 5, 201810, 0.0500, NULL, '2019-12-05 11:08:07', '2019-12-05 11:08:07'),
@@ -3274,7 +3334,18 @@ INSERT INTO `sara_indicadores_metas` (`id`, `indicador_id`, `PeriodoDesde`, `Met
 (27, 9, 201810, 0.6000, NULL, '2019-12-10 12:40:35', '2019-12-10 12:40:35'),
 (28, 10, 201810, 6.0000, NULL, '2019-12-10 14:31:24', '2019-12-10 14:31:24'),
 (29, 11, 201810, 4.0000, NULL, '2019-12-10 16:42:08', '2019-12-10 16:42:08'),
-(30, 12, 201801, 6.0000, NULL, '2019-12-11 08:46:16', '2019-12-11 08:46:16');
+(30, 12, 201801, 6.0000, NULL, '2019-12-11 08:46:16', '2019-12-11 08:46:16'),
+(31, 1, 201902, 0.0500, NULL, '2020-02-26 10:26:30', '2020-02-26 10:26:30'),
+(32, 13, 201810, 0.9000, NULL, '2020-02-26 14:45:59', '2020-02-26 14:45:59'),
+(33, 14, 201810, 0.9500, NULL, '2020-02-26 15:01:08', '2020-02-26 15:01:08'),
+(37, 16, 201810, 1.0000, NULL, '2020-02-26 16:21:07', '2020-02-26 16:21:07'),
+(39, 17, 201810, 3.0000, NULL, '2020-02-26 16:42:22', '2020-02-26 16:42:22'),
+(40, 15, 201810, 5.0000, NULL, '2020-02-26 16:42:59', '2020-02-26 16:42:59'),
+(41, 18, 201810, 30.0000, NULL, '2020-02-26 16:54:24', '2020-02-26 16:54:24'),
+(42, 19, 201710, 20.0000, NULL, '2020-02-27 08:52:50', '2020-02-27 08:52:50'),
+(44, 20, 201810, 15.0000, NULL, '2020-02-27 09:09:33', '2020-02-27 09:09:33'),
+(45, 21, 201810, 5.0000, NULL, '2020-02-27 09:40:47', '2020-02-27 09:40:47'),
+(46, 22, 201810, 3.0000, NULL, '2020-02-27 10:01:57', '2020-02-27 10:01:57');
 
 -- --------------------------------------------------------
 
@@ -3294,7 +3365,7 @@ CREATE TABLE IF NOT EXISTS `sara_indicadores_variables` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=35 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=55 ;
 
 --
 -- Volcado de datos para la tabla `sara_indicadores_variables`
@@ -3321,7 +3392,27 @@ INSERT INTO `sara_indicadores_variables` (`id`, `indicador_id`, `Letra`, `Tipo`,
 (31, 10, 'b', 'Variable', 14, NULL, NULL, NULL, '2019-12-10 14:31:00', '2019-12-10 14:31:00'),
 (32, 11, 'a', 'Variable', 31, NULL, NULL, NULL, '2019-12-10 16:41:31', '2019-12-10 16:41:31'),
 (33, 11, 'b', 'Variable', 16, NULL, NULL, NULL, '2019-12-10 16:41:45', '2019-12-10 16:41:45'),
-(34, 12, 'a', 'Variable', 32, NULL, NULL, NULL, '2019-12-11 08:46:02', '2019-12-11 08:46:02');
+(34, 12, 'a', 'Variable', 32, NULL, NULL, NULL, '2019-12-11 08:46:02', '2019-12-11 08:46:02'),
+(35, 13, 'a', 'Variable', 34, NULL, NULL, NULL, '2020-02-26 14:45:36', '2020-02-26 14:45:36'),
+(36, 13, 'b', 'Variable', 33, NULL, NULL, NULL, '2020-02-26 14:45:42', '2020-02-26 14:45:42'),
+(37, 14, 'a', 'Variable', 36, NULL, NULL, NULL, '2020-02-26 15:00:42', '2020-02-26 15:00:42'),
+(38, 14, 'b', 'Variable', 35, NULL, NULL, NULL, '2020-02-26 15:00:47', '2020-02-26 15:00:47'),
+(39, 15, 'a', 'Variable', 38, NULL, NULL, NULL, '2020-02-26 16:11:58', '2020-02-26 16:42:43'),
+(40, 15, 'b', 'Variable', 37, NULL, NULL, NULL, '2020-02-26 16:12:04', '2020-02-26 16:42:43'),
+(41, 16, 'a', 'Indicador', 15, 'Cump', NULL, NULL, '2020-02-26 16:14:30', '2020-02-26 16:14:40'),
+(42, 16, 'b', 'Variable', 39, NULL, NULL, NULL, '2020-02-26 16:20:44', '2020-02-26 16:20:44'),
+(43, 17, 'a', 'Variable', 41, NULL, NULL, NULL, '2020-02-26 16:42:04', '2020-02-26 16:42:04'),
+(44, 17, 'b', 'Variable', 40, NULL, NULL, NULL, '2020-02-26 16:42:10', '2020-02-26 16:42:10'),
+(45, 18, 'a', 'Variable', 43, NULL, NULL, NULL, '2020-02-26 16:54:03', '2020-02-26 16:54:03'),
+(46, 18, 'b', 'Variable', 42, NULL, NULL, NULL, '2020-02-26 16:54:07', '2020-02-26 16:54:07'),
+(47, 19, 'a', 'Variable', 45, NULL, NULL, NULL, '2020-02-27 08:52:22', '2020-02-27 08:52:22'),
+(48, 19, 'b', 'Variable', 44, NULL, NULL, NULL, '2020-02-27 08:52:29', '2020-02-27 08:52:29'),
+(49, 20, 'a', 'Variable', 47, NULL, NULL, NULL, '2020-02-27 09:08:49', '2020-02-27 09:08:49'),
+(50, 20, 'b', 'Variable', 46, NULL, NULL, NULL, '2020-02-27 09:08:55', '2020-02-27 09:08:55'),
+(51, 21, 'a', 'Variable', 49, NULL, NULL, NULL, '2020-02-27 09:40:25', '2020-02-27 09:40:25'),
+(52, 21, 'b', 'Variable', 48, NULL, NULL, NULL, '2020-02-27 09:40:33', '2020-02-27 09:40:33'),
+(53, 22, 'a', 'Variable', 51, NULL, NULL, NULL, '2020-02-27 10:01:37', '2020-02-27 10:01:37'),
+(54, 22, 'b', 'Variable', 50, NULL, NULL, NULL, '2020-02-27 10:01:42', '2020-02-27 10:01:42');
 
 -- --------------------------------------------------------
 
@@ -3437,14 +3528,15 @@ CREATE TABLE IF NOT EXISTS `sara_scorecards` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=9 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
 
 --
 -- Volcado de datos para la tabla `sara_scorecards`
 --
 
 INSERT INTO `sara_scorecards` (`id`, `Ruta`, `Titulo`, `Secciones`, `created_at`, `updated_at`) VALUES
-(1, 'Salud\\Citas', 'PGP SOS', '["General","Hospitalario","Ambulatorio - Calidad","Ambulatorio - PyP","Ambulatorio - Cronicas","Apoyo Dx"]', '2019-09-27 13:52:18', '2019-12-04 16:18:05');
+(1, 'Salud\\Citas', 'PGP SOS', '["General","Hospitalario","Ambulatorio - Calidad","Ambulatorio - PyP","Ambulatorio - Cronicas","Apoyo Dx"]', '2019-09-27 13:52:18', '2020-02-24 08:47:27'),
+(9, '', 'Tablero Mando Institucional', '[]', '2020-02-24 10:50:16', '2020-02-24 10:50:16');
 
 -- --------------------------------------------------------
 
@@ -3462,7 +3554,7 @@ CREATE TABLE IF NOT EXISTS `sara_scorecards_card` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=19 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=24 ;
 
 --
 -- Volcado de datos para la tabla `sara_scorecards_card`
@@ -3474,10 +3566,10 @@ INSERT INTO `sara_scorecards_card` (`id`, `scorecard_id`, `Indice`, `seccion_id`
 (12, 1, 2, 1, 'Indicador', 5, '2019-12-05 11:08:49', '2019-12-05 11:08:49'),
 (13, 1, 3, 1, 'Indicador', 6, '2019-12-06 09:32:35', '2019-12-06 09:32:35'),
 (14, 1, 4, 1, 'Indicador', 7, '2019-12-06 10:33:23', '2019-12-06 10:33:23'),
-(15, 1, 5, 1, 'Indicador', 8, '2019-12-10 11:48:47', '2019-12-10 11:48:47'),
-(16, 1, 6, 1, 'Indicador', 9, '2019-12-10 12:42:20', '2019-12-10 12:42:20'),
-(17, 1, 7, 1, 'Indicador', 10, '2019-12-10 14:32:35', '2019-12-10 14:32:35'),
-(18, 1, 8, 1, 'Indicador', 11, '2019-12-10 16:45:48', '2019-12-10 16:45:48');
+(19, 1, 5, 1, 'Indicador', 8, '2020-02-25 13:11:53', '2020-02-25 13:11:53'),
+(21, 1, 6, 1, 'Indicador', 9, '2020-02-25 13:12:16', '2020-02-25 13:12:16'),
+(22, 1, 7, 1, 'Indicador', 10, '2020-02-25 13:12:24', '2020-02-25 13:12:24'),
+(23, 1, 8, 1, 'Indicador', 11, '2020-02-25 13:12:28', '2020-02-25 13:12:28');
 
 -- --------------------------------------------------------
 
@@ -3498,7 +3590,7 @@ CREATE TABLE IF NOT EXISTS `sara_scorecards_nodos` (
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `scorecard_id` (`scorecard_id`,`padre_id`,`Indice`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=25 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=49 ;
 
 --
 -- Volcado de datos para la tabla `sara_scorecards_nodos`
@@ -3506,22 +3598,41 @@ CREATE TABLE IF NOT EXISTS `sara_scorecards_nodos` (
 
 INSERT INTO `sara_scorecards_nodos` (`id`, `scorecard_id`, `Nodo`, `padre_id`, `Indice`, `tipo`, `elemento_id`, `peso`, `created_at`, `updated_at`) VALUES
 (1, 1, 'PGP SOS', NULL, 0, 'Nodo', NULL, 1.0, '2020-02-21 00:00:00', '2020-02-21 00:00:00'),
-(2, 1, '1. Hospitalario', 1, 0, 'Nodo', NULL, 600.0, '2020-02-21 00:00:00', '2020-02-21 00:00:00'),
-(3, 1, '', 2, 0, 'Indicador', 3, 1.0, '2020-02-21 00:00:00', '2020-02-21 00:00:00'),
-(4, 1, '2. Calidad', 1, 0, 'Nodo', NULL, 67.0, '2020-02-21 14:31:29', '2020-02-21 14:31:29'),
-(5, 1, '3. PyP', 1, 0, 'Nodo', NULL, 67.0, '2020-02-21 14:34:20', '2020-02-21 14:34:20'),
-(6, 1, '4. Crónicos', 1, 0, 'Nodo', NULL, 66.0, '2020-02-21 14:34:39', '2020-02-21 14:34:39'),
-(7, 1, '5. Ayudas Diagnósticas', 1, 0, 'Nodo', NULL, 200.0, '2020-02-21 14:35:51', '2020-02-21 14:35:51'),
-(8, 1, NULL, 2, 2, 'Indicador', 4, 1.0, '2020-02-21 15:33:24', '2020-02-21 15:33:24'),
-(9, 1, NULL, 2, 3, 'Indicador', 5, 1.0, '2020-02-21 16:18:10', '2020-02-21 16:18:10'),
-(10, 1, NULL, 2, 4, 'Indicador', 6, 1.0, '2020-02-21 16:28:47', '2020-02-21 16:28:47'),
-(11, 1, NULL, 2, 5, 'Indicador', 7, 1.0, '2020-02-21 16:54:55', '2020-02-21 16:54:55'),
-(12, 1, NULL, 2, 6, 'Indicador', 8, 1.0, '2020-02-21 16:55:02', '2020-02-21 16:55:02'),
-(13, 1, NULL, 2, 7, 'Indicador', 9, 1.0, '2020-02-21 16:55:07', '2020-02-21 16:55:07'),
-(14, 1, NULL, 2, 8, 'Indicador', 10, 1.0, '2020-02-21 16:55:12', '2020-02-21 16:55:12'),
-(15, 1, NULL, 2, 9, 'Indicador', 11, 1.0, '2020-02-21 16:55:16', '2020-02-21 16:55:16'),
-(23, 1, NULL, 4, 1, 'Indicador', 1, 1.0, '2020-02-21 18:16:59', '2020-02-21 18:16:59'),
-(24, 1, NULL, 4, 2, 'Indicador', 2, 1.0, '2020-02-21 18:17:03', '2020-02-21 18:17:03');
+(2, 1, '1. Hospitalario', 1, 0, 'Nodo', NULL, 60.0, '2020-02-21 00:00:00', '2020-02-24 08:55:01'),
+(3, 1, '01. Oportunidad de Cirugía', 2, 0, 'Indicador', 3, 1.0, '2020-02-21 00:00:00', '2020-02-26 13:44:34'),
+(4, 1, '2. Calidad', 1, 0, 'Nodo', NULL, 6.7, '2020-02-21 14:31:29', '2020-02-24 08:55:07'),
+(5, 1, '3. PyP', 1, 0, 'Nodo', NULL, 6.7, '2020-02-21 14:34:20', '2020-02-24 08:55:11'),
+(6, 1, '4. Crónicos', 1, 0, 'Nodo', NULL, 6.6, '2020-02-21 14:34:39', '2020-02-24 08:55:16'),
+(7, 1, '5. Ayudas Diagnósticas', 1, 0, 'Nodo', NULL, 20.0, '2020-02-21 14:35:51', '2020-02-24 08:59:55'),
+(8, 1, '02. % Cancelación de Cirugía', 2, 1, 'Indicador', 4, 1.0, '2020-02-21 15:33:24', '2020-02-24 13:03:20'),
+(9, 1, '03. % Infección Intrahospitalaria', 2, 2, 'Indicador', 5, 1.0, '2020-02-21 16:18:10', '2020-02-24 13:03:21'),
+(10, 1, '04. % Mortalidad Intrahospitalaria', 2, 3, 'Indicador', 6, 1.0, '2020-02-21 16:28:47', '2020-02-24 13:04:55'),
+(11, 1, '05. % Mortalidad x Infección Intrahospitalaria', 2, 4, 'Indicador', 7, 1.0, '2020-02-21 16:54:55', '2020-02-24 13:04:55'),
+(12, 1, '06. % Reingreso <15 Días', 2, 5, 'Indicador', 8, 1.0, '2020-02-21 16:55:02', '2020-02-24 13:05:09'),
+(13, 1, '07. Gestión de Eventos Adversos', 2, 6, 'Indicador', 9, 1.0, '2020-02-21 16:55:07', '2020-02-24 13:05:09'),
+(25, 9, 'Tablero Mando Institucional', NULL, 0, 'Nodo', NULL, 1.0, '2020-02-24 10:50:16', '2020-02-24 10:50:16'),
+(26, 9, 'Social', 25, 0, 'Nodo', NULL, 1.0, '2020-02-24 10:50:17', '2020-02-24 10:50:17'),
+(27, 9, 'Financiera', 25, 0, 'Nodo', NULL, 1.0, '2020-02-24 10:50:30', '2020-02-24 10:50:30'),
+(28, 9, 'Contribuir a la comunidad', 26, 0, 'Nodo', NULL, 1.0, '2020-02-24 10:50:49', '2020-02-24 10:50:49'),
+(30, 1, NULL, 2, 7, 'Indicador', 10, 1.0, '2020-02-24 13:08:52', '2020-02-24 13:08:52'),
+(31, 1, NULL, 2, 8, 'Indicador', 11, 1.0, '2020-02-24 13:09:01', '2020-02-24 13:09:01'),
+(32, 9, 'Aprendizaje', 25, 0, 'Nodo', NULL, 1.0, '2020-02-26 10:34:36', '2020-02-26 10:34:36'),
+(33, 9, 'Cliente', 25, 0, 'Nodo', NULL, 1.0, '2020-02-26 10:34:46', '2020-02-26 10:34:46'),
+(34, 9, 'Procesos', 25, 0, 'Nodo', NULL, 1.0, '2020-02-26 10:35:06', '2020-02-26 10:35:06'),
+(35, 9, 'Aumentar los Ingresos', 27, 0, 'Nodo', NULL, 1.0, '2020-02-26 10:35:25', '2020-02-26 10:35:25'),
+(36, 9, 'Reducir Costos y Gastos', 27, 0, 'Nodo', NULL, 1.0, '2020-02-26 10:35:51', '2020-02-26 10:35:51'),
+(37, 9, NULL, 35, 0, 'Indicador', 1, 1.0, '2020-02-26 10:49:00', '2020-02-26 10:49:00'),
+(38, 9, NULL, 36, 0, 'Indicador', 3, 1.0, '2020-02-26 10:49:08', '2020-02-26 10:49:08'),
+(39, 1, NULL, 2, 9, 'Indicador', 13, 1.0, '2020-02-26 14:46:53', '2020-02-26 14:46:53'),
+(40, 1, NULL, 2, 10, 'Indicador', 14, 1.0, '2020-02-26 15:02:44', '2020-02-26 15:02:44'),
+(41, 1, '12. Oportunidad de Citas', 4, 0, 'Nodo', NULL, 1.0, '2020-02-26 16:36:32', '2020-02-26 16:36:32'),
+(42, 1, NULL, 41, 0, 'Indicador', 15, 1.0, '2020-02-26 16:36:51', '2020-02-26 16:36:51'),
+(43, 1, NULL, 41, 1, 'Indicador', 17, 1.0, '2020-02-26 16:41:24', '2020-02-26 16:41:24'),
+(44, 1, NULL, 41, 2, 'Indicador', 18, 1.0, '2020-02-26 16:54:42', '2020-02-26 16:54:42'),
+(45, 1, NULL, 41, 3, 'Indicador', 19, 1.0, '2020-02-27 08:58:35', '2020-02-27 08:58:35'),
+(46, 1, NULL, 41, 4, 'Indicador', 20, 1.0, '2020-02-27 09:10:42', '2020-02-27 09:10:42'),
+(47, 1, NULL, 41, 5, 'Indicador', 21, 1.0, '2020-02-27 09:41:36', '2020-02-27 09:41:36'),
+(48, 1, NULL, 41, 6, 'Indicador', 22, 1.0, '2020-02-27 10:02:49', '2020-02-27 10:02:49');
 
 -- --------------------------------------------------------
 
@@ -3760,7 +3871,7 @@ INSERT INTO `sara_usuarios` (`id`, `Email`, `Password`, `Cedula`, `Nombres`, `CD
 (180, 'cnader@comfamiliar.com', '$2y$10$O6tSvoPDQBcdCiy/qrEL7eK8uA7x/ey3akQuOyJzsdnMgZkQK3ura', '10026380', 'Cesar Alejandro Nader Vega', NULL, 0, '2018-05-22 21:29:25', '2018-05-22 21:29:25'),
 (181, 'cnaranjo@comfamiliar.com', '$2y$10$AmbDuxTqtaaleWTH86T3CutJTYxqWfuHFhWsegmykNGJPZk8coZn.', '1088261413', 'Carolina Naranjo Giraldo', NULL, 0, '2019-02-28 16:10:11', '2019-02-28 16:10:11'),
 (182, 'corozcoh@comfamiliar.com', '$2y$10$.VTNQGLKO6cCDriNJKJK2OQf1MhbHRlac90knMYx8fffU3zlaJqP.', '42146457', 'Carolina Orozco Henao', NULL, 0, '2018-05-16 18:16:43', '2018-05-16 18:16:43'),
-(183, 'corrego@comfamiliar.com', '$2y$10$2YA.NlgmDsFTtMlf7e1ouOw6ZTdCi/zDIafFqVzmpABWccDW1loB.', '1093217141', 'Cristian Orrego', 2328, 1, '2017-12-26 16:37:15', '2018-06-14 21:17:11'),
+(183, 'corrego@comfamiliar.com', '$2y$10$2YA.NlgmDsFTtMlf7e1ouOw6ZTdCi/zDIafFqVzmpABWccDW1loB.', '1093217141', 'Christian Orrego', 2328, 1, '2017-12-26 16:37:15', '2018-06-14 21:17:11'),
 (184, 'corregos@comfamiliar.com', '$2y$10$aO0UFUs5o6ByPERRCUP.meA3LfUf8tHeyafdYcwvk9LDGoGrOoPui', '42165101', 'Claudia Marcela Orrego Sanchez', NULL, 0, '2019-01-03 22:44:55', '2019-01-03 22:44:55'),
 (185, 'cosorio@comfamiliar.com', '$2y$10$N6SA3ymTYr0gCOLqpItGQuQBxS3ZbjiO.HNHUvK7hMj76GXIYO8nC', '42132655', 'Claudia Lorena Osorio Cano', 100, 0, '2018-02-07 21:34:45', '2018-04-17 19:09:36'),
 (186, 'cosorioa@comfamiliar.com', '$2y$10$LhUT6ZZ3I4GilB9oRln8EuWVzdZ0tkzUXiNmrb0/vltx/jeLHA7xe', '1088305062', 'Christian Alexis Osorio Aguirre', NULL, 0, '2018-07-17 15:45:07', '2018-07-17 15:45:07'),
@@ -4666,7 +4777,7 @@ CREATE TABLE IF NOT EXISTS `sara_variables` (
   `updated_at` datetime NOT NULL,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=33 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=52 ;
 
 --
 -- Volcado de datos para la tabla `sara_variables`
@@ -4687,11 +4798,30 @@ INSERT INTO `sara_variables` (`id`, `Ruta`, `proceso_id`, `Variable`, `Descripci
 (25, 'Comfamiliar Risaralda\\Subdirección Salud\\IPS Hospitalaria\\Hospitalizaciones', 79, 'PGPSOS - Pacientes Fallecidos >48h', '', 'Numero', 0, 'Calculado de Entidad', 14, 372, 'countdistinct', 376, '[{"columna_id":377,"column_title":"Cod. Entidad","tipo_campo":"Texto","campo_id":528,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":378,"column_title":"Capitado","tipo_campo":"Texto","campo_id":529,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"}]', '2019-12-06 09:28:05', '2020-02-19 18:25:47', NULL),
 (26, 'Comfamiliar Risaralda\\Subdirección Salud\\IPS Hospitalaria\\Hospitalizaciones', 79, 'PGPSOS - Pacientes Fallecidos >48h x Infección Intrahospitalaria', 'Pacientes que fellecieron por infección intrahospitalaria', 'Numero', 0, 'Calculado de Entidad', 14, 372, 'countdistinct', 376, '[{"columna_id":377,"column_title":"Cod. Entidad","tipo_campo":"Texto","campo_id":528,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":378,"column_title":"Capitado","tipo_campo":"Texto","campo_id":529,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"},{"columna_id":382,"column_title":"Motivo Defuncion","tipo_campo":"Texto","campo_id":533,"obs":"","Comparador":"nulo","Valor":"INFECCION","Op1":null,"Op2":null,"Op3":null,"val":"INFECCION"}]', '2019-12-06 09:47:55', '2020-02-19 18:25:51', NULL),
 (27, 'Comfamiliar Risaralda\\Subdirección Salud\\IPS Hospitalaria\\Hospitalizaciones', 79, 'PGPSOS - Pacientes Reingresados <15 Días', 'Pacientes con reingreso a la clínica hasta 15 días después del egreso de hospitalización con el mismo grupo diagnóstico', 'Numero', 0, 'Calculado de Entidad', 15, 385, 'countdistinct', 393, '[{"columna_id":388,"column_title":"Fecha de Egreso","tipo_campo":"Fecha","campo_id":544,"obs":"","Comparador":">=","Valor":"2018-10-09T05:00:00.000Z","Op1":"fij","Op2":null,"Op3":null,"val":"2018-10-09T05:00:00.000Z"},{"columna_id":394,"column_title":"Entidad","tipo_campo":"Texto","campo_id":550,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":395,"column_title":"Capitado","tipo_campo":"Texto","campo_id":551,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"},{"columna_id":406,"column_title":"Justificado","tipo_campo":"Texto","campo_id":562,"obs":"","Comparador":"=","Valor":"NO","Op1":null,"Op2":null,"Op3":null,"val":"NO"}]', '2019-12-10 11:31:52', '2020-02-19 18:25:57', NULL),
-(28, 'Comfamiliar Risaralda\\Subdirección Salud\\Calidad en Salud', 79, 'PGPSOS - Eventos Adversos Reportados', '', 'Numero', 0, 'Calculado de Entidad', 16, 437, 'count', 408, '[{"columna_id":413,"column_title":".USENTIDAD","tipo_campo":"Texto","campo_id":569,"obs":"","Comparador":"like_","Valor":"SERVICIO OCCIDENTAL DE SALUD","Op1":null,"Op2":null,"Op3":null,"val":"SERVICIO OCCIDENTAL DE SALUD"},{"columna_id":426,"column_title":".EVTIPO","tipo_campo":"Texto","campo_id":582,"obs":"","Comparador":"=","Valor":"Evento Adverso","Op1":null,"Op2":null,"Op3":null,"val":"Evento Adverso"}]', '2019-12-10 12:14:46', '2020-02-19 18:24:23', NULL),
+(28, 'Comfamiliar Risaralda\\Subdirección Salud\\PGP', 79, 'PGPSOS - Eventos Adversos Reportados', '', 'Numero', 0, 'Calculado de Entidad', 16, 437, 'count', 408, '[{"columna_id":413,"column_title":".USENTIDAD","tipo_campo":"Texto","campo_id":569,"obs":"","Comparador":"like_","Valor":"SERVICIO OCCIDENTAL DE SALUD","Op1":null,"Op2":null,"Op3":null,"val":"SERVICIO OCCIDENTAL DE SALUD"},{"columna_id":426,"column_title":".EVTIPO","tipo_campo":"Texto","campo_id":582,"obs":"","Comparador":"=","Valor":"Evento Adverso","Op1":null,"Op2":null,"Op3":null,"val":"Evento Adverso"}]', '2019-12-10 12:14:46', '2020-02-27 17:15:53', NULL),
 (29, 'Comfamiliar Risaralda', 79, 'PGPSOS - Eventos Adversos Gestionados', '', 'Numero', 0, 'Valor Fijo', NULL, NULL, 'count', NULL, '[]', '2019-12-10 12:38:39', '2020-02-19 18:24:16', NULL),
 (30, 'Comfamiliar Risaralda\\Subdirección Salud\\IPS Hospitalaria\\Hospitalizaciones', 79, 'PGPSOS - Egresos Hospitalización', 'Egresos en un periodo determinado', 'Numero', 0, 'Calculado de Entidad', 12, 350, 'count', 349, '[{"columna_id":357,"column_title":"Cod. Entidad","tipo_campo":"Entidad","campo_id":507,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":358,"column_title":"Capitado","tipo_campo":"Booleano","campo_id":508,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"}]', '2019-12-10 14:02:34', '2020-02-19 18:25:31', NULL),
 (31, 'Comfamiliar Risaralda\\Subdirección Salud\\IPS Hospitalaria\\Hospitalizaciones', 79, 'PGPSOS - Egresos UCI', 'Egresos de UCI en un periodo determinado', 'Numero', 0, 'Calculado de Entidad', 12, 350, 'count', 349, '[{"columna_id":357,"column_title":"Cod. Entidad","tipo_campo":"Entidad","campo_id":507,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":358,"column_title":"Capitado","tipo_campo":"Booleano","campo_id":508,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"},{"columna_id":438,"column_title":".USOUCI","tipo_campo":"Texto","campo_id":594,"obs":"","Comparador":"=","Valor":"SI","Op1":null,"Op2":null,"Op3":null,"val":"SI"}]', '2019-12-10 16:37:56', '2020-02-19 18:25:37', NULL),
-(32, 'Comfamiliar Risaralda\\Subdirección Salud\\IPS Hospitalaria\\Hospitalizaciones', 54, 'Egresos Hospitalarios', '', 'Numero', 0, 'Calculado de Entidad', 12, 350, 'count', 349, '[]', '2019-12-11 08:43:57', '2020-02-19 18:27:14', NULL);
+(32, 'Comfamiliar Risaralda\\Subdirección Salud\\IPS Hospitalaria\\Hospitalizaciones', 54, 'Egresos Hospitalarios', '', 'Numero', 0, 'Calculado de Entidad', 12, 350, 'count', 349, '[]', '2019-12-11 08:43:57', '2020-02-19 18:27:14', NULL),
+(33, '', 79, 'PGPSOS - Encuestas Hospitalarias Totales', '', 'Numero', 0, 'Valor Fijo', NULL, NULL, 'count', NULL, '[]', '2020-02-26 14:33:57', '2020-02-26 14:33:57', NULL),
+(34, '', 79, 'PGPSOS - Encuestas Hospitalarias Satisfechos', '', 'Numero', 0, 'Valor Fijo', NULL, NULL, 'count', NULL, '[]', '2020-02-26 14:39:33', '2020-02-26 14:39:33', NULL),
+(35, '', 79, 'PGPSOS - Historias Clínicas Evaluadas', '', 'Numero', 0, 'Valor Fijo', NULL, NULL, 'count', NULL, '[]', '2020-02-26 14:55:25', '2020-02-26 14:55:25', NULL),
+(36, 'Comfamiliar Risaralda\\Subdirección Salud\\PGP', 79, 'PGPSOS - Historias Clínicas <95', '', 'Numero', 0, 'Valor Fijo', NULL, NULL, 'count', NULL, '[]', '2020-02-26 14:57:10', '2020-02-26 14:59:35', NULL),
+(37, 'Comfamiliar Risaralda\\Subdirección Salud\\PGP', 79, 'PGPSOS - Citas Pediatría', '', 'Numero', 0, 'Calculado de Entidad', 3, 193, 'count', 192, '[{"columna_id":640,"column_title":"Cod. Entidad","tipo_campo":"Texto","campo_id":328,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":641,"column_title":"Capitado","tipo_campo":"Booleano","campo_id":333,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"},{"columna_id":642,"column_title":"Cod. Motivo","tipo_campo":"Texto","campo_id":292,"obs":"","Comparador":"=","Valor":"06","Op1":null,"Op2":null,"Op3":null,"val":"06"},{"columna_id":218,"column_title":"Nro. Cita","tipo_campo":"Entero","campo_id":297,"obs":"","Comparador":"=","Valor":"1","Op1":null,"Op2":null,"Op3":null,"val":"1"},{"columna_id":643,"column_title":"Cod. Servicio","tipo_campo":"Texto","campo_id":339,"obs":"","Comparador":"=","Valor":"176","Op1":null,"Op2":null,"Op3":null,"val":"176"}]', '2020-02-26 15:46:38', '2020-02-26 16:04:18', NULL),
+(38, 'Comfamiliar Risaralda\\Subdirección Salud\\PGP', 79, 'PGPSOS - Días Citas Pediatría', 'Sumatoria días hábiles espera para cita pediatría', 'Numero', 0, 'Calculado de Entidad', 3, 193, 'sum', 202, '[{"columna_id":640,"column_title":"Cod. Entidad","tipo_campo":"Texto","campo_id":328,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":641,"column_title":"Capitado","tipo_campo":"Booleano","campo_id":333,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"},{"columna_id":642,"column_title":"Cod. Motivo","tipo_campo":"Texto","campo_id":292,"obs":"","Comparador":"=","Valor":"06","Op1":null,"Op2":null,"Op3":null,"val":"06"},{"columna_id":218,"column_title":"Nro. Cita","tipo_campo":"Entero","campo_id":297,"obs":"","Comparador":"=","Valor":"1","Op1":null,"Op2":null,"Op3":null,"val":"1"},{"columna_id":643,"column_title":"Cod. Servicio","tipo_campo":"Texto","campo_id":339,"obs":"","Comparador":"=","Valor":"176","Op1":null,"Op2":null,"Op3":null,"val":"176"}]', '2020-02-26 16:09:53', '2020-02-26 16:10:19', NULL),
+(39, '', 79, 'PGPSOS - Servicios Priorizados', '', 'Numero', 0, 'Valor Fijo', NULL, NULL, 'count', NULL, '[]', '2020-02-26 16:19:28', '2020-02-26 16:19:28', NULL),
+(40, 'Comfamiliar Risaralda\\Subdirección Salud\\PGP', 79, 'PGPSOS - Citas Medicina General', 'Citas', 'Numero', 0, 'Calculado de Entidad', 3, 193, 'count', 192, '[{"columna_id":640,"column_title":"Cod. Entidad","tipo_campo":"Texto","campo_id":328,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":641,"column_title":"Capitado","tipo_campo":"Booleano","campo_id":333,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"},{"columna_id":642,"column_title":"Cod. Motivo","tipo_campo":"Texto","campo_id":292,"obs":"","Comparador":"=","Valor":"06","Op1":null,"Op2":null,"Op3":null,"val":"06"},{"columna_id":218,"column_title":"Nro. Cita","tipo_campo":"Entero","campo_id":297,"obs":"","Comparador":"=","Valor":"1","Op1":null,"Op2":null,"Op3":null,"val":"1"},{"columna_id":643,"column_title":"Cod. Servicio","tipo_campo":"Texto","campo_id":339,"obs":"","Comparador":"=","Valor":"101","Op1":null,"Op2":null,"Op3":null,"val":"176"}]', '2020-02-26 16:38:33', '2020-02-26 16:38:45', NULL),
+(41, 'Comfamiliar Risaralda\\Subdirección Salud\\PGP', 79, 'PGPSOS - Días Citas Medicina General', 'Sumatoria días hábiles espera para cita medicina general', 'Numero', 0, 'Calculado de Entidad', 3, 193, 'sum', 202, '[{"columna_id":640,"column_title":"Cod. Entidad","tipo_campo":"Texto","campo_id":328,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":641,"column_title":"Capitado","tipo_campo":"Booleano","campo_id":333,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"},{"columna_id":642,"column_title":"Cod. Motivo","tipo_campo":"Texto","campo_id":292,"obs":"","Comparador":"=","Valor":"06","Op1":null,"Op2":null,"Op3":null,"val":"06"},{"columna_id":218,"column_title":"Nro. Cita","tipo_campo":"Entero","campo_id":297,"obs":"","Comparador":"=","Valor":"1","Op1":null,"Op2":null,"Op3":null,"val":"1"},{"columna_id":643,"column_title":"Cod. Servicio","tipo_campo":"Texto","campo_id":339,"obs":"","Comparador":"=","Valor":"101","Op1":null,"Op2":null,"Op3":null,"val":"176"}]', '2020-02-26 16:39:20', '2020-02-26 16:39:36', NULL),
+(42, 'Comfamiliar Risaralda\\Subdirección Salud\\PGP', 79, 'PGPSOS - Citas Internista', 'Citas', 'Numero', 0, 'Calculado de Entidad', 3, 193, 'count', 192, '[{"columna_id":640,"column_title":"Cod. Entidad","tipo_campo":"Texto","campo_id":328,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":641,"column_title":"Capitado","tipo_campo":"Booleano","campo_id":333,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"},{"columna_id":642,"column_title":"Cod. Motivo","tipo_campo":"Texto","campo_id":292,"obs":"","Comparador":"=","Valor":"06","Op1":null,"Op2":null,"Op3":null,"val":"06"},{"columna_id":218,"column_title":"Nro. Cita","tipo_campo":"Entero","campo_id":297,"obs":"","Comparador":"=","Valor":"1","Op1":null,"Op2":null,"Op3":null,"val":"1"},{"columna_id":224,"column_title":"Servicio","tipo_campo":"Texto","campo_id":340,"obs":"","Comparador":"like_","Valor":"INTERNISTA","Op1":null,"Op2":null,"Op3":null}]', '2020-02-26 16:50:23', '2020-02-26 16:51:09', NULL),
+(43, 'Comfamiliar Risaralda\\Subdirección Salud\\PGP', 79, 'PGPSOS - Días Citas Internista', 'Días Hábiles', 'Numero', 0, 'Calculado de Entidad', 3, 193, 'sum', 202, '[{"columna_id":640,"column_title":"Cod. Entidad","tipo_campo":"Texto","campo_id":328,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":641,"column_title":"Capitado","tipo_campo":"Booleano","campo_id":333,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"},{"columna_id":642,"column_title":"Cod. Motivo","tipo_campo":"Texto","campo_id":292,"obs":"","Comparador":"=","Valor":"06","Op1":null,"Op2":null,"Op3":null,"val":"06"},{"columna_id":218,"column_title":"Nro. Cita","tipo_campo":"Entero","campo_id":297,"obs":"","Comparador":"=","Valor":"1","Op1":null,"Op2":null,"Op3":null,"val":"1"},{"columna_id":224,"column_title":"Servicio","tipo_campo":"Texto","campo_id":340,"obs":"","Comparador":"like_","Valor":"INTERNISTA","Op1":null,"Op2":null,"Op3":null,"val":"INTERNISTA"}]', '2020-02-26 16:51:55', '2020-02-26 16:52:10', NULL),
+(44, 'Comfamiliar Risaralda\\Subdirección Salud\\PGP', 79, 'PGPSOS - Citas Cirugía General', 'Citas', 'Numero', 0, 'Calculado de Entidad', 3, 193, 'count', 192, '[{"columna_id":640,"column_title":"Cod. Entidad","tipo_campo":"Texto","campo_id":328,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":641,"column_title":"Capitado","tipo_campo":"Booleano","campo_id":333,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"},{"columna_id":642,"column_title":"Cod. Motivo","tipo_campo":"Texto","campo_id":292,"obs":"","Comparador":"=","Valor":"06","Op1":null,"Op2":null,"Op3":null,"val":"06"},{"columna_id":218,"column_title":"Nro. Cita","tipo_campo":"Entero","campo_id":297,"obs":"","Comparador":"=","Valor":"1","Op1":null,"Op2":null,"Op3":null,"val":"1"},{"columna_id":643,"column_title":"Cod. Servicio","tipo_campo":"Texto","campo_id":339,"obs":"","Comparador":"=","Valor":"108","Op1":null,"Op2":null,"Op3":null,"val":"176"}]', '2020-02-27 08:14:28', '2020-02-27 08:14:47', NULL),
+(45, 'Comfamiliar Risaralda\\Subdirección Salud\\PGP', 79, 'PGPSOS - Días Citas Cirugía General', 'Sumatoria días hábiles espera para cita cx general', 'Numero', 0, 'Calculado de Entidad', 3, 193, 'sum', 202, '[{"columna_id":640,"column_title":"Cod. Entidad","tipo_campo":"Texto","campo_id":328,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":641,"column_title":"Capitado","tipo_campo":"Booleano","campo_id":333,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"},{"columna_id":642,"column_title":"Cod. Motivo","tipo_campo":"Texto","campo_id":292,"obs":"","Comparador":"=","Valor":"06","Op1":null,"Op2":null,"Op3":null,"val":"06"},{"columna_id":218,"column_title":"Nro. Cita","tipo_campo":"Entero","campo_id":297,"obs":"","Comparador":"=","Valor":"1","Op1":null,"Op2":null,"Op3":null,"val":"1"},{"columna_id":643,"column_title":"Cod. Servicio","tipo_campo":"Texto","campo_id":339,"obs":"","Comparador":"=","Valor":"108","Op1":null,"Op2":null,"Op3":null,"val":"176"}]', '2020-02-27 08:50:41', '2020-02-27 08:50:57', NULL),
+(46, 'Comfamiliar Risaralda\\Subdirección Salud\\PGP', 79, 'PGPSOS - Citas Ginecología', 'Citas', 'Numero', 0, 'Calculado de Entidad', 3, 193, 'count', 192, '[{"columna_id":640,"column_title":"Cod. Entidad","tipo_campo":"Texto","campo_id":328,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":641,"column_title":"Capitado","tipo_campo":"Booleano","campo_id":333,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"},{"columna_id":642,"column_title":"Cod. Motivo","tipo_campo":"Texto","campo_id":292,"obs":"","Comparador":"=","Valor":"06","Op1":null,"Op2":null,"Op3":null,"val":"06"},{"columna_id":218,"column_title":"Nro. Cita","tipo_campo":"Entero","campo_id":297,"obs":"","Comparador":"=","Valor":"1","Op1":null,"Op2":null,"Op3":null,"val":"1"},{"columna_id":224,"column_title":"Servicio","tipo_campo":"Texto","campo_id":340,"obs":"","Comparador":"like_","Valor":"GINECOLOGIA","Op1":null,"Op2":null,"Op3":null,"val":"GINECOLOGIA"}]', '2020-02-27 09:03:02', '2020-02-27 09:04:39', NULL),
+(47, 'Comfamiliar Risaralda\\Subdirección Salud\\PGP', 79, 'PGPSOS - Días Citas Ginecología', 'Días Hábiles', 'Numero', 0, 'Calculado de Entidad', 3, 193, 'sum', 202, '[{"columna_id":640,"column_title":"Cod. Entidad","tipo_campo":"Texto","campo_id":328,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":641,"column_title":"Capitado","tipo_campo":"Booleano","campo_id":333,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"},{"columna_id":642,"column_title":"Cod. Motivo","tipo_campo":"Texto","campo_id":292,"obs":"","Comparador":"=","Valor":"06","Op1":null,"Op2":null,"Op3":null,"val":"06"},{"columna_id":218,"column_title":"Nro. Cita","tipo_campo":"Entero","campo_id":297,"obs":"","Comparador":"=","Valor":"1","Op1":null,"Op2":null,"Op3":null,"val":"1"},{"columna_id":224,"column_title":"Servicio","tipo_campo":"Texto","campo_id":340,"obs":"","Comparador":"like_","Valor":"GINECOLOGIA","Op1":null,"Op2":null,"Op3":null,"val":"INTERNISTA"}]', '2020-02-27 09:05:03', '2020-02-27 09:05:31', NULL),
+(48, 'Comfamiliar Risaralda\\Subdirección Salud\\PGP', 79, 'PGPSOS - Citas Obstetricia', 'Citas', 'Numero', 0, 'Calculado de Entidad', 3, 193, 'count', 192, '[{"columna_id":640,"column_title":"Cod. Entidad","tipo_campo":"Texto","campo_id":328,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":641,"column_title":"Capitado","tipo_campo":"Booleano","campo_id":333,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"},{"columna_id":642,"column_title":"Cod. Motivo","tipo_campo":"Texto","campo_id":292,"obs":"","Comparador":"=","Valor":"06","Op1":null,"Op2":null,"Op3":null,"val":"06"},{"columna_id":218,"column_title":"Nro. Cita","tipo_campo":"Entero","campo_id":297,"obs":"","Comparador":"=","Valor":"1","Op1":null,"Op2":null,"Op3":null,"val":"1"},{"columna_id":643,"column_title":"Cod. Servicio","tipo_campo":"Texto","campo_id":339,"obs":"","Comparador":"=","Valor":"167","Op1":null,"Op2":null,"Op3":null,"val":"167"}]', '2020-02-27 09:28:34', '2020-02-27 09:29:36', NULL),
+(49, 'Comfamiliar Risaralda\\Subdirección Salud\\PGP', 79, 'PGPSOS - Días Citas Obstetricia', 'Días Hábiles', 'Numero', 0, 'Calculado de Entidad', 3, 193, 'sum', 202, '[{"columna_id":640,"column_title":"Cod. Entidad","tipo_campo":"Texto","campo_id":328,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":641,"column_title":"Capitado","tipo_campo":"Booleano","campo_id":333,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"},{"columna_id":642,"column_title":"Cod. Motivo","tipo_campo":"Texto","campo_id":292,"obs":"","Comparador":"=","Valor":"06","Op1":null,"Op2":null,"Op3":null,"val":"06"},{"columna_id":218,"column_title":"Nro. Cita","tipo_campo":"Entero","campo_id":297,"obs":"","Comparador":"=","Valor":"1","Op1":null,"Op2":null,"Op3":null,"val":"1"},{"columna_id":643,"column_title":"Cod. Servicio","tipo_campo":"Texto","campo_id":339,"obs":"","Comparador":"=","Valor":"167","Op1":null,"Op2":null,"Op3":null,"val":"167"}]', '2020-02-27 09:37:34', '2020-02-27 09:38:44', NULL),
+(50, 'Comfamiliar Risaralda\\Subdirección Salud\\PGP', 79, 'PGPSOS - Citas Odontologia', 'Citas', 'Numero', 0, 'Calculado de Entidad', 3, 193, 'count', 192, '[{"columna_id":640,"column_title":"Cod. Entidad","tipo_campo":"Texto","campo_id":328,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":641,"column_title":"Capitado","tipo_campo":"Booleano","campo_id":333,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"},{"columna_id":642,"column_title":"Cod. Motivo","tipo_campo":"Texto","campo_id":292,"obs":"","Comparador":"=","Valor":"06","Op1":null,"Op2":null,"Op3":null,"val":"06"},{"columna_id":643,"column_title":"Cod. Servicio","tipo_campo":"Texto","campo_id":339,"obs":"","Comparador":"=","Valor":"001","Op1":null,"Op2":null,"Op3":null,"val":"001"},{"columna_id":225,"column_title":"Tipo Cita","tipo_campo":"Texto","campo_id":342,"obs":"","Comparador":"like","Valor":"PRIMERA VEZ","Op1":null,"Op2":null,"Op3":null}]', '2020-02-27 09:55:58', '2020-02-27 09:59:15', NULL),
+(51, 'Comfamiliar Risaralda\\Subdirección Salud\\PGP', 79, 'PGPSOS - Días Citas Odontologia', 'Días Hábiles', 'Numero', 0, 'Calculado de Entidad', 3, 193, 'sum', 202, '[{"columna_id":640,"column_title":"Cod. Entidad","tipo_campo":"Texto","campo_id":328,"obs":"","Comparador":"=","Valor":"SOS","Op1":null,"Op2":null,"Op3":null,"val":"SOS"},{"columna_id":641,"column_title":"Capitado","tipo_campo":"Booleano","campo_id":333,"obs":"","Comparador":"=","Valor":"S","Op1":null,"Op2":null,"Op3":null,"val":"S"},{"columna_id":642,"column_title":"Cod. Motivo","tipo_campo":"Texto","campo_id":292,"obs":"","Comparador":"=","Valor":"06","Op1":null,"Op2":null,"Op3":null,"val":"06"},{"columna_id":643,"column_title":"Cod. Servicio","tipo_campo":"Texto","campo_id":339,"obs":"","Comparador":"=","Valor":"001","Op1":null,"Op2":null,"Op3":null,"val":"001"},{"columna_id":225,"column_title":"Tipo Cita","tipo_campo":"Texto","campo_id":342,"obs":"","Comparador":"like","Valor":"PRIMERA VEZ","Op1":null,"Op2":null,"Op3":null,"val":"PRIMERA VEZ"}]', '2020-02-27 10:00:03', '2020-02-27 10:00:28', NULL);
 
 -- --------------------------------------------------------
 
@@ -4709,7 +4839,7 @@ CREATE TABLE IF NOT EXISTS `sara_variables_valores` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `var_periodo` (`variable_id`,`Periodo`),
   KEY `Periodo` (`Periodo`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=380 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=682 ;
 
 --
 -- Volcado de datos para la tabla `sara_variables_valores`
@@ -5045,43 +5175,345 @@ INSERT INTO `sara_variables_valores` (`id`, `variable_id`, `Periodo`, `Valor`, `
 (340, 32, 201910, 1249.0000, '2019-12-11 08:44:55', '2019-12-11 08:44:55'),
 (341, 32, 201911, 1192.0000, '2019-12-11 08:44:55', '2020-01-14 08:15:14'),
 (342, 32, 201912, 1256.0000, '2019-12-11 08:44:55', '2020-01-15 07:38:48'),
-(343, 19, 202001, 251.0000, '2020-01-13 09:22:25', '2020-02-12 08:11:17'),
-(344, 20, 202001, 8776.0000, '2020-01-13 09:23:14', '2020-02-12 08:11:17'),
+(343, 19, 202001, 251.0000, '2020-01-13 09:22:25', '2020-02-26 08:50:21'),
+(344, 20, 202001, 8776.0000, '2020-01-13 09:23:14', '2020-02-26 08:50:22'),
 (345, 14, 202001, 80.0000, '2020-01-13 16:05:39', '2020-01-13 16:05:39'),
 (346, 16, 202001, 6.0000, '2020-01-13 16:05:39', '2020-01-13 16:05:39'),
-(347, 21, 202001, 323.0000, '2020-01-13 16:05:39', '2020-02-12 08:11:17'),
+(347, 21, 202001, 322.0000, '2020-01-13 16:05:39', '2020-02-26 08:50:22'),
 (348, 22, 202001, 30.0000, '2020-01-13 16:05:39', '2020-02-12 08:11:17'),
-(349, 23, 202001, 386.0000, '2020-01-13 16:05:39', '2020-02-03 16:20:55'),
+(349, 23, 202001, 387.0000, '2020-01-13 16:05:39', '2020-02-25 13:18:53'),
 (350, 24, 202001, 4.0000, '2020-01-13 16:05:39', '2020-01-29 09:09:36'),
-(351, 25, 202001, 7.0000, '2020-01-13 16:05:39', '2020-02-03 16:20:55'),
-(352, 30, 202001, 405.0000, '2020-01-13 16:05:39', '2020-02-03 16:20:55'),
+(351, 25, 202001, 8.0000, '2020-01-13 16:05:39', '2020-02-25 13:18:53'),
+(352, 30, 202001, 404.0000, '2020-01-13 16:05:39', '2020-02-25 13:18:53'),
 (353, 31, 202001, 23.0000, '2020-01-13 16:05:39', '2020-02-03 16:20:55'),
-(354, 28, 202001, 30.0000, '2020-01-13 16:48:17', '2020-02-03 16:20:55'),
+(354, 28, 202001, 45.0000, '2020-01-13 16:48:17', '2020-02-27 17:15:52'),
 (355, 32, 202001, 1200.0000, '2020-01-14 08:15:14', '2020-02-21 09:13:34'),
 (356, 1, 202001, 49963.0000, '2020-01-15 07:38:22', '2020-02-21 09:13:21'),
-(357, 17, 202001, 2881.0000, '2020-01-15 07:38:22', '2020-02-21 09:13:21'),
+(357, 17, 202001, 2882.0000, '2020-01-15 07:38:22', '2020-02-26 10:23:50'),
 (358, 18, 202001, 62833.0000, '2020-01-15 07:38:22', '2020-02-21 09:13:21'),
-(359, 27, 202001, 10.0000, '2020-01-29 09:09:36', '2020-02-03 16:20:55'),
+(359, 27, 202001, 15.0000, '2020-01-29 09:09:36', '2020-02-25 13:18:53'),
 (360, 26, 202001, 0.0000, '2020-02-03 16:31:51', '2020-02-03 16:31:51'),
-(361, 29, 202001, NULL, '2020-02-05 08:09:01', '2020-02-05 08:11:04'),
+(361, 29, 202001, 37.0000, '2020-02-05 08:09:01', '2020-02-25 13:18:53'),
 (362, 14, 202002, 80.0000, '2020-02-19 08:59:02', '2020-02-19 08:59:02'),
 (363, 16, 202002, 6.0000, '2020-02-19 08:59:02', '2020-02-19 08:59:02'),
-(364, 19, 202002, 176.0000, '2020-02-19 08:59:02', '2020-02-19 08:59:02'),
-(365, 20, 202002, 5755.0000, '2020-02-19 08:59:02', '2020-02-19 08:59:02'),
-(366, 21, 202002, 305.0000, '2020-02-19 08:59:02', '2020-02-19 08:59:02'),
-(367, 22, 202002, 10.0000, '2020-02-19 08:59:02', '2020-02-19 08:59:02'),
-(368, 23, 202002, 271.0000, '2020-02-19 08:59:02', '2020-02-19 08:59:02'),
-(369, 24, 202002, 3.0000, '2020-02-19 08:59:02', '2020-02-19 08:59:02'),
-(370, 25, 202002, 4.0000, '2020-02-19 08:59:02', '2020-02-19 08:59:02'),
-(371, 27, 202002, 6.0000, '2020-02-19 08:59:02', '2020-02-19 08:59:02'),
-(372, 28, 202002, 3.0000, '2020-02-19 08:59:02', '2020-02-19 08:59:02'),
-(373, 29, 202002, NULL, '2020-02-19 08:59:02', '2020-02-19 08:59:43'),
-(374, 30, 202002, 283.0000, '2020-02-19 08:59:02', '2020-02-19 08:59:02'),
-(375, 31, 202002, 13.0000, '2020-02-19 08:59:02', '2020-02-19 08:59:02'),
+(364, 19, 202002, 252.0000, '2020-02-19 08:59:02', '2020-02-28 07:20:46'),
+(365, 20, 202002, 8374.0000, '2020-02-19 08:59:02', '2020-02-28 07:20:46'),
+(366, 21, 202002, 344.0000, '2020-02-19 08:59:02', '2020-02-28 07:20:46'),
+(367, 22, 202002, 11.0000, '2020-02-19 08:59:02', '2020-02-26 08:50:22'),
+(368, 23, 202002, 389.0000, '2020-02-19 08:59:02', '2020-02-28 07:20:46'),
+(369, 24, 202002, 5.0000, '2020-02-19 08:59:02', '2020-02-25 13:18:47'),
+(370, 25, 202002, 6.0000, '2020-02-19 08:59:02', '2020-02-28 07:20:46'),
+(371, 27, 202002, 9.0000, '2020-02-19 08:59:02', '2020-02-28 07:20:46'),
+(372, 28, 202002, NULL, '2020-02-19 08:59:02', '2020-02-27 17:15:46'),
+(373, 29, 202002, NULL, '2020-02-19 08:59:02', '2020-02-26 14:36:55'),
+(374, 30, 202002, 414.0000, '2020-02-19 08:59:02', '2020-02-28 07:20:46'),
+(375, 31, 202002, 22.0000, '2020-02-19 08:59:02', '2020-02-28 07:20:46'),
 (376, 1, 202002, 31916.0000, '2020-02-21 09:13:21', '2020-02-21 09:13:21'),
-(377, 17, 202002, 1273.0000, '2020-02-21 09:13:21', '2020-02-21 09:13:21'),
-(378, 18, 202002, 44879.0000, '2020-02-21 09:13:21', '2020-02-21 09:13:21'),
-(379, 32, 202002, 824.0000, '2020-02-21 09:13:34', '2020-02-21 09:13:34');
+(377, 17, 202002, 2261.0000, '2020-02-21 09:13:21', '2020-02-26 10:23:50'),
+(378, 18, 202002, 58080.0000, '2020-02-21 09:13:21', '2020-02-26 10:20:58'),
+(379, 32, 202002, 1003.0000, '2020-02-21 09:13:34', '2020-02-25 13:18:53'),
+(380, 33, 202001, 72.0000, '2020-02-26 14:34:29', '2020-02-26 14:34:29'),
+(381, 33, 201912, 13.0000, '2020-02-26 14:34:35', '2020-02-26 14:34:35'),
+(382, 33, 201911, 23.0000, '2020-02-26 14:34:40', '2020-02-26 14:34:40'),
+(383, 33, 201910, 101.0000, '2020-02-26 14:34:53', '2020-02-26 14:34:53'),
+(384, 33, 201909, 35.0000, '2020-02-26 14:35:25', '2020-02-26 14:35:25'),
+(385, 33, 201908, 207.0000, '2020-02-26 14:35:30', '2020-02-26 14:35:30'),
+(386, 33, 201907, 238.0000, '2020-02-26 14:35:35', '2020-02-26 14:35:35'),
+(387, 33, 201906, 227.0000, '2020-02-26 14:35:52', '2020-02-26 14:35:52'),
+(388, 33, 201905, 227.0000, '2020-02-26 14:36:00', '2020-02-26 14:36:00'),
+(389, 33, 201904, 103.0000, '2020-02-26 14:36:05', '2020-02-26 14:36:05'),
+(390, 33, 201903, 77.0000, '2020-02-26 14:36:11', '2020-02-26 14:36:11'),
+(391, 33, 201902, 43.0000, '2020-02-26 14:36:14', '2020-02-26 14:36:14'),
+(392, 33, 201901, 80.0000, '2020-02-26 14:36:21', '2020-02-26 14:36:21'),
+(393, 33, 201812, 133.0000, '2020-02-26 14:36:31', '2020-02-26 14:36:31'),
+(394, 33, 201811, 157.0000, '2020-02-26 14:36:36', '2020-02-26 14:36:36'),
+(395, 33, 201810, 178.0000, '2020-02-26 14:36:43', '2020-02-26 14:36:43'),
+(396, 34, 202001, 69.0000, '2020-02-26 14:39:49', '2020-02-26 14:39:49'),
+(397, 34, 201912, 12.0000, '2020-02-26 14:40:18', '2020-02-26 14:40:18'),
+(398, 34, 201911, 23.0000, '2020-02-26 14:40:25', '2020-02-26 14:40:25'),
+(399, 34, 201910, 85.0000, '2020-02-26 14:40:32', '2020-02-26 14:40:32'),
+(400, 34, 201909, 35.0000, '2020-02-26 14:40:41', '2020-02-26 14:40:41'),
+(401, 34, 201908, 200.0000, '2020-02-26 14:40:50', '2020-02-26 14:40:50'),
+(402, 34, 201907, 230.0000, '2020-02-26 14:41:03', '2020-02-26 14:41:03'),
+(403, 34, 201906, 209.0000, '2020-02-26 14:41:08', '2020-02-26 14:41:08'),
+(404, 34, 201905, 224.0000, '2020-02-26 14:41:14', '2020-02-26 14:41:14'),
+(405, 34, 201904, 92.0000, '2020-02-26 14:41:21', '2020-02-26 14:41:21'),
+(406, 34, 201903, 76.0000, '2020-02-26 14:43:19', '2020-02-26 14:43:19'),
+(407, 34, 201902, 41.0000, '2020-02-26 14:43:25', '2020-02-26 14:43:25'),
+(408, 34, 201901, 76.0000, '2020-02-26 14:43:32', '2020-02-26 14:43:32'),
+(409, 34, 201812, 119.0000, '2020-02-26 14:43:47', '2020-02-26 14:43:47'),
+(410, 34, 201811, 144.0000, '2020-02-26 14:43:51', '2020-02-26 14:43:51'),
+(411, 34, 201810, 158.0000, '2020-02-26 14:43:54', '2020-02-26 14:43:54'),
+(412, 35, 201812, 90.0000, '2020-02-26 14:55:48', '2020-02-26 14:55:48'),
+(413, 35, 201902, 90.0000, '2020-02-26 14:55:54', '2020-02-26 14:55:54'),
+(414, 35, 201901, 90.0000, '2020-02-26 14:55:57', '2020-02-26 14:55:57'),
+(415, 35, 201903, 71.0000, '2020-02-26 14:56:03', '2020-02-26 14:56:03'),
+(416, 35, 201905, 71.0000, '2020-02-26 14:56:06', '2020-02-26 14:56:06'),
+(417, 35, 201904, 71.0000, '2020-02-26 14:56:08', '2020-02-26 14:56:08'),
+(418, 35, 201906, 82.0000, '2020-02-26 14:56:12', '2020-02-26 14:56:12'),
+(419, 35, 201908, 82.0000, '2020-02-26 14:56:15', '2020-02-26 14:56:15'),
+(420, 35, 201907, 82.0000, '2020-02-26 14:56:18', '2020-02-26 14:56:18'),
+(421, 35, 201909, 81.0000, '2020-02-26 14:56:23', '2020-02-26 14:56:23'),
+(422, 35, 201911, 81.0000, '2020-02-26 14:56:28', '2020-02-26 14:56:28'),
+(423, 35, 201910, 81.0000, '2020-02-26 14:56:31', '2020-02-26 14:56:31'),
+(424, 35, 201912, 94.0000, '2020-02-26 14:56:37', '2020-02-26 14:56:37'),
+(425, 35, 202001, 94.0000, '2020-02-26 14:56:40', '2020-02-26 14:56:40'),
+(426, 35, 202002, 94.0000, '2020-02-26 14:56:46', '2020-02-26 14:56:46'),
+(427, 36, 201912, 91.0000, '2020-02-26 14:57:28', '2020-02-26 14:59:33'),
+(428, 36, 202002, NULL, '2020-02-26 14:57:34', '2020-02-26 14:58:46'),
+(429, 36, 202001, 91.0000, '2020-02-26 14:57:37', '2020-02-26 14:58:39'),
+(430, 36, 202003, NULL, '2020-02-26 14:57:44', '2020-02-26 14:58:48'),
+(431, 36, 202005, NULL, '2020-02-26 14:57:47', '2020-02-26 14:58:54'),
+(432, 36, 202004, NULL, '2020-02-26 14:57:49', '2020-02-26 14:58:52'),
+(433, 36, 202006, NULL, '2020-02-26 14:57:53', '2020-02-26 14:58:57'),
+(434, 36, 202008, NULL, '2020-02-26 14:57:56', '2020-02-26 14:59:02'),
+(435, 36, 202007, NULL, '2020-02-26 14:57:59', '2020-02-26 14:58:59'),
+(436, 36, 201908, 78.0000, '2020-02-26 14:58:06', '2020-02-26 14:58:06'),
+(437, 36, 201906, 78.0000, '2020-02-26 14:58:08', '2020-02-26 14:58:08'),
+(438, 36, 201907, 78.0000, '2020-02-26 14:58:11', '2020-02-26 14:58:11'),
+(439, 36, 201905, 68.0000, '2020-02-26 14:58:13', '2020-02-26 14:58:13'),
+(440, 36, 201904, 68.0000, '2020-02-26 14:58:16', '2020-02-26 14:58:16'),
+(441, 36, 201812, 85.0000, '2020-02-26 14:58:19', '2020-02-26 14:58:19'),
+(442, 36, 201903, 68.0000, '2020-02-26 14:58:26', '2020-02-26 14:58:26'),
+(443, 36, 201902, 85.0000, '2020-02-26 14:58:29', '2020-02-26 14:58:29'),
+(444, 36, 201901, 85.0000, '2020-02-26 14:58:31', '2020-02-26 14:58:31'),
+(445, 36, 201909, 78.0000, '2020-02-26 14:59:24', '2020-02-26 14:59:24'),
+(446, 36, 201910, 78.0000, '2020-02-26 14:59:27', '2020-02-26 14:59:27'),
+(447, 36, 201911, 78.0000, '2020-02-26 14:59:29', '2020-02-26 14:59:29'),
+(448, 37, 201810, 171.0000, '2020-02-26 16:04:27', '2020-02-26 16:04:27'),
+(449, 37, 201811, 180.0000, '2020-02-26 16:04:27', '2020-02-26 16:04:27'),
+(450, 37, 201812, 131.0000, '2020-02-26 16:04:27', '2020-02-26 16:04:27'),
+(451, 37, 201901, 488.0000, '2020-02-26 16:04:27', '2020-02-26 16:04:27'),
+(452, 37, 201902, 549.0000, '2020-02-26 16:04:27', '2020-02-26 16:04:27'),
+(453, 37, 201903, 516.0000, '2020-02-26 16:04:27', '2020-02-26 16:04:27'),
+(454, 37, 201904, 518.0000, '2020-02-26 16:04:27', '2020-02-26 16:04:27'),
+(455, 37, 201905, 539.0000, '2020-02-26 16:04:27', '2020-02-26 16:04:27'),
+(456, 37, 201906, 394.0000, '2020-02-26 16:04:27', '2020-02-26 16:04:27'),
+(457, 37, 201907, 443.0000, '2020-02-26 16:04:27', '2020-02-26 16:04:27'),
+(458, 37, 201908, 475.0000, '2020-02-26 16:04:27', '2020-02-26 16:04:27'),
+(459, 37, 201909, 394.0000, '2020-02-26 16:04:27', '2020-02-26 16:04:27'),
+(460, 37, 201910, 368.0000, '2020-02-26 16:04:27', '2020-02-26 16:04:27'),
+(461, 37, 201911, 251.0000, '2020-02-26 16:04:27', '2020-02-26 16:04:27'),
+(462, 37, 201912, 224.0000, '2020-02-26 16:04:27', '2020-02-26 16:04:27'),
+(463, 37, 202001, 835.0000, '2020-02-26 16:04:27', '2020-02-26 16:04:27'),
+(464, 38, 201810, 2254.0000, '2020-02-26 16:10:37', '2020-02-26 16:10:37'),
+(465, 38, 201811, 2790.0000, '2020-02-26 16:10:37', '2020-02-26 16:10:37'),
+(466, 38, 201812, 1542.0000, '2020-02-26 16:10:37', '2020-02-26 16:10:37'),
+(467, 38, 201901, 1818.0000, '2020-02-26 16:10:37', '2020-02-26 16:10:37'),
+(468, 38, 201902, 2420.0000, '2020-02-26 16:10:37', '2020-02-26 16:10:37'),
+(469, 38, 201903, 1811.0000, '2020-02-26 16:10:37', '2020-02-26 16:10:37'),
+(470, 38, 201904, 1517.0000, '2020-02-26 16:10:37', '2020-02-26 16:10:37'),
+(471, 38, 201905, 1734.0000, '2020-02-26 16:10:37', '2020-02-26 16:10:37'),
+(472, 38, 201906, 1435.0000, '2020-02-26 16:10:37', '2020-02-26 16:10:37'),
+(473, 38, 201907, 2287.0000, '2020-02-26 16:10:37', '2020-02-26 16:10:37'),
+(474, 38, 201908, 3527.0000, '2020-02-26 16:10:37', '2020-02-26 16:10:37'),
+(475, 38, 201909, 3186.0000, '2020-02-26 16:10:37', '2020-02-26 16:10:37'),
+(476, 38, 201910, 2927.0000, '2020-02-26 16:10:37', '2020-02-26 16:10:37'),
+(477, 38, 201911, 1255.0000, '2020-02-26 16:10:37', '2020-02-26 16:10:37'),
+(478, 38, 201912, 700.0000, '2020-02-26 16:10:37', '2020-02-26 16:10:37'),
+(479, 38, 202001, 3536.0000, '2020-02-26 16:10:37', '2020-02-26 16:10:37'),
+(480, 39, 201810, 6.0000, '2020-02-26 16:19:43', '2020-02-26 16:19:43'),
+(481, 39, 201811, 6.0000, '2020-02-26 16:20:05', '2020-02-26 16:20:05'),
+(482, 39, 201812, 6.0000, '2020-02-26 16:20:05', '2020-02-26 16:20:05'),
+(483, 39, 201901, 6.0000, '2020-02-26 16:20:05', '2020-02-26 16:20:05'),
+(484, 39, 201902, 6.0000, '2020-02-26 16:20:05', '2020-02-26 16:20:05'),
+(485, 39, 201903, 6.0000, '2020-02-26 16:20:05', '2020-02-26 16:20:05'),
+(486, 39, 201904, 6.0000, '2020-02-26 16:20:05', '2020-02-26 16:20:05'),
+(487, 39, 201905, 6.0000, '2020-02-26 16:20:05', '2020-02-26 16:20:05'),
+(488, 39, 201906, 6.0000, '2020-02-26 16:20:05', '2020-02-26 16:20:05'),
+(489, 39, 201907, 6.0000, '2020-02-26 16:20:05', '2020-02-26 16:20:05'),
+(490, 39, 201908, 7.0000, '2020-02-26 16:20:13', '2020-02-26 16:20:13'),
+(491, 39, 201909, 7.0000, '2020-02-26 16:20:25', '2020-02-26 16:20:25'),
+(492, 39, 201910, 7.0000, '2020-02-26 16:20:25', '2020-02-26 16:20:25'),
+(493, 39, 201911, 7.0000, '2020-02-26 16:20:25', '2020-02-26 16:20:25'),
+(494, 39, 201912, 7.0000, '2020-02-26 16:20:25', '2020-02-26 16:20:25'),
+(495, 39, 202001, 7.0000, '2020-02-26 16:20:25', '2020-02-26 16:20:25'),
+(496, 40, 201810, 3574.0000, '2020-02-26 16:38:54', '2020-02-26 16:38:54'),
+(497, 40, 201811, 2796.0000, '2020-02-26 16:38:54', '2020-02-26 16:38:54'),
+(498, 40, 201812, 2200.0000, '2020-02-26 16:38:54', '2020-02-26 16:38:54'),
+(499, 40, 201901, 12142.0000, '2020-02-26 16:38:54', '2020-02-26 16:38:54'),
+(500, 40, 201902, 9582.0000, '2020-02-26 16:38:54', '2020-02-26 16:38:54'),
+(501, 40, 201903, 7856.0000, '2020-02-26 16:38:54', '2020-02-26 16:38:54'),
+(502, 40, 201904, 6594.0000, '2020-02-26 16:38:54', '2020-02-26 16:38:54'),
+(503, 40, 201905, 5890.0000, '2020-02-26 16:38:54', '2020-02-26 16:38:54'),
+(504, 40, 201906, 4370.0000, '2020-02-26 16:38:54', '2020-02-26 16:38:54'),
+(505, 40, 201907, 4640.0000, '2020-02-26 16:38:54', '2020-02-26 16:38:54'),
+(506, 40, 201908, 3520.0000, '2020-02-26 16:38:54', '2020-02-26 16:38:54'),
+(507, 40, 201909, 3177.0000, '2020-02-26 16:38:54', '2020-02-26 16:38:54'),
+(508, 40, 201910, 3078.0000, '2020-02-26 16:38:54', '2020-02-26 16:38:54'),
+(509, 40, 201911, 2296.0000, '2020-02-26 16:38:54', '2020-02-26 16:38:54'),
+(510, 40, 201912, 2023.0000, '2020-02-26 16:38:54', '2020-02-26 16:38:54'),
+(511, 40, 202001, 12285.0000, '2020-02-26 16:38:54', '2020-02-26 16:38:54'),
+(512, 41, 201810, 5741.0000, '2020-02-26 16:39:43', '2020-02-26 16:39:43'),
+(513, 41, 201811, 4866.0000, '2020-02-26 16:39:43', '2020-02-26 16:39:43'),
+(514, 41, 201812, 2437.0000, '2020-02-26 16:39:43', '2020-02-26 16:39:43'),
+(515, 41, 201901, 19512.0000, '2020-02-26 16:39:43', '2020-02-26 16:39:43'),
+(516, 41, 201902, 17135.0000, '2020-02-26 16:39:43', '2020-02-26 16:39:43'),
+(517, 41, 201903, 13591.0000, '2020-02-26 16:39:43', '2020-02-26 16:39:43'),
+(518, 41, 201904, 9607.0000, '2020-02-26 16:39:43', '2020-02-26 16:39:43'),
+(519, 41, 201905, 7737.0000, '2020-02-26 16:39:43', '2020-02-26 16:39:43'),
+(520, 41, 201906, 5686.0000, '2020-02-26 16:39:43', '2020-02-26 16:39:43'),
+(521, 41, 201907, 6817.0000, '2020-02-26 16:39:43', '2020-02-26 16:39:43'),
+(522, 41, 201908, 6126.0000, '2020-02-26 16:39:43', '2020-02-26 16:39:43'),
+(523, 41, 201909, 6685.0000, '2020-02-26 16:39:43', '2020-02-26 16:39:43'),
+(524, 41, 201910, 6310.0000, '2020-02-26 16:39:43', '2020-02-26 16:39:43'),
+(525, 41, 201911, 4536.0000, '2020-02-26 16:39:43', '2020-02-26 16:39:43'),
+(526, 41, 201912, 3088.0000, '2020-02-26 16:39:43', '2020-02-26 16:39:43'),
+(527, 41, 202001, 25414.0000, '2020-02-26 16:39:43', '2020-02-26 16:39:43'),
+(528, 42, 201810, 130.0000, '2020-02-26 16:51:28', '2020-02-26 16:51:28'),
+(529, 42, 201811, 144.0000, '2020-02-26 16:51:28', '2020-02-26 16:51:28'),
+(530, 42, 201812, 181.0000, '2020-02-26 16:51:28', '2020-02-26 16:51:28'),
+(531, 42, 201901, 206.0000, '2020-02-26 16:51:28', '2020-02-26 16:51:28'),
+(532, 42, 201902, 348.0000, '2020-02-26 16:51:28', '2020-02-26 16:51:28'),
+(533, 42, 201903, 301.0000, '2020-02-26 16:51:28', '2020-02-26 16:51:28'),
+(534, 42, 201904, 269.0000, '2020-02-26 16:51:28', '2020-02-26 16:51:28'),
+(535, 42, 201905, 190.0000, '2020-02-26 16:51:28', '2020-02-26 16:51:28'),
+(536, 42, 201906, 144.0000, '2020-02-26 16:51:28', '2020-02-26 16:51:28'),
+(537, 42, 201907, 226.0000, '2020-02-26 16:51:28', '2020-02-26 16:51:28'),
+(538, 42, 201908, 190.0000, '2020-02-26 16:51:28', '2020-02-26 16:51:28'),
+(539, 42, 201909, 230.0000, '2020-02-26 16:51:28', '2020-02-26 16:51:28'),
+(540, 42, 201910, 252.0000, '2020-02-26 16:51:28', '2020-02-26 16:51:28'),
+(541, 42, 201911, 221.0000, '2020-02-26 16:51:28', '2020-02-26 16:51:28'),
+(542, 42, 201912, 206.0000, '2020-02-26 16:51:28', '2020-02-26 16:51:28'),
+(543, 42, 202001, 474.0000, '2020-02-26 16:51:28', '2020-02-26 16:51:28'),
+(544, 43, 201810, 4335.0000, '2020-02-26 16:52:33', '2020-02-26 16:52:33'),
+(545, 43, 201811, 4684.0000, '2020-02-26 16:52:33', '2020-02-26 16:52:33'),
+(546, 43, 201812, 4028.0000, '2020-02-26 16:52:33', '2020-02-26 16:52:33'),
+(547, 43, 201901, 4003.0000, '2020-02-26 16:52:33', '2020-02-26 16:52:33'),
+(548, 43, 201902, 9886.0000, '2020-02-26 16:52:33', '2020-02-26 16:52:33'),
+(549, 43, 201903, 8106.0000, '2020-02-26 16:52:33', '2020-02-26 16:52:33'),
+(550, 43, 201904, 7154.0000, '2020-02-26 16:52:33', '2020-02-26 16:52:33'),
+(551, 43, 201905, 2167.0000, '2020-02-26 16:52:33', '2020-02-26 16:52:33'),
+(552, 43, 201906, 2119.0000, '2020-02-26 16:52:33', '2020-02-26 16:52:33'),
+(553, 43, 201907, 4567.0000, '2020-02-26 16:52:33', '2020-02-26 16:52:33'),
+(554, 43, 201908, 2471.0000, '2020-02-26 16:52:33', '2020-02-26 16:52:33'),
+(555, 43, 201909, 3329.0000, '2020-02-26 16:52:33', '2020-02-26 16:52:33'),
+(556, 43, 201910, 4187.0000, '2020-02-26 16:52:33', '2020-02-26 16:52:33'),
+(557, 43, 201911, 1950.0000, '2020-02-26 16:52:33', '2020-02-26 16:52:33'),
+(558, 43, 201912, 1432.0000, '2020-02-26 16:52:33', '2020-02-26 16:52:33'),
+(559, 43, 202001, 4653.0000, '2020-02-26 16:52:33', '2020-02-26 16:52:33'),
+(560, 44, 201810, 134.0000, '2020-02-27 08:14:56', '2020-02-27 08:14:56'),
+(561, 44, 201811, 130.0000, '2020-02-27 08:14:56', '2020-02-27 08:14:56'),
+(562, 44, 201812, 118.0000, '2020-02-27 08:14:56', '2020-02-27 08:14:56'),
+(563, 44, 201901, 192.0000, '2020-02-27 08:14:56', '2020-02-27 08:14:56'),
+(564, 44, 201902, 210.0000, '2020-02-27 08:14:56', '2020-02-27 08:14:56'),
+(565, 44, 201903, 222.0000, '2020-02-27 08:14:56', '2020-02-27 08:14:56'),
+(566, 44, 201904, 126.0000, '2020-02-27 08:14:56', '2020-02-27 08:14:56'),
+(567, 44, 201905, 195.0000, '2020-02-27 08:14:56', '2020-02-27 08:14:56'),
+(568, 44, 201906, 182.0000, '2020-02-27 08:14:56', '2020-02-27 08:14:56'),
+(569, 44, 201907, 187.0000, '2020-02-27 08:14:56', '2020-02-27 08:14:56'),
+(570, 44, 201908, 154.0000, '2020-02-27 08:14:56', '2020-02-27 08:14:56'),
+(571, 44, 201909, 141.0000, '2020-02-27 08:14:56', '2020-02-27 08:14:56'),
+(572, 44, 201910, 167.0000, '2020-02-27 08:14:56', '2020-02-27 08:14:56'),
+(573, 44, 201911, 172.0000, '2020-02-27 08:14:56', '2020-02-27 08:14:56'),
+(574, 44, 201912, 163.0000, '2020-02-27 08:14:56', '2020-02-27 08:14:56'),
+(575, 44, 202001, 274.0000, '2020-02-27 08:14:56', '2020-02-27 08:14:56'),
+(576, 45, 201810, 605.0000, '2020-02-27 08:51:04', '2020-02-27 08:51:04'),
+(577, 45, 201811, 625.0000, '2020-02-27 08:51:04', '2020-02-27 08:51:04'),
+(578, 45, 201812, 509.0000, '2020-02-27 08:51:04', '2020-02-27 08:51:04'),
+(579, 45, 201901, 572.0000, '2020-02-27 08:51:04', '2020-02-27 08:51:04'),
+(580, 45, 201902, 1085.0000, '2020-02-27 08:51:04', '2020-02-27 08:51:04'),
+(581, 45, 201903, 1246.0000, '2020-02-27 08:51:04', '2020-02-27 08:51:04'),
+(582, 45, 201904, 769.0000, '2020-02-27 08:51:04', '2020-02-27 08:51:04'),
+(583, 45, 201905, 802.0000, '2020-02-27 08:51:04', '2020-02-27 08:51:04'),
+(584, 45, 201906, 1140.0000, '2020-02-27 08:51:04', '2020-02-27 08:51:04'),
+(585, 45, 201907, 852.0000, '2020-02-27 08:51:04', '2020-02-27 08:51:04'),
+(586, 45, 201908, 870.0000, '2020-02-27 08:51:04', '2020-02-27 08:51:04'),
+(587, 45, 201909, 1533.0000, '2020-02-27 08:51:04', '2020-02-27 08:51:04'),
+(588, 45, 201910, 2400.0000, '2020-02-27 08:51:04', '2020-02-27 08:51:04'),
+(589, 45, 201911, 1937.0000, '2020-02-27 08:51:04', '2020-02-27 08:51:04'),
+(590, 45, 201912, 2647.0000, '2020-02-27 08:51:04', '2020-02-27 08:51:04'),
+(591, 45, 202001, 3335.0000, '2020-02-27 08:51:04', '2020-02-27 08:51:04'),
+(592, 46, 201810, 119.0000, '2020-02-27 09:03:26', '2020-02-27 09:03:26'),
+(593, 46, 201811, 84.0000, '2020-02-27 09:03:26', '2020-02-27 09:03:26'),
+(594, 46, 201812, 120.0000, '2020-02-27 09:03:26', '2020-02-27 09:03:26'),
+(595, 46, 201901, 229.0000, '2020-02-27 09:03:26', '2020-02-27 09:03:26'),
+(596, 46, 201902, 200.0000, '2020-02-27 09:03:26', '2020-02-27 09:03:26'),
+(597, 46, 201903, 183.0000, '2020-02-27 09:03:26', '2020-02-27 09:03:26'),
+(598, 46, 201904, 209.0000, '2020-02-27 09:03:26', '2020-02-27 09:03:26'),
+(599, 46, 201905, 189.0000, '2020-02-27 09:03:26', '2020-02-27 09:03:26'),
+(600, 46, 201906, 201.0000, '2020-02-27 09:03:26', '2020-02-27 09:03:26'),
+(601, 46, 201907, 234.0000, '2020-02-27 09:03:26', '2020-02-27 09:03:26'),
+(602, 46, 201908, 135.0000, '2020-02-27 09:03:26', '2020-02-27 09:03:26'),
+(603, 46, 201909, 313.0000, '2020-02-27 09:03:26', '2020-02-27 09:03:26'),
+(604, 46, 201910, 375.0000, '2020-02-27 09:03:26', '2020-02-27 09:03:26'),
+(605, 46, 201911, 288.0000, '2020-02-27 09:03:26', '2020-02-27 09:03:26'),
+(606, 46, 201912, 281.0000, '2020-02-27 09:03:26', '2020-02-27 09:03:26'),
+(607, 46, 202001, 463.0000, '2020-02-27 09:03:26', '2020-02-27 09:03:26'),
+(608, 47, 201810, 2052.0000, '2020-02-27 09:05:40', '2020-02-27 09:05:40'),
+(609, 47, 201811, 1605.0000, '2020-02-27 09:05:40', '2020-02-27 09:05:40'),
+(610, 47, 201812, 1326.0000, '2020-02-27 09:05:40', '2020-02-27 09:05:40'),
+(611, 47, 201901, 763.0000, '2020-02-27 09:05:40', '2020-02-27 09:05:40'),
+(612, 47, 201902, 1477.0000, '2020-02-27 09:05:40', '2020-02-27 09:05:40'),
+(613, 47, 201903, 1384.0000, '2020-02-27 09:05:40', '2020-02-27 09:05:40'),
+(614, 47, 201904, 1845.0000, '2020-02-27 09:05:40', '2020-02-27 09:05:40'),
+(615, 47, 201905, 1515.0000, '2020-02-27 09:05:40', '2020-02-27 09:05:40'),
+(616, 47, 201906, 1587.0000, '2020-02-27 09:05:40', '2020-02-27 09:05:40'),
+(617, 47, 201907, 3957.0000, '2020-02-27 09:05:40', '2020-02-27 09:05:40'),
+(618, 47, 201908, 1770.0000, '2020-02-27 09:05:40', '2020-02-27 09:05:40'),
+(619, 47, 201909, 4897.0000, '2020-02-27 09:05:40', '2020-02-27 09:05:40'),
+(620, 47, 201910, 6507.0000, '2020-02-27 09:05:40', '2020-02-27 09:05:40'),
+(621, 47, 201911, 2610.0000, '2020-02-27 09:05:40', '2020-02-27 09:05:40'),
+(622, 47, 201912, 3696.0000, '2020-02-27 09:05:40', '2020-02-27 09:05:40'),
+(623, 47, 202001, 3850.0000, '2020-02-27 09:05:40', '2020-02-27 09:05:40'),
+(624, 48, 201908, 17.0000, '2020-02-27 09:29:10', '2020-02-27 09:29:10'),
+(625, 48, 201909, 4.0000, '2020-02-27 09:29:10', '2020-02-27 09:29:10'),
+(626, 48, 201910, 19.0000, '2020-02-27 09:29:10', '2020-02-27 09:29:10'),
+(627, 48, 201911, 9.0000, '2020-02-27 09:29:10', '2020-02-27 09:29:10'),
+(628, 48, 201912, 14.0000, '2020-02-27 09:29:10', '2020-02-27 09:29:10'),
+(629, 48, 202001, 13.0000, '2020-02-27 09:29:10', '2020-02-27 09:29:10'),
+(630, 49, 201908, 82.0000, '2020-02-27 09:39:25', '2020-02-27 09:39:25'),
+(631, 49, 201909, 19.0000, '2020-02-27 09:39:25', '2020-02-27 09:39:25'),
+(632, 49, 201910, 161.0000, '2020-02-27 09:39:25', '2020-02-27 09:39:25'),
+(633, 49, 201911, 50.0000, '2020-02-27 09:39:25', '2020-02-27 09:39:25'),
+(634, 49, 201912, 94.0000, '2020-02-27 09:39:25', '2020-02-27 09:39:25'),
+(635, 49, 202001, 96.0000, '2020-02-27 09:39:25', '2020-02-27 09:39:25'),
+(636, 50, 201810, 1849.0000, '2020-02-27 09:59:38', '2020-02-27 09:59:38'),
+(637, 50, 201811, 1621.0000, '2020-02-27 09:59:38', '2020-02-27 09:59:38'),
+(638, 50, 201812, 1329.0000, '2020-02-27 09:59:38', '2020-02-27 09:59:38'),
+(639, 50, 201901, 1884.0000, '2020-02-27 09:59:38', '2020-02-27 09:59:38'),
+(640, 50, 201902, 1650.0000, '2020-02-27 09:59:38', '2020-02-27 09:59:38'),
+(641, 50, 201903, 1684.0000, '2020-02-27 09:59:38', '2020-02-27 09:59:38'),
+(642, 50, 201904, 1566.0000, '2020-02-27 09:59:38', '2020-02-27 09:59:38'),
+(643, 50, 201905, 1805.0000, '2020-02-27 09:59:38', '2020-02-27 09:59:38'),
+(644, 50, 201906, 1383.0000, '2020-02-27 09:59:38', '2020-02-27 09:59:38'),
+(645, 50, 201907, 1660.0000, '2020-02-27 09:59:38', '2020-02-27 09:59:38'),
+(646, 50, 201908, 1475.0000, '2020-02-27 09:59:38', '2020-02-27 09:59:38'),
+(647, 50, 201909, 1373.0000, '2020-02-27 09:59:38', '2020-02-27 09:59:38'),
+(648, 50, 201910, 1360.0000, '2020-02-27 09:59:38', '2020-02-27 09:59:38'),
+(649, 50, 201911, 1255.0000, '2020-02-27 09:59:38', '2020-02-27 09:59:38'),
+(650, 50, 201912, 1224.0000, '2020-02-27 09:59:38', '2020-02-27 09:59:38'),
+(651, 50, 202001, 1254.0000, '2020-02-27 09:59:38', '2020-02-27 09:59:38'),
+(652, 51, 201810, 27528.0000, '2020-02-27 10:00:35', '2020-02-27 10:00:35'),
+(653, 51, 201811, 23136.0000, '2020-02-27 10:00:35', '2020-02-27 10:00:35'),
+(654, 51, 201812, 18504.0000, '2020-02-27 10:00:35', '2020-02-27 10:00:35'),
+(655, 51, 201901, 22200.0000, '2020-02-27 10:00:35', '2020-02-27 10:00:35'),
+(656, 51, 201902, 16666.0000, '2020-02-27 10:00:35', '2020-02-27 10:00:35'),
+(657, 51, 201903, 20701.0000, '2020-02-27 10:00:35', '2020-02-27 10:00:35'),
+(658, 51, 201904, 22383.0000, '2020-02-27 10:00:35', '2020-02-27 10:00:35'),
+(659, 51, 201905, 27143.0000, '2020-02-27 10:00:35', '2020-02-27 10:00:35'),
+(660, 51, 201906, 19063.0000, '2020-02-27 10:00:35', '2020-02-27 10:00:35'),
+(661, 51, 201907, 20299.0000, '2020-02-27 10:00:35', '2020-02-27 10:00:35'),
+(662, 51, 201908, 21639.0000, '2020-02-27 10:00:35', '2020-02-27 10:00:35'),
+(663, 51, 201909, 19506.0000, '2020-02-27 10:00:35', '2020-02-27 10:00:35'),
+(664, 51, 201910, 17759.0000, '2020-02-27 10:00:35', '2020-02-27 10:00:35'),
+(665, 51, 201911, 15303.0000, '2020-02-27 10:00:35', '2020-02-27 10:00:35'),
+(666, 51, 201912, 14263.0000, '2020-02-27 10:00:35', '2020-02-27 10:00:35'),
+(667, 51, 202001, 13674.0000, '2020-02-27 10:00:35', '2020-02-27 10:00:35'),
+(668, 37, 202002, 582.0000, '2020-02-27 11:33:26', '2020-02-27 11:33:26'),
+(669, 38, 202002, 3858.0000, '2020-02-27 11:33:26', '2020-02-27 11:33:26'),
+(670, 40, 202002, 7508.0000, '2020-02-27 11:33:26', '2020-02-27 11:33:26'),
+(671, 41, 202002, 19083.0000, '2020-02-27 11:33:26', '2020-02-27 11:33:26'),
+(672, 42, 202002, 348.0000, '2020-02-27 11:33:26', '2020-02-27 11:33:26'),
+(673, 43, 202002, 3938.0000, '2020-02-27 11:33:26', '2020-02-27 11:33:26'),
+(674, 44, 202002, 200.0000, '2020-02-27 11:33:26', '2020-02-27 11:33:26'),
+(675, 45, 202002, 2613.0000, '2020-02-27 11:33:26', '2020-02-27 11:33:26'),
+(676, 46, 202002, 391.0000, '2020-02-27 11:33:26', '2020-02-27 11:33:26'),
+(677, 47, 202002, 3319.0000, '2020-02-27 11:33:26', '2020-02-27 11:33:26'),
+(678, 48, 202002, 8.0000, '2020-02-27 11:33:26', '2020-02-27 11:33:26'),
+(679, 49, 202002, 36.0000, '2020-02-27 11:33:26', '2020-02-27 11:33:26'),
+(680, 50, 202002, 1289.0000, '2020-02-27 11:33:26', '2020-02-27 11:33:26'),
+(681, 51, 202002, 12835.0000, '2020-02-27 11:33:26', '2020-02-27 11:33:26');
 
 --
 -- Restricciones para tablas volcadas

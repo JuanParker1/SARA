@@ -290,9 +290,14 @@ class EntidadesController extends Controller
         $file = request()->file('file');
         $Cargador    = EntidadCargador::where('id', request('cargador_id'))->with(['entidad', 'entidad.campos'])->first();
 
+
+        \Excel::setDelimiter(';');
+
         $registros = \Excel::load($file, function($reader) use ($Cargador){
             $reader->noHeading = !$Cargador->Config['with_headers'];
         })->get();
+
+        //return $registros;
 
         $load_data = [];
 
