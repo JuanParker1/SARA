@@ -28,15 +28,13 @@
 				</div>
 
 				
-				<md-menu-content class="w170 no-margin">
+				<md-menu-content class="w170 no-margin no-padding-bottom">
 					<div class="s120 bg-lightgrey border-rounded margin-0-auto" md-whiteframe=1 
 						style="background-image: url({{ 'http://sec.comfamiliar.com/images/fotosEmpleados/' + Usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>
 
 					<h3 class="md-title margin text-center">{{ Usuario.Nombres }}</h3>
-					<md-menu-item>
-						<md-button ng-click="Logout()">
-							<md-icon md-font-icon="fa-power-off no-margin"></md-icon>Salir
-						</md-button>
+					<md-menu-item layout layout-align="center center" ng-click="Logout()" class="Pointer">
+						<md-icon md-font-icon="fa-power-off no-margin no-padding"></md-icon>Salir
 					</md-menu-item>
 				</md-menu-content>
 			</md-menu>

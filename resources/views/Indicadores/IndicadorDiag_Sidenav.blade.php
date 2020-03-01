@@ -17,7 +17,15 @@
 					</div>
 						
 					<div class="padding-but-top overflow-y hasScroll" flex>
-						<div ng-repeat="C in Comentarios" class="comment">{{ C }}</div>
+						<div ng-repeat="C in Comentarios" md-whiteframe=2 class="comment" layout=column>
+							<div layout class="margin-bottom-5">
+								<b flex>{{ C.Autor }}</b>
+								<div>{{ C.Periodo }}</div>
+							</div>
+							<p class="no-margin">
+								{{ C.Comentario }}
+							</p>
+						</div>
 						<div class="h20"></div>
 					</div>
 				</div>
@@ -46,3 +54,17 @@
 
 
 </md-sidenav>
+
+<style type="text/css">
+	.comment{
+		background: #303030;
+		font-size: 15px;
+		margin: 5px 0 10px;
+		padding: 9px 10px;
+		border-radius: 4px;
+	}
+
+	.comment.mine{
+	    background: #173d46;
+	}
+</style>

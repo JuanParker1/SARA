@@ -123,12 +123,12 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
         }
 
         Ctrl.Comentarios = [
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed urna nulla. Sed sem arcu",
-            "Curabitur posuere auctor dolor non maximus. Ut volutpat tortor a varius eleifend.",
-            "Fusce fringilla facilisis nibh nec porta. Proin molestie",
-            "Fusce fringilla facilisis nibh nec porta. Ut volutpat tortor a varius eleifend.",
-            "Fusce fringilla facilisis nibh nec porta. consectetur adipiscing elit.",
-            "Fusce fringilla facilisis nibh nec porta. Proin molestie 2"
+            { 'Comentario': "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed urna nulla. Sed sem arcu", 'Autor': 'Christian Orrego', 'Periodo': 202001 },
+            { 'Comentario': "Curabitur posuere auctor dolor non maximus. Ut volutpat tortor a varius eleifend.", 'Autor': 'Christian Orrego', 'Periodo': 202001 },
+            { 'Comentario': "Fusce fringilla facilisis nibh nec porta. Proin molestie", 'Autor': 'Christian Orrego', 'Periodo': 202001 },
+            { 'Comentario': "Fusce fringilla facilisis nibh nec porta. Ut volutpat tortor a varius eleifend.", 'Autor': 'Christian Orrego', 'Periodo': 202001 },
+            { 'Comentario': "Fusce fringilla facilisis nibh nec porta. consectetur adipiscing elit.", 'Autor': 'Christian Orrego', 'Periodo': 202001 },
+            { 'Comentario': "Fusce fringilla facilisis nibh nec porta. Proin molestie 2", 'Autor': 'Christian Orrego', 'Periodo': 202001 }
         ];
 
 

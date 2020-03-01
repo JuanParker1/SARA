@@ -109,19 +109,5 @@
 
 	@include('Indicadores.IndicadorDiag_Sidenav')
 
-
-	<style type="text/css">
-		.comment{
-			background: #303030;
-			font-size: 15px;
-			margin: 5px 0;
-			padding: 9px 10px;
-			border-radius: 4px;
-		}
-
-		.comment.mine{
-		    background: #173d46;
-		}
-	</style>
 </md-dialog>
 
