@@ -1,7 +1,7 @@
 <md-sidenav md-is-locked-open="$mdMedia('gt-md') && showSidenav" md-is-open="showSidenav"  
 	class="md-sidenav-right w350 text-white" layout=column>
 
-	<md-tabs flex class="md-tabs-fullheight md-short">
+	<md-tabs flex class="md-tabs-fullheight md-tabs-icons">
 		<md-tab>
 			<md-tab-label>
 				<md-icon md-font-icon="fa-comment fa-lg"></md-icon>
@@ -20,7 +20,7 @@
 						<div ng-repeat="C in Comentarios" md-whiteframe=2 class="comment" layout=column>
 							<div layout class="margin-bottom-5">
 								<b flex>{{ C.Autor }}</b>
-								<div>{{ C.Periodo }}</div>
+								<div class="comment_pill">{{ C.Periodo }}</div>
 							</div>
 							<p class="no-margin">
 								{{ C.Comentario }}
@@ -45,11 +45,27 @@
 							<md-icon md-svg-icon="md-plus"></md-icon>
 						</md-button>
 					</div>
-						
 				</div>
 			</md-tab-body>
 
 		</md-tab>
+
+
+		<md-tab>
+			<md-tab-label>
+				<md-icon md-font-icon="fa-dice-d20 fa-lg"></md-icon>
+			</md-tab-label>
+
+			<md-tab-body>
+				<div layout=column>
+					<div class="padding-5-10" layout>
+						<h3 class="no-margin md-subhead" flex>Análisis I.A.</h3>
+					</div>
+				</div>
+			</md-tab-body>
+
+		</md-tab>
+
 	</md-tabs>
 
 
@@ -66,5 +82,11 @@
 
 	.comment.mine{
 	    background: #173d46;
+	}
+
+	.comment .comment_pill{
+		background: #5d5d5d;
+		border-radius: 25px;
+		padding: 0px 10px;
 	}
 </style>

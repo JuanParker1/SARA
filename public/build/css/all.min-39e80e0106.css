@@ -513,6 +513,16 @@ md-sidenav {
   right: 0;
   overflow-x: hidden;
 }
+.md-tabs-icons md-tabs-canvas,
+.md-tabs-icons md-pagination-wrapper {
+  height: 40px;
+}
+.md-tabs-icons .md-tab {
+  padding: 8px 16px;
+}
+.md-tabs-icons md-tabs-content-wrapper {
+  top: 41px;
+}
 .md-tab {
   outline: none;
 }

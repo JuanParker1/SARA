@@ -37,12 +37,12 @@ class Usuario extends Model
                         WHERE se.Estado = 'A' 
                         ORDER BY se.Orden";
         }else{
-            $query = "SELECT se.*, s.Level
+            /*$query = "SELECT se.*, s.Level
                         FROM `compras_security` s
                             JOIN sara_secciones se ON (se.id = s.Seccion_id) 
                         WHERE s.Perfil_id = $this->Perfil_id 
                         AND se.Estado = 'A' 
-                        ORDER BY se.Orden";
+                        ORDER BY se.Orden";*/
         }
 
         $Secciones = DB::select($query);

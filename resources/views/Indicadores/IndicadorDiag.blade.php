@@ -12,7 +12,7 @@
 				<div class="text-13px text-clear">{{ Ind.Definicion }}</div>
 			</div>
 
-			<div class="Pointer padding-right" layout layout-align="center center">
+			<div class="Pointer padding-right" layout layout-align="center center" hide>
 				<div class="s25 bg-lightgrey border-rounded margin-right-5 border" 
 					style="background-image: url({{ 'http://sec.comfamiliar.com/images/fotosEmpleados/' + Usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>
 				<div class="text-16px" hide-xs>{{ Usuario.Nombres }}</div>
@@ -22,7 +22,7 @@
 				<md-icon md-font-icon="fa-chevron-left" ng-class="{'fa-rotate-180': showSidenav}"></md-icon>
 			</md-button>
 			
-			<md-button class="md-icon-button no-margin" aria-label="Button" ng-click="Cancel()" hide>
+			<md-button class="md-icon-button no-margin" aria-label="Button" ng-click="Cancel()">
 				<md-icon md-svg-icon="md-close"></md-icon>
 			</md-button>
 		</div>
@@ -110,4 +110,3 @@
 	@include('Indicadores.IndicadorDiag_Sidenav')
 
 </md-dialog>
-

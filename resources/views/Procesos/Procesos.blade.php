@@ -61,7 +61,20 @@
 		</div>
 
 		
-		<div flex layout=column>
+		<div flex layout>
+
+			<div layout=column flex=20 class=" bg-white border border-radius margin-left margin-bottom padding md-compact-input-containers">
+				<div class="md-subheader margin-bottom">General</div>
+				<md-input-container class="">
+					<input type="text" ng-model="ProcesoSel.CDC" aria-label=s placeholder="CDC">
+				</md-input-container>
+				
+			</div>
+
+			<div layout=column flex=40 class=" bg-white border border-radius margin-left margin-bottom padding md-compact-input-containers">
+				<div class="md-subheader margin-bottom">Personal</div>
+			</div>
+
 		</div>
 
 		<div layout class="border-top bg-lightgrey-5">
