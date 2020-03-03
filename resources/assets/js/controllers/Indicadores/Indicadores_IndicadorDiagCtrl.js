@@ -1,6 +1,6 @@
 angular.module('Indicadores_IndicadorDiagCtrl', [])
-.controller('Indicadores_IndicadorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'indicador_id', '$timeout',
-	function($scope, $rootScope, $mdDialog, $filter, indicador_id, $timeout) {
+.controller('Indicadores_IndicadorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'indicador_id', '$timeout', '$injector',
+	function($scope, $rootScope, $mdDialog, $filter, indicador_id, $timeout, $injector) {
 
 		console.info('Indicadores_IndicadorDiagCtrl');
 		var Ctrl = $scope;
@@ -11,6 +11,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 		Ctrl.Meses = Rs.Meses;
 		Ctrl.inArray = Rs.inArray;
 		Ctrl.Anio  = angular.copy(Rs.AnioActual);
+        Ctrl.Mes   = angular.copy(Rs.MesActual);
 		Ctrl.anioAdd = (num) => { Ctrl.Anio += num; Ctrl.getIndicadores(); };
 		Ctrl.Sentidos = Rs.Sentidos;
         Ctrl.Usuario = Rs.Usuario;
@@ -113,23 +114,93 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
         };
 
         //Sidenav
-        Ctrl.showSidenav = true;
+        Ctrl.showSidenav = false;
 
         Ctrl.toogleSidenav = () => {
             Ctrl.showSidenav = !Ctrl.showSidenav;
+            if(!ComentariosLoaded) Ctrl.getComentarios();
             $timeout(() => {
                 Ctrl.updateChart();
-            }, 300);        
+            }, 300);
         }
 
-        Ctrl.Comentarios = [
-            { 'Comentario': "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed urna nulla. Sed sem arcu", 'Autor': 'Christian Orrego', 'Periodo': 202001 },
-            { 'Comentario': "Curabitur posuere auctor dolor non maximus. Ut volutpat tortor a varius eleifend.", 'Autor': 'Christian Orrego', 'Periodo': 202001 },
-            { 'Comentario': "Fusce fringilla facilisis nibh nec porta. Proin molestie", 'Autor': 'Christian Orrego', 'Periodo': 202001 },
-            { 'Comentario': "Fusce fringilla facilisis nibh nec porta. Ut volutpat tortor a varius eleifend.", 'Autor': 'Christian Orrego', 'Periodo': 202001 },
-            { 'Comentario': "Fusce fringilla facilisis nibh nec porta. consectetur adipiscing elit.", 'Autor': 'Christian Orrego', 'Periodo': 202001 },
-            { 'Comentario': "Fusce fringilla facilisis nibh nec porta. Proin molestie 2", 'Autor': 'Christian Orrego', 'Periodo': 202001 }
-        ];
+        //Comments
+        Ctrl.ComentariosCRUD = $injector.get('CRUD').config({ 
+            base_url: '/api/Main/comentarios', 
+            query_with: [ 'autor' ], add_append: 'refresh', 
+            order_by: ['-created_at']
+        });
+        var ComentariosLoaded = false;
+        Ctrl.getComentarios = () => {
+            Ctrl.ComentariosCRUD.setScope('Entidad', ['Indicador', indicador_id]).get().then(() => {
+                ComentariosLoaded = true;
+            });
+        };
+
+        Ctrl.addComment = () => {
+
+            var Periodos = [
+                moment().add(-1, 'month').format('YYYYMM'),
+                moment().format('YYYYMM')
+            ];
+
+            Rs.BasicDialog({
+                Theme: 'Black', Title: 'Agregar Comentario',
+                Fields: [
+                    { Nombre: 'Periodo',     Value: Periodos[0], Required: true, Type: 'simplelist',  List: Periodos },
+                    { Nombre: 'Comentario',  Value: '',          Required: true, Type: 'textarea',    opts: { rows: 4 } }
+                ],
+                Confirm: { Text: 'Comentar' },
+            }).then(r => {
+                if(!r) return;
+                var f = Rs.prepFields(r.Fields);
+
+                Ctrl.ComentariosCRUD.add({
+                    Entidad: 'Indicador', Entidad_id: indicador_id, 
+                    usuario_id: Rs.Usuario.id, Comentario: f.Comentario, Op1: f.Periodo
+                });
+            });
+        };
+
+        Ctrl.addAccion = () => {
+            var Periodos = [
+                moment().add(-1, 'month').format('YYYYMM')
+            ];
+
+            var Tipos = ['Preventiva', 'Correctiva', 'De Mejora'];
+
+            Rs.BasicDialog({
+                Theme: 'Black', Title: 'Agregar Acción',
+                Fields: [
+                    { Nombre: 'Periodo',     flex: 50, Value: Periodos[0],  Required: true, Type: 'simplelist',  List: Periodos },
+                    { Nombre: 'Tipo',        flex: 50, Value: 'Correctiva', Required: true, Type: 'simplelist',  List: Tipos },
+                    { Nombre: 'Link Isolución',        Value: '',           Required: true }
+                ],
+                Confirm: { Text: 'Agregar' },
+            }).then(r => {
+                if(!r) return;
+                var f = Rs.prepFields(r.Fields);
+
+                Ctrl.ComentariosCRUD.add({
+                    Entidad: 'Indicador', Entidad_id: indicador_id, 
+                    usuario_id: Rs.Usuario.id, Comentario: 'Se registró una: Acción '+f.Tipo, Op1: f.Periodo, Op2: f.Tipo, Op4: f['Link Isolución']
+                });
+            });
+        };
+
+        Ctrl.seeExternal = (Link) => {
+            /*return $mdDialog.show({
+                controller: 'ExternalLinkCtrl',
+                templateUrl: 'templates/dialogs/external-link.html',
+                locals: { Link : Link },
+                clickOutsideToClose: false,
+                fullscreen: true,
+                multiple: true
+            });*/
+            window.open(Link,'popup','width=1220,height=700');
+        }
+
+        Ctrl.toogleSidenav(); //FIX
 
 
 	}

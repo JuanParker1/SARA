@@ -12,7 +12,7 @@ class Usuario extends Model
 {
     protected $table = 'sara_usuarios';
 	protected $guarded = ['id'];
-	protected $hidden = ['Password'];
+	protected $hidden = ['Password', 'isGod'];
 	protected $primaryKey = 'id';
     protected $casts = [
         'isGod' => 'boolean',

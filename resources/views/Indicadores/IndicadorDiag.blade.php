@@ -2,7 +2,7 @@
 
 	<div layout=column flex>
 		
-		<div layout layout-align="center center" class="padding-0-10">
+		<div layout layout-align="center center" class="padding-left">
 			<div flex layout=column>
 				<div class="text-16px"><span>{{ Ind.Indicador }}</span>
 					<md-icon class="margin-left Pointer" md-font-icon="{{Sentidos[Ind.Sentido].icon}}">
@@ -17,12 +17,10 @@
 					style="background-image: url({{ 'http://sec.comfamiliar.com/images/fotosEmpleados/' + Usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>
 				<div class="text-16px" hide-xs>{{ Usuario.Nombres }}</div>
 			</div>
-
-			<md-button class="md-icon-button no-margin no-padding s30" aria-label="Button" ng-click="toogleSidenav()">
-				<md-icon md-font-icon="fa-chevron-left" ng-class="{'fa-rotate-180': showSidenav}"></md-icon>
-			</md-button>
 			
-			<md-button class="md-icon-button no-margin" aria-label="Button" ng-click="Cancel()">
+			<md-button class="md-icon-button no-margin focus-on-hover" aria-label="Button" ng-click="Cancel()" 
+				style="margin-right: -15px !important;">
+				<md-tooltip md-direction=left>Salir</md-tooltip>
 				<md-icon md-svg-icon="md-close"></md-icon>
 			</md-button>
 		</div>
@@ -31,7 +29,7 @@
 
 			<div flex layout=column class="overflow-y hasScroll padding-top-20">
 				
-				<md-table-container class="padding-right-20 margin-right-5 border-bottom">
+				<md-table-container class="border-bottom">
 					<table md-table class="md-table-short table-col-compress">
 						<thead md-head>
 							<tr md-row>
@@ -105,6 +103,12 @@
 
 		</div>
 
+	</div>
+
+	<div class="w20 Pointer sidenav-activator" layout layout-align="center center" ng-click="toogleSidenav()">
+		<md-button class="md-icon-button no-margin no-padding s30" aria-label="Button">
+			<md-icon md-font-icon="fa-chevron-left" ng-class="{'fa-rotate-180': showSidenav}"></md-icon>
+		</md-button>
 	</div>
 
 	@include('Indicadores.IndicadorDiag_Sidenav')

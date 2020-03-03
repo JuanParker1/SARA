@@ -41,6 +41,7 @@ angular.module('SARA', [
 	'FileDialogCtrl',
 	'ImageEditor_DialogCtrl',
 	'IconSelectDiagCtrl',
+	'ExternalLinkCtrl',
 
 	'MainCtrl',
 	'LoginCtrl',

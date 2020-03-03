@@ -8,7 +8,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use File;
-
+use App\Functions\CRUD;
 
 
 class MainController extends Controller
@@ -98,6 +98,13 @@ class MainController extends Controller
 		$Categorias = $Iconos->unique('Categoria')->pluck('Categoria')->toArray();
 		sort($Categorias);
 		return compact('Iconos','Categorias');
+	}
+
+	//Comentarios
+	public function postComentarios()
+	{
+		$CRUD = new CRUD('App\Models\Comentario');
+        return $CRUD->call(request()->fn, request()->ops);
 	}
 
 }

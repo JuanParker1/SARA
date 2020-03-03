@@ -551,6 +551,21 @@ angular.module('CRUDDialogCtrl', [])
 
 	}
 ]);
+angular.module('ExternalLinkCtrl', [])
+.controller(   'ExternalLinkCtrl', ['$scope', 'Link', '$mdDialog', '$sce',  
+	function ($scope, Link, $mdDialog, $sce) {
+
+		var Ctrl = $scope;
+
+		Ctrl.Link = $sce.trustAsResourceUrl(Link);
+
+		Ctrl.Cancel = function(){
+			$mdDialog.cancel();
+		}
+		
+	}
+
+]);
 angular.module('FileDialogCtrl', [])
 .controller('FileDialogCtrl', ['$scope', '$rootScope', '$http', '$mdDialog', '$mdToast', 'FileSel', 
 	function($scope, $rootScope, $http, $mdDialog, $mdToast, FileSel) {
@@ -2268,8 +2283,8 @@ angular.module('IndicadoresCtrl', [])
 	}
 ]);
 angular.module('Indicadores_IndicadorDiagCtrl', [])
-.controller('Indicadores_IndicadorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'indicador_id', '$timeout',
-	function($scope, $rootScope, $mdDialog, $filter, indicador_id, $timeout) {
+.controller('Indicadores_IndicadorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'indicador_id', '$timeout', '$injector',
+	function($scope, $rootScope, $mdDialog, $filter, indicador_id, $timeout, $injector) {
 
 		console.info('Indicadores_IndicadorDiagCtrl');
 		var Ctrl = $scope;
@@ -2280,6 +2295,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 		Ctrl.Meses = Rs.Meses;
 		Ctrl.inArray = Rs.inArray;
 		Ctrl.Anio  = angular.copy(Rs.AnioActual);
+        Ctrl.Mes   = angular.copy(Rs.MesActual);
 		Ctrl.anioAdd = (num) => { Ctrl.Anio += num; Ctrl.getIndicadores(); };
 		Ctrl.Sentidos = Rs.Sentidos;
         Ctrl.Usuario = Rs.Usuario;
@@ -2382,23 +2398,93 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
         };
 
         //Sidenav
-        Ctrl.showSidenav = true;
+        Ctrl.showSidenav = false;
 
         Ctrl.toogleSidenav = () => {
             Ctrl.showSidenav = !Ctrl.showSidenav;
+            if(!ComentariosLoaded) Ctrl.getComentarios();
             $timeout(() => {
                 Ctrl.updateChart();
-            }, 300);        
+            }, 300);
         }
 
-        Ctrl.Comentarios = [
-            { 'Comentario': "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed urna nulla. Sed sem arcu", 'Autor': 'Christian Orrego', 'Periodo': 202001 },
-            { 'Comentario': "Curabitur posuere auctor dolor non maximus. Ut volutpat tortor a varius eleifend.", 'Autor': 'Christian Orrego', 'Periodo': 202001 },
-            { 'Comentario': "Fusce fringilla facilisis nibh nec porta. Proin molestie", 'Autor': 'Christian Orrego', 'Periodo': 202001 },
-            { 'Comentario': "Fusce fringilla facilisis nibh nec porta. Ut volutpat tortor a varius eleifend.", 'Autor': 'Christian Orrego', 'Periodo': 202001 },
-            { 'Comentario': "Fusce fringilla facilisis nibh nec porta. consectetur adipiscing elit.", 'Autor': 'Christian Orrego', 'Periodo': 202001 },
-            { 'Comentario': "Fusce fringilla facilisis nibh nec porta. Proin molestie 2", 'Autor': 'Christian Orrego', 'Periodo': 202001 }
-        ];
+        //Comments
+        Ctrl.ComentariosCRUD = $injector.get('CRUD').config({ 
+            base_url: '/api/Main/comentarios', 
+            query_with: [ 'autor' ], add_append: 'refresh', 
+            order_by: ['-created_at']
+        });
+        var ComentariosLoaded = false;
+        Ctrl.getComentarios = () => {
+            Ctrl.ComentariosCRUD.setScope('Entidad', ['Indicador', indicador_id]).get().then(() => {
+                ComentariosLoaded = true;
+            });
+        };
+
+        Ctrl.addComment = () => {
+
+            var Periodos = [
+                moment().add(-1, 'month').format('YYYYMM'),
+                moment().format('YYYYMM')
+            ];
+
+            Rs.BasicDialog({
+                Theme: 'Black', Title: 'Agregar Comentario',
+                Fields: [
+                    { Nombre: 'Periodo',     Value: Periodos[0], Required: true, Type: 'simplelist',  List: Periodos },
+                    { Nombre: 'Comentario',  Value: '',          Required: true, Type: 'textarea',    opts: { rows: 4 } }
+                ],
+                Confirm: { Text: 'Comentar' },
+            }).then(r => {
+                if(!r) return;
+                var f = Rs.prepFields(r.Fields);
+
+                Ctrl.ComentariosCRUD.add({
+                    Entidad: 'Indicador', Entidad_id: indicador_id, 
+                    usuario_id: Rs.Usuario.id, Comentario: f.Comentario, Op1: f.Periodo
+                });
+            });
+        };
+
+        Ctrl.addAccion = () => {
+            var Periodos = [
+                moment().add(-1, 'month').format('YYYYMM')
+            ];
+
+            var Tipos = ['Preventiva', 'Correctiva', 'De Mejora'];
+
+            Rs.BasicDialog({
+                Theme: 'Black', Title: 'Agregar Acción',
+                Fields: [
+                    { Nombre: 'Periodo',     flex: 50, Value: Periodos[0],  Required: true, Type: 'simplelist',  List: Periodos },
+                    { Nombre: 'Tipo',        flex: 50, Value: 'Correctiva', Required: true, Type: 'simplelist',  List: Tipos },
+                    { Nombre: 'Link Isolución',        Value: '',           Required: true }
+                ],
+                Confirm: { Text: 'Agregar' },
+            }).then(r => {
+                if(!r) return;
+                var f = Rs.prepFields(r.Fields);
+
+                Ctrl.ComentariosCRUD.add({
+                    Entidad: 'Indicador', Entidad_id: indicador_id, 
+                    usuario_id: Rs.Usuario.id, Comentario: 'Se registró una: Acción '+f.Tipo, Op1: f.Periodo, Op2: f.Tipo, Op4: f['Link Isolución']
+                });
+            });
+        };
+
+        Ctrl.seeExternal = (Link) => {
+            /*return $mdDialog.show({
+                controller: 'ExternalLinkCtrl',
+                templateUrl: 'templates/dialogs/external-link.html',
+                locals: { Link : Link },
+                clickOutsideToClose: false,
+                fullscreen: true,
+                multiple: true
+            });*/
+            window.open(Link,'popup','width=1220,height=700');
+        }
+
+        Ctrl.toogleSidenav(); //FIX
 
 
 	}
@@ -3791,6 +3877,7 @@ angular.module('SARA', [
 	'FileDialogCtrl',
 	'ImageEditor_DialogCtrl',
 	'IconSelectDiagCtrl',
+	'ExternalLinkCtrl',
 
 	'MainCtrl',
 	'LoginCtrl',
@@ -3981,6 +4068,7 @@ angular.module('appConfig', [])
 			'md-list'			: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/><path d="M0 0h24v24H0z" fill="none"/></svg>',
 			'md-list-view'		: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M4 14h4v-4H4v4zm0 5h4v-4H4v4zM4 9h4V5H4v4zm5 5h12v-4H9v4zm0 5h12v-4H9v4zM9 5v4h12V5H9z"/><path d="M0 0h24v24H0z" fill="none"/></svg>',
 			'md-refresh'		: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/><path d="M0 0h24v24H0z" fill="none"/></svg>',
+			'md-trending-up'	: '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/><path d="M0 0h24v24H0z" fill="none"/></svg>',
 		};
 
 		iconp = $mdIconProvider.defaultFontSet( 'fa' );
