@@ -14,8 +14,8 @@
 </div>
 
 
-<div ng-if="$ctrl.nodo.tipo !== 'Nodo'" layout=column class="mh120 bg-black-3 margin-5 relative border-radius scorecard" md-whiteframe=2 md-ink-ripple layout=column>
-	<div flex ng-show="$ctrl.nodo.tipo == 'Indicador'" layout=column class="Pointer" ng-click="viewIndicadorDiag($ctrl.nodo.elemento_id)">
+<div ng-if="$ctrl.nodo.tipo !== 'Nodo'" layout=column class="mh120 margin-5 relative border-radius scorecard" md-ink-ripple layout=column>
+	<div flex ng-show="$ctrl.nodo.tipo == 'Indicador'" layout=column class="Pointer" ng-click="$root.viewIndicadorDiag($ctrl.nodo.elemento_id)">
 		<div class="card_title" layout>
 			<div flex>{{ $ctrl.nodo.Nodo }}</div>
 			<!--<md-icon class="s15" md-font-icon="{{Sentidos[I.Sentido].icon}} fa-fw">
@@ -28,7 +28,12 @@
 			<div class="card_value" style="color: {{ $ctrl.nodo.valores[$ctrl.periodo].color }}"
 				>{{ $ctrl.nodo.valores[$ctrl.periodo].val }}</div>
 		</div>
-		<div class="card_subtext">{{ $ctrl.nodo.valores[$ctrl.periodo].meta_val }}</div>
+		<div class="card_subtext">Meta: 
+			<md-icon class="s15 margin-left-5" md-font-icon="{{ $root.Sentidos[$ctrl.nodo.elemento.Sentido].icon}} fa-fw">
+				<md-tooltip md-direction=left>{{ $root.Sentidos[$ctrl.nodo.elemento.Sentido].desc }}</md-tooltip>
+			</md-icon>
+			{{ $ctrl.nodo.valores[$ctrl.periodo].meta_val }}
+		</div>
 	</div>
 </div>
 

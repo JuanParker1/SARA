@@ -8,6 +8,8 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use App\Models\Usuario;
+use App\Models\Perfil;
+use App\Functions\CRUD;
 use App\Functions\Logger as Log;
 use Hash;
 use Crypt;
@@ -199,6 +201,23 @@ class UsuarioController extends Controller
 		return Usuario::get();
 	}
 
+	public function postPerfiles()
+	{
+		return Perfil::all();
+	}
 
+	public function postSearch()
+	{
+		extract(request()->all()); //searchText, limit
+		$searchText = str_replace(" ", "%", $searchText);
+		return Usuario::orWhere('Email', 'LIKE', "%$searchText%")->orWhere('Nombres', 'LIKE', "%$searchText%")
+			   ->limit($limit)->get([ 'id', 'Email', 'Nombres', 'Cedula' ]);
+	}
+
+	public function postAsignaciones()
+	{
+		$CRUD = new CRUD('App\Models\UsuarioAsignacion');
+        return $CRUD->call(request()->fn, request()->ops);
+	}
 
 }

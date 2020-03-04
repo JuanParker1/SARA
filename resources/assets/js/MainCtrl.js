@@ -39,6 +39,14 @@ angular.module('MainCtrl', [])
 			Rs.OpenSidebar('SectionsNav');
 		};
 
+		var HoraDelDia = parseInt(moment().format('H'));
+			 if(HoraDelDia < 7){ Rs.Saludo = 'Hola'; }
+		else if(HoraDelDia >= 7 && HoraDelDia < 12){ Rs.Saludo = 'Buenos días'; }
+		else if(HoraDelDia >= 12 && HoraDelDia < 18){ Rs.Saludo = 'Buenas tardes'; }
+		else{ Rs.Saludo = 'Buenas noches'; }
+
+
+
 		
 	}
 ]);

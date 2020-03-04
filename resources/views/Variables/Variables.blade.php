@@ -56,7 +56,7 @@
 					</md-input-container>
 					<md-input-container class="no-margin-top margin-bottom">
 						<md-select ng-model="VarSel.Tipo" aria-label=s>
-							<md-option ng-value="Op" ng-repeat="Op in ['Valor Fijo', 'Calculado de Entidad']">{{ Op }}</md-option>
+							<md-option ng-value="Op" ng-repeat="Op in ['Valor Fijo', 'Calculado de Entidad', 'Manual']">{{ Op }}</md-option>
 						</md-select>
 					</md-input-container>
 					<div class="w15"></div>

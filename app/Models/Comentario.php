@@ -11,7 +11,7 @@ class Comentario extends MyModel
 	protected $hidden = [];
 	protected $primaryKey = 'id';
     protected $casts = [];
-    protected $appends = [];
+    protected $appends = ['hace'];
 
     public function columns()
 	{
@@ -20,6 +20,7 @@ class Comentario extends MyModel
 			[ 'id',					'id',				null, true, false, null, 100 ],
 			[ 'Entidad',			'Entidad',			null, true, false, null, 100 ],
 			[ 'Entidad_id',			'Entidad_id',		null, true, false, null, 100 ],
+			[ 'Grupo',				'Grupo',			null, true, false, null, 100 ],
 			[ 'usuario_id',			'usuario_id',		null, true, false, null, 100 ],
 			[ 'Comentario',			'Comentario',		null, true, false, null, 100 ],
 			[ 'Op1',				'Op1',				null, true, false, null, 100 ],
@@ -35,6 +36,12 @@ class Comentario extends MyModel
 	{
 		return $this->belongsTo('\App\Models\Usuario', 'usuario_id');
 	}
+
+	public function getHaceAttribute()
+	{
+		return $this->created_at->diffForHumans();
+	}
+
 
 	public function scopeEntidad($q, $Entidad)
 	{

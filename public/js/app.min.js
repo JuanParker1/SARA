@@ -39,6 +39,14 @@ angular.module('MainCtrl', [])
 			Rs.OpenSidebar('SectionsNav');
 		};
 
+		var HoraDelDia = parseInt(moment().format('H'));
+			 if(HoraDelDia < 7){ Rs.Saludo = 'Hola'; }
+		else if(HoraDelDia >= 7 && HoraDelDia < 12){ Rs.Saludo = 'Buenos días'; }
+		else if(HoraDelDia >= 12 && HoraDelDia < 18){ Rs.Saludo = 'Buenas tardes'; }
+		else{ Rs.Saludo = 'Buenas noches'; }
+
+
+
 		
 	}
 ]);
@@ -2440,7 +2448,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
                 var f = Rs.prepFields(r.Fields);
 
                 Ctrl.ComentariosCRUD.add({
-                    Entidad: 'Indicador', Entidad_id: indicador_id, 
+                    Entidad: 'Indicador', Entidad_id: indicador_id, Grupo: 'Comentario',
                     usuario_id: Rs.Usuario.id, Comentario: f.Comentario, Op1: f.Periodo
                 });
             });
@@ -2466,7 +2474,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
                 var f = Rs.prepFields(r.Fields);
 
                 Ctrl.ComentariosCRUD.add({
-                    Entidad: 'Indicador', Entidad_id: indicador_id, 
+                    Entidad: 'Indicador', Entidad_id: indicador_id, Grupo: 'Accion',
                     usuario_id: Rs.Usuario.id, Comentario: 'Se registró una: Acción '+f.Tipo, Op1: f.Periodo, Op2: f.Tipo, Op4: f['Link Isolución']
                 });
             });
@@ -2511,15 +2519,22 @@ angular.module('ProcesosCtrl', [])
 			Rs.http('api/Procesos', {}, Ctrl, 'Procesos').then(() => {
 
 				Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos,'Ruta','Proceso',false,true);
+
+				Ctrl.lookupProceso({ route: "Comfamiliar Risaralda\\Subdirección Salud" });
+
 				//console.log(Ctrl.ProcesosFS);
 			});	
 		};
 
 		Ctrl.openProceso = (P) => {
 			Ctrl.ProcesoSel = P;
+			Ctrl.getAsignaciones();
 		};
 
 		Ctrl.lookupProceso = (F) => {
+
+			//console.log(F);
+
 			var Ps = Ctrl.Procesos.filter((P) => {
 				return ( P.children > 0 && P.Ruta == F.route );
 			});
@@ -2569,6 +2584,37 @@ angular.module('ProcesosCtrl', [])
 			});
 		};
 		
+		Rs.http('api/Usuario/perfiles', {}, Ctrl, 'Perfiles');
+
+
+		Ctrl.userSearch = (searchText) => {
+			return Rs.http('api/Usuario/search', { searchText: searchText, limit: 5 });
+		};
+
+		Ctrl.selectedItem = null;
+		Ctrl.selectedUser = (item) => {
+			if(!item) return;
+
+			var User = angular.copy(item);
+			Ctrl.selectedItem = null;
+			Ctrl.searchText = '';
+
+			perfil_id = 2;
+			if(Ctrl.AsignacionesCRUD.rows.length > 0) perfil_id = 3;
+
+			Ctrl.AsignacionesCRUD.add({
+				usuario_id: User.id,
+				nodo_id: Ctrl.ProcesoSel.id,
+				perfil_id: perfil_id
+			});
+
+		}
+
+		//Asignaciones
+		Ctrl.AsignacionesCRUD = $injector.get('CRUD').config({ base_url: '/api/Usuario/asignaciones', add_append: 'refresh' });
+		Ctrl.getAsignaciones = () => {
+			Ctrl.AsignacionesCRUD.setScope('Nodo',  Ctrl.ProcesoSel.id).get();
+		}
 	}
 ]);
 angular.module('ScorecardsCtrl', [])
@@ -3590,6 +3636,12 @@ angular.module('Filters', [])
 			//if(!index || !len) return input;
 			return input.splice(index, len);
 		};
+	}).filter('getword', function() {
+		return function(input, index) {
+			if(!input) return input;
+			var arr = input.split(' ');
+			return arr[index-1];
+		};
 	});
 // Reacts upon enter key press.
 angular.module('enterStroke', []).directive('enterStroke',
@@ -4069,6 +4121,9 @@ angular.module('appConfig', [])
 			'md-list-view'		: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M4 14h4v-4H4v4zm0 5h4v-4H4v4zM4 9h4V5H4v4zm5 5h12v-4H9v4zm0 5h12v-4H9v4zM9 5v4h12V5H9z"/><path d="M0 0h24v24H0z" fill="none"/></svg>',
 			'md-refresh'		: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/><path d="M0 0h24v24H0z" fill="none"/></svg>',
 			'md-trending-up'	: '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/><path d="M0 0h24v24H0z" fill="none"/></svg>',
+			'md-info'			: '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>',
+			'md-info-outline'	: '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>',
+			'md-description'	: '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>'
 		};
 
 		iconp = $mdIconProvider.defaultFontSet( 'fa' );

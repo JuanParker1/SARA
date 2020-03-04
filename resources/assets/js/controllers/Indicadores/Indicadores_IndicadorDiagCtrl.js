@@ -156,7 +156,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
                 var f = Rs.prepFields(r.Fields);
 
                 Ctrl.ComentariosCRUD.add({
-                    Entidad: 'Indicador', Entidad_id: indicador_id, 
+                    Entidad: 'Indicador', Entidad_id: indicador_id, Grupo: 'Comentario',
                     usuario_id: Rs.Usuario.id, Comentario: f.Comentario, Op1: f.Periodo
                 });
             });
@@ -182,7 +182,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
                 var f = Rs.prepFields(r.Fields);
 
                 Ctrl.ComentariosCRUD.add({
-                    Entidad: 'Indicador', Entidad_id: indicador_id, 
+                    Entidad: 'Indicador', Entidad_id: indicador_id, Grupo: 'Accion',
                     usuario_id: Rs.Usuario.id, Comentario: 'Se registró una: Acción '+f.Tipo, Op1: f.Periodo, Op2: f.Tipo, Op4: f['Link Isolución']
                 });
             });

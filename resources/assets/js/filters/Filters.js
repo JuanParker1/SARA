@@ -151,4 +151,10 @@ angular.module('Filters', [])
 			//if(!index || !len) return input;
 			return input.splice(index, len);
 		};
+	}).filter('getword', function() {
+		return function(input, index) {
+			if(!input) return input;
+			var arr = input.split(' ');
+			return arr[index-1];
+		};
 	});

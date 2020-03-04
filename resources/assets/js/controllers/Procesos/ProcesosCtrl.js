@@ -19,15 +19,22 @@ angular.module('ProcesosCtrl', [])
 			Rs.http('api/Procesos', {}, Ctrl, 'Procesos').then(() => {
 
 				Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos,'Ruta','Proceso',false,true);
+
+				Ctrl.lookupProceso({ route: "Comfamiliar Risaralda\\Subdirección Salud" });
+
 				//console.log(Ctrl.ProcesosFS);
 			});	
 		};
 
 		Ctrl.openProceso = (P) => {
 			Ctrl.ProcesoSel = P;
+			Ctrl.getAsignaciones();
 		};
 
 		Ctrl.lookupProceso = (F) => {
+
+			//console.log(F);
+
 			var Ps = Ctrl.Procesos.filter((P) => {
 				return ( P.children > 0 && P.Ruta == F.route );
 			});
@@ -77,5 +84,36 @@ angular.module('ProcesosCtrl', [])
 			});
 		};
 		
+		Rs.http('api/Usuario/perfiles', {}, Ctrl, 'Perfiles');
+
+
+		Ctrl.userSearch = (searchText) => {
+			return Rs.http('api/Usuario/search', { searchText: searchText, limit: 5 });
+		};
+
+		Ctrl.selectedItem = null;
+		Ctrl.selectedUser = (item) => {
+			if(!item) return;
+
+			var User = angular.copy(item);
+			Ctrl.selectedItem = null;
+			Ctrl.searchText = '';
+
+			perfil_id = 2;
+			if(Ctrl.AsignacionesCRUD.rows.length > 0) perfil_id = 3;
+
+			Ctrl.AsignacionesCRUD.add({
+				usuario_id: User.id,
+				nodo_id: Ctrl.ProcesoSel.id,
+				perfil_id: perfil_id
+			});
+
+		}
+
+		//Asignaciones
+		Ctrl.AsignacionesCRUD = $injector.get('CRUD').config({ base_url: '/api/Usuario/asignaciones', add_append: 'refresh' });
+		Ctrl.getAsignaciones = () => {
+			Ctrl.AsignacionesCRUD.setScope('Nodo',  Ctrl.ProcesoSel.id).get();
+		}
 	}
 ]);

@@ -18,7 +18,7 @@ class ProcesosController extends Controller
 
     	foreach ($Procesos as $P) {
     		$P->children = $Procesos->filter(function ($DaP) use ($P) { return $DaP->padre_id == $P->id; })->count();
-    		//$P->Ruta = ($P->children > 0) ? $P->fullruta : dirname($P->fullruta);
+    		$P->Ruta = ($P->children > 0) ? $P->fullruta : dirname($P->fullruta);
     	};
 
     	return $Procesos;
