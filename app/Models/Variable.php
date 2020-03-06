@@ -46,9 +46,12 @@ class Variable extends Model
 		return $this->belongsTo('\App\Models\EntidadGrid', 'grid_id');
 	}
 
-	public function valores()
+	public function valores($Anio = false)
 	{
-		return $this->hasMany('\App\Models\VariableValor', 'variable_id')->orderBy('Periodo');
+		$q = $this->hasMany('\App\Models\VariableValor', 'variable_id')->orderBy('Periodo');
+
+		if(!$Anio) return $q;
+		return $q->where('Periodo', '>=', $Anio.'01')->where('Periodo', '<=', $Anio.'12');
 	}
 
 	public function proceso()

@@ -63,12 +63,21 @@
 				</div>
 
 				<div class="md-subheader margin-bottom-5">Procesos</div>
-				<md-autocomplete md-selected-item="selectedItem" md-search-text="searchText" 
-					md-items="item in getMatches(searchText)" 	md-item-text="item.display"
+				<div layout=column>
+					<div ng-repeat="(kP, P) in AppSel.Procesos" class="padding-5" layout class="show-children-on-hover">
+						<div ng-repeat="E in Procesos | filter:{ id: P }:true" flex md-truncate class="text-13px">{{ E.Proceso }}</div>
+						<md-icon class="s20 child focus-on-hover Pointer" md-svg-icon="md-close" ng-click="removeProceso(kP)"></md-icon>
+					</div>
+				</div>
+				<md-autocomplete 
+					md-selected-item="selectedP" 
+					md-selected-item-change="selectedProceso(item)"  
+					md-search-text="searchText" 
+					md-items="item in buscarProcesos(searchText)" 	md-item-text="item.Proceso"
 					class="bg-lightgrey-5 h30"
 					placeholder="Agregar Proceso">
 					<md-item-template>
-						<span md-highlight-text="searchText">{{ item.display }}</span>
+						<span md-highlight-text="searchText">{{ item.Proceso }}</span>
 					</md-item-template>
 					<md-not-found>No Encontrado</md-not-found>
 				</md-autocomplete>

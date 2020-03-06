@@ -7,6 +7,7 @@
 					<th md-column></th>
 					<th md-column md-numeric ng-repeat="M in Meses" class="mw45">{{ M[1] }}</th>
 					<th md-column md-numeric>Meta</th>
+					<th md-column></th>
 				</tr>
 			</thead>
 			<tbody md-body class="text-14px Pointer" >

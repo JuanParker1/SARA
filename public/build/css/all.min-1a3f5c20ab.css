@@ -9624,6 +9624,9 @@ button {
   height: 1000px !important;
   line-height: 1000px !important;
 }
+.h42 {
+  height: 42px !important;
+}
 .vh10,
 .h10vh {
   min-height: 10vh !important;

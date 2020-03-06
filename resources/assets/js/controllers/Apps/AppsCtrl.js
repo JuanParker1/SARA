@@ -111,5 +111,24 @@
 			Ctrl.PageSel = P;
 		};
 
+
+		Rs.http('api/Procesos', {}, Ctrl, 'Procesos');
+		Ctrl.buscarProcesos = (searchText) => {
+			return $filter('filter')(Ctrl.Procesos, { Proceso: searchText });
+		};
+
+		Ctrl.selectedProceso = (item) => {
+			if(!item) return;
+
+			var Proceso = angular.copy(item);
+			Ctrl.selectedP = null;
+			Ctrl.searchText = '';
+
+			Ctrl.AppSel.Procesos.push(Proceso.id);
+		}
+		Ctrl.removeProceso = (kP) => {
+			Ctrl.AppSel.Procesos.splice(kP, 1);
+		}
+
 	}
 ]);

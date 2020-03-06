@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Core\MyModel;
 
-class VariableValor extends Model
+class VariableValor extends MyModel
 {
     protected $table = 'sara_variables_valores';
 	protected $guarded = ['id'];

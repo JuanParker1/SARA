@@ -53,6 +53,15 @@ class Proceso extends MyModel
 		}
 	}
 
+	public function recolectar(&$Arr)
+	{
+		$Arr[] = $this;
+
+		foreach ($this->subprocesos as $sP) {
+			$sP->recolectar($Arr);
+		}
+	}
+
 	//Eventos
 	public static function boot()
     {

@@ -12,7 +12,7 @@ class Usuario extends Model
 {
     protected $table = 'sara_usuarios';
 	protected $guarded = ['id'];
-	protected $hidden = ['Password', 'isGod'];
+	protected $hidden = ['Password'];
 	protected $primaryKey = 'id';
     protected $casts = [
         'isGod' => 'boolean',
@@ -32,17 +32,19 @@ class Usuario extends Model
     public function getSecciones()
     {
     	if($this->isGod){
-            $query = "SELECT se.*, 100 AS Level
+            $query = "SELECT se.*, 5 AS Level
                         FROM sara_secciones se 
-                        WHERE se.Estado = 'A' 
                         ORDER BY se.Orden";
         }else{
-            /*$query = "SELECT se.*, s.Level
-                        FROM `compras_security` s
-                            JOIN sara_secciones se ON (se.id = s.Seccion_id) 
-                        WHERE s.Perfil_id = $this->Perfil_id 
-                        AND se.Estado = 'A' 
-                        ORDER BY se.Orden";*/
+            $query = "SELECT se.id, se.Seccion, se.Orden, se.Icono, MAX(ps.Level) as Level
+                        FROM sara_usuarios_asignacion ua  
+                            JOIN sara_perfiles_secciones ps ON ( ua.perfil_id = ps.perfil_id ) 
+                            JOIN sara_secciones se ON ( se.id = ps.seccion_id ) 
+                        WHERE 1 = 1 
+                            AND ua.usuario_id = {$this->id}
+                            AND se.Estado = 'A'  
+                        GROUP BY se.id, se.Seccion, se.Orden, se.Icono 
+                        ORDER BY se.Orden";
         }
 
         $Secciones = DB::select($query);
@@ -56,11 +58,29 @@ class Usuario extends Model
 
     public function getApps()
     {
-        /*$this->Apps = $this->apps()->get()->transform(function($A){
-            $A['favorito'] = ($A['pivot']['favorito'] == 1);
-            return $A;
-        });*/
-        $this->Apps = \App\Models\Apps::all();
+        
+        //Obtener los procesos
+        $ProcesosAsignados = \App\Models\UsuarioAsignacion::where('usuario_id', $this->id)->get(['nodo_id'])->pluck('nodo_id');
+        $Procesos = \App\Models\Proceso::whereIn('id', $ProcesosAsignados)->get();
+        $MyProcesos = [];
+        
+        foreach ($Procesos as $P){
+            $P->recolectar($MyProcesos);
+        }
+
+        $MyProcesosIds = collect($MyProcesos)->pluck('id')->toArray();
+
+        $this->Procesos = $MyProcesos;
+
+        $Apps = \App\Models\Apps::all();
+
+        if($this->isGod){
+            $this->Apps = $Apps;
+        }else{
+            $this->Apps = $Apps->filter(function($A) use ($MyProcesosIds){
+                return count(array_intersect($A['Procesos'], $MyProcesosIds)) > 0;
+            })->values();
+        }
     }
 
 

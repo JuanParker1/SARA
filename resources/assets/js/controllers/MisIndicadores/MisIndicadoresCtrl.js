@@ -5,8 +5,6 @@ angular.module('MisIndicadoresCtrl', [])
 		console.info('MisIndicadoresCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
-		Ctrl.FuncionSel = null;
-		Ctrl.FuncionesNav = true;
 		Rs.mainTheme = 'Black';
 		
 	}

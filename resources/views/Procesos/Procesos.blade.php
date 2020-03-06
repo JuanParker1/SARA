@@ -1,7 +1,7 @@
-<div flex id="Procesos" layout ng-controller="ProcesosCtrl">
+<div flex id="Procesos" layout ng-controller="ProcesosCtrl" class="relative">
 	
 
-	<md-sidenav class="bg-white border-radius border margin-5 w350" layout=column 
+	<md-sidenav class="bg-white w300 border-right" layout=column 
 		md-is-open="ProcesosNav"
 		md-is-locked-open="$mdMedia('gt-xs') && ProcesosNav">
 		
@@ -40,18 +40,27 @@
 
 	<div flex class="" layout=column ng-show="ProcesoSel">
 
-		<div layout class="padding-but-bottom">
-			<md-input-container class="no-margin-top margin-bottom md-title" flex>
-				<input type="text" ng-model="ProcesoSel.Proceso" aria-label=s>
+		<div layout class="padding-top-5 padding-left-5 h60">
+
+			<md-button class="md-icon-button no-margin no-padding s30" aria-label="b" ng-click="ProcesosNav = !ProcesosNav" 
+				style="margin-top: 2px !important">
+				<md-icon md-svg-icon="md-bars" class=""></md-icon>
+			</md-button>
+
+			<md-input-container class=" no-margin-bottom md-title" flex>
+				<input type="text" ng-model="ProcesoSel.Proceso" aria-label=s placeholder="Titulo">
 			</md-input-container>
-			<md-input-container class="no-margin-top margin-bottom">
-				<md-tooltip md-direction="top">Tipo</md-tooltip>
+			<md-input-container class="w70">
+				<input type="text" ng-model="ProcesoSel.CDC" aria-label=s placeholder="CDC">
+			</md-input-container>
+			<md-input-container class=" no-margin-bottom">
+				<label>Tipo</label>
 				<md-select ng-model="ProcesoSel.Tipo" aria-label=s>
 					<md-option ng-repeat="Op in TiposProcesos" ng-value="Op.id">{{ Op.Nombre }}</md-option>
 				</md-select>
 			</md-input-container>
-			<div class="text-clear" style="margin: 10px 5px 0;">de</div>
-			<md-input-container class="no-margin-top margin-bottom">
+			<div class="text-clear" style="margin: 27px 7px 0;">de</div>
+			<md-input-container class="no-margin-bottom">
 				<md-tooltip md-direction="top">Padre</md-tooltip>
 				<md-select ng-model="ProcesoSel.padre_id" aria-label=s>
 					<md-option ng-value='null'>Empresa</md-option>
@@ -63,31 +72,18 @@
 		
 		<div flex layout>
 
-			<div layout=column flex=15 class=" bg-white border border-radius margin-left margin-bottom padding md-compact-input-containers">
-				<div class="md-subheader margin-bottom">General</div>
-				<div layout layout-wrap>
-					<md-input-container class="" flex=20 hide>
-						<input type="text" ng-model="ProcesoSel.id" aria-label=s placeholder="Id" readonly>
-					</md-input-container>
-					<md-input-container class="" flex=100>
-						<input type="text" ng-model="ProcesoSel.CDC" aria-label=s placeholder="CDC">
-					</md-input-container>
-				</div>
-				
-			</div>
+			<div layout=column
+				class="bg-white border border-radius margin-left-5 margin-bottom-5 overflow-y darkScroll w430">
+				<div class="md-subheader margin">Personal ({{ AsignacionesCRUD.rows.length }})</div>
 
-			<div layout=column flex=45 
-				class="bg-white border border-radius margin-left margin-bottom padding overflow-y darkScroll">
-				<div class="md-subheader margin-bottom">Personal ({{ AsignacionesCRUD.rows.length }})</div>
-
-				<div layout=column class="border border-radius margin-bottom" ng-show="AsignacionesCRUD.rows.length > 0">
+				<div flex layout=column class="border-top overflow-y hasScroll" ng-show="AsignacionesCRUD.rows.length > 0">
 					
-					<div layout ng-repeat="A in AsignacionesCRUD.rows" class="padding-right-5" ng-class="{ 'border-bottom': !$last }" layout-align="center center">
+					<div layout ng-repeat="A in AsignacionesCRUD.rows" class="padding-right-5 border-bottom" layout-align="center center">
 						
 						<div class="s50 bg-lightgrey border-right" 
 						style="background-image: url({{ 'http://sec.comfamiliar.com/images/fotosEmpleados/' + A.usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>
 
-						<div layout=column flex class="margin-left-5">
+						<div layout=column flex class="margin-left-5" md-truncate>
 							<span class="text-14px text-bold">{{ A.usuario.Nombres }}</span>
 							<span class="text-clear text-14px">{{ A.usuario.Email }}</span>
 						</div>
@@ -102,6 +98,8 @@
 
 					</div>
 
+					<div class="h30"></div>
+
 				</div>
 
 				<md-autocomplete 
@@ -111,7 +109,7 @@
 					md-items="item in userSearch(searchText)"
 					md-delay="400"
 					placeholder="Agregar Usuario..."
-					class="bg-lightgrey-5">
+					class="bg-lightgrey-5 margin">
 
 					<md-item-template>
 						<span md-highlight-text="searchText" md-highlight-flags="^i" >{{ item.Nombres }}</span>

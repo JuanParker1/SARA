@@ -22,9 +22,9 @@ class VariablesController extends Controller
         return $CRUD->call(request()->fn, request()->ops);
     }
 
-    public function getValores($Variable)
+    public function getValores($Variable, $Anio = false)
     {
-        return $Variable->valores()->get()->keyBy('Periodo')->transform(function($v) use ($Variable){
+        return $Variable->valores($Anio)->get()->keyBy('Periodo')->transform(function($v) use ($Variable){
             $v->formatVal($Variable->TipoDato, $Variable->Decimales);
             return [ 'val' => $v->val, 'Valor' => $v->Valor ];
         });
@@ -54,6 +54,23 @@ class VariablesController extends Controller
 
         return $Variable;
     }
+
+    public function postGetUsuario()
+    {
+        extract(request()->all()); //Usuario
+
+        $ProcesosIds = collect($Usuario['Procesos'])->pluck('id')->toArray();
+
+        $Variables = Variable::whereIn('proceso_id', $ProcesosIds)->get();
+
+        foreach ($Variables as $V) {
+            $V['valores'] = $this->getValores($V, $Anio);
+        }
+
+        return $Variables;
+    }
+
+
 
     public function postUpdateValor()
     {
@@ -137,4 +154,25 @@ class VariablesController extends Controller
         }
         return $Variables;
     }
+
+    public function postStoreAll()
+    {
+        extract(request()->all()); //VariablesValores
+
+        foreach ($VariablesValores as $VP) {
+            $DaVP = VariableValor::where('variable_id', $VP['variable_id'])->where('Periodo', $VP['Periodo'])->first();
+
+            if(!$DaVP AND !is_null($VP['Valor'])){
+                $DaVP = new VariableValor($VP);
+                $DaVP->save();
+            }else{
+                $DaVP->fillit($VP);
+                $DaVP->save();
+            }
+
+            
+
+        }
+    }
+
 }

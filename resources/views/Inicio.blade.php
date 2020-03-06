@@ -15,7 +15,8 @@
 
 	</div>
 
-	<div class="md-subheader padding-bottom-5" ng-show="Usuario.Apps.length > 0">Mis Aplicaciones</div>
+	<div class="md-subheader padding-bottom-5">Mis Aplicaciones</div>
+	<div ng-show="Usuario.Apps.length == 0" class="text-clear margin-5-0">Aún no tienes aplicaciones creadas.</div>
 	<div layout layout-wrap class="margin-bottom-20">
 
 		<a class="square-card w135 h120" layout=column

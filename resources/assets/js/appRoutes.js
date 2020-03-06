@@ -37,7 +37,7 @@ angular.module('appRoutes', [])
 						url: '/:subsection',
 						templateUrl: function (params) { return '/Home/'+params.section+'/'+params.subsection; },
 					})
-					.state('App', { url: '/a', templateUrl: '/a' } )
+					.state('App', { url: '/a', templateUrl: '/a' })
 					.state('App.App', { url: '/:app_id' });
 
 			$urlRouterProvider.otherwise('/Home');
