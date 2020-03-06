@@ -6,7 +6,7 @@
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 		Ctrl.AppsSidenav = true;
-
+		Rs.mainTheme = 'Snow_White';
 		Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
 		Rs.http('/api/Entidades/cargadores-get', {}, Ctrl, 'Cargadores');
 		Rs.http('/api/Scorecards/all', {}, Ctrl, 'Scorecards');

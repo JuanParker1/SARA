@@ -61,6 +61,19 @@
 						<input type="number" ng-model="AppSel.ToolbarSize" min=0>
 					</md-input-container>
 				</div>
+
+				<div class="md-subheader margin-bottom-5">Procesos</div>
+				<md-autocomplete md-selected-item="selectedItem" md-search-text="searchText" 
+					md-items="item in getMatches(searchText)" 	md-item-text="item.display"
+					class="bg-lightgrey-5 h30"
+					placeholder="Agregar Proceso">
+					<md-item-template>
+						<span md-highlight-text="searchText">{{ item.display }}</span>
+					</md-item-template>
+					<md-not-found>No Encontrado</md-not-found>
+				</md-autocomplete>
+
+
 			</div>
 
 			<div class="bg-white w150 border border-radius" layout=column style="margin: 5px 0 5px 5px">

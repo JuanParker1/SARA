@@ -7,7 +7,7 @@ angular.module('IndicadoresCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.IndSel = null;
 		Ctrl.IndicadoresNav = true;
-
+		Rs.mainTheme = 'Snow_White';
 		Ctrl.tiposDatoInd = ['Numero','Porcentaje','Moneda'];
 		Ctrl.OpsUsar = [
 			{id: 'Cump', desc: 'Cumplimiento (1/0)'},

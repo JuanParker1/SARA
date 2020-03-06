@@ -5,6 +5,9 @@ angular.module('ProcesosCtrl', [])
 		console.info('ProcesosCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
+
+		Rs.mainTheme = 'Snow_White';
+		
 		Ctrl.ProcesoSel = null;
 		Ctrl.ProcesosNav = true;
 		Ctrl.TiposProcesos = [ 
@@ -20,7 +23,7 @@ angular.module('ProcesosCtrl', [])
 
 				Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos,'Ruta','Proceso',false,true);
 
-				Ctrl.lookupProceso({ route: "Comfamiliar Risaralda\\Subdirección Salud" });
+				Ctrl.lookupProceso({ route: "Comfamiliar Risaralda" });
 
 				//console.log(Ctrl.ProcesosFS);
 			});	

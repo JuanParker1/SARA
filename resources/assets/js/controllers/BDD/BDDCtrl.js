@@ -5,6 +5,8 @@ angular.module('BDDCtrl', [])
 		console.info('BDDCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
+
+		Rs.mainTheme = 'Snow_White';
 		Ctrl.BDDSidenav = true;
 		Ctrl.BDDFavSidenav = false;
 

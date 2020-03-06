@@ -51,9 +51,13 @@ button{
 .rotate-270{ transform: rotate(270deg); }
 .rotate-360{ transform: rotate(360deg); }
 
+.scale0-9{ transform: scale(0.9); }
+.scale0-95{ transform: scale(0.95); }
 .scale1-2{ transform: scale(1.2); }
 .scale1-5{ transform: scale(1.5); }
 .scale2{ transform: scale(2); }
+
+.scale-hover-1:hover{ transform: scale(1) !important; }
 
 .outline-children > *{ outline: 1px solid blue; }
 .border{ border: 1px solid #e1e1e1 !important; }
@@ -315,6 +319,7 @@ md-tooltip{
 	width: 99%;
 }
 
+.text-inherit{ color: inherit !important; fill: inherit !important; }
 .text-black{ color: black !important; fill: black !important; }
 .text-white{ color: white !important; fill: white !important; }
 .text-red{   color: red !important; fill: red !important; }
@@ -335,6 +340,8 @@ md-tooltip{
 .text-16px{ font-size: 16px; }
 .text-18px{ font-size: 18px; }
 .text-20px{ font-size: 20px; line-height: 25px; }
+
+.text-300{ font-weight: 300; }
 
 .lh15, .lh15 .md-button{ line-height: 15px !important; }
 .lh20, .lh20 .md-button{ line-height: 20px !important; }
@@ -950,6 +957,31 @@ md-tabs.md-Black-theme .md-tab.md-active, md-tabs.md-Black-theme .md-tab.md-acti
 	}
 	&::-webkit-scrollbar-thumb:active {
 		background-color: #ffffff;
+	}
+}
+
+.theme-Snow_White .hasScroll{
+	&::-webkit-scrollbar {
+		height: 9px;
+		width: 9px;
+	}
+	&::-webkit-scrollbar-button {
+		height: 0;
+		width: 0;
+	}
+	&::-webkit-scrollbar-track {
+		background-color: transparent;
+	}
+	&::-webkit-scrollbar-thumb {
+		background-color: rgba(0, 0, 0, 0.1);
+		-webkit-border-radius: 10px;
+		border: 1px solid transparent;
+	}
+	&::-webkit-scrollbar-thumb:hover {
+		background-color: rgba(0, 0, 0, 0.2);
+	}
+	&::-webkit-scrollbar-thumb:active {
+		background-color: rgba(0, 0, 0, 0.3);
 	}
 }
 

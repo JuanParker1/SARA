@@ -5,7 +5,7 @@ angular.module('EntidadesCtrl', [])
 		console.info('EntidadesCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
-
+		Rs.mainTheme = 'Snow_White';
 		Ctrl.EntidadSidenav = true;
 		Ctrl.loadingEntidad = false;
 		Ctrl.showCampos = true;

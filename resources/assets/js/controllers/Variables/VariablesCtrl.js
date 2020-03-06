@@ -7,7 +7,7 @@ angular.module('VariablesCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.VarSel = null;
 		Ctrl.VariablesNav = true;
-
+		Rs.mainTheme = 'Snow_White';
 		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Variables' });
 		Ctrl.Grids = Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
 

@@ -9,6 +9,9 @@ angular.module('MainCtrl', [])
 		Rs.CloseSidebar = function(nav_id){  $mdSidenav(nav_id).close();  }
 		Rs.OpenSidebar = function(nav_id){ 	 $mdSidenav(nav_id).open();   }
 
+		//Rs.mainTheme = 'Snow_White';
+		Rs.mainTheme = 'Black';
+
 		//Check state
 		Rs.StateChanged = function(){
 			Rs.State = $state.current;
@@ -38,12 +41,6 @@ angular.module('MainCtrl', [])
 			Rs.Storage.mainSidenavLabels = !Rs.Storage.mainSidenavLabels;
 			Rs.OpenSidebar('SectionsNav');
 		};
-
-		var HoraDelDia = parseInt(moment().format('H'));
-			 if(HoraDelDia < 7){ Rs.Saludo = 'Hola'; }
-		else if(HoraDelDia >= 7 && HoraDelDia < 12){ Rs.Saludo = 'Buenos días'; }
-		else if(HoraDelDia >= 12 && HoraDelDia < 18){ Rs.Saludo = 'Buenas tardes'; }
-		else{ Rs.Saludo = 'Buenas noches'; }
 
 
 

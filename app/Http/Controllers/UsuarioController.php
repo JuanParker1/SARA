@@ -150,6 +150,7 @@ class UsuarioController extends Controller
 		$Usuario->getApps();
 		$Usuario['token'] = $token;
 		$Usuario['url']   = config('app.url');
+		$Usuario['app_name']   = config('app.name');
 
 		//new Log('USER.ENTER', null);
 

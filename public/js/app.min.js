@@ -9,6 +9,9 @@ angular.module('MainCtrl', [])
 		Rs.CloseSidebar = function(nav_id){  $mdSidenav(nav_id).close();  }
 		Rs.OpenSidebar = function(nav_id){ 	 $mdSidenav(nav_id).open();   }
 
+		//Rs.mainTheme = 'Snow_White';
+		Rs.mainTheme = 'Black';
+
 		//Check state
 		Rs.StateChanged = function(){
 			Rs.State = $state.current;
@@ -39,12 +42,6 @@ angular.module('MainCtrl', [])
 			Rs.OpenSidebar('SectionsNav');
 		};
 
-		var HoraDelDia = parseInt(moment().format('H'));
-			 if(HoraDelDia < 7){ Rs.Saludo = 'Hola'; }
-		else if(HoraDelDia >= 7 && HoraDelDia < 12){ Rs.Saludo = 'Buenos días'; }
-		else if(HoraDelDia >= 12 && HoraDelDia < 18){ Rs.Saludo = 'Buenas tardes'; }
-		else{ Rs.Saludo = 'Buenas noches'; }
-
 
 
 		
@@ -60,12 +57,19 @@ angular.module('InicioCtrl', [])
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 
+		Rs.mainTheme = 'Snow_White';
+		//Rs.mainTheme = 'Black';
+		
 		Ctrl.makeFavorite = (A,make) => {
 			A.favorito = make;
 			Rs.http('api/App/favorito', { usuario_id: Rs.Usuario.id, app_id: A.id, favorito: make });
 		};
 
-
+		var HoraDelDia = parseInt(moment().format('H'));
+			 if(HoraDelDia < 7){ Rs.Saludo = 'Hola'; Rs.mainTheme = 'Black'; }
+		else if(HoraDelDia >= 7 && HoraDelDia < 12){ Rs.Saludo = 'Buenos días'; }
+		else if(HoraDelDia >= 12 && HoraDelDia < 18){ Rs.Saludo = 'Buenas tardes'; }
+		else{ Rs.Saludo = 'Buenas noches'; Rs.mainTheme = 'Black'; }
 	}
 ]);
 angular.module('LoginCtrl', [])
@@ -109,7 +113,7 @@ angular.module('LoginCtrl', [])
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 		Ctrl.AppsSidenav = true;
-
+		Rs.mainTheme = 'Snow_White';
 		Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
 		Rs.http('/api/Entidades/cargadores-get', {}, Ctrl, 'Cargadores');
 		Rs.http('/api/Scorecards/all', {}, Ctrl, 'Scorecards');
@@ -247,9 +251,12 @@ angular.module('App_ViewCtrl', [])
 			if(!app_id || app_id == '') return;
 			Rs.http('/api/App/app-get', { app_id: app_id }).then((r) => {
 				Ctrl.AppSel = r.App;
+				document.title = 'SARA - '+Ctrl.AppSel.Titulo;
 				Ctrl.openPage(Ctrl.AppSel.pages[0]);
 			});
 		});
+
+
 
 	}
 ]);
@@ -260,6 +267,8 @@ angular.module('BDDCtrl', [])
 		console.info('BDDCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
+
+		Rs.mainTheme = 'Snow_White';
 		Ctrl.BDDSidenav = true;
 		Ctrl.BDDFavSidenav = false;
 
@@ -898,7 +907,7 @@ angular.module('EntidadesCtrl', [])
 		console.info('EntidadesCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
-
+		Rs.mainTheme = 'Snow_White';
 		Ctrl.EntidadSidenav = true;
 		Ctrl.loadingEntidad = false;
 		Ctrl.showCampos = true;
@@ -2108,7 +2117,7 @@ angular.module('FuncionesCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.FuncionSel = null;
 		Ctrl.FuncionesNav = true;
-
+		Rs.mainTheme = 'Snow_White';
 		
 	}
 ]);
@@ -2121,7 +2130,7 @@ angular.module('IndicadoresCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.IndSel = null;
 		Ctrl.IndicadoresNav = true;
-
+		Rs.mainTheme = 'Snow_White';
 		Ctrl.tiposDatoInd = ['Numero','Porcentaje','Moneda'];
 		Ctrl.OpsUsar = [
 			{id: 'Cump', desc: 'Cumplimiento (1/0)'},
@@ -2492,12 +2501,25 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
             window.open(Link,'popup','width=1220,height=700');
         }
 
-        Ctrl.toogleSidenav(); //FIX
+        //Ctrl.toogleSidenav(); //FIX
 
 
 	}
 ]);
 
+angular.module('MisIndicadoresCtrl', [])
+.controller('MisIndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('MisIndicadoresCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.FuncionSel = null;
+		Ctrl.FuncionesNav = true;
+		Rs.mainTheme = 'Black';
+		
+	}
+]);
 angular.module('ProcesosCtrl', [])
 .controller('ProcesosCtrl', ['$scope', '$rootScope', '$injector', '$filter',
 	function($scope, $rootScope, $injector, $filter) {
@@ -2505,6 +2527,9 @@ angular.module('ProcesosCtrl', [])
 		console.info('ProcesosCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
+
+		Rs.mainTheme = 'Snow_White';
+		
 		Ctrl.ProcesoSel = null;
 		Ctrl.ProcesosNav = true;
 		Ctrl.TiposProcesos = [ 
@@ -2520,7 +2545,7 @@ angular.module('ProcesosCtrl', [])
 
 				Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos,'Ruta','Proceso',false,true);
 
-				Ctrl.lookupProceso({ route: "Comfamiliar Risaralda\\Subdirección Salud" });
+				Ctrl.lookupProceso({ route: "Comfamiliar Risaralda" });
 
 				//console.log(Ctrl.ProcesosFS);
 			});	
@@ -2626,7 +2651,7 @@ angular.module('ScorecardsCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.ScoSel = null;
 		Ctrl.ScorecardsNav = true;
-
+		Rs.mainTheme = 'Snow_White';
 		Ctrl.ScorecardsCRUD  = $injector.get('CRUD').config({ base_url: '/api/Scorecards' });
 		Ctrl.CardsCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/cards' });
 		Ctrl.NodosCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/nodos', query_call: [['getRuta',null]] });
@@ -2933,7 +2958,7 @@ angular.module('VariablesCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.VarSel = null;
 		Ctrl.VariablesNav = true;
-
+		Rs.mainTheme = 'Snow_White';
 		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Variables' });
 		Ctrl.Grids = Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
 
@@ -3968,6 +3993,8 @@ angular.module('SARA', [
 
 	'FuncionesCtrl',
 	'ProcesosCtrl',
+
+	'MisIndicadoresCtrl',
 ]);
 
 angular.module('appConfig', [])

@@ -647,6 +647,8 @@ md-dialog.md-dialog-fullheight {
  */
 .md-subheader {
   background-color: transparent !important;
+  color: inherit !important;
+  opacity: 0.6;
 }
 .md-subheader.label .md-subheader-inner {
   padding: 0 3px !important;
@@ -945,6 +947,12 @@ button {
 .rotate-360 {
   transform: rotate(360deg);
 }
+.scale0-9 {
+  transform: scale(0.9);
+}
+.scale0-95 {
+  transform: scale(0.95);
+}
 .scale1-2 {
   transform: scale(1.2);
 }
@@ -953,6 +961,9 @@ button {
 }
 .scale2 {
   transform: scale(2);
+}
+.scale-hover-1:hover {
+  transform: scale(1) !important;
 }
 .outline-children > * {
   outline: 1px solid blue;
@@ -9912,6 +9923,10 @@ md-tooltip {
   text-overflow: ellipsis;
   width: 99%;
 }
+.text-inherit {
+  color: inherit !important;
+  fill: inherit !important;
+}
 .text-black {
   color: black !important;
   fill: black !important;
@@ -9976,6 +9991,9 @@ md-tooltip {
 .text-20px {
   font-size: 20px;
   line-height: 25px;
+}
+.text-300 {
+  font-weight: 300;
 }
 .lh15,
 .lh15 .md-button {
@@ -10789,6 +10807,28 @@ md-tabs.md-Black-theme .md-tab.md-focused md-icon {
 .hasScroll::-webkit-scrollbar-thumb:active {
   background-color: #ffffff;
 }
+.theme-Snow_White .hasScroll::-webkit-scrollbar {
+  height: 9px;
+  width: 9px;
+}
+.theme-Snow_White .hasScroll::-webkit-scrollbar-button {
+  height: 0;
+  width: 0;
+}
+.theme-Snow_White .hasScroll::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+.theme-Snow_White .hasScroll::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  -webkit-border-radius: 10px;
+  border: 1px solid transparent;
+}
+.theme-Snow_White .hasScroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.theme-Snow_White .hasScroll::-webkit-scrollbar-thumb:active {
+  background-color: rgba(0, 0, 0, 0.3);
+}
 .darkScroll::-webkit-scrollbar {
   height: 9px;
   width: 9px;
@@ -10891,6 +10931,33 @@ md-tabs.md-Black-theme .md-tab.md-focused md-icon {
 }
 body {
   background-color: #eaeaea;
+}
+.theme-Snow_White.bg-theme,
+.theme-Snow_White .bg-theme {
+  background-color: white !important;
+  color: black;
+}
+.theme-Snow_White md-toolbar:not(.md-menu-toolbar) md-icon {
+  color: rgba(0, 0, 0, 0.55);
+}
+.theme-Black.bg-theme,
+.theme-Black .bg-theme {
+  background-color: #313131 !important;
+  color: white;
+}
+.theme-Black .border,
+.theme-Black .border-top,
+.theme-Black .border-right,
+.theme-Black .border-bottom,
+.theme-Black .border-left {
+  border-color: #2d2d2d !important;
+}
+.theme-Black #Section {
+  background-color: #404040;
+  color: white;
+}
+.theme-Black md-icon {
+  color: rgba(255, 255, 255, 0.55);
 }
 .Navigation md-list-item md-icon {
   margin-top: -3px -3px 0 5px;

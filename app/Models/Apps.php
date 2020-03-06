@@ -11,6 +11,7 @@ class Apps extends MyModel
 	protected $hidden = [];
 	protected $primaryKey = 'id';
     protected $casts = [
+        'Procesos' => 'array'
     ];
     protected $appends = ['textcolor'];
 
@@ -20,12 +21,13 @@ class Apps extends MyModel
         return [
             [ 'id',                     'id',                   null, true, false, null, 100 ],
             [ 'Titulo',                 'Titulo',               null, true, false, null, 100 ],
-            [ 'Desc',                   'Desc',                 null, true, true, null, 100 ],
+            [ 'Detalles',               'Detalles',                 null, true, true, null, 100 ],
             [ 'Slug',                   'Slug',                 null, true, true, null, 100 ],
             [ 'Icono',                 'Icono',               null, true, true, null, 100 ],
             [ 'Color',                 'Color',               null, true, true, null, 100 ],
             [ 'Navegacion',            'Navegacion',               null, true, true, null, 100 ],
             [ 'ToolbarSize',           'ToolbarSize',               null, true, true, null, 100 ],
+            [ 'Procesos',               'Procesos',               null, true, true, null, 100 ],
         ];
     }
 

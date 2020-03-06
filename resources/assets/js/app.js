@@ -80,4 +80,6 @@ angular.module('SARA', [
 
 	'FuncionesCtrl',
 	'ProcesosCtrl',
+
+	'MisIndicadoresCtrl',
 ]);

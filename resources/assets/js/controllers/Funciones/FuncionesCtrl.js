@@ -7,7 +7,7 @@ angular.module('FuncionesCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.FuncionSel = null;
 		Ctrl.FuncionesNav = true;
-
+		Rs.mainTheme = 'Snow_White';
 		
 	}
 ]);

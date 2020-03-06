@@ -66,18 +66,19 @@
 			<div layout=column flex=15 class=" bg-white border border-radius margin-left margin-bottom padding md-compact-input-containers">
 				<div class="md-subheader margin-bottom">General</div>
 				<div layout layout-wrap>
-					<md-input-container class="" flex=20>
+					<md-input-container class="" flex=20 hide>
 						<input type="text" ng-model="ProcesoSel.id" aria-label=s placeholder="Id" readonly>
 					</md-input-container>
-					<md-input-container class="" flex=80>
+					<md-input-container class="" flex=100>
 						<input type="text" ng-model="ProcesoSel.CDC" aria-label=s placeholder="CDC">
 					</md-input-container>
 				</div>
 				
 			</div>
 
-			<div layout=column flex=45 class=" bg-white border border-radius margin-left margin-bottom padding md-compact-input-containers">
-				<div class="md-subheader margin-bottom">Personal</div>
+			<div layout=column flex=45 
+				class="bg-white border border-radius margin-left margin-bottom padding overflow-y darkScroll">
+				<div class="md-subheader margin-bottom">Personal ({{ AsignacionesCRUD.rows.length }})</div>
 
 				<div layout=column class="border border-radius margin-bottom" ng-show="AsignacionesCRUD.rows.length > 0">
 					

@@ -200,7 +200,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
             window.open(Link,'popup','width=1220,height=700');
         }
 
-        Ctrl.toogleSidenav(); //FIX
+        //Ctrl.toogleSidenav(); //FIX
 
 
 	}

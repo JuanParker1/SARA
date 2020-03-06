@@ -29,9 +29,12 @@ angular.module('App_ViewCtrl', [])
 			if(!app_id || app_id == '') return;
 			Rs.http('/api/App/app-get', { app_id: app_id }).then((r) => {
 				Ctrl.AppSel = r.App;
+				document.title = 'SARA - '+Ctrl.AppSel.Titulo;
 				Ctrl.openPage(Ctrl.AppSel.pages[0]);
 			});
 		});
+
+
 
 	}
 ]);
