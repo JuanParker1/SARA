@@ -22,8 +22,12 @@ angular.module('ProcesosCtrl', [])
 			Rs.http('api/Procesos', {}, Ctrl, 'Procesos').then(() => {
 
 				Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos,'Ruta','Proceso',false,true);
-
-				Ctrl.lookupProceso({ route: "Comfamiliar Risaralda" });
+				if(Rs.Storage.procesosel){
+					var Ps = Ctrl.Procesos.filter((P) => {
+						return ( P.id == Rs.Storage.procesosel );
+					});
+					if(Ps.length > 0) Ctrl.openProceso(Ps[0]);
+				}
 
 				//console.log(Ctrl.ProcesosFS);
 			});	
@@ -32,6 +36,10 @@ angular.module('ProcesosCtrl', [])
 		Ctrl.openProceso = (P) => {
 			Ctrl.ProcesoSel = P;
 			Ctrl.getAsignaciones();
+			Ctrl.getIndicadores();
+
+			Rs.Storage.procesosel = P.id;
+
 		};
 
 		Ctrl.lookupProceso = (F) => {
@@ -118,5 +126,12 @@ angular.module('ProcesosCtrl', [])
 		Ctrl.getAsignaciones = () => {
 			Ctrl.AsignacionesCRUD.setScope('Nodo',  Ctrl.ProcesoSel.id).get();
 		}
+
+		//Indicadores
+		Ctrl.IndicadoresCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores' });
+		Ctrl.getIndicadores = () => {
+			Ctrl.IndicadoresCRUD.setScope('proceso',  Ctrl.ProcesoSel.id).get();
+		}
+
 	}
 ]);

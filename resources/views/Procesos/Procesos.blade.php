@@ -71,55 +71,34 @@
 
 		
 		<div flex layout>
+			<div flex class="overflow-y hasScroll">
+				@include('Procesos.Procesos_Integrantes')
 
-			<div layout=column
-				class="bg-white border border-radius margin-left-5 margin-bottom-5 overflow-y darkScroll w430">
-				<div class="md-subheader margin">Personal ({{ AsignacionesCRUD.rows.length }})</div>
-
-				<div flex layout=column class="border-top overflow-y hasScroll" ng-show="AsignacionesCRUD.rows.length > 0">
-					
-					<div layout ng-repeat="A in AsignacionesCRUD.rows" class="padding-right-5 border-bottom" layout-align="center center">
-						
-						<div class="s50 bg-lightgrey border-right" 
-						style="background-image: url({{ 'http://sec.comfamiliar.com/images/fotosEmpleados/' + A.usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>
-
-						<div layout=column flex class="margin-left-5" md-truncate>
-							<span class="text-14px text-bold">{{ A.usuario.Nombres }}</span>
-							<span class="text-clear text-14px">{{ A.usuario.Email }}</span>
-						</div>
-
-						<md-select ng-model="A.perfil_id" aria-label=s class="no-margin md-no-underline h50 text-13px" ng-change="AsignacionesCRUD.update(A)">
-							<md-option ng-repeat="Op in Perfiles" ng-value="Op.id">{{ Op.Perfil }}</md-option>
-						</md-select>
-
-						<md-button class="md-icon-button no-margin focus-on-hover s30 no-padding" ng-click="AsignacionesCRUD.delete(A)">
-							<md-icon md-svg-icon="md-close"></md-icon>
-						</md-button>
-
-					</div>
-
-					<div class="h30"></div>
-
+				<div layout=column class="margin-left-5 border border-radius bg-theme">
+					<div class="md-subheader margin">Subprocesos</div>
+					<div ng-repeat="P in Procesos | filter:{ padre_id: ProcesoSel.id }:true" class="padding-5-10 border-top Pointer text-13px" 
+						ng-click="openProceso(P)">{{ P.Proceso }}</div>
 				</div>
 
-				<md-autocomplete 
-					md-selected-item="selectedItem"
-					md-selected-item-change="selectedUser(item)" 
-					md-search-text="searchText"
-					md-items="item in userSearch(searchText)"
-					md-delay="400"
-					placeholder="Agregar Usuario..."
-					class="bg-lightgrey-5 margin">
+				<div class="h30"></div>
 
-					<md-item-template>
-						<span md-highlight-text="searchText" md-highlight-flags="^i" >{{ item.Nombres }}</span>
-						<span md-highlight-text="searchText" md-highlight-flags="^i" class="margin-left-5 ">{{ item.Email }}</span>
-        			</md-item-template>
-        			<md-not-found>No Encontrado</md-not-found>
-
-				</md-autocomplete>
 			</div>
+			<div flex class="overflow-y hasScroll">
+				<div layout=column class="margin-left-5 margin-right-5 border border-radius bg-theme">
+					<div layout class="margin">
+						<div class="md-subheader">Indicadores ({{ IndicadoresCRUD.rows.length }})</div>
+					</div>
+					<div ng-repeat="I in IndicadoresCRUD.rows" class="padding-left border-top text-13px" layout layout-align="center center">
+						<div class="" flex>{{ I.Indicador }}</div>
+						<md-button class="md-icon-button s30 no-margin no-padding" ng-click="viewIndicadorDiag(I.id)">
+							<md-icon md-font-icon="fa-external-link-alt fa-fw"></md-icon>
+						</md-button>
+					</div>
+				</div>
 
+				<div class="h30"></div>
+
+			</div>
 		</div>
 
 		<div layout class="border-top bg-lightgrey-5">

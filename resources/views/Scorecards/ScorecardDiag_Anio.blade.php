@@ -18,7 +18,10 @@
 							<md-icon md-font-icon="fa-chevron-right fa-fw s20 transition margin-right-5" ng-if="N.tipo == 'Nodo'"
 								ng-class="{'fa-rotate-90':N.open}"></md-icon>
 							<md-icon md-font-icon="fa-chart-line fa-fw s20 margin-right-5" ng-if="N.tipo == 'Indicador'"></md-icon>
-							<div class="padding-5-0 mw160" flex>{{ N.Nodo }}</div>
+							<div class="padding-5-0 mw160" flex layout=column>
+								<div>{{ N.Nodo }}</div>
+								<div class="text-clear" hide ng-if="N.tipo == 'Indicador'">{{ N.elemento.proceso.Proceso }}</div>
+							</div>
 						</div>
 					</td>
 					<td md-cell ng-repeat="M in Meses" class="scorecard_mescell">

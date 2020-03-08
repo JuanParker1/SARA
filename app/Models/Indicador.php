@@ -41,6 +41,12 @@ class Indicador extends MyModel
 		return $this->belongsTo('\App\Models\Proceso', 'proceso_id');
 	}
 
+	//Scope
+	public function scopeProceso($q, $proceso_id)
+	{
+		return $q->where('proceso_id', $proceso_id);
+	}
+
 
 	//Calcular Variables
 	public function calcVals($Anio, $mesIni = 1, $mesFin = 12)

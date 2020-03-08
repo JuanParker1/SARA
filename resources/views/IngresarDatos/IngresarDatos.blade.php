@@ -1,7 +1,7 @@
 <div flex id="IngresarDatos" layout=column ng-controller="IngresarDatosCtrl">
 	
 	<div layout class="border-bottom bg-theme padding-0-10 h42 text-14px" layout-align="center center">
-		<h3 class="text-20px text-300 no-margin">Ingresar Datos</h3>
+		<h3 class="text-16px text-400 no-margin">Ingresar Datos</h3>
 		<span flex></span>
 
 		<div layout>
@@ -40,7 +40,7 @@
 					<tr md-row class="">
 						<th md-column>
 							<md-input-container md-no-float class=" no-margin md-no-underline">
-								<input type="text" ng-model="filterVariablesText" placeholder="Buscar..." class="text-300 text-14px" 
+								<input type="text" ng-model="filterVariablesText" placeholder="Buscar..." class="text-400 text-14px" 
 									ng-change="filterVariables()">
 							</md-input-container>
 						</th>
@@ -58,7 +58,7 @@
 						</td>
 						<td md-cell ng-repeat="(Periodo,VP) in V.valores" style="padding: 0 !important" class="md-cell-compress" ng-class="{ 'bg-lightgrey': VP['readonly'] }">
 								
-							<md-input-container class="no-margin no-padding md-no-underline mw80" 
+							<md-input-container class="no-margin no-padding md-no-underline mw60" 
 								ng-class="{ 'bg-yellow': VP['edited'] }">
 								<input type="text" ng-model="VP['new_Valor']" ng-change="markChanged(VP)" class="text-right border-right padding-right" ui-number-mask="0" 
 									autocomplete="new-password" ng-readonly="VP['readonly']" aria-label=a>
