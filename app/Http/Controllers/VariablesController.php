@@ -39,20 +39,21 @@ class VariablesController extends Controller
 
     public function postGet()
     {
-    	$Variable = Variable::where('id', request('id'))->with([])->first();
+    	$Variable = Variable::where('id', request('id'))->first();
         $Variable->valores = $this->getValores($Variable);
-
-        $VariablesRelacionadas = [];
-        if($Variable->Tipo == 'Calculado de Entidad'){
-            $VariablesRelacionadas = Variable::where('id', '<>', $Variable->id)->where('grid_id', $Variable->grid_id)->get();
-            foreach ($VariablesRelacionadas as $V) {
-                $V->valores = $this->getValores($V);
-            }
-        };
-
-        $Variable->related_variables = $VariablesRelacionadas;
+ 
+        $Variable->desagregados = [];
+        $Variable->desagregables = $Variable->getDesagregables();
 
         return $Variable;
+    }
+
+    public function postGetDesagregacion($value='')
+    {
+        extract(request()->all()); //variable_id, Anio, desag_campos
+
+        $Variable = Variable::where('id', $variable_id)->first();
+        return $Variable->getDesagregated( ($Anio*100)+1, ($Anio*100)+12, $desag_campos);
     }
 
     public function postGetUsuario()

@@ -54,6 +54,7 @@ angular.module('ScorecardsCtrl', [])
 		Ctrl.openNodo = (Nodo) => {
 			Ctrl.NodoSel = Nodo;
 			Ctrl.NodoSel.indicadores = Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo !== 'Nodo' && N.padre_id == Nodo.id) });
+			Ctrl.NodoSel.subnodos = Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo == 'Nodo' && N.padre_id == Nodo.id) });
 		};
 
 		Ctrl.addIndicador = () => {
@@ -114,6 +115,7 @@ angular.module('ScorecardsCtrl', [])
 			Ctrl.ScoSel = V;
 			Ctrl.NodoSel = Rs.def(Nodo, null);
 			Ctrl.NodosCRUD.setScope('scorecard', Ctrl.ScoSel.id).get().then(() => {
+				Ctrl.openNodo(Ctrl.NodosCRUD.rows[0]);
 				Ctrl.getFs();
 			});
 		};

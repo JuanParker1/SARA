@@ -90,7 +90,9 @@ angular.module('VariablesCtrl', [])
 		Ctrl.openVariable = (V) => {
 			//Rs.viewVariableDiag(V.id);
 			Rs.http('/api/Variables/get-variable', { id: V.id }, Ctrl, 'VarSel').then(() => {
+				
 				//Rs.getVariableData([Ctrl.VarSel.id]);
+				//Rs.viewVariableDiag(Ctrl.VarSel.id);
 				Rs.Storage.VariableSel = Ctrl.VarSel.id;
 			});
 			//Ctrl.VarSel = V;

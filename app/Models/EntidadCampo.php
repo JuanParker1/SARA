@@ -16,6 +16,7 @@ class EntidadCampo extends MyModel
     	'Unico'      => 'boolean',
     	'Editable'   => 'boolean',
     	'Buscable'   => 'boolean',
+    	'Desagregable'   => 'boolean',
     	'Config'     => 'array',
     ];
     protected $appends = ['campo_title'];
@@ -37,6 +38,7 @@ class EntidadCampo extends MyModel
 			[ 'Unico',		'Unico',		null, true,  false, null, 100 ],
 			[ 'Editable',	'Editable',		null, true,  false, null, 100 ],
 			[ 'Buscable',	'Buscable',		null, true,  false, null, 100 ],
+			[ 'Desagregable','Desagregable',null, true,  false, null, 100 ],
 			[ 'Op1',		'Op1',			null, false, false, null, 100 ],
 			[ 'Op2',		'Op2',			null, false, false, null, 100 ],
 			[ 'Op3',		'Op3',			null, false, false, null, 100 ],

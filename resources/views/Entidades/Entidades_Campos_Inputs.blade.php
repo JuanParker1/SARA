@@ -10,7 +10,7 @@
 		@if($withSave) enter-stroke="addCampo(C)" @endif >
 	</md-input-container>
 </td>
-<td md-cell class="md-cell-compress" ng-repeat="Op in ['Requerido','Visible','Unico']">
+<td md-cell class="md-cell-compress" ng-repeat="Op in ['Requerido','Visible','Unico','Desagregable']">
 	<md-checkbox ng-model="C[Op]" aria-label="{{ Op }}" style="transform: translateX(3px);" class="md-primary"
 		ng-change="markChanged(C)"></md-checkbox>
 </td>

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Core\MyModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\IndicadorVariable;
 use App\Models\IndicadorMeta;
 use App\Models\Variable;
@@ -19,17 +20,19 @@ class Indicador extends MyModel
 	];
     protected $appends = ['Ruta'];
 
+    use SoftDeletes;
+
     public function columns()
 	{
 		//Name, Desc, Type, Required, Unique, Default, Width, Options
 		return [
 			[ 'id',						'id',				null, true, false, null, 100 ],
 			//[ 'Ruta',					'Ruta',				null, true, false, null, 100 ],
-			[ 'proceso_id',				'proceso_id',	null, true, false, null, 100 ],
+			[ 'proceso_id',				'proceso_id',		null, true, false, null, 100 ],
 			[ 'Indicador',				'Indicador',		null, true, false, null, 100 ],
 			[ 'Definicion',				'Definición',		null, true, false, null, 100 ],
 			[ 'Unidad',					'Unidad',			null, true, false, null, 100 ],
-			[ 'TipoDato',				'TipoDato',		null, true, false, null, 100 ],
+			[ 'TipoDato',				'TipoDato',			null, true, false, null, 100 ],
 			[ 'Decimales',				'Decimales',		null, true, false, null, 100 ],
 			[ 'Formula',				'Formula',			null, true, false, null, 100 ],
 			[ 'Sentido',				'Sentido',			null, true, false, null, 100 ],
@@ -53,7 +56,27 @@ class Indicador extends MyModel
 	{
 		$decimales = ($this->TipoDato == 'Porcentaje') ? $this->Decimales + 2 : $this->Decimales;
 
-		$this->variables = IndicadorVariable::indicador($this->id)->get();
+		//Variables
+		if(!$this->variables){
+			$this->variables = IndicadorVariable::indicador($this->id)->get();
+			$desagregables = [];
+			$desagregados = [];
+			
+			foreach ($this->variables as $V) {
+				foreach ($V->variable->getDesagregables() as $campo) {
+					if(in_array($campo['id'], [])){ //TODO poner desagregaciones posibles
+						$desagregados[$campo['id']] = $campo;
+					}else{
+						$desagregables[$campo['id']] = $campo;
+					};
+
+					
+				}
+			}
+			$this->desagregables = collect($desagregables)->values();
+			$this->desagregados  = collect($desagregados)->values();
+		}
+
 		$this->metas     = IndicadorMeta::indicador($this->id)->year($Anio,$mesFin)->get();
 		$def = [
 			'mes' => 0, 'calculable' => true, 
@@ -95,13 +118,8 @@ class Indicador extends MyModel
 
 			//Calcular Formulas
 			if($v['calculable']){
-				$parser = new FormulaParser($this->Formula, $decimales);
-				$parser->setVariables($v['comp']);
-				$res = $parser->getResult();
-				if($res && $res[0] == 'done' && is_numeric($res[1])){
-					$v['Valor'] = $res[1];
-					$v['val'] = Helper::formatVal($res[1], $this->TipoDato, $this->Decimales);
-				}
+				$v['Valor'] = Helper::calcFormula( $this->Formula, $v['comp'], $decimales );
+				$v['val']   = Helper::formatVal($v['Valor'], $this->TipoDato, $this->Decimales);
 			};
 
 			//Obtener metas
@@ -119,28 +137,9 @@ class Indicador extends MyModel
 			};
 
 			//Evaluar Cumplimiento
-			if(!is_null($v['Valor']) AND !is_null($v['meta_Valor'])){
-				if($this->Sentido == 'ASC'){
-					$v['cump'] = ($v['Valor'] >= $v['meta_Valor']) ? 1:0;
-					$cump_porc = ($v['cump'] == 1) ? 1 : $v['Valor']/($v['meta_Valor'] ?: 1);
-				}else if($this->Sentido == 'DES'){
-					$v['cump'] = ($v['Valor'] <= $v['meta_Valor']) ? 1:0;
-					$cump_porc = ($v['cump'] == 1) ? 1 : ((1 - ( ( $v['Valor'] - $v['meta_Valor'] ) / $v['meta_Valor'] )) ?: 1);
-				}else if($this->Sentido == 'RAN' AND !is_null($v['meta2_Valor'])){
-					$v['cump'] = ($v['Valor'] >= $v['meta_Valor'] AND $v['Valor'] <= $v['meta2_Valor']) ? 1:0;
-					if($v['cump'] == 1){
-						$cump_porc = 1;
-					}else if($v['Valor'] < $v['meta_Valor']){
-						$cump_porc = $v['Valor']/($v['meta_Valor'] ?: 1);
-					}else if($v['Valor'] > $v['meta2_Valor']){
-						$cump_porc = ((1 - ( ( $v['Valor'] - $v['meta_Valor'] ) / $v['meta_Valor'] )) ?: 1);
-					}
-				};
-
-				$v['cump_porc'] = round(max($cump_porc,0),3);
-			};
-
-			$v['color'] = Helper::getIndicatorColor($v['cump_porc']);
+			$v['cump']      = Helper::calcCump($v['Valor'], $v['meta_Valor'], $this->Sentido, 'bool', $v['meta2_Valor']);
+			$v['cump_porc'] = Helper::calcCump($v['Valor'], $v['meta_Valor'], $this->Sentido, 'porc', $v['meta2_Valor']);
+			$v['color']     = Helper::getIndicatorColor($v['cump_porc']);
 		}
 
 

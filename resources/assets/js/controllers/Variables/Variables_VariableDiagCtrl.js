@@ -88,5 +88,23 @@ angular.module('Variables_VariableDiagCtrl', [])
         ];
 
         Ctrl.getVariables();
+
+
+        //Desagregacion
+        Ctrl.addedDesagregado = ($chip) => {
+            var index = Rs.getIndex(Ctrl.Var.desagregables, $chip.id);
+            Ctrl.Var.desagregables.splice(index,1);
+        };
+
+        Ctrl.removedDesagregado = ($chip) => {
+            Ctrl.Var.desagregables.push($chip);
+        };
+
+        Ctrl.getDesagregatedData = () => {
+             Rs.http('api/Variables/get-desagregacion', { variable_id: variable_id, Anio: Ctrl.Anio, desag_campos: Ctrl.Var.desagregados }, Ctrl, 'Desagregacion');
+        };
+
+
+
 	}
 ]);

@@ -29,6 +29,11 @@ class IndicadorVariable extends MyModel
 		];
 	}
 
+	public function variable()
+	{
+		return $this->belongsTo('\App\Models\Variable', 'variable_id');
+	}
+
 	public function scopeIndicador($query,$id)
 	{
 		return $query->where('indicador_id', $id);

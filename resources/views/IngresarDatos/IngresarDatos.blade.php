@@ -49,22 +49,23 @@
 					</tr>
 				</thead>
 				<tbody md-body class="text-14px" >
-					<tr md-row ng-repeat="V in filteredVariables" class="md-row-hover">
+					<tr md-row ng-repeat="V in filteredVariables | orderBy:'Variable' " class="md-row-hover">
 						<td md-cell class="border-right">
 							{{ V.Variable }}
 							<md-button class="md-icon-button no-margin no-padding s25" ng-click="viewVariableDiag(V.id)">
 								<md-icon md-font-icon="fa-external-link-alt"></md-icon>
 							</md-button>
 						</td>
-						<td md-cell ng-repeat="(Periodo,VP) in V.valores" style="padding: 0 !important" class="md-cell-compress" ng-class="{ 'bg-lightgrey': VP['readonly'] }">
-								
-							<md-input-container class="no-margin no-padding md-no-underline mw60" 
-								ng-class="{ 'bg-yellow': VP['edited'] }">
+
+						<td md-cell ng-repeat="M in Meses" style="padding: 0 !important" class="md-cell-compress">
+							<md-input-container ng-repeat="VP in [ V.valores[Anio+M[0]] ]"
+								class="no-margin no-padding md-no-underline mw60" 
+								ng-class="{ 'bg-lightgrey': VP['readonly'], 'bg-yellow': VP['edited'] }">
 								<input type="text" ng-model="VP['new_Valor']" ng-change="markChanged(VP)" class="text-right border-right padding-right" ui-number-mask="0" 
 									autocomplete="new-password" ng-readonly="VP['readonly']" aria-label=a>
 							</md-input-container>
-							
 						</td>
+						
 						<td md-cell></td>
 					</tr>
 				</tbody>

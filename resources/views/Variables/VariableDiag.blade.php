@@ -47,25 +47,49 @@
 						<td md-cell class="text-bold mw70">{{ Anio - 1 }}</td>
 						<td md-cell class="mw50 Pointer " ng-repeat="M in Meses" ng-click="">{{ Var.valores[(Anio-1)+M[0]].val }}</td>
 					</tr>
+					
+					<tr md-row ng-show="Var.desagregables.length > 0"><td md-cell colspan=13></td></tr>
+					<tr md-row ng-show="Var.desagregables.length > 0">
+						<td md-cell colspan=13>
+							<div class="padding-left" layout>
+								<span class="lh30 margin-right">Desagregar Por:</span>
+								<md-chips class="h30" ng-model="Var.desagregados" md-on-add="addedDesagregado($chip)" md-on-remove="removedDesagregado($chip)">
+									
+									 <md-autocomplete
+										md-selected-item="selectedItem"
+										md-search-text="searchText"
+										md-items="item in Var.desagregables | filter:searchText "
+										md-item-text="item.campo_title" 
+										md-min-length=0 
+										md-no-cache="true"
+										placeholder="Agregar" 
+										class="w50">
+										<span md-highlight-text="searchText">{{ item.campo_title }}</span>
+									</md-autocomplete>
 
-					<tr md-row class="Pointer" ng-click="viewRelatedVariables = !viewRelatedVariables">
-						<td md-cell class="text-clear"><md-icon md-font-icon="fa-fw fa-chevron-right" ng-class="{'fa-rotate-90':viewRelatedVariables}"></md-icon>
-							Variables Relacionadas</td><td md-cell colspan=12></td>
+									<md-chip-template>{{$chip.campo_title}}</md-chip-template>
+
+								</md-chips>
+
+								<md-button class="md-icon-button s30 no-margin no-padding" ng-show="Var.desagregados.length > 0" 
+									ng-click="getDesagregatedData()">
+									<md-tooltip md-direction=right>Desagregar</md-tooltip>
+									<md-icon md-font-icon="fa-bolt"></md-icon>
+								</md-button>
+							</div>
+						</td>
 					</tr>
 
-					<tr md-row class="md-row-hover Pointer" ng-repeat="R in Var.related_variables | switch:viewRelatedVariables" ng-click="viewVariableDiag(R.id)">
-						<td md-cell class=""><div layout layout-align="center center">
-							<div flex class="padding-5-0">{{ R.Variable }}</div>
-							<md-button class="md-icon-button no-margin no-padding s30" aria-label="b" >
-								<md-icon md-font-icon="fa-external-link-alt fa-fw"></md-icon>
-								<md-tooltip md-direction="left">Ver Variable</md-tooltip>
-							</md-button>
-						</div></td>
-						<td md-cell class="" ng-repeat="M in Meses">{{ R.valores[Anio+M[0]].val }}</td>
+					<tr md-row ng-repeat="D in Desagregacion">
+						<td md-cell>{{ D.Llave }}</td>
+						<td md-cell ng-repeat="M in Meses">
+							<div ng-repeat="Dato in [D.valores[Anio+M[0]]] ">{{ Dato.val }}</div>
+						</td>
 					</tr>
 
 				</tbody>
 			</table>
+			<div class="h40"></div>
 		</md-table-container>
 
 	</div>

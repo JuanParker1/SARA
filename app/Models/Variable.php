@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use App\Models\EntidadCampo;
 
+use App\Functions\Helper AS H;
+use App\Functions\GridHelper;
+use App\Functions\CamposHelper;
+
 class Variable extends Model
 {
     protected $table = 'sara_variables';
@@ -59,6 +63,12 @@ class Variable extends Model
 		return $this->belongsTo('\App\Models\Proceso', 'proceso_id');
 	}
 
+	public function getDesagregables()
+	{
+		if($this->Tipo !== 'Calculado de Entidad') return [];
+		return EntidadCampo::where('entidad_id', $this->grid->entidad_id)->where('Desagregable', 1)->orderBy('Alias')->get([ 'id', 'Columna', 'Alias', 'Tipo' ]);
+	}
+
 	public function getFiltrosAttribute($a)
 	{
 		$Filtros = json_decode($this->attributes['Filtros'], true);
@@ -80,5 +90,73 @@ class Variable extends Model
 	{
 		return $this->proceso->Ruta;
 	}
+
+
+	//Desagregacion
+	public function getDesagregated($PeriodoIni, $PeriodoFin, $desag_campos, $make_array = true)
+	{
+		$Grid = GridHelper::getGrid($this->grid_id);
+        $q    = GridHelper::getQ($Grid->entidad);
+
+        GridHelper::calcJoins($Grid);
+        GridHelper::addJoins($Grid, $q);
+        GridHelper::addFilters($this->Filtros, $Grid, $q);
+
+        $ColPeriodo = H::getElm($Grid->columnas, $this->ColPeriodo);
+		$ColPeriodoName = \DB::raw($ColPeriodo->campo->getColName($ColPeriodo['tabla_consec']));
+		$ColCalculo = H::getElm($Grid->columnas, $this->Col);
+		$ColCalculoName = $ColCalculo->campo->getColName($ColCalculo['tabla_consec']);
+
+		$q->whereBetween($ColPeriodoName, [ $PeriodoIni, $PeriodoFin ]);
+
+		GridHelper::getGroupedData($Grid, $q, [$ColPeriodoName], [ [ $ColCalculoName, $this->Agrupador ] ]);
+
+		foreach ($desag_campos as $C) {
+			//$Campo = EntidadCampo::where('id', $C['id'])->first();
+			$CampoName = \DB::raw(CamposHelper::getColName('t0', $C['Columna']));
+
+			$q->addSelect($CampoName);
+			$q->groupBy($CampoName);
+			$q->orderBy($CampoName);
+		}
+
+
+		$Data = collect(GridHelper::getData($Grid, $q, false, false, false));
+
+		//dd($Data);
+
+		$Data = $Data->transform(function($D){
+
+			$ValFormat = H::formatVal($D[1],$this->TipoDato,$this->Decimales);
+
+			$Arr = [ 'Periodo' => $D[0], 'Valor'   => intval($D[1]), 'val'     => $ValFormat ];
+
+			$Groupers = [];
+			for ($i=2; $i < count($D); $i++) { $Groupers[] = utf8_encode(trim($D[$i])); }
+			$Arr['Groupers'] = join('|||', $Groupers);  
+
+			return $Arr;
+		})->groupBy('Groupers')->transform(function($G, $kG){
+
+			$Arr = explode('|||', $kG);
+			$Arr['Llave'] = implode(' - ', $Arr);
+			$Arr['valores'] = [];
+			$Arr['valor_total'] = 0;
+
+			foreach ($G as $Row) {
+				$Arr['valores'][$Row['Periodo']] = [ 'Valor' => $Row['Valor'], 'val' => $Row['val'] ];
+				$Arr['valor_total'] += $Row['Valor'];
+			}
+
+			return $Arr;
+		})->sortByDesc('valor_total');
+
+		if($make_array) $Data = $Data->values();
+
+		return $Data;
+        //$q->toSql();
+	}
+
+
 
 }

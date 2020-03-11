@@ -33,6 +33,8 @@ angular.module('IngresarDatosCtrl', [])
 				var PeriodoAnt = parseInt(moment().add(-1, 'month').format('YYYYMM'));
 
 				Variables.forEach(V => {
+					//console.log(V.valores);
+
 					Rs.Meses.forEach(M => {
 						var Periodo = Ctrl.Anio + M[0];
 						if(!V.valores[Periodo]){
@@ -84,7 +86,9 @@ angular.module('IngresarDatosCtrl', [])
 
 			Ctrl.filteredVariables.forEach(V => {
 
-				angular.forEach(V.valores, (VP, Periodo) => {
+				Rs.Meses.forEach(M => {
+					var Periodo = Ctrl.Anio + M[0];
+					var VP = V.valores[Periodo];
 					if(VP.edited){
 						VariablesValores.push({
 							variable_id: V.id,

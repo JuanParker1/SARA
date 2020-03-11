@@ -23,8 +23,13 @@ angular.module('IndicadoresCtrl', [])
 
 		Ctrl.getIndicadores = () => {
 			Ctrl.IndicadoresCRUD.get().then(() => {
-				Ctrl.openIndicador(Ctrl.IndicadoresCRUD.rows[0]);
 				Ctrl.getFs();
+
+				if(Rs.Storage.IndicadorSel){
+					var indicador_sel_id = Rs.getIndex(Ctrl.IndicadoresCRUD.rows, Rs.Storage.IndicadorSel);
+					Ctrl.openIndicador(Ctrl.IndicadoresCRUD.rows[indicador_sel_id]);
+				};
+
 			});
 		};
 
@@ -81,7 +86,8 @@ angular.module('IndicadoresCtrl', [])
 			Ctrl.IndicadoresVarsCRUD.setScope('indicador', Ctrl.IndSel.id).get();
 			Ctrl.MetasCRUD.setScope('indicador', Ctrl.IndSel.id).get();
 
-			Rs.viewIndicadorDiag(Ctrl.IndSel.id); //FIX
+			Rs.Storage.IndicadorSel = Ctrl.IndSel.id;
+			//Rs.viewIndicadorDiag(Ctrl.IndSel.id); //FIX
 		};
 
 		Ctrl.updateIndicador = () => {

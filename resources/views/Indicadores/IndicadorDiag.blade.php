@@ -40,7 +40,8 @@
 											<div class="h30 lh30">{{ Anio }}</div>
 											<md-button ng-click="anioAdd( 1)" class="no-margin s30 no-padding md-icon-button"><md-icon class="s20" md-font-icon="fa-fw fa-chevron-right"></md-icon></md-button>
 										</div>
-										<md-switch class="margin-top-5" ng-model="modoComparativo" aria-label="a" ng-change="updateChart()">Ver Comparativo</md-switch>
+										<md-switch class="margin-5-0" ng-model="modoComparativo" aria-label="a" ng-change="updateChart()">Ver Comparativo</md-switch>
+										<md-switch class="margin-5-0" ng-model="showSidenav"     aria-label="a">Ver Mejoramiento</md-switch>
 									</div>
 								</th>
 								<th md-column colspan=12>
@@ -82,10 +83,10 @@
 								<td md-cell>Formula: {{ Ind.Formula }}</td>
 								<td md-cell colspan=12></td>
 							</tr>
-							<tr md-row class="md-row-hover Pointer" ng-repeat="comp in Ind.variables" ng-click="viewCompDiag(comp)">
+							<tr md-row class="md-row-hover Pointer" ng-repeat="comp in Ind.variables" >
 								<td md-cell><div layout layout-align="center center">
 									<div flex class="padding-5-0"><b>{{ comp.Letra }}:</b> {{ comp.variable_name }}</div>
-									<md-button class="md-icon-button no-margin no-padding s30" aria-label="b" >
+									<md-button class="md-icon-button no-margin no-padding s30" aria-label="b" ng-click="viewCompDiag(comp)">
 										<md-icon md-font-icon="fa-external-link-alt fa-fw"></md-icon>
 										<md-tooltip md-direction="left">Ver {{ comp.Tipo }}</md-tooltip>
 									</md-button>
@@ -93,11 +94,80 @@
 								</td>
 								<td md-cell ng-repeat="M in Meses">{{ comp.valores[Anio+M[0]].val }}</td>
 							</tr>
+
+							<tr md-row><td md-cell colspan=13></td></tr>
+
+							<tr md-row>
+								<td md-cell>Mejoramiento</td>
+								<td md-cell ng-repeat="M in Meses">
+									<md-icon md-font-icon="fa-comment fa-fw fa-lg" class="Pointer"
+										ng-if="(ComentariosCRUD.rows | filter:{ Grupo:'Comentario', Op1: Anio+M[0] }).length > 0">
+										<md-tooltip>{{ (ComentariosCRUD.rows | filter:{ Grupo:'Comentario', Op1: Anio+M[0] }).length }} Comentarios</md-tooltip>		
+									</md-icon>
+									<md-icon md-font-icon="fa-clipboard-list fa-fw fa-lg" class="Pointer"
+										ng-if="(ComentariosCRUD.rows | filter:{ Grupo:'Accion', Op1: Anio+M[0] }).length > 0">
+										<md-tooltip>{{ (ComentariosCRUD.rows | filter:{ Grupo:'Accion', Op1: Anio+M[0] }).length }} Acciones</md-tooltip>		
+									</md-icon>
+								</td>
+							</tr>
+
+							<tr md-row ng-show="Ind.desagregables.length > 0 || Ind.desagregados.length > 0">
+								<td md-cell colspan=13></td></tr>
+
+							<tr md-row ng-show="Ind.desagregables.length > 0 || Ind.desagregados.length > 0">
+								<td md-cell colspan=13>
+									<div class="padding-left" layout>
+										<span class="lh30 margin-right text-clear">Desagregar Por:</span>
+										<md-chips class="h30" ng-model="Ind.desagregados"
+											md-on-remove="removedDesagregado($chip)"
+											readonly=true md-removable=true>
+											<md-chip-template>{{$chip.campo_title}}</md-chip-template>
+										</md-chips>
+										
+										<div>
+										<md-select ng-model="newChip" placeholder="Agregar Campo" ng-change="addDesagregado()" 
+											ng-show="Ind.desagregables.length > 0">
+											<md-option ng-repeat="C in Ind.desagregables" ng-value="C">{{ C.campo_title }}</md-option>
+										</md-select>
+										</div>
+										
+										<md-button class="md-icon-button s30 no-margin no-padding" ng-show="Ind.desagregados.length > 0" 
+											ng-click="getDesagregatedData($event)">
+											<md-tooltip md-direction=right>Desagregar</md-tooltip>
+											<md-icon md-font-icon="fa-bolt"></md-icon>
+										</md-button>
+
+										<div class="text-clear h30 lh30 margin-0-10">Ver:</div>
+										<md-select ng-model="viewDesagregacionVal">
+											<md-option value='All'>Todos</md-option>
+											<md-option value='IndVal'>Resultado</md-option>
+											<md-option ng-repeat="(kV, V) in Ind.variables" ng-value='{{ kV }}'>{{ V.variable_name }}</md-option>
+										</md-select>
+
+									</div>
+								</td>
+							</tr>
+
+							<tr md-row ng-repeat="D in Desagregacion.valores">
+								<td md-cell class="md-cell-compress">{{ D.Llave }}</td>
+								<td md-cell ng-repeat="(Periodo, DM) in D.valores">
+									<div layout=column>
+										<div ng-style="{ color: DM.color }" ng-show="inArray(viewDesagregacionVal, ['All', 'IndVal'])" class="h20">{{ DM.val }}</div>
+										<div ng-repeat="Variable in DM.comps_vals track by $index" class="h20"
+											ng-show="inArray(viewDesagregacionVal, ['All', $index])">{{ Variable }}</div>
+									</div>
+								</td>
+							</tr>
+
+
+
 						</tbody>
 					</table>
+
+					<div class="h40"></div>
 				</md-table-container>
 
-				<div class="h50"></div>
+				
 
 			</div>
 

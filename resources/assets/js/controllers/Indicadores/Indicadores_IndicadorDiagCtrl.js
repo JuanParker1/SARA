@@ -32,6 +32,10 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 
                 Ctrl.updateChart();
 
+                Ctrl.Desagregacion = null;
+                Ctrl.getComentarios();
+                //Ctrl.getDesagregatedData();
+
 			});
 
 		};
@@ -189,19 +193,30 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
         };
 
         Ctrl.seeExternal = (Link) => {
-            /*return $mdDialog.show({
-                controller: 'ExternalLinkCtrl',
-                templateUrl: 'templates/dialogs/external-link.html',
-                locals: { Link : Link },
-                clickOutsideToClose: false,
-                fullscreen: true,
-                multiple: true
-            });*/
             window.open(Link,'popup','width=1220,height=700');
         }
 
         //Ctrl.toogleSidenav(); //FIX
 
+        //Desagregacion
+        Ctrl.viewDesagregacionVal = 'IndVal';
+        
+        Ctrl.addDesagregado = () => {
+            Ctrl.Ind.desagregados.push(angular.copy(Ctrl.newChip));
+            var index = Rs.getIndex(Ctrl.Ind.desagregables, Ctrl.newChip.id);
+            Ctrl.Ind.desagregables.splice(index,1);
+            Ctrl.newChip = null;
+        };
+
+        Ctrl.removedDesagregado = ($chip) => {
+            Ctrl.Ind.desagregables.push($chip);
+        };
+
+        Ctrl.getDesagregatedData = (ev) => {
+            if(ev) ev.stopPropagation();
+           
+            Rs.http('api/Indicadores/get-desagregacion', { Indicador: Ctrl.Ind, Anio: Ctrl.Anio, desag_campos: Ctrl.Ind.desagregados }, Ctrl, 'Desagregacion');
+        };
 
 	}
 ]);

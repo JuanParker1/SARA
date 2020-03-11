@@ -2165,8 +2165,13 @@ angular.module('IndicadoresCtrl', [])
 
 		Ctrl.getIndicadores = () => {
 			Ctrl.IndicadoresCRUD.get().then(() => {
-				Ctrl.openIndicador(Ctrl.IndicadoresCRUD.rows[0]);
 				Ctrl.getFs();
+
+				if(Rs.Storage.IndicadorSel){
+					var indicador_sel_id = Rs.getIndex(Ctrl.IndicadoresCRUD.rows, Rs.Storage.IndicadorSel);
+					Ctrl.openIndicador(Ctrl.IndicadoresCRUD.rows[indicador_sel_id]);
+				};
+
 			});
 		};
 
@@ -2223,7 +2228,8 @@ angular.module('IndicadoresCtrl', [])
 			Ctrl.IndicadoresVarsCRUD.setScope('indicador', Ctrl.IndSel.id).get();
 			Ctrl.MetasCRUD.setScope('indicador', Ctrl.IndSel.id).get();
 
-			Rs.viewIndicadorDiag(Ctrl.IndSel.id); //FIX
+			Rs.Storage.IndicadorSel = Ctrl.IndSel.id;
+			//Rs.viewIndicadorDiag(Ctrl.IndSel.id); //FIX
 		};
 
 		Ctrl.updateIndicador = () => {
@@ -2351,6 +2357,10 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 				});
 
                 Ctrl.updateChart();
+
+                Ctrl.Desagregacion = null;
+                Ctrl.getComentarios();
+                //Ctrl.getDesagregatedData();
 
 			});
 
@@ -2509,19 +2519,30 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
         };
 
         Ctrl.seeExternal = (Link) => {
-            /*return $mdDialog.show({
-                controller: 'ExternalLinkCtrl',
-                templateUrl: 'templates/dialogs/external-link.html',
-                locals: { Link : Link },
-                clickOutsideToClose: false,
-                fullscreen: true,
-                multiple: true
-            });*/
             window.open(Link,'popup','width=1220,height=700');
         }
 
         //Ctrl.toogleSidenav(); //FIX
 
+        //Desagregacion
+        Ctrl.viewDesagregacionVal = 'IndVal';
+        
+        Ctrl.addDesagregado = () => {
+            Ctrl.Ind.desagregados.push(angular.copy(Ctrl.newChip));
+            var index = Rs.getIndex(Ctrl.Ind.desagregables, Ctrl.newChip.id);
+            Ctrl.Ind.desagregables.splice(index,1);
+            Ctrl.newChip = null;
+        };
+
+        Ctrl.removedDesagregado = ($chip) => {
+            Ctrl.Ind.desagregables.push($chip);
+        };
+
+        Ctrl.getDesagregatedData = (ev) => {
+            if(ev) ev.stopPropagation();
+           
+            Rs.http('api/Indicadores/get-desagregacion', { Indicador: Ctrl.Ind, Anio: Ctrl.Anio, desag_campos: Ctrl.Ind.desagregados }, Ctrl, 'Desagregacion');
+        };
 
 	}
 ]);
@@ -2561,6 +2582,8 @@ angular.module('IngresarDatosCtrl', [])
 				var PeriodoAnt = parseInt(moment().add(-1, 'month').format('YYYYMM'));
 
 				Variables.forEach(V => {
+					//console.log(V.valores);
+
 					Rs.Meses.forEach(M => {
 						var Periodo = Ctrl.Anio + M[0];
 						if(!V.valores[Periodo]){
@@ -2612,7 +2635,9 @@ angular.module('IngresarDatosCtrl', [])
 
 			Ctrl.filteredVariables.forEach(V => {
 
-				angular.forEach(V.valores, (VP, Periodo) => {
+				Rs.Meses.forEach(M => {
+					var Periodo = Ctrl.Anio + M[0];
+					var VP = V.valores[Periodo];
 					if(VP.edited){
 						VariablesValores.push({
 							variable_id: V.id,
@@ -2640,6 +2665,44 @@ angular.module('MisIndicadoresCtrl', [])
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 		Rs.mainTheme = 'Black';
+
+		Ctrl.ProcesoSel = false;
+		Ctrl.Anio  = angular.copy(Rs.AnioActual);
+		Ctrl.Mes   = angular.copy(Rs.MesActual);
+		Ctrl.filterIndicadoresText = '';
+		Ctrl.Loading = true;
+
+		var Indicadores = [];
+		Ctrl.anioAdd = (num) => {Ctrl.Anio = Ctrl.Anio + num; Ctrl.getIndicadores(); };
+
+		Ctrl.getIndicadores = () => {
+			Ctrl.Loading = true;
+			Ctrl.hasEdited = false;
+			Rs.http('api/Indicadores/get-usuario', { Usuario: Rs.Usuario, Anio: Ctrl.Anio }).then((r) => {
+				Indicadores = r;
+				Ctrl.filterIndicadores();
+			});
+		};
+
+		Ctrl.getIndicadores();
+
+		Ctrl.filteredIndicadores = [];
+		Ctrl.filterIndicadores = () => {
+			var Vars = angular.copy(Indicadores);
+			
+			if(Ctrl.ProcesoSel){ 
+				Vars = $filter('filter')(Vars, { proceso_id: Ctrl.ProcesoSel }, true);
+			}
+
+			if(Ctrl.filterIndicadoresText.trim() !== ''){
+				Vars = $filter('filter')(Vars, Ctrl.filterIndicadoresText);
+			}
+
+			Ctrl.filteredIndicadores = Vars;
+			Ctrl.Loading = false;
+		}
+
+
 		
 	}
 ]);
@@ -2836,6 +2899,7 @@ angular.module('ScorecardsCtrl', [])
 		Ctrl.openNodo = (Nodo) => {
 			Ctrl.NodoSel = Nodo;
 			Ctrl.NodoSel.indicadores = Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo !== 'Nodo' && N.padre_id == Nodo.id) });
+			Ctrl.NodoSel.subnodos = Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo == 'Nodo' && N.padre_id == Nodo.id) });
 		};
 
 		Ctrl.addIndicador = () => {
@@ -2896,6 +2960,7 @@ angular.module('ScorecardsCtrl', [])
 			Ctrl.ScoSel = V;
 			Ctrl.NodoSel = Rs.def(Nodo, null);
 			Ctrl.NodosCRUD.setScope('scorecard', Ctrl.ScoSel.id).get().then(() => {
+				Ctrl.openNodo(Ctrl.NodosCRUD.rows[0]);
 				Ctrl.getFs();
 			});
 		};
@@ -3179,7 +3244,9 @@ angular.module('VariablesCtrl', [])
 		Ctrl.openVariable = (V) => {
 			//Rs.viewVariableDiag(V.id);
 			Rs.http('/api/Variables/get-variable', { id: V.id }, Ctrl, 'VarSel').then(() => {
+				
 				//Rs.getVariableData([Ctrl.VarSel.id]);
+				//Rs.viewVariableDiag(Ctrl.VarSel.id);
 				Rs.Storage.VariableSel = Ctrl.VarSel.id;
 			});
 			//Ctrl.VarSel = V;
@@ -3455,6 +3522,24 @@ angular.module('Variables_VariableDiagCtrl', [])
         ];
 
         Ctrl.getVariables();
+
+
+        //Desagregacion
+        Ctrl.addedDesagregado = ($chip) => {
+            var index = Rs.getIndex(Ctrl.Var.desagregables, $chip.id);
+            Ctrl.Var.desagregables.splice(index,1);
+        };
+
+        Ctrl.removedDesagregado = ($chip) => {
+            Ctrl.Var.desagregables.push($chip);
+        };
+
+        Ctrl.getDesagregatedData = () => {
+             Rs.http('api/Variables/get-desagregacion', { variable_id: variable_id, Anio: Ctrl.Anio, desag_campos: Ctrl.Var.desagregados }, Ctrl, 'Desagregacion');
+        };
+
+
+
 	}
 ]);
 

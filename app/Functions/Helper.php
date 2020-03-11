@@ -2,6 +2,7 @@
 
 namespace App\Functions;
 use Carbon\Carbon;
+use App\Functions\FormulaParser;
 
 class Helper
 {
@@ -71,5 +72,55 @@ class Helper
         }
         return $randomString;
     }
+
+
+    //Formulas
+    public static function calcFormula($formula, $comps, $decimales = 0)
+    {
+        $parser = new FormulaParser($formula, $decimales);
+        $parser->setVariables($comps);
+        $res = $parser->getResult();
+
+        if($res && $res[0] == 'done' && is_numeric($res[1])){
+            return $res[1];
+        }else{
+            return null;
+        }
+    }
+
+    public static function calcCump($Valor, $Meta, $Sentido, $Modo = 'bool', $Meta2 = null)
+    {
+        if(is_null($Valor) OR is_null($Meta)) return null;
+
+        if($Sentido == 'ASC'){
+            
+            $cump = ($Valor >= $Meta) ? 1 : 0;
+            $porc = $Valor / $Meta;
+        
+        }else if($Sentido == 'DES'){
+            
+            $cump = ($Valor <= $Meta) ? 1 : 0;
+            $porc = 1 - ( ( $Valor - $Meta ) / $Meta );
+        
+        }else if($Sentido == 'RAN' AND !is_null($Meta2)){
+
+            $cump = ($Valor >= $Meta AND $Valor <= $Meta2) ? 1 : 0;
+            if($Valor <= $Meta){ $porc = $Valor / $Meta; }
+            else if( $Valor >= $Meta2 ){ $porc = 1 - ( ( $Valor - $Meta2 ) / $Meta2 ); }
+            else{ $porc = 1; }
+
+        }else{
+            return null;
+        }
+
+        $porc = max(min($porc, 1), 0);
+        $porc = round($porc, 3);
+
+        if( $Modo == 'bool' ) return $cump;
+        if( $Modo == 'porc' ) return $porc;
+
+    }
+    
+    
 
 }

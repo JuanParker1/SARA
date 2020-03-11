@@ -43,7 +43,7 @@
 
 	</md-sidenav>
 
-	<div flex class="" layout=column>
+	<div flex class="" layout=column ng-show="IndSel !== null">
 		<div flex layout=column class="overflow-y darkScroll padding-5">
 			<div layout class="">
 				<md-button class="md-icon-button no-margin no-padding s30" aria-label="b" ng-click="IndicadoresNav = !IndicadoresNav" 
@@ -87,6 +87,7 @@
 
 			@include('Indicadores.Indicadores_Formula')
 			@include('Indicadores.Indicadores_Metas')
+			<!-- include('Indicadores.Indicadores_Desagregacion') -->
 
 			<div class="h50"></div>
 		</div>

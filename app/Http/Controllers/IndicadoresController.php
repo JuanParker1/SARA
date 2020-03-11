@@ -66,6 +66,87 @@ class IndicadoresController extends Controller
         return $Indicador;
     }
 
+    public function postGetUsuario()
+    {
+        extract(request()->all()); //Usuario, Anio
+        $ProcesosIds = collect($Usuario['Procesos'])->pluck('id')->toArray();
+        $Indicadores = Indicador::whereIn('proceso_id', $ProcesosIds)->get();
+
+        foreach ($Indicadores as $I) {
+            $I['valores'] = $I->calcVals($Anio);
+        }
+
+        return $Indicadores;
+    }
+
+
+
+    public function postGetDesagregacion()
+    {
+        extract(request()->all()); //Indicador, Anio, desag_campos
+        
+        $Variables = [];
+        $Resultados = [];
+
+        $PeriodoIni = ($Anio*100)+1;
+        $PeriodoFin = ($Anio*100)+12;
+        $Periodos = Helper::getPeriodos( $PeriodoIni, $PeriodoFin );
+        $decimales = ($Indicador['TipoDato'] == 'Porcentaje') ? $Indicador['Decimales'] + 2 : $Indicador['Decimales'];
+
+        foreach ($Indicador['variables'] as $V) {
+            $Var = Variable::where('id', $V['variable_id'])->first();
+            $Desagregated = $Var->getDesagregated( $PeriodoIni, $PeriodoFin, $desag_campos, false);
+            $Variables[] = $Desagregated;
+
+            foreach ($Desagregated as $key => $Grupo) {
+                if(!array_key_exists($key, $Resultados)) $Resultados[$key] = [ 'Llave' => $key, 'valores' => [] ];
+            }
+        }
+
+        //return $Variables;
+
+        foreach ($Resultados as $keyArr => &$Arr) {
+            foreach ($Periodos as $Periodo) {
+
+                //Obtener Comps
+                $comps = [];
+                $comps_vals = [];
+                foreach ($Indicador['variables'] as $kV => $V) {
+
+
+                    if(is_null($Variables[$kV]->get($keyArr))){
+                        $Valor = null;
+                        $val = null;
+                    }else{
+                        $ValoresArr = $Variables[$kV][$keyArr]['valores'];
+                        $Valor = array_key_exists($Periodo, $ValoresArr) ? $ValoresArr[$Periodo]['Valor'] : null;
+                        $val   = array_key_exists($Periodo, $ValoresArr) ? $ValoresArr[$Periodo]['val']   : null;
+                    }
+
+                    $comps[$V['Letra']] = $Valor;
+                    $comps_vals[] = $val;
+                }
+
+                $Meta  = $Indicador['valores'][$Periodo]['meta_Valor'];
+                $Meta2 = $Indicador['valores'][$Periodo]['meta2_Valor'];
+
+                $Valor      = Helper::calcFormula( $Indicador['Formula'], $comps, $decimales );
+                $val        = Helper::formatVal($Valor, $Indicador['TipoDato'], $Indicador['Decimales']);
+                $cump       = Helper::calcCump($Valor, $Meta, $Indicador['Sentido'], 'bool', $Meta2);
+                $cump_porc  = Helper::calcCump($Valor, $Meta, $Indicador['Sentido'], 'porc', $Meta2);
+                $color      = Helper::getIndicatorColor($cump_porc);
+
+
+                $Arr['valores'][$Periodo] = compact('Periodo', 'Valor', 'val', 'comps_vals', 'cump', 'cump_porc', 'color');
+            }
+        }
+
+        return [ 'valores' => $Resultados, 'Variables' => $Variables ];
+
+    }
+
+
+
 
     //Variables
     public function postVariables()
