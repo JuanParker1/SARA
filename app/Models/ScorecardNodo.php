@@ -51,13 +51,17 @@ class ScorecardNodo extends MyModel
 
 	public function nodos()
 	{
-		return $this->hasMany('\App\Models\ScorecardNodo', 'padre_id');
+		return $this->hasMany('\App\Models\ScorecardNodo', 'padre_id')->orderBy('Indice')->orderBy('Nodo');
 	}
 
 	public function getElementoAttribute()
 	{
 		if($this->tipo == 'Indicador'){
 			return \App\Models\Indicador::where('id', $this->elemento_id)->first();
+		}
+
+		if($this->tipo == 'Variable'){
+			return \App\Models\Variable::where('id', $this->elemento_id)->first();
 		}
 	}
 
@@ -66,6 +70,8 @@ class ScorecardNodo extends MyModel
 
 		if($this->tipo == 'Indicador'){
 			return $this->elemento->Indicador;
+		}else if($this->tipo == 'Variable'){
+			return $this->elemento->Variable;
 		}else{
 			return $this->attributes['Nodo'];
 		}
@@ -81,7 +87,7 @@ class ScorecardNodo extends MyModel
 			$this->nodo_padre->getRuta();
 			$RutaPadre = $this->nodo_padre->Ruta;
 			if($RutaPadre !== '') $RutaPadre .= '\\';
-			$this->Ruta = $RutaPadre . $this->Nodo;
+			$this->Ruta = $RutaPadre . $this->Indice . '. ' . $this->Nodo;
 		}else{
 			$this->nodo_padre->getRuta();
 			$this->Ruta = $this->nodo_padre->Ruta;
@@ -117,9 +123,11 @@ class ScorecardNodo extends MyModel
 		$this->puntos_totales = $this->nodos->sum('peso');
 
 		if($this->tipo == 'Indicador') $this->valores = $this->elemento->calcVals(round($Periodos[0]/100));
+		if($this->tipo == 'Variable')  $this->valores = $this->elemento->getVals( round($Periodos[0]/100));
 		if($this->tipo == 'Nodo'){
 			$calc = array_fill_keys($Periodos, [ 'puntos' => 0, 'incalculables' => 0 ]);
 			foreach ($this->nodos as $subnodo) {
+				
 				if($subnodo->tipo == 'Indicador'){
 					foreach ($subnodo->valores as $per => $val) {
 						if($val['calculable']){
@@ -127,6 +135,17 @@ class ScorecardNodo extends MyModel
 						}else{
 							$calc[$per]['incalculables']++;
 						}
+					}
+				}
+
+				if($subnodo->tipo == 'Variable'){
+					foreach ($subnodo->valores as $per => $val) {
+						if(!is_null($val['Valor'])){
+							$calc[$per]['puntos'] += $subnodo->peso;
+						}else{
+							$calc[$per]['incalculables']++;
+						}
+						
 					}
 				}
 
@@ -153,17 +172,20 @@ class ScorecardNodo extends MyModel
 		
 	}
 
-	public function flatten(&$NodosFlat, $depth)
+	public function flatten(&$NodosFlat, $depth, $open_to_level)
 	{
+		$open = ( $depth <  $open_to_level );
+		$show = ( $depth <= $open_to_level );
+
 		$NodosFlat[] = [
 			'id' => $this->id, 'Nodo' => $this->Nodo, 
 			'depth' => $depth, 'tipo' => $this->tipo, 'nodos_cant' => $this->nodos_cant, 
-			'calc' => $this->calc, 'valores' => $this->valores, 'elemento' => $this->elemento, 'open' => true, 'show' => true,
+			'calc' => $this->calc, 'valores' => $this->valores, 'elemento' => $this->elemento, 'open' => $open, 'show' => $show,
 			'ruta' => $this->ruta
 		];
 		$depth++;
 		foreach ($this->nodos as $nodo) {
-			$nodo->flatten($NodosFlat, $depth);
+			$nodo->flatten($NodosFlat, $depth, $open_to_level);
 		}
 	}
 

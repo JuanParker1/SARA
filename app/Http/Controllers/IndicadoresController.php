@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Functions\CRUD;
 use App\Models\Indicador;
 use App\Models\IndicadorVariable;
+use App\Models\IndicadorMeta;
 use App\Models\Variable;
 use App\Models\VariableValor;
 use App\Models\Scorecard;
@@ -161,6 +162,188 @@ class IndicadoresController extends Controller
         $CRUD = new CRUD('App\Models\IndicadorMeta');
         return $CRUD->call(request()->fn, request()->ops);
     }
+
+
+
+
+
+
+    public function getLoadSolgein()
+    {
+        \Excel::setDelimiter(';');
+
+        $regs = \Excel::selectSheetsByIndex(0)->load('temp/Plantilla_Indicadores_SOLGEIN.xlsx', function($reader){   
+        })->get();
+
+        $inds = collect($regs)->filter(function($i){
+            return ($i['estado'] == 'A');
+        })->map(function($i){
+            
+            $Ind = [
+                'proceso_id' => $i['nodo'],
+                'Indicador'  => $i['indicador'],
+                'Definicion' => $i['definicion'],
+                'TipoDato'   => $i['tipodato'],
+                'Decimales'  => $i['decimales'],
+                'Formula'    => $i['formula'],
+                'Sentido'    => $i['sentido'],
+                'componentes' => [],
+            ];
+
+            foreach (['a', 'b', 'c', 'd', 'e'] as $letra) {
+                $variable = $i['variable_'.$letra];
+
+                if(is_null($variable)) continue;
+
+
+
+                $Ind['componentes'][$letra] = [
+                    'proceso_id' => $i['nodo'],
+                    'Variable' => $variable,
+                    'TipoDato' => $i['tipodato_'.$letra],
+                    'Decimales' => $i['decimales_'.$letra],
+                    'Tipo'      => 'Manual',
+                ];
+
+            }
+
+
+            return $Ind;
+
+        })->values();
+
+        foreach ($inds as $ind) {
+        
+            $DaInd = new Indicador($ind);
+            unset($DaInd->componentes);
+
+            $Found = Indicador::where('proceso_id', $DaInd->proceso_id)->where('Indicador', $DaInd->Indicador)->count();
+            if($Found == 0){
+                $DaInd->save(); 
+
+                foreach ($ind['componentes'] as $letra => $variable) {
+                    
+                    $DaVar = new Variable($variable);
+                    $DaVar->save();
+
+                    $DaIndVar = new IndicadorVariable([
+                        'indicador_id' => $DaInd->id,
+                        'Letra'        => $letra,
+                        'Tipo'         => 'Variable',
+                        'variable_id'  => $DaVar->id,
+                    ]);
+
+                    $DaIndVar->save();
+
+                } 
+            }
+
+        }
+
+
+             
+    }
+
+
+
+    public function getLoadSolgeinVals()
+    {
+        \Excel::setDelimiter(';');
+
+        $regs = \Excel::selectSheetsByIndex(0)->load('temp/Valores_Indicadores_SOLGEIN.xlsx', function($reader){   
+        })->get();
+
+        $inds = collect($regs)->groupBy('cod_indicador')->map(function($var){
+            $nodo = $var[0]['nodo'];
+
+            $DaVar = Variable::where('proceso_id', $nodo)->where('Variable', $var[0]['variable'])->first();
+
+            //dd($var[0]['variable']);
+
+            if($DaVar){
+
+                $ind_cod = IndicadorVariable::where('variable_id', $DaVar->id)->first();
+                $ind_cod = $ind_cod->indicador_id;
+
+                foreach ($var as $va) {
+                    /*$UltimaMeta = IndicadorMeta::where('indicador_id', $ind_cod)->where('PeriodoDesde', '<=', $va['mes'])->orderBy('PeriodoDesde', 'DESC')->first();
+
+                    if(!$UltimaMeta OR $UltimaMeta->Meta !== $va['valor_meta']){
+                        $newMeta = new IndicadorMeta([
+                            'indicador_id' => $ind_cod,
+                            'PeriodoDesde' => $va['mes'],
+                            'Meta'         => $va['valor_meta']
+                        ]);
+
+                        $newMeta->save();
+                    }*/
+
+                    $ValorPeriodo = VariableValor::where('variable_id', $DaVar->id)->where('Periodo', $va['mes'])->first();
+
+                    if(!$ValorPeriodo){
+                        $newValor = new VariableValor([
+                            'variable_id' => $DaVar->id,
+                            'Periodo'     => $va['mes'],
+                            'Valor'       => $va['valor_real']
+                        ]);
+
+                        $newValor->save();
+
+                        //dd($newValor);
+                    }
+
+                }
+
+                
+
+                //dd($ind_cod);
+
+                //dd([$var[0]['variable'], $DaVar]);
+            }
+            
+
+        });
+
+        return $regs;
+    }
+
+
+    public function getLoadSolgeinMetas()
+    {
+        \Excel::setDelimiter(';');
+
+        $regs = \Excel::selectSheetsByIndex(0)->load('temp/Plantilla_Indicadores_SOLGEIN.xlsx', function($reader){   
+        })->get();
+
+        foreach ($regs as $reg) {
+            
+            $DaInd = Indicador::where('proceso_id', $reg['nodo'])->where('Indicador', $reg['indicador'])->first();
+
+            if($DaInd){
+
+                $UltimaMeta = IndicadorMeta::where('indicador_id', $DaInd->id)->orderBy('PeriodoDesde', 'DESC')->first();
+
+                if(!$UltimaMeta AND !is_null($reg['meta'])){
+
+                    $newMeta = new IndicadorMeta([
+                        'indicador_id' => $DaInd->id,
+                        'Meta'         => $reg['meta']
+                    ]);
+
+                    //dd($newMeta);
+
+                    $newMeta->save();
+                }
+
+            }
+
+        }
+
+        return $regs;
+
+    }
+
+
 
 
 }

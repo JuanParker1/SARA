@@ -22,25 +22,17 @@ class VariablesController extends Controller
         return $CRUD->call(request()->fn, request()->ops);
     }
 
-    public function getValores($Variable, $Anio = false)
-    {
-        return $Variable->valores($Anio)->get()->keyBy('Periodo')->transform(function($v) use ($Variable){
-            $v->formatVal($Variable->TipoDato, $Variable->Decimales);
-            return [ 'val' => $v->val, 'Valor' => $v->Valor ];
-        });
-    }
-
     public function postGetVariable()
     {
         $Variable = Variable::where('id', request('id'))->with(['grid','grid.columnas'])->first();
-        $Variable->valores = $this->getValores($Variable);
+        $Variable->valores = $Variable->getVals();
         return $Variable;
     }
 
     public function postGet()
     {
     	$Variable = Variable::where('id', request('id'))->first();
-        $Variable->valores = $this->getValores($Variable);
+        $Variable->valores = $Variable->getVals();
  
         $Variable->desagregados = [];
         $Variable->desagregables = $Variable->getDesagregables();
@@ -65,7 +57,7 @@ class VariablesController extends Controller
         $Variables = Variable::whereIn('proceso_id', $ProcesosIds)->get();
 
         foreach ($Variables as $V) {
-            $V['valores'] = $this->getValores($V, $Anio);
+            $V['valores'] = $V->getVals($Anio);
         }
 
         return $Variables;
@@ -85,7 +77,7 @@ class VariablesController extends Controller
     {
         $Variables = Variable::whereIn('id', request('ids'))->get();
         foreach ($Variables as $V) {
-            $V->valores = $this->getValores($V);
+            $V->valores = $V->getVals();
         }
         return $Variables;
     }
@@ -151,7 +143,7 @@ class VariablesController extends Controller
 
         $Variables = Variable::whereIn('id', $ids)->get();
         foreach ($Variables as $V) {
-            $V->valores = $this->getValores($V);
+            $V->valores = $V->getVals();
         }
         return $Variables;
     }
@@ -171,9 +163,9 @@ class VariablesController extends Controller
                 $DaVP->save();
             }
 
-            
-
         }
     }
+
+
 
 }

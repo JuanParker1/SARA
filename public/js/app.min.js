@@ -50,15 +50,16 @@ angular.module('MainCtrl', [])
 
 
 angular.module('InicioCtrl', [])
-.controller('InicioCtrl', ['$scope', '$rootScope', 
-	function($scope, $rootScope) {
+.controller('InicioCtrl', ['$scope', '$rootScope', '$filter',
+	function($scope, $rootScope, $filter) {
 
 		console.info('InicioCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 
-		Rs.mainTheme = 'Snow_White';
-		//Rs.mainTheme = 'Black';
+
+		//Rs.mainTheme = 'Snow_White';
+		Rs.mainTheme = 'Black';
 		
 		Ctrl.makeFavorite = (A,make) => {
 			A.favorito = make;
@@ -70,6 +71,49 @@ angular.module('InicioCtrl', [])
 		else if(HoraDelDia >= 7 && HoraDelDia < 12){ Rs.Saludo = 'Buenos días'; }
 		else if(HoraDelDia >= 12 && HoraDelDia < 18){ Rs.Saludo = 'Buenas tardes'; }
 		else{ Rs.Saludo = 'Buenas noches'; Rs.mainTheme = 'Black'; }
+
+
+		//Búsqueda
+		Ctrl.searchMode = false;
+		Ctrl.searchText = '';
+		Ctrl.searchGroups = [
+			{ Titulo: 'Tableros',    Value: 'Tablero', 		Icono: 'fa-th-large' },
+			{ Titulo: 'Indicadores', Value: 'Indicador', 	Icono: 'fa-chart-line' },
+			{ Titulo: 'Variables',   Value: 'Variable', 	Icono: 'fa-superscript' },
+			{ Titulo: 'Reportes',    Value: 'Reporte', 	    Icono: 'fa-table' },
+			{ Titulo: 'Procesos',    Value: 'Proceso', 	    Icono: 'fa-cube' },
+			{ Titulo: 'Funciones',   Value: 'Funcion', 	    Icono: 'fa-cube' },
+		];
+		Ctrl.searchGroupSel = 0;
+
+		Ctrl.mainSearch = () => {
+			//Ctrl.searchResults = null;
+			if(Ctrl.searchText.trim() == ''){
+				Ctrl.searchMode = false;
+				return;
+			}
+
+			Ctrl.searchGroupSel = 0;
+			Ctrl.searchMode = true;
+
+			Rs.http('api/Main/main-search', { searchText: Ctrl.searchText }, Ctrl, 'searchResults').then(() => {
+				//Ctrl.
+			});
+		};
+
+		Ctrl.filteredSearchResults = () => {
+			if(!Ctrl.searchResults) return [];
+			if(Ctrl.searchGroupSel == 0){ return Ctrl.searchResults.results; }
+			return $filter('filter')(Ctrl.searchResults.results, { Tipo: Ctrl.searchGroups[Ctrl.searchGroupSel-1].Value });
+		}
+
+		Ctrl.selectSearchGroup = (k) => {
+			Ctrl.searchGroupSel = k;
+		}
+
+		Ctrl.mainSearch();
+
+
 	}
 ]);
 angular.module('LoginCtrl', [])
@@ -414,497 +458,6 @@ angular.module('BDDCtrl', [])
 				Ctrl.FavsCRUD.update(R);
 			});
 		};
-
-	}
-]);
-angular.module('BasicDialogCtrl', [])
-.controller(   'BasicDialogCtrl', ['$scope', 'Config', '$mdDialog', 
-	function ($scope, Config, $mdDialog) {
-
-		var Ctrl = $scope;
-
-		Ctrl.Config = Config;
-		Ctrl.periodDateLocale = {
-			formatDate: (date) => {
-				if(typeof date == 'undefined' || date === null || isNaN(date.getTime()) ){ return null; }else{
-					return moment(date).format('YMM');
-				}
-			}
-		};
-
-		Ctrl.Cancel = function(){
-			$mdDialog.hide();
-		}
-
-		Ctrl.SendData = function(){
-			$mdDialog.hide(Ctrl.Config);
-		}
-
-		Ctrl.selectItem = (Field, item) => {
-			if(!Field.opts.itemVal){
-				Field.Value = item;
-			}else{
-				Field.Value = item[Field.opts.itemVal];
-			}
-			
-		};
-
-		Ctrl.Delete = function(ev) {
-			if(Config.HasDelete){
-				Config.HasDeleteConf = true;
-
-				Ctrl.SendData();
-			}
-		}
-	}
-
-]);
-angular.module('BottomSheetCtrl', [])
-.controller('BottomSheetCtrl', ['$scope', '$rootScope', '$mdBottomSheet', 'Config', 
-	function($scope, $rootScope, $mdBottomSheet, Config) {
-
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-	
-		Ctrl.Cancel = function(){ $mdBottomSheet.cancel(); }
-
-		Ctrl.Config = angular.copy(Config);
-
-		Ctrl.Send = function(Item){
-			$mdBottomSheet.hide(Item);
-		}
-	}
-]);
-angular.module('ConfirmCtrl', [])
-.controller(   'ConfirmCtrl', ['$scope', 'Config', '$mdDialog', 
-	function ($scope, Config, $mdDialog) {
-
-		var Ctrl = $scope;
-
-		Ctrl.Config = Config;
-
-		Ctrl.Cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		Ctrl.Send = function(val){
-			$mdDialog.hide(val);
-		}
-		
-	}
-
-]);
-angular.module('ConfirmDeleteCtrl', [])
-.controller(   'ConfirmDeleteCtrl', ['$scope', 'Config', '$mdDialog', 
-	function ($scope, Config, $mdDialog) {
-
-		var Ctrl = $scope;
-
-		Ctrl.Config = Config;
-
-		Ctrl.Cancel = function(){
-			$mdDialog.hide(false);
-		}
-
-		Ctrl.Delete = function(){
-			$mdDialog.hide(true);
-		}
-		
-	}
-
-]);
-angular.module('CRUDDialogCtrl', [])
-.controller('CRUDDialogCtrl', ['$rootScope', '$scope', '$mdDialog', 'ops', 'config', 'columns', 'Obj', 'rows', 
-	function($rootScope, $scope, $mdDialog, ops, config, columns, Obj, rows) {
-
-		console.info('CRUDDialogCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		Ctrl.config = {};
-		Ctrl.columns = columns;
-		Ctrl.Obj = {};
-		console.log(columns);
-		//Ctrl.Obj = angular.copy(Obj);
-
-		//Saber si es nuevo
-		Ctrl.new = !(ops.primary_key in Obj);
-		Ctrl.config.confirmText = Ctrl.new ? 'Crear' : 'Guardar';
-		Ctrl.config.title = Ctrl.new ? ('Nuevo '+ops.name) : ('Editando '+ops.name);
-		Ctrl.config.delete_title = '¿Borrar '+ops.name+'?';
-
-		angular.forEach(columns, function(F){
-			if(F.Default !== null){
-				var DefValue = angular.copy(F.Default);
-				Ctrl.Obj[F.Field] = DefValue;
-			};
-
-			F.show = true;
-			if(config.only.length > 0){
-				F.show = Rs.inArray(F.Field, config.only);
-			};
-		});
-
-		angular.extend(Ctrl.Obj, Obj);
-		angular.extend(Ctrl.config, config);
-
-		Ctrl.cancel = function(){ $mdDialog.hide(false); };
-
-		Ctrl.sendData = function(){
-			//Verificar los Uniques
-			var Errors = 0;
-			angular.forEach(columns, function(C){
-				if(C.Unique){
-					//console.log(ops.primary_key, Ctrl.Obj[ops.primary_key]);
-					var except = Ctrl.new ? false : [ ops.primary_key, Ctrl.Obj[ops.primary_key] ];
-					var Found = Rs.found(Ctrl.Obj[C.Field], rows, C.Field, undefined, except );
-					if(Found) Errors++;
-				};
-			});
-
-			if(Errors > 0) return false;
-
-			$mdDialog.hide(Ctrl.Obj);
-		};
-
-
-		Ctrl.delete = function(ev){
-			var config = {
-				Title: Ctrl.config.delete_title,
-			};
-
-			Rs.confirmDelete(config).then(function(del){
-				if(del){
-					$mdDialog.hide('DELETE');
-				};
-			});
-		};
-
-
-		
-		//Campos
-		//Ctrl.fields = angular.copy
-
-	}
-]);
-angular.module('ExternalLinkCtrl', [])
-.controller(   'ExternalLinkCtrl', ['$scope', 'Link', '$mdDialog', '$sce',  
-	function ($scope, Link, $mdDialog, $sce) {
-
-		var Ctrl = $scope;
-
-		Ctrl.Link = $sce.trustAsResourceUrl(Link);
-
-		Ctrl.Cancel = function(){
-			$mdDialog.cancel();
-		}
-		
-	}
-
-]);
-angular.module('FileDialogCtrl', [])
-.controller('FileDialogCtrl', ['$scope', '$rootScope', '$http', '$mdDialog', '$mdToast', 'FileSel', 
-	function($scope, $rootScope, $http, $mdDialog, $mdToast, FileSel) {
-
-		console.info('FileDialogCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		Ctrl.FileSel = FileSel;
-		Ctrl.inArray = Rs.inArray;
-
-		//Dialog
-		Ctrl.Cancel = function(){
-			$mdDialog.hide();
-		};
-
-	}
-]);
-angular.module('IconSelectDiagCtrl', [])
-.controller(   'IconSelectDiagCtrl', ['$scope',  '$mdDialog', '$http', '$filter',
-	function ($scope, $mdDialog, $http, $filter) {
-
-		var Ctrl = $scope;
-		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
-		Ctrl.filter = ''; Ctrl.CatSel = null;
-
-		$http.get('/api/Main/iconos').then((r) => {
-			Ctrl.Categorias = r.data.Categorias;
-			Ctrl.IconosRaw	= r.data.Iconos;
-		});
-
-		Ctrl.Iconos = [];
-
-		Ctrl.filterCat = (C) => { Ctrl.CatSel = C; Ctrl.filterIconos(); }
-
-		Ctrl.filterIconos = () => {
-			console.log(Ctrl.CatSel, Ctrl.filter);
-			if(Ctrl.CatSel == null && Ctrl.filter == ''){ Ctrl.Iconos = []; }
-			else if(Ctrl.filter !== ''){   Ctrl.Iconos = $filter('filter')(Ctrl.IconosRaw, Ctrl.filter) }
-			else if(Ctrl.CatSel !== null){ Ctrl.Iconos = $filter('filter')(Ctrl.IconosRaw, { Categoria: Ctrl.CatSel }) };
-		};
-
-		Ctrl.selectIcon = (I) => {
-			$mdDialog.hide(I.IconoFull);
-		};
-		
-	}
-
-]);
-angular.module('ImageEditor_DialogCtrl', [])
-.controller(   'ImageEditor_DialogCtrl', ['$scope', '$rootScope', '$mdDialog', '$mdToast', '$timeout', '$http', 'Upload', 'Config', 
-	function ($scope, $rootScope, $mdDialog, $mdToast, $timeout, $http, Upload, Config) {
-
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		//console.info('-> Image Editor');
-
-		Ctrl.Config = {
-			Theme : 'Snow_White',		//El tema
-			Title: 'Cambiar Imágen',	//El Titulo
-			CanvasWidth:  350,			//Ancho del canvas
-			CanvasHeight: 350,			//Alto del canvas
-			CropWidth:  100,			//Ancho del recorte que se subirá
-			CropHeight: 100,			//Alto del recorte que se subirá
-			MinWidth:  50,				//Ancho mínimo del selector
-			MinHeight: 50,				//Ancho mínimo del selector
-			KeepAspect: true,			//Mantener aspecto
-			Preview: false,				//Mostrar vista previa
-			PreviewClass: '',			//md-img-round
-			RemoveOpt: false,			//Si es texto muestra la opcion de borrar
-			Daten: null					//La data a enviar al servidor
-		};
-
-		Ctrl.RotationCanvas = document.createElement("canvas");
-
-		Ctrl.cropper = {};
-		Ctrl.cropper.sourceImage = null;
-		Ctrl.cropper.croppedImage = null;
-		Ctrl.bounds = {};
-
-		Ctrl.Progress = null;
-
-		angular.extend(Ctrl.Config, Config);
-
-		Ctrl.CancelText = Ctrl.Config.RemoveOpt ? Ctrl.Config.RemoveOpt : 'Cancelar';
-		
-		Ctrl.CancelBtn = function(){
-			if(!Ctrl.Config.RemoveOpt){
-				Ctrl.Cancel();
-			}else{
-				$http.post('/api/Upload/remove', { Path: Ctrl.Config.Daten.Path }).then(function(){
-					$mdDialog.hide({Removed: true});
-				});
-			}
-		}
-
-		Ctrl.Cancel = function(){
-			$mdDialog.hide();
-		}
-
-		Ctrl.Rotar = function(dir){
-			var canvas = Ctrl.RotationCanvas;
-			var ctx = canvas.getContext("2d");
-
-			var image = new Image();
-			image.src = Ctrl.cropper.sourceImage;
-			image.onload = function() {
-				canvas.width = image.height;
-				canvas.height = image.width;
-				ctx.rotate(dir * Math.PI / 180);
-				ctx.translate(0, -canvas.width);
-				ctx.drawImage(image, 0, 0); 
-				Ctrl.cropper.sourceImage = canvas.toDataURL();
-			};
-		}
-
-		Ctrl.$watch('Ctrl.cropper.sourceImage', function(nv, ov){
-			if(nv){
-				console.log('Imagen Cargada');
-			}
-		});
-
-		Ctrl.SendImage = function(){
-
-			var Daten = {
-				file: Upload.dataUrltoBlob(Ctrl.cropper.croppedImage),
-				Quality: 90
-			};
-
-			angular.extend(Daten, Config.Daten);
-
-			Upload.upload({
-
-				url: '/api/Archivos/upload-img',
-				data: Daten,
-
-			}).then(function (res) {
-				
-				$timeout(function () {
-					$mdDialog.hide(res.data);
-				});
-
-			}, function (response) {
-				if (response.status > 0){
-					
-					var Msg = response.status + ': ' + response.data;
-					var errTxt = '<md-toast class="md-toast-error"><span flex>' + Msg + '<span></md-toast>';
-
-					$mdToast.show({
-						template: errTxt,
-						hideDelay: 5000
-					});
-
-				}
-			}, function (evt) {
-				Ctrl.Progress = parseInt(100.0 * evt.loaded / evt.total);
-			});
-
-		}
-
-		//console.log(angular.element(document.querySelector('#Canvas')));
-	}
-
-]);
-angular.module('ImportCtrl', [])
-.controller('ImportCtrl', ['$scope', '$rootScope', '$http', '$mdDialog', 'Upload', 'Config',
-	function($scope, $rootScope, $http, $mdDialog, Upload, Config) {
-
-		console.info('ImportCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		var DefConfig = {
-			Paso: 1,
-		};
-		Ctrl.Config = Config;
-
-		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
-
-		Ctrl.Pasos = [ '',
-			'Paso 1: Diligenciar la plantilla',
-			'Paso 2: Verificar datos a importar',
-			'Paso 3: Importando',
-			'Finalizado',
-			'Errores encontrados',
-			'Error al cargar el archivo'
-		];
-
-		Ctrl.Config.Paso = 1;
-
-		Ctrl.DownloadPlantilla = function(){
-			$http.get(Ctrl.Config.PlantillaUrl, { responseType: 'arraybuffer' }).then(function(r) {
-        		var blob = new Blob([r.data], { type: "application/vnd.ms-excel; charset=UTF-8" });
-		        var filename = Ctrl.Config.PlantillaUrl.split('/').pop();
-		        saveAs(blob, filename);
-        	});
-		};
-
-
-		Ctrl.UploadTemplate = function(file, invalidfile){
-			if(file) {
-	            Upload.upload({
-					url: '/api/Upload/file',
-					data: {
-						file: file,
-						Path: Ctrl.Config.Upload.Path,
-						Name: Ctrl.Config.Upload.Name,
-					}
-				}).then(function(r){
-					if(r.status == 200){
-						Ctrl.VerifyData();
-					}else{
-						Ctrl.Config.Paso = 6;
-					};
-				});
-			};
-		};
-
-		Ctrl.VerifyData = function(){
-			Ctrl.Config.Paso = 2;
-			$http.post(Ctrl.Config.VerifyUrl, { Config: Ctrl.Config }).then(function(r){
-				var Msgs = r.data;
-				console.log(Msgs);
-				if(Msgs.length == 0){
-					Ctrl.Config.Paso = 3;
-				}else{ //Hubo errores en la verificacion
-					Ctrl.Config.Paso = 5;
-					Ctrl.Errores = Msgs;
-				}
-			});
-		}
-
-		//Ctrl.VerifyData();
-
-		Ctrl.DownloadErrors = function(){
-			var Headers = [ 'Fila', 'Error' ];
-			var e = {
-        		filename: 'Errores_Importacion',
-        		ext: 'xls',
-        		sheets: [
-        			{
-						name: 'Errores',
-						headers: Headers,
-						rows: Ctrl.Errores,
-					}
-        		]
-			};
-			Rs.DownloadExcel(e);
-		};
-
-		//console.log(Ctrl.Config.PlantillaUrl);
-
-	}
-]);
-angular.module('ListSelectorCtrl', [])
-.controller('ListSelectorCtrl', ['$scope', '$rootScope', '$http', '$mdDialog', 'List', 'Config',
-	function($scope, $rootScope, $http, $mdDialog, List, Config) {
-
-		//console.info('ListSelectorCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.Config = Config;
-		Ctrl.Searching = false;
-
-		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
-
-		Ctrl.getData = function(){
-			Ctrl.Searching = true;
-			//Traer los datos del servidor
-			$http({
-				method: Ctrl.Config.remoteMethod,
-				url: Ctrl.Config.remoteUrl,
-				data: Ctrl.Config.remoteData,
-			}).then(function(r){
-				Ctrl.Searching = false;
-				Ctrl.List = r.data;
-			}, function(){
-				Ctrl.Searching = false;
-			});
-		};
-
-		//Si pasan la lista usarla
-		if(List !== null){
-			Ctrl.List = List;
-		}else if(Ctrl.Config.remoteUrl){
-			Ctrl.getData();
-		};
-
-		Ctrl.changeSearch = function(){
-
-			if(Ctrl.Config.remoteQuery){
-				if(Ctrl.Searching) return false;
-				Ctrl.Config.remoteData.filter = Ctrl.Search;
-				Ctrl.getData();
-			}else{
-				Ctrl.SearchFilter = Ctrl.Search;
-			}
-		}
-
-		Ctrl.Resp = function(Row){
-			$mdDialog.hide(Row);
-		}
-
 
 	}
 ]);
@@ -2127,6 +1680,497 @@ angular.module('Entidades_VerCamposCtrl', [])
 		};
 	}
 ]);
+angular.module('BasicDialogCtrl', [])
+.controller(   'BasicDialogCtrl', ['$scope', 'Config', '$mdDialog', 
+	function ($scope, Config, $mdDialog) {
+
+		var Ctrl = $scope;
+
+		Ctrl.Config = Config;
+		Ctrl.periodDateLocale = {
+			formatDate: (date) => {
+				if(typeof date == 'undefined' || date === null || isNaN(date.getTime()) ){ return null; }else{
+					return moment(date).format('YMM');
+				}
+			}
+		};
+
+		Ctrl.Cancel = function(){
+			$mdDialog.hide();
+		}
+
+		Ctrl.SendData = function(){
+			$mdDialog.hide(Ctrl.Config);
+		}
+
+		Ctrl.selectItem = (Field, item) => {
+			if(!Field.opts.itemVal){
+				Field.Value = item;
+			}else{
+				Field.Value = item[Field.opts.itemVal];
+			}
+			
+		};
+
+		Ctrl.Delete = function(ev) {
+			if(Config.HasDelete){
+				Config.HasDeleteConf = true;
+
+				Ctrl.SendData();
+			}
+		}
+	}
+
+]);
+angular.module('BottomSheetCtrl', [])
+.controller('BottomSheetCtrl', ['$scope', '$rootScope', '$mdBottomSheet', 'Config', 
+	function($scope, $rootScope, $mdBottomSheet, Config) {
+
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+	
+		Ctrl.Cancel = function(){ $mdBottomSheet.cancel(); }
+
+		Ctrl.Config = angular.copy(Config);
+
+		Ctrl.Send = function(Item){
+			$mdBottomSheet.hide(Item);
+		}
+	}
+]);
+angular.module('ConfirmCtrl', [])
+.controller(   'ConfirmCtrl', ['$scope', 'Config', '$mdDialog', 
+	function ($scope, Config, $mdDialog) {
+
+		var Ctrl = $scope;
+
+		Ctrl.Config = Config;
+
+		Ctrl.Cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		Ctrl.Send = function(val){
+			$mdDialog.hide(val);
+		}
+		
+	}
+
+]);
+angular.module('ConfirmDeleteCtrl', [])
+.controller(   'ConfirmDeleteCtrl', ['$scope', 'Config', '$mdDialog', 
+	function ($scope, Config, $mdDialog) {
+
+		var Ctrl = $scope;
+
+		Ctrl.Config = Config;
+
+		Ctrl.Cancel = function(){
+			$mdDialog.hide(false);
+		}
+
+		Ctrl.Delete = function(){
+			$mdDialog.hide(true);
+		}
+		
+	}
+
+]);
+angular.module('CRUDDialogCtrl', [])
+.controller('CRUDDialogCtrl', ['$rootScope', '$scope', '$mdDialog', 'ops', 'config', 'columns', 'Obj', 'rows', 
+	function($rootScope, $scope, $mdDialog, ops, config, columns, Obj, rows) {
+
+		console.info('CRUDDialogCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.config = {};
+		Ctrl.columns = columns;
+		Ctrl.Obj = {};
+		console.log(columns);
+		//Ctrl.Obj = angular.copy(Obj);
+
+		//Saber si es nuevo
+		Ctrl.new = !(ops.primary_key in Obj);
+		Ctrl.config.confirmText = Ctrl.new ? 'Crear' : 'Guardar';
+		Ctrl.config.title = Ctrl.new ? ('Nuevo '+ops.name) : ('Editando '+ops.name);
+		Ctrl.config.delete_title = '¿Borrar '+ops.name+'?';
+
+		angular.forEach(columns, function(F){
+			if(F.Default !== null){
+				var DefValue = angular.copy(F.Default);
+				Ctrl.Obj[F.Field] = DefValue;
+			};
+
+			F.show = true;
+			if(config.only.length > 0){
+				F.show = Rs.inArray(F.Field, config.only);
+			};
+		});
+
+		angular.extend(Ctrl.Obj, Obj);
+		angular.extend(Ctrl.config, config);
+
+		Ctrl.cancel = function(){ $mdDialog.hide(false); };
+
+		Ctrl.sendData = function(){
+			//Verificar los Uniques
+			var Errors = 0;
+			angular.forEach(columns, function(C){
+				if(C.Unique){
+					//console.log(ops.primary_key, Ctrl.Obj[ops.primary_key]);
+					var except = Ctrl.new ? false : [ ops.primary_key, Ctrl.Obj[ops.primary_key] ];
+					var Found = Rs.found(Ctrl.Obj[C.Field], rows, C.Field, undefined, except );
+					if(Found) Errors++;
+				};
+			});
+
+			if(Errors > 0) return false;
+
+			$mdDialog.hide(Ctrl.Obj);
+		};
+
+
+		Ctrl.delete = function(ev){
+			var config = {
+				Title: Ctrl.config.delete_title,
+			};
+
+			Rs.confirmDelete(config).then(function(del){
+				if(del){
+					$mdDialog.hide('DELETE');
+				};
+			});
+		};
+
+
+		
+		//Campos
+		//Ctrl.fields = angular.copy
+
+	}
+]);
+angular.module('ExternalLinkCtrl', [])
+.controller(   'ExternalLinkCtrl', ['$scope', 'Link', '$mdDialog', '$sce',  
+	function ($scope, Link, $mdDialog, $sce) {
+
+		var Ctrl = $scope;
+
+		Ctrl.Link = $sce.trustAsResourceUrl(Link);
+
+		Ctrl.Cancel = function(){
+			$mdDialog.cancel();
+		}
+		
+	}
+
+]);
+angular.module('FileDialogCtrl', [])
+.controller('FileDialogCtrl', ['$scope', '$rootScope', '$http', '$mdDialog', '$mdToast', 'FileSel', 
+	function($scope, $rootScope, $http, $mdDialog, $mdToast, FileSel) {
+
+		console.info('FileDialogCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.FileSel = FileSel;
+		Ctrl.inArray = Rs.inArray;
+
+		//Dialog
+		Ctrl.Cancel = function(){
+			$mdDialog.hide();
+		};
+
+	}
+]);
+angular.module('IconSelectDiagCtrl', [])
+.controller(   'IconSelectDiagCtrl', ['$scope',  '$mdDialog', '$http', '$filter',
+	function ($scope, $mdDialog, $http, $filter) {
+
+		var Ctrl = $scope;
+		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
+		Ctrl.filter = ''; Ctrl.CatSel = null;
+
+		$http.get('/api/Main/iconos').then((r) => {
+			Ctrl.Categorias = r.data.Categorias;
+			Ctrl.IconosRaw	= r.data.Iconos;
+		});
+
+		Ctrl.Iconos = [];
+
+		Ctrl.filterCat = (C) => { Ctrl.CatSel = C; Ctrl.filterIconos(); }
+
+		Ctrl.filterIconos = () => {
+			console.log(Ctrl.CatSel, Ctrl.filter);
+			if(Ctrl.CatSel == null && Ctrl.filter == ''){ Ctrl.Iconos = []; }
+			else if(Ctrl.filter !== ''){   Ctrl.Iconos = $filter('filter')(Ctrl.IconosRaw, Ctrl.filter) }
+			else if(Ctrl.CatSel !== null){ Ctrl.Iconos = $filter('filter')(Ctrl.IconosRaw, { Categoria: Ctrl.CatSel }) };
+		};
+
+		Ctrl.selectIcon = (I) => {
+			$mdDialog.hide(I.IconoFull);
+		};
+		
+	}
+
+]);
+angular.module('ImageEditor_DialogCtrl', [])
+.controller(   'ImageEditor_DialogCtrl', ['$scope', '$rootScope', '$mdDialog', '$mdToast', '$timeout', '$http', 'Upload', 'Config', 
+	function ($scope, $rootScope, $mdDialog, $mdToast, $timeout, $http, Upload, Config) {
+
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		//console.info('-> Image Editor');
+
+		Ctrl.Config = {
+			Theme : 'Snow_White',		//El tema
+			Title: 'Cambiar Imágen',	//El Titulo
+			CanvasWidth:  350,			//Ancho del canvas
+			CanvasHeight: 350,			//Alto del canvas
+			CropWidth:  100,			//Ancho del recorte que se subirá
+			CropHeight: 100,			//Alto del recorte que se subirá
+			MinWidth:  50,				//Ancho mínimo del selector
+			MinHeight: 50,				//Ancho mínimo del selector
+			KeepAspect: true,			//Mantener aspecto
+			Preview: false,				//Mostrar vista previa
+			PreviewClass: '',			//md-img-round
+			RemoveOpt: false,			//Si es texto muestra la opcion de borrar
+			Daten: null					//La data a enviar al servidor
+		};
+
+		Ctrl.RotationCanvas = document.createElement("canvas");
+
+		Ctrl.cropper = {};
+		Ctrl.cropper.sourceImage = null;
+		Ctrl.cropper.croppedImage = null;
+		Ctrl.bounds = {};
+
+		Ctrl.Progress = null;
+
+		angular.extend(Ctrl.Config, Config);
+
+		Ctrl.CancelText = Ctrl.Config.RemoveOpt ? Ctrl.Config.RemoveOpt : 'Cancelar';
+		
+		Ctrl.CancelBtn = function(){
+			if(!Ctrl.Config.RemoveOpt){
+				Ctrl.Cancel();
+			}else{
+				$http.post('/api/Upload/remove', { Path: Ctrl.Config.Daten.Path }).then(function(){
+					$mdDialog.hide({Removed: true});
+				});
+			}
+		}
+
+		Ctrl.Cancel = function(){
+			$mdDialog.hide();
+		}
+
+		Ctrl.Rotar = function(dir){
+			var canvas = Ctrl.RotationCanvas;
+			var ctx = canvas.getContext("2d");
+
+			var image = new Image();
+			image.src = Ctrl.cropper.sourceImage;
+			image.onload = function() {
+				canvas.width = image.height;
+				canvas.height = image.width;
+				ctx.rotate(dir * Math.PI / 180);
+				ctx.translate(0, -canvas.width);
+				ctx.drawImage(image, 0, 0); 
+				Ctrl.cropper.sourceImage = canvas.toDataURL();
+			};
+		}
+
+		Ctrl.$watch('Ctrl.cropper.sourceImage', function(nv, ov){
+			if(nv){
+				console.log('Imagen Cargada');
+			}
+		});
+
+		Ctrl.SendImage = function(){
+
+			var Daten = {
+				file: Upload.dataUrltoBlob(Ctrl.cropper.croppedImage),
+				Quality: 90
+			};
+
+			angular.extend(Daten, Config.Daten);
+
+			Upload.upload({
+
+				url: '/api/Archivos/upload-img',
+				data: Daten,
+
+			}).then(function (res) {
+				
+				$timeout(function () {
+					$mdDialog.hide(res.data);
+				});
+
+			}, function (response) {
+				if (response.status > 0){
+					
+					var Msg = response.status + ': ' + response.data;
+					var errTxt = '<md-toast class="md-toast-error"><span flex>' + Msg + '<span></md-toast>';
+
+					$mdToast.show({
+						template: errTxt,
+						hideDelay: 5000
+					});
+
+				}
+			}, function (evt) {
+				Ctrl.Progress = parseInt(100.0 * evt.loaded / evt.total);
+			});
+
+		}
+
+		//console.log(angular.element(document.querySelector('#Canvas')));
+	}
+
+]);
+angular.module('ImportCtrl', [])
+.controller('ImportCtrl', ['$scope', '$rootScope', '$http', '$mdDialog', 'Upload', 'Config',
+	function($scope, $rootScope, $http, $mdDialog, Upload, Config) {
+
+		console.info('ImportCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		var DefConfig = {
+			Paso: 1,
+		};
+		Ctrl.Config = Config;
+
+		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
+
+		Ctrl.Pasos = [ '',
+			'Paso 1: Diligenciar la plantilla',
+			'Paso 2: Verificar datos a importar',
+			'Paso 3: Importando',
+			'Finalizado',
+			'Errores encontrados',
+			'Error al cargar el archivo'
+		];
+
+		Ctrl.Config.Paso = 1;
+
+		Ctrl.DownloadPlantilla = function(){
+			$http.get(Ctrl.Config.PlantillaUrl, { responseType: 'arraybuffer' }).then(function(r) {
+        		var blob = new Blob([r.data], { type: "application/vnd.ms-excel; charset=UTF-8" });
+		        var filename = Ctrl.Config.PlantillaUrl.split('/').pop();
+		        saveAs(blob, filename);
+        	});
+		};
+
+
+		Ctrl.UploadTemplate = function(file, invalidfile){
+			if(file) {
+	            Upload.upload({
+					url: '/api/Upload/file',
+					data: {
+						file: file,
+						Path: Ctrl.Config.Upload.Path,
+						Name: Ctrl.Config.Upload.Name,
+					}
+				}).then(function(r){
+					if(r.status == 200){
+						Ctrl.VerifyData();
+					}else{
+						Ctrl.Config.Paso = 6;
+					};
+				});
+			};
+		};
+
+		Ctrl.VerifyData = function(){
+			Ctrl.Config.Paso = 2;
+			$http.post(Ctrl.Config.VerifyUrl, { Config: Ctrl.Config }).then(function(r){
+				var Msgs = r.data;
+				console.log(Msgs);
+				if(Msgs.length == 0){
+					Ctrl.Config.Paso = 3;
+				}else{ //Hubo errores en la verificacion
+					Ctrl.Config.Paso = 5;
+					Ctrl.Errores = Msgs;
+				}
+			});
+		}
+
+		//Ctrl.VerifyData();
+
+		Ctrl.DownloadErrors = function(){
+			var Headers = [ 'Fila', 'Error' ];
+			var e = {
+        		filename: 'Errores_Importacion',
+        		ext: 'xls',
+        		sheets: [
+        			{
+						name: 'Errores',
+						headers: Headers,
+						rows: Ctrl.Errores,
+					}
+        		]
+			};
+			Rs.DownloadExcel(e);
+		};
+
+		//console.log(Ctrl.Config.PlantillaUrl);
+
+	}
+]);
+angular.module('ListSelectorCtrl', [])
+.controller('ListSelectorCtrl', ['$scope', '$rootScope', '$http', '$mdDialog', 'List', 'Config',
+	function($scope, $rootScope, $http, $mdDialog, List, Config) {
+
+		//console.info('ListSelectorCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.Config = Config;
+		Ctrl.Searching = false;
+
+		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
+
+		Ctrl.getData = function(){
+			Ctrl.Searching = true;
+			//Traer los datos del servidor
+			$http({
+				method: Ctrl.Config.remoteMethod,
+				url: Ctrl.Config.remoteUrl,
+				data: Ctrl.Config.remoteData,
+			}).then(function(r){
+				Ctrl.Searching = false;
+				Ctrl.List = r.data;
+			}, function(){
+				Ctrl.Searching = false;
+			});
+		};
+
+		//Si pasan la lista usarla
+		if(List !== null){
+			Ctrl.List = List;
+		}else if(Ctrl.Config.remoteUrl){
+			Ctrl.getData();
+		};
+
+		Ctrl.changeSearch = function(){
+
+			if(Ctrl.Config.remoteQuery){
+				if(Ctrl.Searching) return false;
+				Ctrl.Config.remoteData.filter = Ctrl.Search;
+				Ctrl.getData();
+			}else{
+				Ctrl.SearchFilter = Ctrl.Search;
+			}
+		}
+
+		Ctrl.Resp = function(Row){
+			$mdDialog.hide(Row);
+		}
+
+
+	}
+]);
 angular.module('FuncionesCtrl', [])
 .controller('FuncionesCtrl', ['$scope', '$rootScope', '$injector', '$filter',
 	function($scope, $rootScope, $injector, $filter) {
@@ -2593,7 +2637,9 @@ angular.module('IngresarDatosCtrl', [])
 							V.valores[Periodo]['edited'] = false;
 							V.valores[Periodo]['readonly'] = (Periodo < PeriodoAnt);
 						};
-						if(V.Tipo !== 'Manual') V.valores[Periodo]['readonly'] = true;
+
+						if(V.Tipo == 'Manual') V.valores[Periodo]['readonly'] = false;
+						
 						//if(Periodo >= PeriodoAct) V.valores[Periodo]['readonly'] = true;
 					});
 				});
@@ -2655,55 +2701,6 @@ angular.module('IngresarDatosCtrl', [])
 			});
 		};
 
-	}
-]);
-angular.module('MisIndicadoresCtrl', [])
-.controller('MisIndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter',
-	function($scope, $rootScope, $injector, $filter) {
-
-		console.info('MisIndicadoresCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Rs.mainTheme = 'Black';
-
-		Ctrl.ProcesoSel = false;
-		Ctrl.Anio  = angular.copy(Rs.AnioActual);
-		Ctrl.Mes   = angular.copy(Rs.MesActual);
-		Ctrl.filterIndicadoresText = '';
-		Ctrl.Loading = true;
-
-		var Indicadores = [];
-		Ctrl.anioAdd = (num) => {Ctrl.Anio = Ctrl.Anio + num; Ctrl.getIndicadores(); };
-
-		Ctrl.getIndicadores = () => {
-			Ctrl.Loading = true;
-			Ctrl.hasEdited = false;
-			Rs.http('api/Indicadores/get-usuario', { Usuario: Rs.Usuario, Anio: Ctrl.Anio }).then((r) => {
-				Indicadores = r;
-				Ctrl.filterIndicadores();
-			});
-		};
-
-		Ctrl.getIndicadores();
-
-		Ctrl.filteredIndicadores = [];
-		Ctrl.filterIndicadores = () => {
-			var Vars = angular.copy(Indicadores);
-			
-			if(Ctrl.ProcesoSel){ 
-				Vars = $filter('filter')(Vars, { proceso_id: Ctrl.ProcesoSel }, true);
-			}
-
-			if(Ctrl.filterIndicadoresText.trim() !== ''){
-				Vars = $filter('filter')(Vars, Ctrl.filterIndicadoresText);
-			}
-
-			Ctrl.filteredIndicadores = Vars;
-			Ctrl.Loading = false;
-		}
-
-
-		
 	}
 ]);
 angular.module('ProcesosCtrl', [])
@@ -2843,6 +2840,55 @@ angular.module('ProcesosCtrl', [])
 
 	}
 ]);
+angular.module('MisIndicadoresCtrl', [])
+.controller('MisIndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('MisIndicadoresCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Rs.mainTheme = 'Black';
+
+		Ctrl.ProcesoSel = false;
+		Ctrl.Anio  = angular.copy(Rs.AnioActual);
+		Ctrl.Mes   = angular.copy(Rs.MesActual);
+		Ctrl.filterIndicadoresText = '';
+		Ctrl.Loading = true;
+
+		var Indicadores = [];
+		Ctrl.anioAdd = (num) => {Ctrl.Anio = Ctrl.Anio + num; Ctrl.getIndicadores(); };
+
+		Ctrl.getIndicadores = () => {
+			Ctrl.Loading = true;
+			Ctrl.hasEdited = false;
+			Rs.http('api/Indicadores/get-usuario', { Usuario: Rs.Usuario, Anio: Ctrl.Anio }).then((r) => {
+				Indicadores = r;
+				Ctrl.filterIndicadores();
+			});
+		};
+
+		Ctrl.getIndicadores();
+
+		Ctrl.filteredIndicadores = [];
+		Ctrl.filterIndicadores = () => {
+			var Vars = angular.copy(Indicadores);
+			
+			if(Ctrl.ProcesoSel){ 
+				Vars = $filter('filter')(Vars, { proceso_id: Ctrl.ProcesoSel }, true);
+			}
+
+			if(Ctrl.filterIndicadoresText.trim() !== ''){
+				Vars = $filter('filter')(Vars, Ctrl.filterIndicadoresText);
+			}
+
+			Ctrl.filteredIndicadores = Vars;
+			Ctrl.Loading = false;
+		}
+
+
+		
+	}
+]);
 angular.module('ScorecardsCtrl', [])
 .controller('ScorecardsCtrl', ['$scope', '$rootScope', '$injector', '$filter',
 	function($scope, $rootScope, $injector, $filter) {
@@ -2861,14 +2907,18 @@ angular.module('ScorecardsCtrl', [])
 
 		Ctrl.getScorecards = () => {
 			Ctrl.ScorecardsCRUD.get().then(() => {
-				Ctrl.openScorecard(Ctrl.ScorecardsCRUD.rows[0]);
+				
+				if(Rs.Storage.ScorecardSel){
+					var scorecard_sel_id = Rs.getIndex(Ctrl.ScorecardsCRUD.rows, Rs.Storage.ScorecardSel);
+					Ctrl.openScorecard(Ctrl.ScorecardsCRUD.rows[scorecard_sel_id]);
+				};
 				//Ctrl.getFs();
 			});
 		};
 
 		Ctrl.getFs = () => {
 			Ctrl.filterScorecards = "";
-			Ctrl.NodosFS = Rs.FsGet(Ctrl.NodosCRUD.rows,'Ruta','Nodo',false,true);
+			Ctrl.NodosFS = Rs.FsGet(Ctrl.NodosCRUD.rows,'Ruta','Nodo',false,true,false);
 			angular.forEach(Ctrl.NodosFS, (F) => {
 				if(F.type == 'folder'){
 					F.file = Ctrl.NodosCRUD.rows.filter(N => { return ( N.tipo == 'Nodo' && N.Ruta == F.route ) })[0];
@@ -2889,7 +2939,7 @@ angular.module('ScorecardsCtrl', [])
 				if(!r) return;
 				var f = Rs.prepFields(r.Fields);
 				Ctrl.NodosCRUD.add({
-					scorecard_id: Ctrl.ScoSel.id, Nodo: f.Nombre, padre_id: f.Padre, Indice: 0, tipo: 'Nodo', peso: f.Peso 
+					scorecard_id: Ctrl.ScoSel.id, Nodo: f.Nombre, padre_id: f.Padre, Indice: Ctrl.NodoSel.subnodos.length, tipo: 'Nodo', peso: f.Peso 
 				}).then(() => {
 					Ctrl.getFs();
 				});
@@ -2898,8 +2948,11 @@ angular.module('ScorecardsCtrl', [])
 
 		Ctrl.openNodo = (Nodo) => {
 			Ctrl.NodoSel = Nodo;
-			Ctrl.NodoSel.indicadores = Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo !== 'Nodo' && N.padre_id == Nodo.id) });
-			Ctrl.NodoSel.subnodos = Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo == 'Nodo' && N.padre_id == Nodo.id) });
+			Ctrl.NodoSel.indicadores = $filter('orderBy')(Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo !== 'Nodo' && N.padre_id == Nodo.id) }), 'Indice');
+			Ctrl.NodoSel.subnodos    = Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo ==  'Nodo'      && N.padre_id == Nodo.id) });
+
+			//Rs.viewScorecardDiag(Ctrl.ScoSel.id); //FIX
+
 		};
 
 		Ctrl.addIndicador = () => {
@@ -2908,7 +2961,7 @@ angular.module('ScorecardsCtrl', [])
 				Fields: [
 					{ Nombre: 'Indicador', Value:null, Required: true, flex: 90, Type: 'autocomplete', 
 					opts: {
-						itemsFn: (text) => { return Ctrl.IndicadoresCRUD.rows; },
+						itemsFn: (text) => { return $filter('filter')(Ctrl.IndicadoresCRUD.rows, { Indicador: text }); },
 						itemDisplay: (item) => { return item.Indicador }, itemText: 'Indicador',
 						minLength: 0, delay: 300, itemVal: false
 					}},
@@ -2920,6 +2973,31 @@ angular.module('ScorecardsCtrl', [])
 				var Indice = Ctrl.NodoSel.indicadores.length;
 				Ctrl.NodosCRUD.add({
 					scorecard_id: Ctrl.ScoSel.id, Nodo: null, padre_id: Ctrl.NodoSel.id, Indice: Indice, tipo: 'Indicador', elemento_id: f.Indicador.id, peso: f.Peso 
+				}).then(() => {
+					Ctrl.openNodo(Ctrl.NodoSel);
+					Ctrl.getFs();
+				});
+			});
+		};
+
+		Ctrl.addVariable = () => {
+			Rs.BasicDialog({
+				Title: 'Agregar Variable', Flex: 50,
+				Fields: [
+					{ Nombre: 'Variable', Value:null, Required: true, flex: 90, Type: 'autocomplete', 
+					opts: {
+						itemsFn: (text) => { return $filter('filter')(Ctrl.VariablesCRUD.rows, { Variable: text }); },
+						itemDisplay: (item) => { return item.Variable }, itemText: 'Variable',
+						minLength: 0, delay: 300, itemVal: false
+					}},
+					{ Nombre: 'Peso',    Value: 1,    			Required: true, flex: 10, Type: 'number' }
+				],
+			}).then(r => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				var Indice = Ctrl.NodoSel.indicadores.length;
+				Ctrl.NodosCRUD.add({
+					scorecard_id: Ctrl.ScoSel.id, Nodo: null, padre_id: Ctrl.NodoSel.id, Indice: Indice, tipo: 'Variable', elemento_id: f.Variable.id, peso: f.Peso 
 				}).then(() => {
 					Ctrl.openNodo(Ctrl.NodoSel);
 					Ctrl.getFs();
@@ -2958,6 +3036,7 @@ angular.module('ScorecardsCtrl', [])
 
 		Ctrl.openScorecard = (V, Nodo) => {
 			Ctrl.ScoSel = V;
+			Rs.Storage.ScorecardSel = V.id;
 			Ctrl.NodoSel = Rs.def(Nodo, null);
 			Ctrl.NodosCRUD.setScope('scorecard', Ctrl.ScoSel.id).get().then(() => {
 				Ctrl.openNodo(Ctrl.NodosCRUD.rows[0]);
@@ -2980,14 +3059,21 @@ angular.module('ScorecardsCtrl', [])
 			}
 
 			var IndicadoresChanged = Ctrl.NodoSel.indicadores.filter(i => { return (i.changed == true); });
-			if(IndicadoresChanged.length > 0){
-				Ctrl.NodosCRUD.updateMultiple(IndicadoresChanged).then(() => {
+			var SubnodosChanged    = Ctrl.NodoSel.subnodos.filter(i => {    return (i.changed == true); });
+			var Changed = IndicadoresChanged.concat(SubnodosChanged);
+			if(Changed.length > 0){
+				Ctrl.NodosCRUD.updateMultiple(Changed).then(() => {
 					Rs.showToast('Indicadores Actualizados', 'Success');
 					angular.forEach(Ctrl.NodoSel.indicadores, I => {
 						I.changed = false;
 					});
+
+					angular.forEach(Ctrl.NodoSel.subnodos, I => {
+						I.changed = false;
+					});
 				});
 			}
+
 			
 			/*Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel).then(() => {
 				Rs.showToast('Scorecard Actualizada', 'Success');
@@ -3048,7 +3134,21 @@ angular.module('ScorecardsCtrl', [])
 		});
 		
 
-		
+		//Reordenar Indicadores
+		Ctrl.dragListener2 = {
+			accept: function (sourceItemHandleScope, destSortableScope) { return true; },
+			orderChanged: () => {
+				angular.forEach(Ctrl.NodoSel.indicadores, (C,index) => {
+					if(C.Indice !== index){
+						C.Indice = index;
+						C.changed = true;
+					};
+				});
+			}
+		};
+
+
+
 	}
 ]);
 angular.module('Scorecards_ScorecardDiagCtrl', [])
@@ -3067,6 +3167,7 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
         Ctrl.viewIndicadorDiag = Rs.viewIndicadorDiag;
         Ctrl.Sentidos = Rs.Sentidos;
         Ctrl.periodDateLocale = Rs.periodDateLocale;
+        Ctrl.Loading = true;
 
 		Ctrl.Anio  = angular.copy(Rs.AnioActual);
 		Ctrl.Mes   = angular.copy(Rs.MesActual);
@@ -3099,7 +3200,14 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 
 		Ctrl.getScorecard = (scorecard_id) => {
 			if(!scorecard_id) return;
+			Ctrl.Loading = true;
             Rs.http('api/Scorecards/get', { id: scorecard_id, Anio: Ctrl.Anio }, Ctrl, 'Sco').then(() => {
+
+            	$timeout(() => {
+            		Ctrl.Loading = false;
+            	}, 2500);
+            	
+
                 //Ctrl.Secciones = [{ Seccion: null, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: null }).length }]
                 /*angular.forEach(Ctrl.Sco.Secciones, (s) => {
                 	Ctrl.Secciones.push({ Seccion: s, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: s }).length }); 
@@ -4424,6 +4532,7 @@ angular.module('appFunctions', [])
 		};
 
 		Rs.inArray = function (item, array) {
+			if(!array) return false;
 			return (-1 !== array.indexOf(item));
 		};
 
@@ -4700,13 +4809,15 @@ angular.module('appFunctions', [])
 
 
 
-		Rs.FsGet = (arr, ruta, filename, defaultOpen,modeB) => {
+		Rs.FsGet = (arr, ruta, filename, defaultOpen,modeB,skipOrder) => {
 
-			var arr = arr.sort((a, b) => {
-				var ar = (a[ruta]+'\\'+a[filename]).toLowerCase();
-				var br = (b[ruta]+'\\'+b[filename]).toLowerCase();
-				return ar > br ? 1 : -1;
-			});
+			if(!skipOrder){
+				var arr = arr.sort((a, b) => {
+					var ar = (a[ruta]+'\\'+a[filename]).toLowerCase();
+					var br = (b[ruta]+'\\'+b[filename]).toLowerCase();
+					return ar > br ? 1 : -1;
+				});
+			}
 			
 			var fs = [];
 	    	var routes = [];

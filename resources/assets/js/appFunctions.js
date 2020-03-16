@@ -31,6 +31,7 @@ angular.module('appFunctions', [])
 		};
 
 		Rs.inArray = function (item, array) {
+			if(!array) return false;
 			return (-1 !== array.indexOf(item));
 		};
 
@@ -307,13 +308,15 @@ angular.module('appFunctions', [])
 
 
 
-		Rs.FsGet = (arr, ruta, filename, defaultOpen,modeB) => {
+		Rs.FsGet = (arr, ruta, filename, defaultOpen,modeB,skipOrder) => {
 
-			var arr = arr.sort((a, b) => {
-				var ar = (a[ruta]+'\\'+a[filename]).toLowerCase();
-				var br = (b[ruta]+'\\'+b[filename]).toLowerCase();
-				return ar > br ? 1 : -1;
-			});
+			if(!skipOrder){
+				var arr = arr.sort((a, b) => {
+					var ar = (a[ruta]+'\\'+a[filename]).toLowerCase();
+					var br = (b[ruta]+'\\'+b[filename]).toLowerCase();
+					return ar > br ? 1 : -1;
+				});
+			}
 			
 			var fs = [];
 	    	var routes = [];

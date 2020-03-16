@@ -107,4 +107,54 @@ class MainController extends Controller
         return $CRUD->call(request()->fn, request()->ops);
 	}
 
+
+	//Búsqueda
+	public function postMainSearch()
+	{
+		extract(request()->all()); //searchText
+
+		$searchText = trim($searchText);
+
+		$res = collect([]);
+		$groups = [];
+
+		//Indicadores
+		$Indicadores = \App\Models\Indicador::buscar($searchText)->get()->transform(function($E){
+			$E['Tipo'] = 'Indicador';
+			$E['Secundario'] = $E['proceso']['Proceso'];
+			$E['Icono'] = 'fa-chart-line';
+			return $E;
+		});
+		if($Indicadores->count() > 0) $groups[] = 'Indicadores'; 
+
+		//Variables
+		$Variables = \App\Models\Variable::buscar($searchText)->get()->transform(function($E){
+			$E['Tipo'] = 'Variable';
+			$E['Secundario'] = $E['proceso']['Proceso'];
+			$E['Icono'] = 'fa-superscript';
+			return $E;
+		});
+		if($Variables->count() > 0) $groups[] = 'Variables'; 
+
+		//Scorecards
+		$Scorecards = \App\Models\Scorecard::buscar($searchText)->get()->transform(function($E){
+			$E['Tipo'] = 'Tablero';
+			$E['Secundario'] = null;
+			$E['Icono'] = 'fa-th-large';
+			return $E;
+		});
+		if($Scorecards->count() > 0) $groups[] = 'Tableros'; 
+
+		$res = $res->merge($Scorecards);
+		$res = $res->merge($Indicadores);
+		$res = $res->merge($Variables);
+		
+
+		return [ 'results' => $res, 'groups' => $groups ];
+
+
+	}
+	
+
+
 }

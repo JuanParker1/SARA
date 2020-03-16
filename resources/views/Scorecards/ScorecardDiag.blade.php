@@ -34,6 +34,13 @@
 
 	</div>
 
+	<div layout layout-align="center center" ng-show="Loading" style="position: absolute; top: 30px; right: 0, bottom: 30px, left: 0">
+		
+		<md-progress-circular md-mode="indeterminate" md-diameter="50" class="md-warn"></md-progress-circular>
+		<div class="md-title margin-left-20">Cargando...</div>
+
+	</div>
+
 	@include('Scorecards.ScorecardDiag_Mes')
 	@include('Scorecards.ScorecardDiag_Anio')
 

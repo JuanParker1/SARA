@@ -34,6 +34,8 @@ class Usuario extends Model
     	if($this->isGod){
             $query = "SELECT se.*, 5 AS Level
                         FROM sara_secciones se 
+                        WHERE 1 = 1 
+                            AND se.Estado = 'A'  
                         ORDER BY se.Orden";
         }else{
             $query = "SELECT se.id, se.Seccion, se.Orden, se.Icono, MAX(ps.Level) as Level
@@ -74,13 +76,13 @@ class Usuario extends Model
 
         $Apps = \App\Models\Apps::all();
 
-        if($this->isGod){
+        /*if($this->isGod){
             $this->Apps = $Apps;
-        }else{
+        }else{*/
             $this->Apps = $Apps->filter(function($A) use ($MyProcesosIds){
                 return count(array_intersect($A['Procesos'], $MyProcesosIds)) > 0;
             })->values();
-        }
+        //}
     }
 
 

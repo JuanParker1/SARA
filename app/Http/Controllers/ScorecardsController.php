@@ -96,7 +96,7 @@ class ScorecardsController extends Controller
 
         $Nodo->getChildren(true);
         $Nodo->calculate($Periodos);
-        $Nodo->flatten($NodosFlat, 0);
+        $Nodo->flatten($NodosFlat, 0, $Sco->config['open_to_level']);
 
         foreach ($NodosFlat as $i => &$N) { $N['i'] = $i; };
 

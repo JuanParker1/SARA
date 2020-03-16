@@ -12,18 +12,18 @@
 			<thead md-head>
 			</thead>
 			<tbody md-body>
-				<tr md-row class="" ng-repeat="N in NodoSel.subnodos | orderBy:'Indice'">
+				<tr md-row class="" ng-repeat="N in NodoSel.subnodos" ng-class="{'bg-yellow': N.changed}">
 					<td md-cell class="md-cell-compress" ng-click="openNodo(N)">{{ N.Nodo }}</td>
 					<td md-cell class="md-cell-compress"></td>
 					<td md-cell class="h30" layout>
 						<span flex></span>
 						<md-input-container class="no-margin w50  md-no-underline no-padding h30">
 							<md-tooltip md-direction=left>Indice</md-tooltip>
-							<input type="number" ng-model="N.Indice" aria-label="s" class="text-right" ng-change="C.changed = true">
+							<input type="number" ng-model="N.Indice" aria-label="s" class="text-right" ng-change="N.changed = true">
 						</md-input-container>
 						<md-input-container class="no-margin w50  md-no-underline no-padding h30">
 							<md-tooltip md-direction=left>Peso</md-tooltip>
-							<input type="number" ng-model="N.peso" aria-label="s" class="text-right" ng-change="C.changed = true">
+							<input type="number" ng-model="N.peso" aria-label="s" class="text-right" ng-change="N.changed = true">
 						</md-input-container>
 					</td>
 				</tr>

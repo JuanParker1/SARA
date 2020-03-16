@@ -28,7 +28,7 @@
 				</div>
 
 				
-				<md-menu-content class="w170 no-margin no-padding-bottom">
+				<md-menu-content class="w170 no-margin no-padding-bottom bg-theme">
 					<div class="s120 bg-lightgrey border-rounded margin-0-auto" md-whiteframe=1 
 						style="background-image: url({{ 'http://sec.comfamiliar.com/images/fotosEmpleados/' + Usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>
 

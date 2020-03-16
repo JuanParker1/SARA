@@ -14,6 +14,7 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
         Ctrl.viewIndicadorDiag = Rs.viewIndicadorDiag;
         Ctrl.Sentidos = Rs.Sentidos;
         Ctrl.periodDateLocale = Rs.periodDateLocale;
+        Ctrl.Loading = true;
 
 		Ctrl.Anio  = angular.copy(Rs.AnioActual);
 		Ctrl.Mes   = angular.copy(Rs.MesActual);
@@ -46,7 +47,14 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 
 		Ctrl.getScorecard = (scorecard_id) => {
 			if(!scorecard_id) return;
+			Ctrl.Loading = true;
             Rs.http('api/Scorecards/get', { id: scorecard_id, Anio: Ctrl.Anio }, Ctrl, 'Sco').then(() => {
+
+            	$timeout(() => {
+            		Ctrl.Loading = false;
+            	}, 2500);
+            	
+
                 //Ctrl.Secciones = [{ Seccion: null, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: null }).length }]
                 /*angular.forEach(Ctrl.Sco.Secciones, (s) => {
                 	Ctrl.Secciones.push({ Seccion: s, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: s }).length }); 

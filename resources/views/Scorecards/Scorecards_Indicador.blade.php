@@ -1,9 +1,15 @@
 <div class="bg-white border border-radius margin-top">
 	<div class="h30" layout layout-align="center center">
-		<div class="md-subheader margin-left margin-right">Indicadores ({{ NodoSel.indicadores.length }})</div>
+		<div class="md-subheader margin-left margin-right">Indicadores y Variables ({{ NodoSel.indicadores.length }})</div>
 		<span flex></span>
+		
+		<md-button class="md-icon-button no-margin no-padding s30" aria-label="b" ng-click="addVariable()">
+			<md-icon md-font-icon="fa-fw fa-superscript "></md-icon>
+			<md-tooltip md-direction="left">Agregar Variable</md-tooltip>
+		</md-button>
+
 		<md-button class="md-icon-button no-margin no-padding s30 margin-right" aria-label="b" ng-click="addIndicador()">
-			<md-icon md-svg-icon="md-plus"></md-icon>
+			<md-icon md-font-icon="fa-fw fa-chart-line "></md-icon>
 			<md-tooltip md-direction="left">Agregar Indicador</md-tooltip>
 		</md-button>
 	</div>
@@ -11,8 +17,13 @@
 		<table md-table class="md-table-short table-col-compress">
 			<thead md-head>
 			</thead>
-			<tbody md-body>
-				<tr md-row class="" ng-repeat="C in NodoSel.indicadores | orderBy:'Indice'" ng-class="{'bg-yellow': C.changed}">
+			<tbody md-body as-sortable=dragListener2 ng-model="NodoSel.indicadores">
+				<tr md-row class="" ng-repeat="C in NodoSel.indicadores" ng-class="{'bg-yellow': C.changed}" as-sortable-item>
+					<td md-cell class="md-cell-compress">
+						<md-button class="md-icon-button w30 mw30 h30 mh30 no-margin no-padding drag-handle" aria-label="b" as-sortable-item-handle>
+							<md-icon md-svg-icon="md-drag-handle"></md-icon>
+						</md-button>
+					</td>
 					<td md-cell class="md-cell-compress">
 						<md-select class="w100p" ng-model="C.tipo" aria-label=s ng-change="C.elemento_id = null; C.changed = true">
 							<md-option ng-value="'Variable'"> <md-icon class="s20" md-font-icon="fa-fw fa-lg fa-superscript"></md-icon>Variable</md-option>
@@ -25,7 +36,9 @@
 						  	<span class="text-clear">{{ Op.proceso.Proceso }}&nbsp;&nbsp;</span>{{ Op.Indicador }}</md-option>
 						</md-select>
 						<md-select class="w100p" ng-model="C.elemento_id" aria-label=s ng-if="C.tipo == 'Variable'" placeholder="Seleccione"  ng-change="C.changed = true">
-						  <md-option ng-value="Op.id" ng-repeat="Op in VariablesCRUD.rows">{{ Op.Variable }}</md-option>
+						  <md-option ng-value="Op.id" ng-repeat="Op in VariablesCRUD.rows">
+						  	<span class="text-clear">{{ Op.proceso.Proceso }}&nbsp;&nbsp;</span>{{ Op.Variable }}
+						  </md-option>
 						</md-select>
 					</td>
 					<td md-cell class="h30" layout>

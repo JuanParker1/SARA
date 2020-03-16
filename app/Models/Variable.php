@@ -158,5 +158,36 @@ class Variable extends Model
 	}
 
 
+	public function getVals($Anio = false)
+    {
+        $Valores = $this->valores($Anio)->get();
+
+        if(!$Anio){
+        	return $Valores->keyBy('Periodo')->transform(function($v){
+	            $v->formatVal($this->TipoDato, $this->Decimales);
+	            return [ 'val' => $v->val, 'Valor' => $v->Valor ];
+	        });
+        }else{
+
+        	$Periodos = array_fill_keys(H::getPeriodos(($Anio*100)+1, ($Anio*100)+12), [ 'val' => null, 'Valor' => null ]);
+
+        	foreach ($Valores as $v) {
+        		$v->formatVal($this->TipoDato, $this->Decimales);
+	            $Periodos[$v->Periodo] = [ 'val' => $v->val, 'Valor' => $v->Valor ];
+        	}
+
+			return $Periodos;
+
+        }
+        
+    }
+
+    public function scopeBuscar($q, $searchText)
+	{
+		return $q->where('Variable', 'LIKE', "%$searchText%")->select([
+			'id', 'Variable AS Titulo', 'Descripcion', 'proceso_id', 'Filtros'
+		]);
+	}
+
 
 }

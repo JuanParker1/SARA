@@ -16,21 +16,13 @@
 
 		<div layout=column flex class="overflow-y darkScroll padding-top-5">
 
-			<div ng-repeat="F in NodosFS" class="mh25 borders-bottom padding-0-5 relative text-13px show-child-on-hover"
+			<div ng-repeat="F in NodosFS" class="mh25 borders-bottom padding-0-5 relative text-13px"
 				md-ink-ripple layout ng-show="F.show">
 				<div ng-style="{ width: (F.depth * 12) }"></div>
 				<div ng-show="F.type == 'folder'" flex layout class="">
 					<md-icon md-font-icon="fa-chevron-right  fa-fw transition Pointer" ng-class="{'fa-rotate-90':F.open}" ng-click="FsOpenFolder(NodosFS, F)"></md-icon>
 					<div flex style="padding: 5px 0" class="Pointer" ng-click="openNodo(F.file)">{{ F.name }}</div>
 					<div style="padding: 4px" class="text-clear text-right">{{ F.file.peso }}</div>
-					<md-menu class="child">
-						<md-button ng-click="$mdMenu.open($event)" class="md-icon-button no-margin margin-right-5 no-padding s25" aria-label="m">
-							<md-icon md-svg-icon="md-more-h" class="s20"></md-icon>
-						</md-button>
-						<md-menu-content class="no-padding">
-							<md-menu-item><md-button ng-click="addNodo(F.file)"><md-icon md-font-icon="fa-plus margin-right fa-fw"></md-icon>Agregar Nodo</md-button></md-menu-item>
-						</md-menu-content>
-					</md-menu>
 				</div>
 				<div ng-show="F.type == 'file'" flex layout>
 					<div flex style="padding: 5px 0 5px 12px">{{ F.file.Nodo }}</div>
@@ -43,7 +35,7 @@
 
 	</md-sidenav>
 
-	<div flex class="" layout=column>
+	<div flex class="" layout=column ng-show="ScoSel !== null">
 		<div flex layout=column class="overflow-y darkScroll padding-5">
 			
 			<div layout class="">
@@ -53,6 +45,10 @@
 				</md-button>
 				<md-input-container class="no-margin-top no-margin-bottom" flex>
 					<input type="text" ng-model="ScoSel.Titulo" aria-label=s ng-change="ScoSel.changed = true">
+				</md-input-container>
+				<md-input-container class="no-margin-top no-margin-bottom w40">
+					<input type="number" ng-model="ScoSel.config.open_to_level" aria-label=s ng-change="ScoSel.changed = true">
+					<md-tooltip>Abrir al Nivel</md-tooltip>
 				</md-input-container>
 			</div>
 
@@ -76,9 +72,9 @@
 
 				</div>
 
-				@include('Scorecards.Scorecards_Indicador')
-
 				@include('Scorecards.Scorecards_Subnodos')
+
+				@include('Scorecards.Scorecards_Indicador')
 
 			</div>
 

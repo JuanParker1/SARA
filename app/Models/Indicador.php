@@ -110,7 +110,7 @@ class Indicador extends MyModel
 			$comp = [];
 			foreach ($this->variables as $c) {
 				if(!$v['calculable']) continue;
-				$target_val = ($c->valores->has($target_per)) ? $c->valores[$target_per]['Valor'] : null;
+				$target_val  = ($c->valores->has($target_per)) ? $c->valores[$target_per]['Valor'] : null;
 				if(is_null($target_val)){ $v['calculable'] = false; continue; }
 				$comp[$c->Letra] = $target_val;
 			};
@@ -133,6 +133,8 @@ class Indicador extends MyModel
 						$v['meta2_Valor'] = $Meta['Meta2'];
 						$v['meta_val'] .= " - " . Helper::formatVal($Meta['Meta2'], $this->TipoDato, $this->Decimales);
 					};
+				}else{
+					$v['calculable'] = false;
 				}
 			};
 
@@ -148,7 +150,16 @@ class Indicador extends MyModel
 
 	public function getRutaAttribute()
 	{
+		if(is_null($this->proceso)) return null;
 		return $this->proceso->Ruta;
+	}
+
+
+	public function scopeBuscar($q, $searchText)
+	{
+		return $q->where('Indicador', 'LIKE', "%$searchText%")->select([
+			'id', 'Indicador AS Titulo', 'Definicion', 'proceso_id'
+		]);
 	}
 
 

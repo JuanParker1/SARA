@@ -16,14 +16,18 @@ angular.module('ScorecardsCtrl', [])
 
 		Ctrl.getScorecards = () => {
 			Ctrl.ScorecardsCRUD.get().then(() => {
-				Ctrl.openScorecard(Ctrl.ScorecardsCRUD.rows[0]);
+				
+				if(Rs.Storage.ScorecardSel){
+					var scorecard_sel_id = Rs.getIndex(Ctrl.ScorecardsCRUD.rows, Rs.Storage.ScorecardSel);
+					Ctrl.openScorecard(Ctrl.ScorecardsCRUD.rows[scorecard_sel_id]);
+				};
 				//Ctrl.getFs();
 			});
 		};
 
 		Ctrl.getFs = () => {
 			Ctrl.filterScorecards = "";
-			Ctrl.NodosFS = Rs.FsGet(Ctrl.NodosCRUD.rows,'Ruta','Nodo',false,true);
+			Ctrl.NodosFS = Rs.FsGet(Ctrl.NodosCRUD.rows,'Ruta','Nodo',false,true,false);
 			angular.forEach(Ctrl.NodosFS, (F) => {
 				if(F.type == 'folder'){
 					F.file = Ctrl.NodosCRUD.rows.filter(N => { return ( N.tipo == 'Nodo' && N.Ruta == F.route ) })[0];
@@ -44,7 +48,7 @@ angular.module('ScorecardsCtrl', [])
 				if(!r) return;
 				var f = Rs.prepFields(r.Fields);
 				Ctrl.NodosCRUD.add({
-					scorecard_id: Ctrl.ScoSel.id, Nodo: f.Nombre, padre_id: f.Padre, Indice: 0, tipo: 'Nodo', peso: f.Peso 
+					scorecard_id: Ctrl.ScoSel.id, Nodo: f.Nombre, padre_id: f.Padre, Indice: Ctrl.NodoSel.subnodos.length, tipo: 'Nodo', peso: f.Peso 
 				}).then(() => {
 					Ctrl.getFs();
 				});
@@ -53,8 +57,11 @@ angular.module('ScorecardsCtrl', [])
 
 		Ctrl.openNodo = (Nodo) => {
 			Ctrl.NodoSel = Nodo;
-			Ctrl.NodoSel.indicadores = Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo !== 'Nodo' && N.padre_id == Nodo.id) });
-			Ctrl.NodoSel.subnodos = Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo == 'Nodo' && N.padre_id == Nodo.id) });
+			Ctrl.NodoSel.indicadores = $filter('orderBy')(Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo !== 'Nodo' && N.padre_id == Nodo.id) }), 'Indice');
+			Ctrl.NodoSel.subnodos    = Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo ==  'Nodo'      && N.padre_id == Nodo.id) });
+
+			//Rs.viewScorecardDiag(Ctrl.ScoSel.id); //FIX
+
 		};
 
 		Ctrl.addIndicador = () => {
@@ -63,7 +70,7 @@ angular.module('ScorecardsCtrl', [])
 				Fields: [
 					{ Nombre: 'Indicador', Value:null, Required: true, flex: 90, Type: 'autocomplete', 
 					opts: {
-						itemsFn: (text) => { return Ctrl.IndicadoresCRUD.rows; },
+						itemsFn: (text) => { return $filter('filter')(Ctrl.IndicadoresCRUD.rows, { Indicador: text }); },
 						itemDisplay: (item) => { return item.Indicador }, itemText: 'Indicador',
 						minLength: 0, delay: 300, itemVal: false
 					}},
@@ -75,6 +82,31 @@ angular.module('ScorecardsCtrl', [])
 				var Indice = Ctrl.NodoSel.indicadores.length;
 				Ctrl.NodosCRUD.add({
 					scorecard_id: Ctrl.ScoSel.id, Nodo: null, padre_id: Ctrl.NodoSel.id, Indice: Indice, tipo: 'Indicador', elemento_id: f.Indicador.id, peso: f.Peso 
+				}).then(() => {
+					Ctrl.openNodo(Ctrl.NodoSel);
+					Ctrl.getFs();
+				});
+			});
+		};
+
+		Ctrl.addVariable = () => {
+			Rs.BasicDialog({
+				Title: 'Agregar Variable', Flex: 50,
+				Fields: [
+					{ Nombre: 'Variable', Value:null, Required: true, flex: 90, Type: 'autocomplete', 
+					opts: {
+						itemsFn: (text) => { return $filter('filter')(Ctrl.VariablesCRUD.rows, { Variable: text }); },
+						itemDisplay: (item) => { return item.Variable }, itemText: 'Variable',
+						minLength: 0, delay: 300, itemVal: false
+					}},
+					{ Nombre: 'Peso',    Value: 1,    			Required: true, flex: 10, Type: 'number' }
+				],
+			}).then(r => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				var Indice = Ctrl.NodoSel.indicadores.length;
+				Ctrl.NodosCRUD.add({
+					scorecard_id: Ctrl.ScoSel.id, Nodo: null, padre_id: Ctrl.NodoSel.id, Indice: Indice, tipo: 'Variable', elemento_id: f.Variable.id, peso: f.Peso 
 				}).then(() => {
 					Ctrl.openNodo(Ctrl.NodoSel);
 					Ctrl.getFs();
@@ -113,6 +145,7 @@ angular.module('ScorecardsCtrl', [])
 
 		Ctrl.openScorecard = (V, Nodo) => {
 			Ctrl.ScoSel = V;
+			Rs.Storage.ScorecardSel = V.id;
 			Ctrl.NodoSel = Rs.def(Nodo, null);
 			Ctrl.NodosCRUD.setScope('scorecard', Ctrl.ScoSel.id).get().then(() => {
 				Ctrl.openNodo(Ctrl.NodosCRUD.rows[0]);
@@ -135,14 +168,21 @@ angular.module('ScorecardsCtrl', [])
 			}
 
 			var IndicadoresChanged = Ctrl.NodoSel.indicadores.filter(i => { return (i.changed == true); });
-			if(IndicadoresChanged.length > 0){
-				Ctrl.NodosCRUD.updateMultiple(IndicadoresChanged).then(() => {
+			var SubnodosChanged    = Ctrl.NodoSel.subnodos.filter(i => {    return (i.changed == true); });
+			var Changed = IndicadoresChanged.concat(SubnodosChanged);
+			if(Changed.length > 0){
+				Ctrl.NodosCRUD.updateMultiple(Changed).then(() => {
 					Rs.showToast('Indicadores Actualizados', 'Success');
 					angular.forEach(Ctrl.NodoSel.indicadores, I => {
 						I.changed = false;
 					});
+
+					angular.forEach(Ctrl.NodoSel.subnodos, I => {
+						I.changed = false;
+					});
 				});
 			}
+
 			
 			/*Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel).then(() => {
 				Rs.showToast('Scorecard Actualizada', 'Success');
@@ -203,6 +243,20 @@ angular.module('ScorecardsCtrl', [])
 		});
 		
 
-		
+		//Reordenar Indicadores
+		Ctrl.dragListener2 = {
+			accept: function (sourceItemHandleScope, destSortableScope) { return true; },
+			orderChanged: () => {
+				angular.forEach(Ctrl.NodoSel.indicadores, (C,index) => {
+					if(C.Indice !== index){
+						C.Indice = index;
+						C.changed = true;
+					};
+				});
+			}
+		};
+
+
+
 	}
 ]);

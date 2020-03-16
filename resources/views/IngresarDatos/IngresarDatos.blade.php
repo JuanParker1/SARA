@@ -59,7 +59,7 @@
 
 						<td md-cell ng-repeat="M in Meses" style="padding: 0 !important" class="md-cell-compress">
 							<md-input-container ng-repeat="VP in [ V.valores[Anio+M[0]] ]"
-								class="no-margin no-padding md-no-underline mw60" 
+								class="no-margin no-padding md-no-underline mw70" 
 								ng-class="{ 'bg-lightgrey': VP['readonly'], 'bg-yellow': VP['edited'] }">
 								<input type="text" ng-model="VP['new_Valor']" ng-change="markChanged(VP)" class="text-right border-right padding-right" ui-number-mask="0" 
 									autocomplete="new-password" ng-readonly="VP['readonly']" aria-label=a>

@@ -44,7 +44,9 @@ angular.module('IngresarDatosCtrl', [])
 							V.valores[Periodo]['edited'] = false;
 							V.valores[Periodo]['readonly'] = (Periodo < PeriodoAnt);
 						};
-						if(V.Tipo !== 'Manual') V.valores[Periodo]['readonly'] = true;
+
+						if(V.Tipo == 'Manual') V.valores[Periodo]['readonly'] = false;
+						
 						//if(Periodo >= PeriodoAct) V.valores[Periodo]['readonly'] = true;
 					});
 				});
