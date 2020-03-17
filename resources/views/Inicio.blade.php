@@ -69,7 +69,7 @@
 
 			<div ng-repeat="R in filteredSearchResults()" layout class="bg-theme border border-radius wu800 search-res" md-whiteframe=2>
 				
-				<div flex layout class="padding Pointer" ngs-click="viewScorecardDiag(R.id)">
+				<div flex layout class="padding Pointer" ng-click="showSearchRes(R)">
 					<div class="text-16px">
 						<span md-highlight-text="searchText" md-highlight-flags="i">{{ R.Titulo }}</span>
 					</div>

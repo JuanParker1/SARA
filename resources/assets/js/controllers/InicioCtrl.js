@@ -62,6 +62,12 @@ angular.module('InicioCtrl', [])
 
 		Ctrl.mainSearch();
 
+		Ctrl.showSearchRes = (R) => {
+			if(R.Tipo == 'Tablero')   return Rs.viewScorecardDiag(R.id);
+			if(R.Tipo == 'Indicador') return Rs.viewIndicadorDiag(R.id);
+			if(R.Tipo == 'Variable')  return Rs.viewVariableDiag(R.id);
+		};
+
 
 	}
 ]);

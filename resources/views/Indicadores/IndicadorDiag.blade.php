@@ -3,7 +3,7 @@
 	<div layout=column flex>
 		
 		<div layout layout-align="center center" class="padding-left">
-			<div flex layout=column>
+			<div layout=column>
 				<div class="text-16px"><span>{{ Ind.Indicador }}</span>
 					<md-icon class="margin-left Pointer" md-font-icon="{{Sentidos[Ind.Sentido].icon}}">
 						<md-tooltip md-direction=right>{{ Sentidos[Ind.Sentido].desc }}</md-tooltip>
@@ -11,7 +11,8 @@
 				</div>
 				<div class="text-13px text-clear">{{ Ind.Definicion }}</div>
 			</div>
-
+			<div class="text-clear margin-left">{{ Ind.proceso.Proceso }}</div>
+			<span flex></span>
 			<div class="Pointer padding-right" layout layout-align="center center" hide>
 				<div class="s25 bg-lightgrey border-rounded margin-right-5 border" 
 					style="background-image: url({{ 'http://sec.comfamiliar.com/images/fotosEmpleados/' + Usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>

@@ -23,7 +23,9 @@
 					<td md-cell class="md-cell-compress">
 						<div class="w5"></div>
 						<md-select ng-model="V.variable_id" aria-label=s ng-show="V.Tipo == 'Variable'"  placeholder="Seleccionar Variable" ng-change="V.changed = true">
-							<md-option ng-value="Var.id" ng-repeat="Var in VariablesCRUD.rows">{{ Var.Variable }}</md-option>
+							<md-option ng-value="Var.id" ng-repeat="Var in VariablesCRUD.rows | orderBy:'Variable'">
+								<span class="text-clear">{{ Var.proceso.Proceso }}&nbsp;</span>{{ Var.Variable }}
+							</md-option>
 						</md-select>
 						<md-select ng-model="V.variable_id" aria-label=s ng-show="V.Tipo == 'Indicador'" placeholder="Seleccionar Indicador" ng-change="V.changed = true">
 							<md-option ng-value="Ind.id" ng-repeat="Ind in IndicadoresCRUD.rows" ng-if="Ind.id !== IndSel.id">{{ Ind.Indicador }}</md-option>

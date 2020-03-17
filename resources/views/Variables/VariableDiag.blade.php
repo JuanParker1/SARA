@@ -1,11 +1,13 @@
 <md-dialog class="no-overflow bg-black-2 vh100" md-theme="Black" flex=100>
 
 
-	<div layout layout-align="center center" class="padding-left margin-bottom">
-		<div flex layout=column>
+	<div layout layout-align="center start" class="padding-left margin-bottom">
+		<div layout=column>
 			<div class="text-16px"><span>{{ Var.Variable }}</span></div>
 			<div class="text-13px text-clear">{{ Var.Descripcion }}</div>
 		</div>
+		<div class="text-clear margin-left">{{ Var.proceso.Proceso }}</div>
+		<span flex></span>
 		<md-button class="md-icon-button" aria-label="Button" ng-click="Cancel()">
 			<md-icon md-svg-icon="md-close"></md-icon>
 		</md-button>

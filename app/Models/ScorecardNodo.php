@@ -71,7 +71,7 @@ class ScorecardNodo extends MyModel
 		if($this->tipo == 'Indicador'){
 			return $this->elemento->Indicador;
 		}else if($this->tipo == 'Variable'){
-			return $this->elemento->Variable;
+			if($this->elemento) return $this->elemento->Variable;
 		}else{
 			return $this->attributes['Nodo'];
 		}
@@ -122,8 +122,8 @@ class ScorecardNodo extends MyModel
 
 		$this->puntos_totales = $this->nodos->sum('peso');
 
-		if($this->tipo == 'Indicador') $this->valores = $this->elemento->calcVals(round($Periodos[0]/100));
-		if($this->tipo == 'Variable')  $this->valores = $this->elemento->getVals( round($Periodos[0]/100));
+		if($this->tipo == 'Indicador' AND $this->elemento) $this->valores = $this->elemento->calcVals(round($Periodos[0]/100));
+		if($this->tipo == 'Variable'  AND $this->elemento)  $this->valores = $this->elemento->getVals( round($Periodos[0]/100));
 		if($this->tipo == 'Nodo'){
 			$calc = array_fill_keys($Periodos, [ 'puntos' => 0, 'incalculables' => 0 ]);
 			foreach ($this->nodos as $subnodo) {
@@ -138,7 +138,7 @@ class ScorecardNodo extends MyModel
 					}
 				}
 
-				if($subnodo->tipo == 'Variable'){
+				if($subnodo->tipo == 'Variable' AND $subnodo->valores){
 					foreach ($subnodo->valores as $per => $val) {
 						if(!is_null($val['Valor'])){
 							$calc[$per]['puntos'] += $subnodo->peso;

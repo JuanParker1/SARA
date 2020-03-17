@@ -250,7 +250,7 @@ class IndicadoresController extends Controller
     {
         \Excel::setDelimiter(';');
 
-        $regs = \Excel::selectSheetsByIndex(0)->load('temp/Valores_Indicadores_SOLGEIN.xlsx', function($reader){   
+        $regs = \Excel::selectSheetsByIndex(0)->load('temp/Valores_Indicadores_SOLGEIN_2020.xlsx', function($reader){   
         })->get();
 
         $inds = collect($regs)->groupBy('cod_indicador')->map(function($var){
