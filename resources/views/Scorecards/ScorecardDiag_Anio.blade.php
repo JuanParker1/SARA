@@ -23,7 +23,7 @@
 
 							<div class="padding-5-0 mw160" flex layout=column>
 								<div>{{ N.Nodo }} <span ng-if="N.tipo == 'Nodo'" class="text-clear">&nbsp;{{ N.nodos_cant }}</span></div>
-								<div class="text-clear" hide ng-if="N.tipo == 'Indicador'">{{ N.elemento.proceso.Proceso }}</div>
+								<div class="text-clear" ngs-if="N.tipo == 'Indicador'">{{ N.elemento.proceso.Proceso }}</div>
 							</div>
 						</div>
 					</td>

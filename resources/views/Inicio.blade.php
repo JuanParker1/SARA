@@ -1,4 +1,4 @@
-<div id="Inicio" flex layout=column ng-controller="InicioCtrl">
+<div id="Inicio" flex layout ng-controller="InicioCtrl">
 
 	<div flex layout=column id="Inicio_Overlay"  class="padding overflow-y darkScroll" >
 
@@ -90,7 +90,10 @@
 
 	</div>
 
-
+	<md-sidenav id="InicioSidenav" layout=column class="w250 text-white padding" 
+		md-is-locked-open="false">
+		Recientes
+	</md-sidenav>
 
 </div>
 
@@ -104,6 +107,11 @@
 
 	#Inicio_Overlay{
 		background: rgba(0, 0, 0, 0.7);
+	}
+
+	#InicioSidenav{
+		background: rgba(0, 0, 0, 0.8);
+    	backdrop-filter: blur(15px);
 	}
 
 	#searchField{
