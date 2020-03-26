@@ -39,6 +39,7 @@ angular.module('Entidades_GridsCtrl', [])
 			Ctrl.GridSel = G;
 			Ctrl.getColumnas().then(() => { 
 				Ctrl.getFiltros();
+				//Ctrl.testGrid(G.id);
 				//Ctrl.configEditor(G.Config.main_buttons[0], Ctrl.GridColumnasCRUD.rows); //FIX
 			});
 		};

@@ -36,6 +36,8 @@ angular.module('Entidades_GridDiagCtrl', [])
 			Ctrl.pag_from = from;
 			Ctrl.pag_to = Math.min((Ctrl.pag_from + Ctrl.pag_pages), (Ctrl.load_data_len));
 			Ctrl.Data = filteredData.slice(Ctrl.pag_from, Ctrl.pag_to);
+
+
 		};
 
 		Ctrl.filterData = () => {
@@ -124,8 +126,64 @@ angular.module('Entidades_GridDiagCtrl', [])
 			};
 		};
 
+		function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;        
+        }
+
+        function excelColName(n) {
+			var ordA = 'a'.charCodeAt(0);
+			var ordZ = 'z'.charCodeAt(0);
+			var len = ordZ - ordA + 1;
+
+			var s = "";
+			while(n >= 0) {
+				s = String.fromCharCode(n % len + ordA).toUpperCase() + s;
+				n = Math.floor(n / len) - 1;
+			}
+			return s;
+		}
+
+		Ctrl.downloadData = () => {
+			var wb = XLSX.utils.book_new();
+	        wb.Props = {
+	                Title: "SheetJS Tutorial",
+	                CreatedDate: new Date(2017,12,19)
+	        };
+
+	        var SheetData = [ [] ];
+	        var ColumnsNo = 0;
+	        Ctrl.Grid.columnas.forEach((C) => {
+	        	if(C.Visible){
+	        		SheetData[0].push(C.column_title);
+	        		ColumnsNo++;
+	        	}
+	        });
+
+	        filteredData.forEach((Row) => {
+	        	var RowData = [];
+	        	Ctrl.Grid.columnas.forEach((C,kC) => {
+	        		if(C.Visible){
+		        		RowData.push(Row[kC]);
+		        	}
+		        });
+		        SheetData.push(RowData);
+	        });
+
+			var ws = XLSX.utils.aoa_to_sheet(SheetData);
+			var last_cell = excelColName(ColumnsNo - 1) + (Data.length + 1);
+			ws['!autofilter'] = { ref: ('A1:'+last_cell) };
+	        
+	        XLSX.utils.book_append_sheet(wb, ws, "Datos");
+	        var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+	     
+	        saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), Ctrl.Grid.Titulo + '.xlsx');
+		};
+
 		
-		
+		//Ctrl.openSidenavElm(['fa-sign-in-alt fa-rotate-90', 'Descargar',false]) //FIX
 		
 	}
 ]);
