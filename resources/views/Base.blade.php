@@ -11,10 +11,10 @@
 
 		<link rel="shortcut icon" href="/img/favicon.ico">
 
-		<link   rel="stylesheet"              href="/css/libs.min.css?201909240131" />
+		<link   rel="stylesheet"              href="/css/libs.min.css?202003260918" />
 		<link   rel="stylesheet"              href="<%  elixir('css/all.min.css') %>" />
 
-		<script defer type="application/javascript" src="/js/libs.min.js?201909240131"></script>
+		<script defer type="application/javascript" src="/js/libs.min.js?202003260918"></script>
 		<script defer type="application/javascript" src="<%  elixir('js/app.min.js') %>"></script>
 	</head>
 
