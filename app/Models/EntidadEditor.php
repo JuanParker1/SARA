@@ -58,8 +58,15 @@ class EntidadEditor extends MyModel
 		foreach ($this->campos as $F) {
 			
 			$ConfigField = $Config['campos']->get($F->id);
+			if($ConfigField){
+				$TipoValor   = $ConfigField['tipo_valor'];
+			}else{
+				$TipoValor = "";
+			}
+			
+
 			$TipoCampo   = $F->campo->Tipo;
-			$TipoValor   = $ConfigField['tipo_valor'];
+			
 			$Valor       = null;
 			$primary_key = ($F->campo->id == $this->entidad->campo_llaveprim);
 
