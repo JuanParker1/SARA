@@ -15,7 +15,11 @@ class ScorecardNodo extends MyModel
     protected $casts = [
     	'peso' => 'real'
 	];
-    protected $appends = ['elemento','Nodo','children'];
+    protected $appends = [
+    	//'elemento',
+    	//'Nodo',
+    	'children'
+    ];
 
     public function columns()
 	{
@@ -44,17 +48,17 @@ class ScorecardNodo extends MyModel
 	}
 
 	
-	public function nodo_padre()
+	/*public function nodo_padre()
 	{
 		return $this->belongsTo('\App\Models\ScorecardNodo', 'padre_id');
-	}
+	}*/
 
-	public function nodos()
+	/*public function nodos()
 	{
 		return $this->hasMany('\App\Models\ScorecardNodo', 'padre_id')->orderBy('Indice')->orderBy('Nodo');
-	}
+	}*/
 
-	public function getElementoAttribute()
+	/*public function getElementoAttribute()
 	{
 		if($this->tipo == 'Indicador'){
 			return \App\Models\Indicador::where('id', $this->elemento_id)->first();
@@ -63,9 +67,9 @@ class ScorecardNodo extends MyModel
 		if($this->tipo == 'Variable'){
 			return \App\Models\Variable::where('id', $this->elemento_id)->first();
 		}
-	}
+	}*/
 
-	public function getNodoAttribute()
+	/*public function getNodoAttribute()
 	{
 
 		if($this->tipo == 'Indicador'){
@@ -75,22 +79,58 @@ class ScorecardNodo extends MyModel
 		}else{
 			return $this->attributes['Nodo'];
 		}
+	}*/
+
+
+
+	public function getRuta($Nodo, $Padre)
+	{
+		if(is_null($Padre)){
+			return '';
+		}else if($Nodo->tipo == 'Nodo'){
+
+			$RutaPadre = $Padre->Ruta;
+			if($RutaPadre !== '') $RutaPadre .= '\\';
+			return $RutaPadre . $Nodo->Indice . '. ' . $Nodo->Nodo;
+
+		}else{
+
+			return $Padre->Ruta;
+		}
 	}
 
-
-
-	public function getRuta($Base = false)
+	public function getElementos($Nodos)
 	{
-		if(is_null($this->padre_id)){
-			$this->Ruta = ($Base) ? $Base : '';
-		}else if($this->tipo == 'Nodo'){
-			$this->nodo_padre->getRuta();
-			$RutaPadre = $this->nodo_padre->Ruta;
-			if($RutaPadre !== '') $RutaPadre .= '\\';
-			$this->Ruta = $RutaPadre . $this->Indice . '. ' . $this->Nodo;
-		}else{
-			$this->nodo_padre->getRuta();
-			$this->Ruta = $this->nodo_padre->Ruta;
+		$var_ids = [];
+		$ind_ids = [];
+
+		foreach ($Nodos as $Nodo) {
+			if($Nodo->tipo == 'Variable')  $var_ids[] = $Nodo->elemento_id;
+			if($Nodo->tipo == 'Indicador') $ind_ids[] = $Nodo->elemento_id;
+		};
+
+		if(!empty($var_ids)) $Variables   = \App\Models\Variable::whereIn( 'id', $var_ids)->get()->keyBy('id');
+		if(!empty($ind_ids)) $Indicadores = \App\Models\Indicador::whereIn('id', $ind_ids)->get()->keyBy('id');
+
+		//dd($Indicadores);
+
+		foreach ($Nodos as $Nodo) {
+			if($Nodo->tipo == 'Variable')  {
+				$Nodo->elemento = $Variables[$Nodo->elemento_id];
+				if($Nodo->elemento) $Nodo->Nodo = $Nodo->elemento->Variable;
+			}
+			if($Nodo->tipo == 'Indicador') {
+				$Nodo->elemento = $Indicadores[$Nodo->elemento_id];
+				if($Nodo->elemento) $Nodo->Nodo = $Nodo->elemento->Indicador;
+			}
+		};
+	}
+
+	public function getRutas($Nodos)
+	{
+		foreach ($Nodos as $Nodo) {		
+			$Padre = $Nodos->first(function($k, $N) use ($Nodo){ return $N['id'] == $Nodo['padre_id']; });
+			$Nodo->Ruta = $this->getRuta($Nodo, $Padre);
 		}
 	}
 
@@ -99,9 +139,13 @@ class ScorecardNodo extends MyModel
 		return $this->tipo == 'Nodo' ? 1 : 0;
 	}
 
-	public function getChildren($Cascade = false, $Ruta = '')
+	public function getChildren($Cascade = false, $Nodos = [], $Ruta = '')
 	{
-		$this->nodos_cant = $this->nodos->count();
+		$this->nodos = $Nodos->filter(function($E){
+			return $E->padre_id == $this->id;
+		})->values();
+
+		$this->nodos_cant = count($this->nodos);
 		$this->open = true;
 
 		if($Cascade){
@@ -109,7 +153,7 @@ class ScorecardNodo extends MyModel
 			$Ruta .= $this->Nodo;
 			$this->ruta = $Ruta;
 			foreach ($this->nodos as $nodo) {
-				$nodo->getChildren(true, $Ruta);
+				$nodo->getChildren(true, $Nodos, $Ruta);
 			}
 		}
 	}
@@ -123,9 +167,10 @@ class ScorecardNodo extends MyModel
 		$this->puntos_totales = $this->nodos->sum('peso');
 
 		if($this->tipo == 'Indicador' AND $this->elemento) $this->valores = $this->elemento->calcVals(round($Periodos[0]/100));
-		if($this->tipo == 'Variable'  AND $this->elemento)  $this->valores = $this->elemento->getVals( round($Periodos[0]/100));
+		if($this->tipo == 'Variable'  AND $this->elemento) $this->valores = $this->elemento->getVals( round($Periodos[0]/100));
 		if($this->tipo == 'Nodo'){
 			$calc = array_fill_keys($Periodos, [ 'puntos' => 0, 'incalculables' => 0 ]);
+
 			foreach ($this->nodos as $subnodo) {
 				
 				if($subnodo->tipo == 'Indicador'){

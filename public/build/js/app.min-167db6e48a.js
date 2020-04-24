@@ -2966,7 +2966,7 @@ angular.module('ScorecardsCtrl', [])
 		Rs.mainTheme = 'Snow_White';
 		Ctrl.ScorecardsCRUD  = $injector.get('CRUD').config({ base_url: '/api/Scorecards' });
 		Ctrl.CardsCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/cards' });
-		Ctrl.NodosCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/nodos', query_call: [['getRuta',null]] });
+		Ctrl.NodosCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/nodos', query_call_arr: [['getElementos',null],['getRutas',null]] });
 		Ctrl.IndicadoresCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores' });
 		Ctrl.VariablesCRUD 	 = $injector.get('CRUD').config({ base_url: '/api/Variables' });
 
@@ -3731,7 +3731,7 @@ angular.module('CRUD', [])
 				primary_key: 'id',
 				ready: false,
 				where: {},
-				limit: 1000,
+				limit: 10000,
 				loading: false,
 				obj: null,
 				only_columns: [],
@@ -3741,6 +3741,7 @@ angular.module('CRUD', [])
 				query_scopes: [],
 				query_with: [],
 				query_call: [],
+				query_call_arr: [],
 				order_by: [],
 				selected:[]
 			};

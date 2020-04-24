@@ -25,6 +25,7 @@ class VariablesController extends Controller
     public function postGetVariable()
     {
         $Variable = Variable::where('id', request('id'))->with(['grid','grid.columnas'])->first();
+        $Variable->Filtros = $Variable->prepFiltros();
         $Variable->valores = $Variable->getVals();
         return $Variable;
     }
@@ -97,6 +98,9 @@ class VariablesController extends Controller
             }
         }else if($Var['Tipo'] == 'Calculado de Entidad'){
             
+            $Var = Variable::find($Var['id']);
+            $Var->Filtros = $Var->prepFiltros();
+
             $Grid = GridHelper::getGrid($Var['grid_id']);
             $q    = GridHelper::getQ($Grid->entidad);
             

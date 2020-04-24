@@ -13,7 +13,7 @@ angular.module('CRUD', [])
 				primary_key: 'id',
 				ready: false,
 				where: {},
-				limit: 1000,
+				limit: 10000,
 				loading: false,
 				obj: null,
 				only_columns: [],
@@ -23,6 +23,7 @@ angular.module('CRUD', [])
 				query_scopes: [],
 				query_with: [],
 				query_call: [],
+				query_call_arr: [],
 				order_by: [],
 				selected:[]
 			};

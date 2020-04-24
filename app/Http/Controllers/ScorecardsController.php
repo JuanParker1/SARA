@@ -87,14 +87,22 @@ class ScorecardsController extends Controller
 
     public function postGet()
     {
+        set_time_limit(10*60);
+
         $Anio = request('Anio');
         $Sco = Scorecard::where('id', request('id'))->first();
-        $Nodo = ScorecardNodo::scorecard($Sco->id)->whereNull('padre_id')->first();
+        $ScoN = new ScorecardNodo();
+
+        $Nodos = ScorecardNodo::scorecard($Sco->id)->get();
+        $ScoN->getElementos($Nodos);
+        $ScoN->getRutas($Nodos);
+
+        $Nodo = $Nodos->first(function($k, $E){ return is_null($E->padre_id); });
 
         $Periodos = Helper::getPeriodos(($Anio*100)+01,($Anio*100)+12);
         $NodosFlat = [];
-
-        $Nodo->getChildren(true);
+        
+        $Nodo->getChildren(true, $Nodos);
         $Nodo->calculate($Periodos);
         $Nodo->flatten($NodosFlat, 0, $Sco->config['open_to_level']);
 

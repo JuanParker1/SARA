@@ -9,6 +9,7 @@ class CRUD
 	function __construct($ModelName)
 	{
 		$this->Model = app($ModelName);
+		set_time_limit(5 * 60);
 		DB::enableQueryLog();
 	}
 	
@@ -94,6 +95,17 @@ class CRUD
 				foreach ($rows as $row) {
 					$row->{$qc[0]}($qc[1]);
 				}
+			}
+		}
+
+		if(!empty($Ops['query_call_arr'])){
+			foreach ($Ops['query_call_arr'] as $qc) {
+				
+				$this->Model->{$qc[0]}($rows, $qc[1]);
+
+				//foreach ($rows as $row) {
+					//$row->{$qc[0]}($qc[1]);
+				//}
 			}
 		}
 
