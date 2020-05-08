@@ -1,11 +1,11 @@
 <div flex id="Entidades" layout ng-controller="EntidadesCtrl">
 
 	<md-sidenav class="w300 no-margin bg-white border-right no-overflow" layout=column
-		md-is-locked-open="EntidadSidenav">
+		md-is-locked-open="Storage.EntidadSidenav">
 	<div flex class="w300" layout=column>
 		
 		<div layout class="border-bottom padding-left" layout-align="center center" style="height: 41px">
-			<md-select ng-model="BddSel" flex class="md-no-underline no-margin" aria-label="s">
+			<md-select ng-model="BddSel" flex class="md-no-underline no-margin" aria-label="s" ng-change="getEntidades()">
 			  <md-option ng-repeat="Opt in Bdds" ng-value="Opt">
 			  	<md-icon md-font-icon="fa-database"></md-icon>{{ Opt.Nombre }}
 			  </md-option>
@@ -18,8 +18,8 @@
 				<input flex type="search" placeholder="Buscar..." ng-model="filterEntidades" class="no-padding" ng-change="searchEntidades()" ng-model-options="{ debounce : 500 }">
 			</div>
 			<md-button class="md-icon-button no-margin" aria-label="b" ng-click="addEntidad()">
-				<md-icon md-font-icon="fa-plus"></md-icon>
-				<md-tooltip md-direction=right>Agregar Entidad</md-tooltip>
+				<md-icon md-svg-icon="md-plus"></md-icon>
+				<md-tooltip md-direction=left>Agregar Entidad</md-tooltip>
 			</md-button>
 		</div>
 
@@ -53,7 +53,7 @@
 		
 	    <div layout class="border-bottom">
 
-    		<md-button class="md-icon-button no-margin h40 mw40 w40" aria-label="Button" ng-click="EntidadSidenav = !EntidadSidenav">
+    		<md-button class="md-icon-button no-margin h40 mw40 w40" aria-label="Button" ng-click="Storage.EntidadSidenav = !Storage.EntidadSidenav">
 				<md-icon md-svg-icon="md-bars"></md-icon>
 			</md-button>
 			<div class="text-bold lh40 margin-right" hide-xs md-truncate style="min-width: 149px">{{ EntidadSel.Nombre }}</div>

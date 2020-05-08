@@ -168,7 +168,15 @@ class GridHelper
         if($Comparador == 'like_'){                              return $q->where($columna_name, 'like', "$Valor%");  };
         if($Comparador == '_like'){                              return $q->where($columna_name, 'like', "%$Valor");  };
         if($Comparador == 'in'){                                 return $q->whereIn($columna_name, $Valor);           };
-        if($Comparador == 'not_in'){                             return $q->whereNotIn($columna_name, $Valor);           };
+        if($Comparador == 'not_in'){                             return $q->whereNotIn($columna_name, $Valor);        };
+        if($Comparador == 'lista'){ 
+            
+            if(!is_null($Valor)){
+                return $q->whereIn($columna_name, $Valor); 
+            }
+            
+        };
+
     }
 
     public static function addFilters($Filtros, $Grid, $q)

@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Core\MyModel;
 
-class Entidad extends Model
+class Entidad extends MyModel
 {
     protected $table = 'sara_entidades';
 	protected $guarded = ['id'];
@@ -18,7 +18,6 @@ class Entidad extends Model
 
     public function columns()
 	{
-
 		//Name, Desc, Type, Required, Unique, Default, Width, Options
 		return [
 			[ 'id',						'id',					null, true, false, null, 100 ],
@@ -30,13 +29,19 @@ class Entidad extends Model
 			[ 'Tabla',					'Tabla',				null, true, false, null, 100 ],
 			[ 'campo_llaveprim',		'campo_llaveprim',		null, true, false, null, 100 ],
 			[ 'campo_orderby',			'campo_orderby',		null, true, false, null, 100 ],
-			[ 'campo_orderbydesc',		'campo_orderbydesc',	null, true, false, null, 100 ],
+			[ 'campo_orderbydir',		'campo_orderbydir',		null, true, false, null, 100 ],
 			[ 'max_rows',				'max_rows',				null, true, false, null, 100 ],
 			[ 'config',					'config',				null, true, false, null, 100 ],
 		];
 	}
 
-	//RElaciones
+	//Scopes
+	public function scopeBdd($q, $bdd_id)
+	{
+		return $q->where('bdd_id', $bdd_id);
+	}
+
+	//Relaciones
 	public function campos()
 	{
 		return $this->hasMany('\App\Models\EntidadCampo', 'entidad_id')->orderBy('Indice', 'ASC');
