@@ -229,9 +229,11 @@ class EntidadesController extends Controller
     public function postEditorGet()
     {
         extract(request()->all()); //$editor_id, $Obj, $Config
+
         $Editor = EntidadEditor::with(['entidad','campos','campos.campo','campos.campo.entidadext'])->where('id', $editor_id)->first();
         if(isset($Config)) $Editor->prepFields($Config, $Obj);
         return $Editor;
+        
     }
 
     public function postEditorSave()

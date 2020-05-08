@@ -170,9 +170,10 @@ class IndicadoresController extends Controller
 
     public function getLoadSolgein()
     {
+        set_time_limit(5*60);
         \Excel::setDelimiter(';');
 
-        $regs = \Excel::selectSheetsByIndex(0)->load('temp/Plantilla_Indicadores_SOLGEIN.xlsx', function($reader){   
+        $regs = \Excel::selectSheetsByIndex(0)->load('temp/Plantilla_Indicadores_SOLGEIN_ADMFINSER.xlsx', function($reader){   
         })->get();
 
         $inds = collect($regs)->filter(function($i){
@@ -195,14 +196,13 @@ class IndicadoresController extends Controller
 
                 if(is_null($variable)) continue;
 
-
-
                 $Ind['componentes'][$letra] = [
                     'proceso_id' => $i['nodo'],
                     'Variable' => $variable,
                     'TipoDato' => $i['tipodato_'.$letra],
                     'Decimales' => $i['decimales_'.$letra],
                     'Tipo'      => 'Manual',
+                    'Filtros'   => []
                 ];
 
             }
@@ -223,8 +223,12 @@ class IndicadoresController extends Controller
 
                 foreach ($ind['componentes'] as $letra => $variable) {
                     
-                    $DaVar = new Variable($variable);
-                    $DaVar->save();
+                    $DaVar = Variable::where('proceso_id', $variable['proceso_id'])->where('Variable', $variable['Variable'])->first();
+
+                    if(!$DaVar){
+                        $DaVar = new Variable($variable);
+                        $DaVar->save();
+                    }
 
                     $DaIndVar = new IndicadorVariable([
                         'indicador_id' => $DaInd->id,
@@ -250,7 +254,7 @@ class IndicadoresController extends Controller
     {
         \Excel::setDelimiter(';');
 
-        $regs = \Excel::selectSheetsByIndex(0)->load('temp/Valores_Indicadores_SOLGEIN_2020.xlsx', function($reader){   
+        $regs = \Excel::selectSheetsByIndex(0)->load('temp/Valores_Indicadores_SOLGEIN_ADMFINSER.xlsx', function($reader){   
         })->get();
 
         $inds = collect($regs)->groupBy('cod_indicador')->map(function($var){
@@ -340,6 +344,55 @@ class IndicadoresController extends Controller
         }
 
         return $regs;
+
+    }
+
+
+    public function getLoadSolgeinPersp()
+    {
+        \Excel::setDelimiter(';');
+        set_time_limit(5*60);
+
+        $regs = \Excel::selectSheetsByIndex(0)->load('temp/Indicadores.xlsx', function($reader){   
+        })->get();
+
+        $Saved = 0;
+
+        foreach ($regs as $reg) {
+            
+            $DaInd = Indicador::where('proceso_id', $reg['nodo'])->where('Indicador', $reg['indicador'])->first();
+
+            if($DaInd){
+
+                $NodoAct =  \App\Models\ScorecardNodo::where('scorecard_id', 9)->where('tipo', 'Indicador')->where('elemento_id', $DaInd['id'])->first();
+
+                if(!$NodoAct){
+
+                    //dd($DaInd);
+
+                    $newNodo = new \App\Models\ScorecardNodo([
+                        'scorecard_id' => 9,
+                        'Nodo'         => $reg['indicador'],
+                        'padre_id'     => intval($reg['nodo_id']),
+                        'Indice'       => 0,
+                        'tipo'         => 'Indicador',
+                        'elemento_id'  => $DaInd['id'],
+                        'peso'         => 1
+                    ]);
+
+                    $newNodo->save();
+                    $Saved++;
+                }
+
+            }else{
+
+                dd($reg);
+
+            }
+
+        }
+
+        return [ count($regs), $Saved ];
 
     }
 

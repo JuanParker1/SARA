@@ -36,6 +36,18 @@ Route::controller('/api/Procesos',   	'ProcesosController');
 
 Route::get('/phpinfo', function(){ phpinfo(); });
 
+Route::get('/testconn', function(){ 
+
+	//$db = connection();
+
+	//$p = \DB::select('select * from `sara_scorecards_nodos` where `scorecard_id` = ? limit 1000', [10]);
+
+	$p = \App\Models\ScorecardNodo::scorecard(10)->get();
+
+	return $p;
+
+});
+
 
 
 // Avoid conflicts with AngularJS.

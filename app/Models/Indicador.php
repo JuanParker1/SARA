@@ -18,6 +18,7 @@ class Indicador extends MyModel
 	protected $primaryKey = 'id';
     protected $casts = [
 	];
+	protected $with = ['proceso'];
     protected $appends = ['Ruta'];
 
     use SoftDeletes;

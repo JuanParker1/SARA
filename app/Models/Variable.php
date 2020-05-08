@@ -20,7 +20,8 @@ class Variable extends Model
     protected $casts = [
     	'Filtros' => 'array'
     ];
-    protected $appends = ['Filtros', 'Ruta'];
+    protected $with = ['proceso'];
+    protected $appends = [ 'Filtros', 'Ruta'];
 
     use SoftDeletes;
 
@@ -71,19 +72,33 @@ class Variable extends Model
 
 	public function getFiltrosAttribute($a)
 	{
+		
 		$Filtros = json_decode($this->attributes['Filtros'], true);
-		foreach ($Filtros as &$F) { 
-			$F['campo'] = EntidadCampo::find($F['campo_id']);
+
+		if(!is_array($Filtros)) $Filtros = [];
+
+		return collect($Filtros)->transform(function($F){
 			$F['val']   = $F['Valor'];
-		};
-		return $Filtros;
+			return $F;
+		});
 	}
+
 	
 	public function setFiltrosAttribute($Filtros)
 	{
+		if(!is_null($Filtros)){
+			foreach ($Filtros as &$F) { unset($F['campo']); };
+			$this->attributes['Filtros'] = json_encode($Filtros);
+		}
+		
+	}
 
-		foreach ($Filtros as &$F) { unset($F['campo']); };
-		$this->attributes['Filtros'] = json_encode($Filtros);
+	public function prepFiltros()
+	{
+		return $this->Filtros->map(function($F){
+			$F['campo'] = EntidadCampo::find($F['campo_id']);
+			return $F;
+		});
 	}
 
 	public function getRutaAttribute()
@@ -97,6 +112,8 @@ class Variable extends Model
 	{
 		$Grid = GridHelper::getGrid($this->grid_id);
         $q    = GridHelper::getQ($Grid->entidad);
+
+        $this->Filtros = $this->prepFiltros();
 
         GridHelper::calcJoins($Grid);
         GridHelper::addJoins($Grid, $q);

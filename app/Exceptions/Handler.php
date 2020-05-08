@@ -48,13 +48,15 @@ class Handler extends ExceptionHandler
 
         if($request->isJson() and !config('app.debug')){
 
+            //$e->getStatusCode()
+
             $json = [
                 'Msg' => $e->getMessage(),
                 'exception' => class_basename($e),
                 'file' => basename($e->getFile()),
                 'line' => $e->getLine()
             ];
-            return response()->json($json, $e->getStatusCode());
+            return response()->json($json, 512);
         }
         
         return parent::render($request, $e);
