@@ -180,7 +180,7 @@ class EntidadesController extends Controller
         GridHelper::addCols($Grid, $q);
         GridHelper::addFilters($Grid->filtros, $Grid, $q);
         GridHelper::addOrders($Grid, $q);
-        $Data = GridHelper::getData($Grid, $q);
+        $Data = GridHelper::getData($Grid, $q, true);
 
         return compact('Grid', 'Data');
     }
