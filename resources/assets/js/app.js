@@ -84,4 +84,6 @@ angular.module('SARA', [
 	'IngresarDatosCtrl',
 
 	'MisIndicadoresCtrl',
+
+	'ConsultasSQLCtrl',
 ]);

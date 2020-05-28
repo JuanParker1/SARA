@@ -31,6 +31,7 @@ Route::controller('/api/Variables',     'VariablesController');
 Route::controller('/api/Indicadores',   'IndicadoresController');
 Route::controller('/api/Scorecards',   	'ScorecardsController');
 Route::controller('/api/Procesos',   	'ProcesosController');
+Route::controller('/api/ConsultasSQL',  'ConsultasSQLController');
 
 
 

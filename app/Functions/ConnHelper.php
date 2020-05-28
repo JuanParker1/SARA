@@ -17,6 +17,7 @@ class ConnHelper
 				'password' => $BDD->Contraseña,
 				'host'     => $BDD->Op2,
 				'database' => $BDD->Op3,
+				'schema'   => $BDD->Op3
 			]);
 		}else if($BDD->Tipo == 'MySQL'){
 			Config::set($conection_name, [
