@@ -1,6 +1,6 @@
 angular.module('ScorecardsCtrl', [])
-.controller('ScorecardsCtrl', ['$scope', '$rootScope', '$injector', '$filter',
-	function($scope, $rootScope, $injector, $filter) {
+.controller('ScorecardsCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$timeout',
+	function($scope, $rootScope, $injector, $filter, $timeout) {
 
 		console.info('ScorecardsCtrl');
 		var Ctrl = $scope;
@@ -56,7 +56,9 @@ angular.module('ScorecardsCtrl', [])
 		};
 
 		Ctrl.openNodo = (Nodo) => {
+			
 			Ctrl.NodoSel = Nodo;
+
 			Ctrl.NodoSel.indicadores = $filter('orderBy')(Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo !== 'Nodo' && N.padre_id == Nodo.id) }), 'Indice');
 			Ctrl.NodoSel.subnodos    = Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo ==  'Nodo'      && N.padre_id == Nodo.id) });
 
@@ -65,26 +67,33 @@ angular.module('ScorecardsCtrl', [])
 		};
 
 		Ctrl.addIndicador = () => {
-			Rs.BasicDialog({
-				Title: 'Agregar Indicador', Flex: 50,
-				Fields: [
-					{ Nombre: 'Indicador', Value:null, Required: true, flex: 90, Type: 'autocomplete', 
-					opts: {
-						itemsFn: (text) => { return $filter('filter')(Ctrl.IndicadoresCRUD.rows, { Indicador: text }); },
-						itemDisplay: (item) => { return item.Indicador }, itemText: 'Indicador',
-						minLength: 0, delay: 300, itemVal: false
-					}},
-					{ Nombre: 'Peso',    Value: 1,    			Required: true, flex: 10, Type: 'number' }
+
+			var indicadores_ids = Ctrl.NodosCRUD.rows.filter(n => n.tipo == 'Indicador').map(n => n.elemento_id);
+			var Indicadores = Ctrl.IndicadoresCRUD.rows.filter(i => !Rs.inArray(i.id, indicadores_ids) );
+
+			//return console.log(indicadores_ids);
+
+			Rs.TableDialog(Indicadores, {
+				Title: 'Seleccionar Indicadores', Flex: 60, 
+				Columns: [
+					{ Nombre: 'proceso.Proceso',  Desc: 'Nodo',       numeric: false, orderBy: 'Ruta' },
+					{ Nombre: 'Indicador', 	 	  Desc: 'Indicador',  numeric: false, orderBy: 'Indicador' },
+					{ Nombre: 'proceso.Tipo',     Desc: 'Tipo Nodo',  numeric: false, orderBy: false },
 				],
-			}).then(r => {
-				if(!r) return;
-				var f = Rs.prepFields(r.Fields);
+				orderBy: 'Ruta', select: 'Row.id'
+			}).then(Selected => {
+				if(!Selected || Selected.length == 0 ) return;
 				var Indice = Ctrl.NodoSel.indicadores.length;
-				Ctrl.NodosCRUD.add({
-					scorecard_id: Ctrl.ScoSel.id, Nodo: null, padre_id: Ctrl.NodoSel.id, Indice: Indice, tipo: 'Indicador', elemento_id: f.Indicador.id, peso: f.Peso 
-				}).then(() => {
+				Selected = Selected.map(indicador_id => {
+					return {
+						scorecard_id: Ctrl.ScoSel.id, 
+						Nodo: null, padre_id: Ctrl.NodoSel.id, 
+						Indice: Indice++, tipo: 'Indicador', elemento_id: indicador_id, peso: 1 
+					}
+				});
+
+				Ctrl.NodosCRUD.addMultiple(Selected).then(() => {
 					Ctrl.openNodo(Ctrl.NodoSel);
-					Ctrl.getFs();
 				});
 			});
 		};

@@ -655,7 +655,7 @@ md-dialog.md-dialog-fullheight {
 .md-subheader.label .md-subheader-inner {
   padding: 0 3px !important;
   font-size: 12px;
-  color: #8e8e8e;
+  color: #252525;
   font-weight: 400;
 }
 .md-subheader.md-subheader-compact .md-subheader-inner {
@@ -9710,6 +9710,24 @@ button {
 .mxh95vh {
   max-height: 95vh !important;
 }
+.mh100m10 {
+  min-height: calc(100% - 10px);
+}
+.mh100m20 {
+  min-height: calc(100% - 20px);
+}
+.mh100m30 {
+  min-height: calc(100% - 30px);
+}
+.mw100m10 {
+  min-width: calc(100% - 10px);
+}
+.mw100m20 {
+  min-width: calc(100% - 20px);
+}
+.mw100m30 {
+  min-width: calc(100% - 30px);
+}
 .seam-top {
   box-shadow: 0 -10px 10px -10px rgba(0, 0, 0, 0.2);
 }
@@ -9739,6 +9757,12 @@ button {
   width: 0;
   transition: all 0.7s ease-in-out;
 }
+.lista-pill {
+  padding: 4px 15px 4px 11px;
+  border-radius: 15px;
+  font-size: 15px;
+  box-shadow: inset 0 0 0 1px #0000001f;
+}
 .bg-white {
   background-color: white !important;
 }
@@ -9753,6 +9777,10 @@ button {
 }
 .bg-lightgrey-5 {
   background-color: #eaeaea !important;
+}
+.bg-darkgrey {
+  background-color: #525252 !important;
+  color: white !important;
 }
 .bg-yellow {
   background-color: #fff5d8 !important;
@@ -9780,9 +9808,19 @@ button {
   background-color: #3a3a3a !important;
   color: white !important;
 }
+.bg-black-4 {
+  background-color: #232323 !important;
+  color: white !important;
+}
 .bg-warmblue {
   background-color: #006bac !important;
   color: white !important;
+}
+.bg-cover {
+  background-size: cover;
+}
+.bg-center-center {
+  background-position: center center;
 }
 span.highlight {
   background: #ffffbf;
@@ -9996,6 +10034,9 @@ md-tooltip {
 .text-20px {
   font-size: 20px;
   line-height: 25px;
+}
+.text-25px {
+  font-size: 25px;
 }
 .text-300 {
   font-weight: 300;

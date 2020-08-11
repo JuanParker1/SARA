@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Core\MyModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use App\Models\EntidadCampo;
@@ -11,7 +11,7 @@ use App\Functions\Helper AS H;
 use App\Functions\GridHelper;
 use App\Functions\CamposHelper;
 
-class Variable extends Model
+class Variable extends MyModel
 {
     protected $table = 'sara_variables';
 	protected $guarded = ['id'];
@@ -38,12 +38,20 @@ class Variable extends Model
 			[ 'TipoDato',				'TipoDato',			null, true, false, null, 100 ],
 			[ 'Decimales',				'Decimales',		null, true, false, null, 100 ],
 			[ 'Tipo',					'Tipo',				null, true, false, null, 100 ],
+			[ 'Frecuencia',				'Frecuencia',		null, true, false, null, 100 ],
 			[ 'grid_id',				'grid_id',			null, true, false, null, 100 ],
 			[ 'ColPeriodo',				'ColPeriodo',		null, true, false, null, 100 ],
 			[ 'Agrupador',				'Agrupador',		null, true, false, null, 100 ],
 			[ 'Col',					'Col',				null, true, false, null, 100 ],
 			[ 'Filtros',				'Filtros',			null, true, false, null, 100 ],
 		];
+	}
+
+	//Scopes
+	public function scopeTipo($q, $Tipo)
+	{
+		if($Tipo) return $q->where('Tipo', $Tipo);
+		return $q;
 	}
 
 	public function grid()
@@ -56,7 +64,7 @@ class Variable extends Model
 		$q = $this->hasMany('\App\Models\VariableValor', 'variable_id')->orderBy('Periodo');
 
 		if(!$Anio) return $q;
-		return $q->where('Periodo', '>=', $Anio.'01')->where('Periodo', '<=', $Anio.'12');
+		return $q->where('Periodo', '>=', ($Anio-1).'01')->where('Periodo', '<=', $Anio.'12');
 	}
 
 	public function proceso()
@@ -175,27 +183,50 @@ class Variable extends Model
 	}
 
 
-	public function getVals($Anio = false)
+	public function getVals($Anio = false, $CalcFrecs = true)
     {
         $Valores = $this->valores($Anio)->get();
+        
+        $PeriodoMin = $Valores->min('Periodo');
+        $PeriodoMax = ($Anio) ? ($Anio*100)+12 : ((intval(date('Y')) * 100) + 12);
 
-        if(!$Anio){
-        	return $Valores->keyBy('Periodo')->transform(function($v){
-	            $v->formatVal($this->TipoDato, $this->Decimales);
-	            return [ 'val' => $v->val, 'Valor' => $v->Valor ];
-	        });
-        }else{
+        $PeriodosList = H::getPeriodos($PeriodoMin, $PeriodoMax);
+       	$Periodos = array_fill_keys($PeriodosList, [ 'val' => null, 'Valor' => null ]);
+       	$PeriodoAct = intval(date('Ym'));
 
-        	$Periodos = array_fill_keys(H::getPeriodos(($Anio*100)+1, ($Anio*100)+12), [ 'val' => null, 'Valor' => null ]);
+       	foreach ($Valores as $v) {
+    		$v->formatVal($this->TipoDato, $this->Decimales);
+            $Periodos[$v->Periodo] = [ 'val' => $v->val, 'Valor' => $v->Valor ];
+    	}
 
-        	foreach ($Valores as $v) {
-        		$v->formatVal($this->TipoDato, $this->Decimales);
-	            $Periodos[$v->Periodo] = [ 'val' => $v->val, 'Valor' => $v->Valor ];
-        	}
+    	if($this->Frecuencia > 1 AND $CalcFrecs){
 
-			return $Periodos;
+    		$FixVals = null;
+    		$Frecs = 0;
 
-        }
+    		foreach ($Periodos as $P => &$Vals) {
+    			
+    			if($P < $PeriodoAct){
+
+    				if(!is_null($Vals['Valor'])){
+
+	    				$FixVals = $Vals;
+	    				$Frecs = 0;
+
+	    			}else if(!is_null($FixVals)){
+
+	    				$Vals = $FixVals;
+	    				$Frecs++;
+
+	    				//if($Frecs >= ($this->Frecuencia-1)){ $FixVals = null; $Frecs = 0; } ASK
+	    			}
+
+    			}
+
+	    	}
+    	}
+    	
+    	return $Periodos;
         
     }
 

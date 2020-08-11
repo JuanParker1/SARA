@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Functions\CRUD;
+use App\Functions\Helper;
 
 use App\Models\Proceso;
 
@@ -18,7 +19,7 @@ class ProcesosController extends Controller
 
     	foreach ($Procesos as $P) {
     		$P->children = $Procesos->filter(function ($DaP) use ($P) { return $DaP->padre_id == $P->id; })->count();
-    		$P->Ruta = ($P->children > 0) ? $P->Ruta : dirname($P->Ruta);
+    		$P->Ruta = ($P->children > 0) ? $P->Ruta : Helper::getDir($P->Ruta);
     	};
 
     	return $Procesos;

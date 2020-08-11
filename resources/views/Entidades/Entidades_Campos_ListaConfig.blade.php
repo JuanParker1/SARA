@@ -1,4 +1,4 @@
-<md-dialog layout=column class="mw400">
+<md-dialog layout=column class="mw500">
 	
 	<div layout class="h30 lh30 padding-left">
 		<div flex class="">Opciones para: <b>{{ C.Alias || C.Columna }}</b></div>
@@ -29,12 +29,18 @@
 							</md-input-container>
 						</td>
 						<td md-cell class="md-cell-compress">
+							<div class="lista-pill" ng-style="{ backgroundColor: Op.color, color: calcTextColor(Op.color) }">
+								<md-icon ng-if="Op.icono" md-font-icon="{{ Op.icono }}" class="text-inherit fa-fw"></md-icon>
+								{{ Op.desc || Op.value }}
+							</div>
+						</td>
+						<td md-cell class="md-cell-compress">
 							<input type="color" ng-model="Op.color">
 							<md-button class="md-icon-button no-padding s30 border md-whiteframe-2dp" ng-click="changeIcon(Op)">
 								<md-icon md-font-icon="fa-lg {{ Op.icono }}"></md-icon>
 								<md-tooltip md-direction="left">Icono</md-tooltip>
 							</md-button>
-							<md-button class="md-icon-button no-padding s30">
+							<md-button class="md-icon-button no-padding s30" ng-click="removeElemento(kOp)">
 								<md-icon md-font-icon="fa-times"></md-icon>
 							</md-button>
 						</td>

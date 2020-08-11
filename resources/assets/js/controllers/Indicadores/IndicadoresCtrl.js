@@ -1,6 +1,6 @@
 angular.module('IndicadoresCtrl', [])
-.controller('IndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter',
-	function($scope, $rootScope, $injector, $filter) {
+.controller('IndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$mdDialog',
+	function($scope, $rootScope, $injector, $filter, $mdDialog) {
 
 		console.info('IndicadoresCtrl');
 		var Ctrl = $scope;
@@ -22,12 +22,13 @@ angular.module('IndicadoresCtrl', [])
 
 
 		Ctrl.getIndicadores = () => {
+			//return Ctrl.addIndicador(false); //FIX
 			Ctrl.IndicadoresCRUD.get().then(() => {
 				Ctrl.getFs();
 
 				if(Rs.Storage.IndicadorSel){
 					var indicador_sel_id = Rs.getIndex(Ctrl.IndicadoresCRUD.rows, Rs.Storage.IndicadorSel);
-					Ctrl.openIndicador(Ctrl.IndicadoresCRUD.rows[indicador_sel_id]);
+					Ctrl.openIndicador(Ctrl.IndicadoresCRUD.rows[indicador_sel_id]); //FIX
 				};
 
 			});
@@ -55,11 +56,28 @@ angular.module('IndicadoresCtrl', [])
 
 		Ctrl.addIndicador = (route) => {
 			if(route){
+				var route = route.split('\\').slice(0, -1).join('\\');
 				proceso_id = Rs.def(Ctrl.Procesos.filter(e => e.Ruta == route).pop().id, null);
 			}else{
 				proceso_id = null;
 			};
-			Ctrl.getFs();
+
+			$mdDialog.show({
+				controller: 'Indicadores_AddDiagCtrl',
+				templateUrl: 'Frag/Indicadores.Indicadores_AddDiag',
+				locals: { proceso_id: proceso_id, tiposDatoInd : Ctrl.tiposDatoInd, Procesos: Ctrl.Procesos },
+				clickOutsideToClose: false, fullscreen: false, multiple: true
+			}).then(newInd => {
+				if(!newInd) return;
+				Rs.http('api/Indicadores/add-indicador', { newInd: newInd }).then(() => {
+					Rs.showToast('Indicador Agregado', 'Success');
+					Ctrl.getIndicadores();
+				});
+			});
+
+			console.log(proceso_id);
+
+			/*Ctrl.getFs();
 			Rs.BasicDialog({
 				Title: 'Crear Indicador', Flex: 50,
 				Fields: [
@@ -78,7 +96,7 @@ angular.module('IndicadoresCtrl', [])
 				}).then(() => {
 					Ctrl.getFs();
 				});
-			});
+			});*/
 		};
 
 		Ctrl.openIndicador = (V) => {
@@ -99,8 +117,10 @@ angular.module('IndicadoresCtrl', [])
 		};
 
 		Ctrl.VariablesCRUD.get().then(() => {
-			Rs.http('api/Procesos', {}, Ctrl, 'Procesos');
-			Ctrl.getIndicadores();
+			Rs.http('api/Procesos', {}, Ctrl, 'Procesos').then(() => {
+				Ctrl.getIndicadores();
+			});
+			
 		});
 
 

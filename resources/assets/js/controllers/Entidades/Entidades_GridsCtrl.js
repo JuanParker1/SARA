@@ -136,12 +136,13 @@ angular.module('Entidades_GridsCtrl', [])
 
 		Ctrl.addFiltro = (Co) => {
 			var Indice = Ctrl.GridFiltrosCRUD.rows.length;
+
 			return Ctrl.GridFiltrosCRUD.add({
 				grid_id: Ctrl.GridSel.id,
 				columna_id: Co.id,
-				Indice: Indice,
+				Indice: Indice
 			}).then(() => {
-				Ctrl.prepFiltros();
+				//Ctrl.prepFiltros();
 				Rs.showToast('Filtro Añadido', 'Success');
 			});
 		};

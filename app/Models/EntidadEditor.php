@@ -76,7 +76,7 @@ class EntidadEditor extends MyModel
 			};
 
 			if($TipoValor == 'Columna'){
-				$Valor = $Obj[$ConfigField['columna_id']]['val'];
+				if(array_key_exists($ConfigField['columna_id'], $Obj)) $Valor = $Obj[$ConfigField['columna_id']]['val'];
 			};
 
 			$F->val = $Valor;

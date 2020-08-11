@@ -10,7 +10,7 @@
 		Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
 		Rs.http('/api/Entidades/cargadores-get', {}, Ctrl, 'Cargadores');
 		Rs.http('/api/Scorecards/all', {}, Ctrl, 'Scorecards');
-		Ctrl.AppsCRUD  = $injector.get('CRUD').config({ base_url: '/api/App/apps' });
+		Ctrl.AppsCRUD  = $injector.get('CRUD').config({ base_url: '/api/App/apps', order_by: [ 'Titulo' ] });
 		Ctrl.PagesCRUD = $injector.get('CRUD').config({ base_url: '/api/App/pages' });
 		Ctrl.TiposPage = [
 			{ id: 'ExternalUrl', Icono: 'fa-external-link-square-alt',  Nombre: 'Url Externa' 	 },
@@ -18,12 +18,18 @@
 			{ id: 'Grid', 		 Icono: 'fa-table', 					Nombre: 'Tabla de Datos' },
 			{ id: 'Cargador', 	 Icono: 'fa-sign-in-alt fa-rotate-270', Nombre: 'Cargador' },
 		];
-		var DefConfig = { url: '', element_id: null, elements_ids: [], buttons_main: [], buttons_grid: [] };
+		var DefConfig = { url: '', element_id: null, elements_ids: [], buttons_main: [], buttons_grid: [], proceso_id: null };
+		Ctrl.orderBy = 'Titulo';
+		Ctrl.changeAppOrder = (order) => { Ctrl.orderBy = order; }
 
 		Ctrl.AppsCRUD.get().then(() => {
-			if(Ctrl.AppsCRUD.rows.length > 0){
-				Ctrl.openApp(Ctrl.AppsCRUD.rows[0]);
-			};
+			if(Rs.Storage.AppSelId){
+				var App = Ctrl.AppsCRUD.rows.find((A) => {
+					return ( A.id == Rs.Storage.AppSelId );
+				});
+				if(App) Ctrl.openApp(App);
+				
+			}
 		});
 
 		Ctrl.addApp = () => {
@@ -39,6 +45,7 @@
 
 		Ctrl.openApp = (A) => {
 			if(A == Ctrl.AppSel) return;
+			Rs.Storage.AppSelId = A.id;
 			Ctrl.AppSel = A;
 			Ctrl.PageSel = null;
 			Ctrl.PagesCRUD.setScope('app', Ctrl.AppSel.id);
@@ -129,6 +136,17 @@
 		Ctrl.removeProceso = (kP) => {
 			Ctrl.AppSel.Procesos.splice(kP, 1);
 		}
+
+
+		//Filtro sobre Scorecard
+		Ctrl.selectedFilterProceso = (item) => {
+			if(!item) return;
+
+			Ctrl.searchText2 = '';
+			Ctrl.PageSel.Config.proceso_id = item.id;
+		}
+
+
 
 	}
 ]);

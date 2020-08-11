@@ -8,6 +8,18 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 
 		Ctrl.Cancel = () => { $mdDialog.cancel(); }
 
+        Ctrl.SidenavIcons = [
+            ['fa-comment',      'Mejoramiento',     false],
+            ['fa-list',         'Desagregar Datos', false],
+            ['fa-info-circle',  'Ficha Técnica',    false],
+        ];
+        Ctrl.openSidenavElm = (S) => {
+            Ctrl.sidenavSel = (S[1] == Ctrl.sidenavSel) ? null : S[1];
+            $timeout(() => {
+                Ctrl.updateChart();
+            }, 300);
+        };
+
 		Ctrl.Meses = Rs.Meses;
 		Ctrl.inArray = Rs.inArray;
 		Ctrl.Anio  = angular.copy(Rs.AnioActual);
@@ -116,17 +128,6 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
             if(comp.Tipo == 'Variable')  return Rs.viewVariableDiag(comp.variable_id);
             if(comp.Tipo == 'Indicador') return Rs.viewIndicadorDiag(comp.variable_id);
         };
-
-        //Sidenav
-        Ctrl.showSidenav = false;
-
-        Ctrl.toogleSidenav = () => {
-            Ctrl.showSidenav = !Ctrl.showSidenav;
-            if(!ComentariosLoaded) Ctrl.getComentarios();
-            $timeout(() => {
-                Ctrl.updateChart();
-            }, 300);
-        }
 
         //Comments
         Ctrl.ComentariosCRUD = $injector.get('CRUD').config({ 

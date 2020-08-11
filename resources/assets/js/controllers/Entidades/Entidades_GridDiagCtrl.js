@@ -19,8 +19,11 @@ angular.module('Entidades_GridDiagCtrl', [])
 			Ctrl.sidenavSel = (S[1] == Ctrl.sidenavSel) ? null : S[1];
 		};
 
-
 		Ctrl.Cancel = () => { $mdDialog.cancel(); };
+
+		Ctrl.getOpcionLista = (Val, Config) => {
+			return Config.opciones.find(el => el.value === Val);
+		};
 
 		var Data = null;
 		var filteredData = null;
@@ -182,6 +185,16 @@ angular.module('Entidades_GridDiagCtrl', [])
 	        saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), Ctrl.Grid.Titulo + '.xlsx');
 		};
 
+		//Previsualizar un Campo
+		Ctrl.previewCampo = (C, val) => {
+			if(!val || val == '') return;
+			$mdDialog.show({
+				templateUrl: 'Frag/Entidades.Entidades_GridDiag_PreviewDiag',
+				controller: 'Entidades_GridDiag_PreviewDiagCtrl',
+				locals: { C: C, val: val },
+				clickOutsideToClose: true, fullscreen: false, multiple: true,
+			});
+		};
 		
 		//Ctrl.openSidenavElm(['fa-sign-in-alt fa-rotate-90', 'Descargar',false]) //FIX
 		

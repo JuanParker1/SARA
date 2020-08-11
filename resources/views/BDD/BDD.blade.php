@@ -23,10 +23,36 @@
 		</md-list>
 	</md-sidenav>
 
-	<div ng-show="BDDSel" flex layout>
-		@include('BDD.BDD_Detalle')
-		@include('BDD.BDD_Consulta')
-		@include('BDD.BDD_Favoritos')
+	<div ng-show="BDDSel" flex layout=column>
+
+		<div layout class="bg-theme border-bottom">
+			<md-button class="md-icon-button no-margin" aria-label="Button" ng-click="BDDSidenav = !BDDSidenav">
+				<md-icon md-svg-icon="md-bars"></md-icon>
+			</md-button>
+			<div class="md-title lh40 w210">{{ BDDSel.Nombre }}</div>
+			<div ng-repeat="I in SeccionesBDD" layout layout-align="center center" class="mw40 border-left relative SectionIcon" 
+				md-ink-ripple ng-class="{ 'border-right': $last, 'SectionIcon_Selected': SectionSel == I[0] }" 
+				ng-click="changeSection(I)">
+	    		<md-icon md-font-icon="{{ I[1] }} fa-fw SectionIcon_Icon"></md-icon>
+	    		<div class="SectionIcon_Text nowrap">{{ I[2] }}</div>
+	    	</div>
+		</div>
+
+		<div flex layout>
+			@include('BDD.BDD_Detalle')
+			
+			<div flex layout ng-show="SectionSel == 'ConsultaSQL'">
+				@include('BDD.BDD_Consulta')
+				@include('BDD.BDD_Favoritos')
+			</div>
+
+			<div flex layout=column ng-show="SectionSel == 'Listas'">
+				@include('BDD.BDD_Listas')
+			</div>
+
+		</div>
+
+
 	</div>
 
 </div>

@@ -1,0 +1,52 @@
+<md-dialog md-theme="{{Config.Theme}}" flex={{Config.Flex}} style="height: 97vh;" aria-label="Table Dialog" layout=column>
+	
+	<md-toolbar class="md-short md-Transparent border-bottom">
+		<div class="md-toolbar-tools">
+			<h2>{{Config.Title}}</h2>
+			<div class="md-toolbar-searchbar" flex layout>
+				<md-icon md-svg-icon="md-search" class="text-black" style="margin: 8px 5px 0 15px;"></md-icon>
+				<input flex type="search" placeholder="Buscar..." ng-model="filterRows" class="no-padding" 
+					ng-model-options="{ debounce : 300 }">
+			</div>
+			<md-button class="md-icon-button" ng-click="Cancel()" >
+				<md-icon md-svg-icon="md-close" aria-label="a" style="color: currentColor"></md-icon>
+			</md-button>
+		</div>
+	</md-toolbar>
+
+	<div flex layout=column>
+		
+		<md-table-container flex class="overflow-y">
+			<table md-table class="md-table-short border-bottom" md-row-select multiple ng-model="Config.selected">
+				<thead md-head md-order="Config.orderBy">
+					<tr md-row>
+						<th md-column ng-repeat="C in Config.Columns" md-numeric="C.numeric" md-order-by="C.orderBy">{{ C.Desc }}</th>
+					</tr>
+				</thead>
+				<tbody md-body>
+					<tr md-row ng-repeat="Row in Elements | filter:filterRows | orderBy:Config.orderBy"
+						md-select="Row" md-select-id="{{ Config.primaryId }}">
+						<td md-cell class="md-cell-compress" ng-repeat="C in Config.Columns">
+							{{ getProp(Row, C.Nombre) }}
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="h50"></div>
+
+		</md-table-container>
+
+
+	</div>
+
+	<div class="border-top" layout ng-show="Config.selected.length > 0">
+		<div hide>{{ Config.selected }}</div>
+		<span flex></span>
+		<md-button class="md-raised bg-ocean" ng-click="Resp()">
+			Seleccionar {{ Config.selected.length }}
+		</md-button>
+	</div>
+
+
+</md-dialog>

@@ -7,6 +7,7 @@ angular.module('Entidades_Campos_ListaConfigCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.Cancel = () => { $mdDialog.cancel(); };
 		Ctrl.inArray  = Rs.inArray;
+		Ctrl.calcTextColor = Rs.calcTextColor;
 		Ctrl.C = C;
 
 		var ConfigDefault = {
@@ -28,8 +29,11 @@ angular.module('Entidades_Campos_ListaConfigCtrl', [])
 
 			};
 
-
 			Ctrl.newOpt = '';
+		};
+
+		Ctrl.removeElemento = (kOp) => {
+			Ctrl.C.Config.opciones.splice(kOp, 1);
 		};
 
 		Ctrl.dragListener = {
@@ -38,7 +42,8 @@ angular.module('Entidades_Campos_ListaConfigCtrl', [])
 
 		Ctrl.changeIcon = (Op) => {
 			Rs.selectIconDiag().then(r => {
-				if(!r) return;
+				console.log(r);
+				//if(!r) return;
 				Op.icono = r;
 			});
 		};

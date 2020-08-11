@@ -17,7 +17,8 @@ class ConnHelper
 				'password' => $BDD->Contraseña,
 				'host'     => $BDD->Op2,
 				'database' => $BDD->Op3,
-				'schema'   => $BDD->Op3
+				'schema'   => $BDD->Op3,
+				'charset'  => 'UTF-8'
 			]);
 		}else if($BDD->Tipo == 'MySQL'){
 			Config::set($conection_name, [
@@ -40,9 +41,9 @@ class ConnHelper
 			return response()->json([ 'Msg' => "Error al crear la conexión al servidor", 'e' => $e->getMessage() ], 512);
 		}
 
-		if(substr($BDD->Tipo,5,3) == 'DB2'){
+		/*if(substr($BDD->Tipo,5,3) == 'DB2'){
 			$Conn->setSchemaGrammar(new \App\Models\Core\DB2Grammar);
-		};
+		};*/
 
 		return $Conn;
 	}

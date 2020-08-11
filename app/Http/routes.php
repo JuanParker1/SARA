@@ -21,6 +21,7 @@ Route::get('/Home/{section}/{subsection}',  'MainController@getSubsection');
 Route::get('/Frag/{fragment}',  			'MainController@getFragment');
 Route::post('/file',  						'MainController@getFile');
 Route::get('/a', 		  					'MainController@getApp');
+Route::get('/ip', 		  					'MainController@getIP');
 
 Route::controller('/api/Main',       	'MainController');
 Route::controller('/api/Usuario',       'UsuarioController');
@@ -44,6 +45,8 @@ Route::get('/testconn', function(){
 	//$p = \DB::select('select * from `sara_scorecards_nodos` where `scorecard_id` = ? limit 1000', [10]);
 
 	$p = \App\Models\ScorecardNodo::scorecard(10)->get();
+	//$url = 'Comfamiliar Risaralda\Subdirección Administrativa\Administración de Documentos';
+	//return implode('\\', array_slice(explode('\\', $url), 0, -1));
 
 	return $p;
 

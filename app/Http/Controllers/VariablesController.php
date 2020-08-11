@@ -24,16 +24,18 @@ class VariablesController extends Controller
 
     public function postGetVariable()
     {
-        $Variable = Variable::where('id', request('id'))->with(['grid','grid.columnas'])->first();
+        extract(request()->all()); //id, Tipo
+        $Variable = Variable::where('id', $id)->with(['grid','grid.columnas'])->first();
         $Variable->Filtros = $Variable->prepFiltros();
-        $Variable->valores = $Variable->getVals();
+        $Variable->valores = $Variable->getVals(false, false);
         return $Variable;
     }
 
     public function postGet()
     {
-    	$Variable = Variable::where('id', request('id'))->first();
-        $Variable->valores = $Variable->getVals();
+    	extract(request()->all()); //Anio
+        $Variable = Variable::where('id', request('id'))->first();
+        $Variable->valores = $Variable->getVals(false);
  
         $Variable->desagregados = [];
         $Variable->desagregables = $Variable->getDesagregables();
@@ -76,7 +78,7 @@ class VariablesController extends Controller
 
     public function postGetVariables()
     {
-        $Variables = Variable::whereIn('id', request('ids'))->get();
+        $Variables = Variable::whereIn('id', request('ids'))->tipo(request('Tipo'))->get();
         foreach ($Variables as $V) {
             $V->valores = $V->getVals();
         }
@@ -87,6 +89,12 @@ class VariablesController extends Controller
     {
         extract(request()->all()); //Var, Periodos
         $Valores = [];
+
+        if(in_array($Var['Tipo'], ['Valor Fijo', 'Calculado de Entidad'])){
+            foreach ($Periodos as $P) {
+                $Valores[$P] = [ 'val' => 0, 'Valor' => 0 ];
+            }
+        }
 
         if($Var['Tipo'] == 'Valor Fijo'){
             $ult_valor = VariableValor::where('variable_id', $Var['id'])->whereNotNull('Valor')->orderBy('Periodo', 'DESC')->first();
@@ -123,7 +131,7 @@ class VariablesController extends Controller
             foreach ($Data as $d) {
                 $VarVal = new VariableValor([ 'Valor' => $d[1] ]);
                 $VarVal->formatVal($Var['TipoDato'], $Var['Decimales']);
-                $Valores[$d[0]] = [ 'val' => $VarVal->val, 'Valor' => $VarVal->Valor ];
+                $Valores[$d[0]] = [ 'val' => $VarVal->val, 'Valor' => $VarVal->Valor, 'sql' => $Grid->sql ];
             };
         }
 

@@ -61,6 +61,7 @@
 									<md-option value="Por Defecto">Por Defecto</md-option>
 									<md-option value="Columna" ng-if="B.modo == 'Editar'">Columna</md-option>
 									<md-option value="Fijo">Fijo</md-option>
+									<md-option value="Variable">Variable</md-option>
 									<md-option value="Sin Valor">Sin Valor</md-option>
 								</md-select>
 
@@ -74,6 +75,13 @@
 									</md-option>
 								</md-select>
 
+								<md-select ng-model="B.campos[R.id]['valor']" class="mw50 margin-left" aria-label="s" ng-if="B.campos[R.id]['tipo_valor'] == 'Variable'">
+									<md-option value="User">Usuario Logeado</md-option>
+									<md-option value="Date">Fecha Actual</md-option>
+									<md-option value="DateTime">FechaHora Actual</md-option>
+									<md-option value="Time">Hora Actual</md-option>
+								</md-select>
+
 							</td>
 						</tr>
 					</tbody>
@@ -81,7 +89,7 @@
 			</md-table-container>
 		</div>
 
-		<pre hide>{{ B | json }}</pre>
+		<pre>{{ B | json }}</pre>
 
 	</div>
 

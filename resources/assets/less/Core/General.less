@@ -143,6 +143,13 @@ button{
 .mxh90vh{ max-height: 90vh !important; }
 .mxh95vh{ max-height: 95vh !important; }
 
+.mh100m10 { min-height: ~"calc(100% - 10px)"; }
+.mh100m20 { min-height: ~"calc(100% - 20px)"; }
+.mh100m30 { min-height: ~"calc(100% - 30px)"; }
+.mw100m10 { min-width:  ~"calc(100% - 10px)"; }
+.mw100m20 { min-width:  ~"calc(100% - 20px)"; }
+.mw100m30 { min-width:  ~"calc(100% - 30px)"; }
+
 .seam-top{ box-shadow: 0 -10px 10px -10px rgba(0, 0, 0, 0.2); }
 .seam-bottom{ box-shadow: 0 10px 10px -10px rgba(0, 0, 0, 0.2); z-index: 1; }
 .seam-inner-top{ box-shadow: inset 0 50px 30px -60px; }
@@ -167,12 +174,20 @@ button{
     transition: all 0.7s ease-in-out; 
 }
 
+.lista-pill {
+	padding: 4px 15px 4px 11px;
+    border-radius: 15px;
+    font-size: 15px;
+    box-shadow: inset 0 0 0 1px #0000001f;
+}
+
 
 .bg-white{ background-color: white !important; }
 .bg-lightgrey-2{ background-color: #f0f0f0 !important; }
 .bg-lightgrey-3{ background-color: #f5f5f5 !important; }
 .bg-lightgrey-4{ background-color: #fafafa !important; }
 .bg-lightgrey-5{ background-color: #eaeaea !important; }
+.bg-darkgrey{ background-color: #525252 !important; color: white !important; }
 .bg-yellow{ background-color: #fff5d8 !important; }
 .bg-paleyellow{ background-color: #FFE082 !important; }
 .bg-green{ background-color: #00695c !important; color: white !important; }
@@ -180,7 +195,12 @@ button{
 .bg-ocean{ background-color: #2b6086 !important; color: white !important; }
 .bg-black-2{ background-color: #2d2d2d !important; color: white !important; }
 .bg-black-3{ background-color: #3a3a3a !important; color: white !important; }
+.bg-black-4{ background-color: #232323 !important; color: white !important; }
 .bg-warmblue{ background-color: #006bac !important; color: white !important; }
+
+
+.bg-cover{ background-size: cover; }
+.bg-center-center{ background-position: center center; }
 
 span.highlight {
     background: #ffffbf;
@@ -342,6 +362,7 @@ md-tooltip{
 .text-16px{ font-size: 16px; }
 .text-18px{ font-size: 18px; }
 .text-20px{ font-size: 20px; line-height: 25px; }
+.text-25px{ font-size: 25px; }
 
 .text-300{ font-weight: 300; }
 .text-400{ font-weight: 400; }

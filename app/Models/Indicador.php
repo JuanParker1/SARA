@@ -57,6 +57,8 @@ class Indicador extends MyModel
 	{
 		$decimales = ($this->TipoDato == 'Porcentaje') ? $this->Decimales + 2 : $this->Decimales;
 
+		//return [];
+
 		//Variables
 		if(!$this->variables){
 			$this->variables = IndicadorVariable::indicador($this->id)->get();
@@ -78,6 +80,8 @@ class Indicador extends MyModel
 			$this->desagregados  = collect($desagregados)->values();
 		}
 
+
+
 		$this->metas     = IndicadorMeta::indicador($this->id)->year($Anio,$mesFin)->get();
 		$def = [
 			'mes' => 0, 'calculable' => true, 
@@ -90,10 +94,7 @@ class Indicador extends MyModel
 		foreach ($this->variables as $c) {
 			if($c->Tipo == 'Variable'){
 				$Var = Variable::where('id',$c->variable_id)->first();
-				$c->valores = $Var->valores()->year($Anio,$mesIni,$mesFin)->get()->keyBy('Periodo')->transform(function($v) use ($Var){
-					$v->formatVal($Var->TipoDato, $Var->Decimales);
-					return $v;
-				});
+				$c->valores = collect($Var->getVals(false));
 				$c->variable_name = $Var->Variable;
 			}else if($c->Tipo == 'Indicador'){
 				$Ind = self::where('id',$c->variable_id)->first();
@@ -102,6 +103,8 @@ class Indicador extends MyModel
 
 			};
 		};
+
+		
 
 		foreach ($valores as $target_per => &$v) {
 
@@ -122,7 +125,7 @@ class Indicador extends MyModel
 				$v['Valor'] = Helper::calcFormula( $this->Formula, $v['comp'], $decimales );
 				$v['val']   = Helper::formatVal($v['Valor'], $this->TipoDato, $this->Decimales);
 			};
-
+			
 			//Obtener metas
 			if(!empty($this->metas)){
 				$Meta = $this->metas->filter(function($m) use ($target_per){ return $m['PeriodoDesde'] <= $target_per; })->first();
@@ -143,6 +146,7 @@ class Indicador extends MyModel
 			$v['cump']      = Helper::calcCump($v['Valor'], $v['meta_Valor'], $this->Sentido, 'bool', $v['meta2_Valor']);
 			$v['cump_porc'] = Helper::calcCump($v['Valor'], $v['meta_Valor'], $this->Sentido, 'porc', $v['meta2_Valor']);
 			$v['color']     = Helper::getIndicatorColor($v['cump_porc']);
+			
 		}
 
 

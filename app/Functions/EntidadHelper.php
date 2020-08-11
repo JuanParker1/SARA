@@ -63,6 +63,7 @@ class EntidadHelper
         $Bdd  = BDD::where('id', $Entidad['bdd_id'])->first();
         $SchemaTabla = GridHelper::getTableName($Entidad['Tabla'], $Bdd->Op3);
         $Conn = ConnHelper::getConn($Bdd);
+        //dd($Conn->getPdo());
         return $Conn->table($SchemaTabla[2]);
     }
 
@@ -88,8 +89,6 @@ class EntidadHelper
             self::insertRows($Entidad, $Obj);
         }else{
             $r = $Row->update($Obj->toArray());
-
-            dd($r);
         };
     }
 

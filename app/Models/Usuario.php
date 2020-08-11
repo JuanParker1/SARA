@@ -24,6 +24,7 @@ class Usuario extends Model
         if (!$User OR !Hash::check($Password, $User->Password)) {
             return false;
         }
+
         return $User;
     }
 
@@ -65,14 +66,18 @@ class Usuario extends Model
         $ProcesosAsignados = \App\Models\UsuarioAsignacion::where('usuario_id', $this->id)->get(['nodo_id'])->pluck('nodo_id');
         $Procesos = \App\Models\Proceso::whereIn('id', $ProcesosAsignados)->get();
         $MyProcesos = [];
+        $ParentProcesosIds = [];
         
         foreach ($Procesos as $P){
             $P->recolectar($MyProcesos);
+            $P->recolectarUp($ParentProcesosIds);
         }
 
         $MyProcesosIds = collect($MyProcesos)->pluck('id')->toArray();
+        $MyProcesosIds = array_merge($MyProcesosIds, $ParentProcesosIds);
 
         $this->Procesos = $MyProcesos;
+
 
         $Apps = \App\Models\Apps::all();
 
@@ -90,6 +95,7 @@ class Usuario extends Model
     public function fromToken($token)
     {
         $Email = Crypt::decrypt($token);
+
         $Usuario = Usuario::where('Email', $Email)->first();
         return $Usuario;
     }

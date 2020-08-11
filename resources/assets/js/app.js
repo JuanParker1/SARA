@@ -42,6 +42,7 @@ angular.module('SARA', [
 	'ImageEditor_DialogCtrl',
 	'IconSelectDiagCtrl',
 	'ExternalLinkCtrl',
+	'TableDialogCtrl',
 
 	'MainCtrl',
 	'LoginCtrl',
@@ -49,13 +50,16 @@ angular.module('SARA', [
 	'InicioCtrl',
 
 	'BDDCtrl',
+		'BDD_ListasDiagCtrl',
 
 	'EntidadesCtrl',
 		'Entidades_Campos_ListaConfigCtrl',
+		'Entidades_Campos_ImagenConfigCtrl',
 		'Entidades_AddColumnsCtrl',
 		'Entidades_VerCamposCtrl',
 		'Entidades_GridsCtrl',
 		'Entidades_GridDiagCtrl',
+			'Entidades_GridDiag_PreviewDiagCtrl',
 		'Entidades_Grids_TestCtrl',
 
 		'Entidades_EditoresCtrl',
@@ -70,6 +74,7 @@ angular.module('SARA', [
 		'Variables_VariableDiagCtrl',
 
 	'IndicadoresCtrl',
+		'Indicadores_AddDiagCtrl',
 		'Indicadores_IndicadorDiagCtrl',
 
 	'ScorecardsCtrl',
@@ -82,8 +87,8 @@ angular.module('SARA', [
 	'ProcesosCtrl',
 
 	'IngresarDatosCtrl',
-
 	'MisIndicadoresCtrl',
+	'MiProcesoCtrl',
 
 	'ConsultasSQLCtrl',
 ]);

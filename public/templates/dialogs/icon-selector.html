@@ -1,8 +1,12 @@
 <md-dialog aria-label=d class="vh95 wu700" layout>
 
-	<div class="w190 well padding-top padding-left" layout=column>
+	<div class="w190 well padding-top padding-left overflow-y hasScroll" layout=column>
 		<div ng-repeat="C in Categorias " class="h30 lh30 Pointer padding-left-5" ng-click="filterCat(C)"
 			ng-class="{ 'text-bold': C == CatSel }">{{ C }}</div>
+		<span flex></span>
+		<md-button ng-click="selectIcon({ IconoFull: null })" class="text-clear no-margin-left">
+			Remover Icono
+		</md-button>
 	</div>
 
 	<div flex layout=column>

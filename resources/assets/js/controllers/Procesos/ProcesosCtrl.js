@@ -11,15 +11,22 @@ angular.module('ProcesosCtrl', [])
 		Ctrl.ProcesoSel = null;
 		Ctrl.ProcesosNav = true;
 		Ctrl.TiposProcesos = [ 
-			{ id: 'Agrupador', 		Nombre: 'Agrupador' },
-			{ id: 'Proceso', 		Nombre: 'Proceso' },
-			{ id: 'Concesionario', 	Nombre: 'Concesionario' },
-			{ id: 'Programa', 		Nombre: 'Programa' },
-			{ id: 'Utilitario', 	Nombre: 'Utilitario' }
+			{ id: 'Agrupador', 		Nombre: 'Agrupador', 		Icono: 'fa-cubes' },
+			{ id: 'Proceso', 		Nombre: 'Proceso', 			Icono: 'fa-cube' },
+			{ id: 'Concesionario', 	Nombre: 'Concesionario', 	Icono: 'external-link-square-alt' },
+			{ id: 'Programa', 		Nombre: 'Programa',			Icono: 'fa-crosshairs' },
+			{ id: 'Utilitario', 	Nombre: 'Utilitario', 		Icono: 'fa-cog' }
 		];
+
+		Ctrl.getProcesoIcon = (id) => {
+			if(!id) return;
+			return Ctrl.TiposProcesos.find(p => (p.id == id) ).Icono;
+		};
 
 		Ctrl.getProcesos = () => {
 			Rs.http('api/Procesos', {}, Ctrl, 'Procesos').then(() => {
+
+				//console.log(Ctrl.Procesos);
 
 				Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos,'Ruta','Proceso',false,true);
 				if(Rs.Storage.procesosel){
@@ -29,7 +36,20 @@ angular.module('ProcesosCtrl', [])
 					if(Ps.length > 0) Ctrl.openProceso(Ps[0]);
 				}
 
-				//console.log(Ctrl.ProcesosFS);
+				angular.forEach(Ctrl.ProcesosFS, fs => {
+					if(fs.type == 'folder'){
+						console.log(p.Ruta + '\\' + p.Proceso);
+						var proceso = Ctrl.Procesos.find(p => (p.Ruta + '\\' + p.Proceso) == fs.route);
+
+						if(proceso){
+							fs.proceso = proceso;
+							console.log(fs);
+						}
+						//Ctrl.//fs.route
+
+						
+					}
+				});
 			});	
 		};
 

@@ -23,9 +23,9 @@ class IndicadorVariable extends MyModel
 			[ 'Letra',				'Letra',			null, true, false, null, 100 ],
 			[ 'Tipo',				'Tipo',				null, true, false, null, 100 ],
 			[ 'variable_id',		'variable_id',		null, true, false, null, 100 ],
-			[ 'Op1',		'Op1',		null, true, false, null, 100 ],
-			[ 'Op2',		'Op2',		null, true, false, null, 100 ],
-			[ 'Op3',		'Op3',		null, true, false, null, 100 ],
+			[ 'Op1',				'Op1',				null, true, false, null, 100 ],
+			[ 'Op2',				'Op2',				null, true, false, null, 100 ],
+			[ 'Op3',				'Op3',				null, true, false, null, 100 ],
 		];
 	}
 

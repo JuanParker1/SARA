@@ -88,7 +88,7 @@
 					<md-icon md-svg-icon="md-more-v"></md-icon>
 				</md-button>
 				<md-menu-content>
-					<md-menu-item><md-button ng-click="copyScorecard()"><md-icon md-font-icon="fa-copy margin-right fa-fw"></md-icon>Copiar Scorecard</md-button></md-menu-item>
+					<md-menu-item><md-button ng-click="deleteScorecardNodo()"><md-icon md-font-icon="fa-trash margin-right fa-fw"></md-icon>Eliminar Nodo</md-button></md-menu-item>
 				</md-menu-content>
 			</md-menu>
 			<md-button class="md-icon-button no-margin" aria-label="b" ng-click="viewScorecardDiag(ScoSel.id)">

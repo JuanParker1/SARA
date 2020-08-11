@@ -1,4 +1,4 @@
-<md-dialog class="no-overflow bg-black-2 vh100" md-theme="Black" flex=100>
+<md-dialog class="no-overflow bg-black-2 mh100m20 mw100m20" md-theme="Black">
 
 
 	<div layout layout-align="center start" class="padding-left margin-bottom">

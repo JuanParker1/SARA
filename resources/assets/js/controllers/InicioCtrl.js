@@ -9,7 +9,8 @@ angular.module('InicioCtrl', [])
 
 		//Rs.mainTheme = 'Snow_White';
 		Rs.mainTheme = 'Black';
-		
+		Rs.InicioSidenavOpen = true;
+
 		Ctrl.makeFavorite = (A,make) => {
 			A.favorito = make;
 			Rs.http('api/App/favorito', { usuario_id: Rs.Usuario.id, app_id: A.id, favorito: make });
@@ -68,6 +69,12 @@ angular.module('InicioCtrl', [])
 			if(R.Tipo == 'Variable')  return Rs.viewVariableDiag(R.id);
 		};
 
+		Ctrl.getFavorites = () => {
+			Rs.http('api/Main/get-favorites', {}).then(r => {
+				Ctrl.Recientes = r.Recientes;
+			});
+		};
 
+		Ctrl.getFavorites();
 	}
 ]);

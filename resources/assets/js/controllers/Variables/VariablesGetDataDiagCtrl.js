@@ -1,6 +1,6 @@
 angular.module('VariablesGetDataDiagCtrl', [])
-.controller('VariablesGetDataDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', 'Variables',
-	function($scope, $rootScope, $mdDialog, $filter, $timeout, Variables) {
+.controller('VariablesGetDataDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', 'Variables', 'Tipo',
+	function($scope, $rootScope, $mdDialog, $filter, $timeout, Variables, Tipo) {
 
 		console.info('VariablesGetDataDiagCtrl');
 		var Ctrl = $scope;
@@ -15,13 +15,19 @@ angular.module('VariablesGetDataDiagCtrl', [])
 		Ctrl.PeriodoFin = moment().subtract(1, 'months').toDate();
 		Ctrl.Anios = [3,2,1,0].map((n) => { return Ctrl.Anio-n});
 
-		Ctrl.selectedRows = angular.copy(Variables);
+		
 		Ctrl.overwriteValues = false;
 
 		Ctrl.periodDateLocale = Rs.periodDateLocale;
+		Ctrl.TipoVar = Tipo || 'Calculado de Entidad';
 		
+		Ctrl.getVariables = () => {
+			Rs.http('api/Variables/get-variables', { ids: Variables, Tipo: Ctrl.TipoVar }, Ctrl, 'Variables').then(() => {
+				Ctrl.selectedRows = Ctrl.Variables.map( v => v.id );
+			});
+		}
+
 		
-		Rs.http('api/Variables/get-variables', { ids: Variables }, Ctrl, 'Variables');
 
 		Ctrl.calcPeriodos = () =>{
 			var periodoAct = parseInt(moment(Ctrl.PeriodoIni).format('YMM'));
@@ -100,6 +106,7 @@ angular.module('VariablesGetDataDiagCtrl', [])
 			});
 		};
 
+		Ctrl.getVariables();
 		Ctrl.calcPeriodos();
 	}
 ]);

@@ -25,21 +25,14 @@
 						</md-button>
 					</td>
 					<td md-cell class="md-cell-compress">
-						<md-select class="w100p" ng-model="C.tipo" aria-label=s ng-change="C.elemento_id = null; C.changed = true">
-							<md-option ng-value="'Variable'"> <md-icon class="s20" md-font-icon="fa-fw fa-lg fa-superscript"></md-icon>Variable</md-option>
-							<md-option ng-value="'Indicador'"><md-icon class="s20" md-font-icon="fa-fw fa-lg fa-chart-line " style="transform: translateY(2px);"></md-icon>Indicador</md-option>
-						</md-select>
+						<div class="w100p" layout>
+							<div class="w100p" ng-if="C.tipo == 'Variable'"><md-icon class="s20" md-font-icon="fa-fw fa-lg fa-superscript"></md-icon>Variable</div>
+							<div class="w100p" ng-if="C.tipo == 'Indicador'"> <md-icon class="s20" md-font-icon="fa-fw fa-lg fa-chart-line " style="transform: translateY(2px);"></md-icon>Indicador</div>
+						</div>
 					</td>
 					<td md-cell class="md-cell-compress">
-						<md-select class="w100p" ng-model="C.elemento_id" aria-label=s ng-if="C.tipo == 'Indicador'" placeholder="Seleccione" ng-change="C.changed = true">
-						  <md-option ng-value="Op.id" ng-repeat="Op in IndicadoresCRUD.rows">
-						  	<span class="text-clear">{{ Op.proceso.Proceso }}&nbsp;&nbsp;</span>{{ Op.Indicador }}</md-option>
-						</md-select>
-						<md-select class="w100p" ng-model="C.elemento_id" aria-label=s ng-if="C.tipo == 'Variable'" placeholder="Seleccione"  ng-change="C.changed = true">
-						  <md-option ng-value="Op.id" ng-repeat="Op in VariablesCRUD.rows">
-						  	<span class="text-clear">{{ Op.proceso.Proceso }}&nbsp;&nbsp;</span>{{ Op.Variable }}
-						  </md-option>
-						</md-select>
+						<div class="w100p" ng-if="C.tipo == 'Indicador'"><span class="text-clear">{{ C.elemento.proceso.Proceso }}&nbsp;&nbsp;</span>{{ C.elemento.Indicador }}</div>
+						<div class="w100p" ng-if="C.tipo == 'Variable'"> <span class="text-clear">{{ C.elemento.proceso.Proceso }}&nbsp;&nbsp;</span>{{ C.elemento.Variable }}</div>
 					</td>
 					<td md-cell class="h30" layout>
 						<span flex></span>

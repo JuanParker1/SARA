@@ -17,6 +17,14 @@ class MyModel extends Model
     }
 
 
+    public function fillit_columns(array $attributes)
+    {
+        $Cols = array_column($this->columns(), 0);
+        $Filler = array_intersect_key($attributes, array_fill_keys($Cols, null));
+        return $this->fill($Filler);
+    }
+
+
     /**
      * Devuelve una propiedad periodo basado en 2 fechas
      */

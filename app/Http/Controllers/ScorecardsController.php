@@ -85,17 +85,46 @@ class ScorecardsController extends Controller
         return $Sco;
     }*/
 
+    public function postGetProcesos()
+    {
+        extract(request()->all()); //$id
+        $Sco = Scorecard::where('id', $id)->first();
+        $ScoN = new ScorecardNodo();
+
+        $Nodos = ScorecardNodo::scorecard($Sco->id)->get();
+        $ScoN->getElementos($Nodos);
+        $Nodo = $Nodos->first(function($k, $E){ return is_null($E->padre_id); });
+
+        $Procesos  = [];
+        $Nodo->getChildren(true, $Nodos);
+        $Nodo->pluck_procesos($Procesos);
+
+        $RutasProcesos = array_column($Procesos, 'Ruta');
+        array_multisort($RutasProcesos, SORT_ASC, $Procesos);
+
+        return $Procesos;
+    }
+
     public function postGet()
     {
+        extract(request()->all()); //$id, $Anio, $filters
         set_time_limit(10*60);
+        ini_set('memory_limit','2G');
 
-        $Anio = request('Anio');
-        $Sco = Scorecard::where('id', request('id'))->first();
+        $Sco = Scorecard::where('id', $id)->first();
         $ScoN = new ScorecardNodo();
 
         $Nodos = ScorecardNodo::scorecard($Sco->id)->get();
         $ScoN->getElementos($Nodos);
         $ScoN->getRutas($Nodos);
+
+        //Filtrar procesos
+        if($filters AND $filters['proceso_ruta']){
+            $Nodos = $Nodos->filter(function($N) use ($filters){
+                if(!$N['elemento']) return true;
+                return substr($N['elemento']['proceso']['Ruta'], 0, strlen($filters['proceso_ruta'])) === $filters['proceso_ruta'];
+            });
+        }
 
         $Nodo = $Nodos->first(function($k, $E){ return is_null($E->padre_id); });
 
@@ -114,7 +143,7 @@ class ScorecardsController extends Controller
         return $Sco;
     }
 
-    public function getTest()
+    public function getGet()
     {
         return $this->postGet();
     }

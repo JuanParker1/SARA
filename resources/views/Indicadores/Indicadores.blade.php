@@ -10,7 +10,7 @@
 				<input flex type="search" placeholder="Buscar Indicador..." ng-model="filterIndicadores" class="no-padding" ng-change="searchIndicador()" ng-model-options="{ debounce : 500 }">
 			</div>
 			<md-button class="md-icon-button no-margin" aria-label="b" ng-click="addIndicador()">
-				<md-icon md-font-icon="fa-plus"></md-icon>
+				<md-icon md-svg-icon="md-plus"></md-icon>
 				<md-tooltip md-direction=left>Agregar Indicador</md-tooltip>
 			</md-button>
 		</div>

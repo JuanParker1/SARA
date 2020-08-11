@@ -8,25 +8,35 @@
 				<md-icon md-font-icon="fa-search" class="fa-fw" style="padding: 0px 8px 0 3px"></md-icon>
 				<input flex type="search" placeholder="Buscar..." ng-model="filterApps" class="no-padding">
 			</div>
+			<md-menu>
+				<md-button ng-click="$mdMenu.open($event)" class="md-icon-button no-margin" aria-label="m">
+					<md-icon md-font-icon="fa-sort-amount-down fa-fw"></md-icon>
+				</md-button>
+				<md-menu-content>
+					<md-menu-item><md-button ng-click="changeAppOrder('Titulo')">Ordenar Alfabéticamente</md-button></md-menu-item>
+					<md-menu-item><md-button ng-click="changeAppOrder('-updated_at')">Ordenar por Modificado</md-button></md-menu-item>
+					<md-menu-item><md-button ng-click="changeAppOrder('-created_at')">Ordenar por Creado</md-button></md-menu-item>
+				</md-menu-content>
+			</md-menu>
 			<md-button class="md-icon-button no-margin" aria-label="b" ng-click="addApp()">
-				<md-icon md-font-icon="fa-plus"></md-icon>
+				<md-icon md-svg-icon="md-plus"></md-icon>
 				<md-tooltip md-direction=right>Agregar</md-tooltip>
 			</md-button>
 		</div>
 
 		<div layout=column flex class="overflow-y darkScroll">
-			<div ng-repeat="A in AppsCRUD.rows | filter:filterApps" ng-click="openApp(A)" ng-class="{'bg-lightgrey-5': A.id == AppSel.id}" layout
+			<div ng-repeat="A in AppsCRUD.rows | filter:filterApps | orderBy: orderBy" ng-click="openApp(A)" ng-class="{'bg-lightgrey-5': A.id == AppSel.id}" layout
 				class="border-bottom relative Pointer" md-ink-ripple>
 				<div layout layout-align="center center" ng-style="{ backgroundColor: A.Color }"><md-icon md-font-icon="{{ A.Icono }} fa-fw s30" ng-style="{ color: A.textcolor }"></md-icon></div>
 				<div flex class="padding-5 text-13px" layout layout-align="start center">{{ A.Titulo }}</div>
 			</div>
 
-			<div class="h30"></div>
+			<div class="h50"></div>
 		</div>
 	</div>
 	</md-sidenav>
 
-	<div flex layout=column class="inherit-color" >
+	<div flex layout=column class="inherit-color" ng-show="AppSel">
 		
 		<div layout=column ng-style="{ backgroundColor: AppSel.Color, color: AppSel.textcolor }" class="border-bottom">
 			<div layout>

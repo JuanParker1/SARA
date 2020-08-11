@@ -70,7 +70,7 @@ angular.module('CRUD', [])
 					t.ops.obj = null;
 					if(t.ops.add_append == 'end'){ t.rows.push(r); }
 					else if(t.ops.add_append == 'start'){ t.rows.unshift(r); }
-					else if(t.ops.add_append == 'refresh'){ t.get(); };
+					else if(t.ops.add_append == 'refresh'){ return t.get(); };
 					return r;
 				});
 			};
@@ -79,7 +79,7 @@ angular.module('CRUD', [])
 				t.ops.obj = Objs;
 				return Rs.http(t.ops.base_url, { fn: 'addmultiple', ops: t.ops }).then(function(r) {
 					t.ops.obj = null;
-					t.get();
+					return t.get();
 					return r;
 				});
 			};
@@ -140,6 +140,7 @@ angular.module('CRUD', [])
 					with_delete: true,
 					delete_title: '',
 					only: [],
+					except: [],
 					buttons: [],
 				};
 

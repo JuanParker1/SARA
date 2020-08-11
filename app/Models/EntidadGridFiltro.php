@@ -82,4 +82,20 @@ class EntidadGridFiltro extends MyModel
     	};
 	}
 
+
+
+	
+	public static function boot()
+    {
+        parent::boot();
+
+        self::creating(function($model){
+        	
+        	//dd($model);
+
+        });
+
+    }
+
+
 }

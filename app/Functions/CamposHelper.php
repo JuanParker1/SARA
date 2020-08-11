@@ -27,7 +27,8 @@ class CamposHelper
 			'Fecha'       => [ 'Icon' => 'md-calendar-event', 	'Divide' => false, 	'Defaults' => [  null, null, null,          'Y-m-d', null] ],
 			'Hora'        => [ 'Icon' => 'md-time', 			'Divide' => false, 	'Defaults' => [  null, null, null,          'H:i:s', null] ],
 			'FechaHora'   => [ 'Icon' => 'md-timer', 			'Divide' => true, 	'Defaults' => [  null, null, null,    'Y-m-d H:i:s', null] ],
-			'Color'   	  => [ 'Icon' => 'md-color', 			'Divide' => false, 	'Defaults' => [  null, null, null,             null, null] ],
+            'Color'       => [ 'Icon' => 'md-color',            'Divide' => false,  'Defaults' => [  null, null, null,             null, null] ],
+			'Imagen'   	  => [ 'Icon' => 'md-image', 			'Divide' => false, 	'Defaults' => [  null, null, null,             null, null] ],
 		];
 
 		$TC['Fecha']['Formatos']      = [ ['Y-m-d','2019-12-31'], ['Ymd', '20191231'] ];
@@ -114,9 +115,19 @@ class CamposHelper
             return $Date->format('Y-m-d H:i');
         }
 
-        if($Campo['Tipo'] == 'Texto'){ return utf8_encode(trim($D)); }
-        if($Campo['Tipo'] == 'TextoLargo'){ return utf8_encode($D); }
+        if(in_array($Campo['Tipo'], ['Texto','TextoLargo','Lista'])){
+            if(config('app.encode_utf8')) $D = utf8_encode($D);
+            $D = trim($D);
+        };
+
         if($Campo['Tipo'] == 'Dinero'){ return Helper::formatVal($D, "Moneda"); }
+
+        if($Campo['Tipo'] == 'Imagen'){
+            $img_ruta = str_replace('$id', $D, $Campo['Config']['img_ruta']);
+            $img_ruta = file_exists(public_path($img_ruta)) ? ($img_ruta.'?'.uniqid()) : null;
+            $D = [ 'id' => $D, 'url' => $img_ruta, 'changed' => false ];
+        }
+
         return $D;
     }
 
@@ -127,7 +138,12 @@ class CamposHelper
         if($Campo['Tipo'] == 'FechaHora'){
             $Date = Carbon::createFromFormat('Y-m-d H:i', $D);
             $D = $Date->format($Campo['Op4']);
-        }
+        };
+
+        if(in_array($Campo['Tipo'], ['Texto','TextoLargo','Lista'])){ 
+            if(config('app.encode_utf8')) $D = utf8_decode($D);
+            $D = trim($D);
+        };
 
         return $D;
     }

@@ -29,7 +29,7 @@ angular.module('ConsultasSQLCtrl', [])
 
 		Ctrl.Stop = () => {
 			Ctrl.Status = 'Stopped';
-			Ctrl.FechaAct = angular.copy(Ctrl.FechaIni);
+			Ctrl.FechaAct = moment(angular.copy(Ctrl.FechaIni)).format('YYYY-MM-DD');
 			Ctrl.Report = [];
 		};
 

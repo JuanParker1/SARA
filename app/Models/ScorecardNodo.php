@@ -147,6 +147,14 @@ class ScorecardNodo extends MyModel
 
 		$this->nodos_cant = count($this->nodos);
 		$this->open = true;
+		$this->cant_indicadores = 0;
+		$this->cant_variables   = 0;
+
+		/*foreach ($this->nodos as $Nodo) {
+			if($Nodo->tipo == 'Indicador') $this->cant_indicadores++;
+			if($Nodo->tipo == 'Variable')  $this->cant_variables++;
+		}*/
+
 
 		if($Cascade){
 			if($Ruta !== '') $Ruta .= '\\';
@@ -163,9 +171,8 @@ class ScorecardNodo extends MyModel
 		foreach ($this->nodos as $nodo) {
 			$nodo->calculate($Periodos);	
 		}
-
+		
 		$this->puntos_totales = $this->nodos->sum('peso');
-
 		if($this->tipo == 'Indicador' AND $this->elemento) $this->valores = $this->elemento->calcVals(round($Periodos[0]/100));
 		if($this->tipo == 'Variable'  AND $this->elemento) $this->valores = $this->elemento->getVals( round($Periodos[0]/100));
 		if($this->tipo == 'Nodo'){
@@ -174,7 +181,11 @@ class ScorecardNodo extends MyModel
 			foreach ($this->nodos as $subnodo) {
 				
 				if($subnodo->tipo == 'Indicador'){
+					
+					$this->cant_indicadores++;
+
 					foreach ($subnodo->valores as $per => $val) {
+
 						if($val['calculable']){
 							$calc[$per]['puntos'] += $subnodo->peso * $val['cump_porc'];
 						}else{
@@ -184,17 +195,24 @@ class ScorecardNodo extends MyModel
 				}
 
 				if($subnodo->tipo == 'Variable' AND $subnodo->valores){
-					foreach ($subnodo->valores as $per => $val) {
-						if(!is_null($val['Valor'])){
+					
+					$this->cant_variables++;
+
+					foreach ($Periodos as $per){
+
+						if(!is_null($subnodo->valores[$per]['Valor'])){
 							$calc[$per]['puntos'] += $subnodo->peso;
 						}else{
 							$calc[$per]['incalculables']++;
 						}
-						
 					}
 				}
 
 				if($subnodo->tipo == 'Nodo'){
+
+					$this->cant_indicadores += $subnodo->cant_indicadores;
+					$this->cant_variables   += $subnodo->cant_variables;
+
 					foreach ($subnodo->calc as $per => $cal) {
 						if($cal['calculable']){
 							$calc[$per]['puntos'] += $subnodo->peso * $cal['Valor'];
@@ -225,12 +243,25 @@ class ScorecardNodo extends MyModel
 		$NodosFlat[] = [
 			'id' => $this->id, 'Nodo' => $this->Nodo, 
 			'depth' => $depth, 'tipo' => $this->tipo, 'nodos_cant' => $this->nodos_cant, 
+			'cant_indicadores' => $this->cant_indicadores, 'cant_variables' => $this->cant_variables, 
 			'calc' => $this->calc, 'valores' => $this->valores, 'elemento' => $this->elemento, 'open' => $open, 'show' => $show,
 			'ruta' => $this->ruta
 		];
+
 		$depth++;
 		foreach ($this->nodos as $nodo) {
 			$nodo->flatten($NodosFlat, $depth, $open_to_level);
+		}
+	}
+
+	public function pluck_procesos(&$Procesos)
+	{
+		if($this->elemento && $this->elemento['proceso']){
+			$Procesos[$this->elemento['proceso']['id']] = $this->elemento['proceso'];
+		};
+
+		foreach ($this->nodos as $nodo) {
+			$nodo->pluck_procesos($Procesos);
 		}
 	}
 

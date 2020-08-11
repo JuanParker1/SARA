@@ -16,6 +16,21 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
         Ctrl.periodDateLocale = Rs.periodDateLocale;
         Ctrl.Loading = true;
 
+
+        //Sidenav
+        Ctrl.sidenavSel = null;
+        Ctrl.SidenavIcons = [
+			['fa-filter', 	'Filtros'		,false],
+		];
+		Ctrl.openSidenavElm = (S) => {
+			Ctrl.sidenavSel = (S[1] == Ctrl.sidenavSel) ? null : S[1];
+		};
+
+		//Filtros
+        Ctrl.filters = {
+        	proceso_ruta: false
+        };
+
 		Ctrl.Anio  = angular.copy(Rs.AnioActual);
 		Ctrl.Mes   = angular.copy(Rs.MesActual);
 		if(!$localStorage['ScorecardModo']) $localStorage['ScorecardModo'] = 'Año';
@@ -45,21 +60,33 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 
         Ctrl.Periodo = moment().toDate();
 
-		Ctrl.getScorecard = (scorecard_id) => {
+		Ctrl.getScorecard = (scorecard_id, Config) => {
 			if(!scorecard_id) return;
 			Ctrl.Loading = true;
-            Rs.http('api/Scorecards/get', { id: scorecard_id, Anio: Ctrl.Anio }, Ctrl, 'Sco').then(() => {
 
-            	$timeout(() => {
-            		Ctrl.Loading = false;
-            	}, 2500);
-            	
+			
 
-                //Ctrl.Secciones = [{ Seccion: null, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: null }).length }]
-                /*angular.forEach(Ctrl.Sco.Secciones, (s) => {
-                	Ctrl.Secciones.push({ Seccion: s, open: true, cards: $filter('filter')(Ctrl.Sco.cards,{ seccion_name: s }).length }); 
-                });*/
+            return Rs.http('api/Scorecards/get-procesos', { id: scorecard_id }).then(Procesos => {
+            	Ctrl.ProcesosFS = Rs.FsGet(Procesos, 'Ruta','Proceso', false, true);
+
+            	if('proceso_id' in Config){
+					if(Config.proceso_id !== null){
+						var ProcesoSel = Procesos.find( p => p.id == Config.proceso_id );
+						if(ProcesoSel){
+							Ctrl.filters.proceso_ruta = ProcesoSel.Ruta;
+						}
+					}
+				}
+
+				Rs.http('api/Scorecards/get', { id: scorecard_id, Anio: Ctrl.Anio, filters: Ctrl.filters }, Ctrl, 'Sco').then(() => {
+	            	Ctrl.Loading = false;
+
+	            	Ctrl.SidenavIcons[0][2] = (typeof  Ctrl.filters.proceso_ruta === 'string');
+	            });
+
             });
+
+            
 		};
 
 		Ctrl.openFlatLevel = (N, ev) => {
@@ -79,19 +106,6 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 						nodo.show = nodo.open = false;
 					}
 				}
-
-				/*if(cont){
-					if(nodo.i > N.i){
-						
-						nodo.show = N.open;
-
-						//if(nodo.depth == N.depth + 1) nodo.show = N.open;
-						//if(nodo.depth > N.depth + 1){ nodo.show = false; nodo.open = false; }
-						//if(nodo.type == 'Nodo' && nodo.depth >= N.depth + 1){ nodo.open = false; }
-						
-						if(nodo.type == 'Nodo' && nodo.depth == N.depth) cont = false;
-					};
-				};*/
 			});
 		}
 
@@ -102,6 +116,11 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 				Rs.viewVariableDiag(N.elemento.id);
 			}
 		};
+
+		//Filtros
+		Ctrl.lookupProceso = (F) => {
+			Ctrl.filters.proceso_ruta = F.route;
+		}
 
         //Ctrl.getScorecard();
 	}

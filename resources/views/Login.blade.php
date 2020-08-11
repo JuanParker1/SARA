@@ -42,10 +42,8 @@
 
 <style type="text/css">
 	#Login{
-		background-image: url(img/bg_1.png);
-		background-position: bottom left;
-		background-repeat: no-repeat;
-		background-size: initial;
-		background-color: #2c2c2c;
+		background-image: url(img/bg_data1.jpg);
+		background-size: cover;
+		background-position: center center;
 	}
 </style>

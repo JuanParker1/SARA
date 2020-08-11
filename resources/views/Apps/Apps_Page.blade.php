@@ -33,6 +33,27 @@
 			</md-select>
 		</md-input-container>
 
+		<div class="h30"></div>
+		<md-subheader class="no-padding margin-bottom">Filtrar Proceso</md-subheader>
+		<div ng-repeat="P in [ PageSel.Config.proceso_id ]" class="padding-5" layout class="show-children-on-hover" 
+			ng-show="PageSel.Config.proceso_id !== null">
+			<div ng-repeat="E in Procesos | filter:{ id: P }:true" flex md-truncate class="text-13px">{{ E.Proceso }}</div>
+			<md-icon class="s20 child focus-on-hover Pointer" md-svg-icon="md-close" ng-click="PageSel.Config.proceso_id = null"></md-icon>
+		</div>
+		<md-autocomplete 
+			md-selected-item-change="selectedFilterProceso(item)"  
+			md-search-text="searchText2" 
+			md-items="item in buscarProcesos(searchText2)" 	md-item-text="item.Proceso"
+			class="bg-white h30"
+			placeholder="Seleccionar Proceso">
+			<md-item-template>
+				<span md-highlight-text="searchText2">{{ item.Proceso }}</span>
+			</md-item-template>
+			<md-not-found>No Encontrado</md-not-found>
+		</md-autocomplete>
+
+
+
 	</div>
 
 	<div layout=column ng-show="PageSel.Tipo == 'Grid'">

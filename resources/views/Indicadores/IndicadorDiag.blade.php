@@ -1,4 +1,6 @@
-<md-dialog class="vh100 no-overflow bg-black-2" md-theme="Black" flex=100 layout>
+<md-dialog class="no-overflow bg-black-2 mh100m20 mw100m20" md-theme="Black" layout>
+
+	@include('Indicadores.IndicadorDiag_Sidenav')
 
 	<div layout=column flex>
 		
@@ -20,7 +22,7 @@
 			</div>
 			
 			<md-button class="md-icon-button no-margin focus-on-hover" aria-label="Button" ng-click="Cancel()" 
-				style="margin-right: -15px !important;">
+				>
 				<md-tooltip md-direction=left>Salir</md-tooltip>
 				<md-icon md-svg-icon="md-close"></md-icon>
 			</md-button>
@@ -42,7 +44,7 @@
 											<md-button ng-click="anioAdd( 1)" class="no-margin s30 no-padding md-icon-button"><md-icon class="s20" md-font-icon="fa-fw fa-chevron-right"></md-icon></md-button>
 										</div>
 										<md-switch class="margin-5-0" ng-model="modoComparativo" aria-label="a" ng-change="updateChart()">Ver Comparativo</md-switch>
-										<md-switch class="margin-5-0" ng-model="showSidenav"     aria-label="a">Ver Mejoramiento</md-switch>
+										<md-switch hide class="margin-5-0" ng-model="showSidenav"     aria-label="a">Ver Mejoramiento</md-switch>
 									</div>
 								</th>
 								<th md-column colspan=12>
@@ -100,7 +102,7 @@
 
 							<tr md-row>
 								<td md-cell>Mejoramiento</td>
-								<td md-cell ng-repeat="M in Meses">
+								<td md-cell ng-repeat="M in Meses" ng-click="openSidenavElm(['','Mejoramiento'])">
 									<md-icon md-font-icon="fa-comment fa-fw fa-lg" class="Pointer"
 										ng-if="(ComentariosCRUD.rows | filter:{ Grupo:'Comentario', Op1: Anio+M[0] }).length > 0">
 										<md-tooltip>{{ (ComentariosCRUD.rows | filter:{ Grupo:'Comentario', Op1: Anio+M[0] }).length }} Comentarios</md-tooltip>		
@@ -115,37 +117,9 @@
 							<tr md-row ng-show="Ind.desagregables.length > 0 || Ind.desagregados.length > 0">
 								<td md-cell colspan=13></td></tr>
 
-							<tr md-row ng-show="Ind.desagregables.length > 0 || Ind.desagregados.length > 0">
+							<tr md-row ng-show="Ind.desagregados.length > 0">
 								<td md-cell colspan=13>
-									<div class="padding-left" layout>
-										<span class="lh30 margin-right text-clear">Desagregar Por:</span>
-										<md-chips class="h30" ng-model="Ind.desagregados"
-											md-on-remove="removedDesagregado($chip)"
-											readonly=true md-removable=true>
-											<md-chip-template>{{$chip.campo_title}}</md-chip-template>
-										</md-chips>
-										
-										<div>
-										<md-select ng-model="newChip" placeholder="Agregar Campo" ng-change="addDesagregado()" 
-											ng-show="Ind.desagregables.length > 0">
-											<md-option ng-repeat="C in Ind.desagregables" ng-value="C">{{ C.campo_title }}</md-option>
-										</md-select>
-										</div>
-										
-										<md-button class="md-icon-button s30 no-margin no-padding" ng-show="Ind.desagregados.length > 0" 
-											ng-click="getDesagregatedData($event)">
-											<md-tooltip md-direction=right>Desagregar</md-tooltip>
-											<md-icon md-font-icon="fa-bolt"></md-icon>
-										</md-button>
-
-										<div class="text-clear h30 lh30 margin-0-10">Ver:</div>
-										<md-select ng-model="viewDesagregacionVal">
-											<md-option value='All'>Todos</md-option>
-											<md-option value='IndVal'>Resultado</md-option>
-											<md-option ng-repeat="(kV, V) in Ind.variables" ng-value='{{ kV }}'>{{ V.variable_name }}</md-option>
-										</md-select>
-
-									</div>
+									<div class="padding-5-10">Datos Desagregados - {{ viewDesagregacionVal }}</div>
 								</td>
 							</tr>
 
@@ -175,13 +149,5 @@
 		</div>
 
 	</div>
-
-	<div class="w20 Pointer sidenav-activator" layout layout-align="center center" ng-click="toogleSidenav()">
-		<md-button class="md-icon-button no-margin no-padding s30" aria-label="Button">
-			<md-icon md-font-icon="fa-chevron-left" ng-class="{'fa-rotate-180': showSidenav}"></md-icon>
-		</md-button>
-	</div>
-
-	@include('Indicadores.IndicadorDiag_Sidenav')
 
 </md-dialog>

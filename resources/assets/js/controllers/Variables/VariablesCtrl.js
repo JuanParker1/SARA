@@ -12,6 +12,14 @@ angular.module('VariablesCtrl', [])
 		Ctrl.Grids = Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
 
 		Ctrl.tiposDatoVar = ['Numero','Porcentaje','Moneda'];
+		Ctrl.Frecuencias = {
+			0: 'Diario',
+			1: 'Mensual',
+			2: 'Bimestral',
+			3: 'Trimestral',
+			6: 'Semestral',
+			12: 'Anual'
+		};
 
 		Ctrl.agregators = [
 			{ id: 'count', 			Nombre: 'Contar' },
@@ -47,7 +55,7 @@ angular.module('VariablesCtrl', [])
 			var Vars = Ctrl.VariablesCRUD.rows.filter((v) => {
 				return v.Ruta.startsWith(F.route);
 			}).map(v => v.id);
-			Rs.getVariableData(Vars);
+			Rs.getVariableData(Vars, null);
 		};
 
 		Ctrl.searchVariable = () => {

@@ -207,10 +207,11 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'env'    => env('APP_ENV', 'production'),
-    'online' => env('APP_ONLINE', true),
-    'url'    => env('APP_URL', 'http://sara.local/'),
-    'name'    => env('APP_NAME', 'SARA'),
+    'env'           => env('APP_ENV', 'production'),
+    'online'        => env('APP_ONLINE', true),
+    'url'           => env('APP_URL', 'http://sara.local/'),
+    'name'          => env('APP_NAME', 'SARA'),
+    'encode_utf8'   => env('APP_ENCODEUTF8', false),
 
 
 

@@ -9,12 +9,11 @@ use App\Http\Controllers\Controller;
 
 use File;
 use App\Functions\CRUD;
+use App\Functions\Helper;
 
 
 class MainController extends Controller
 {
-    
-
 
     public function getBase(){ 
     	
@@ -92,6 +91,11 @@ class MainController extends Controller
 		return $User;
 	}
 
+	public function getIP()
+	{
+		return request()->ip();
+	}
+
 	public function getIconos()
 	{
 		$Iconos = \App\Models\Icono::all();
@@ -103,7 +107,7 @@ class MainController extends Controller
 	//Comentarios
 	public function postComentarios()
 	{
-		$CRUD = new CRUD('App\Models\Comentario');
+		$CRUD = new \App\Functions\CRUD('App\Models\Comentario');
         return $CRUD->call(request()->fn, request()->ops);
 	}
 
@@ -155,6 +159,47 @@ class MainController extends Controller
 
 	}
 	
+	public function postAddLog()
+	{
+		$Log = request()->all();
 
+		//if(!array_key_exists('usuario_id', $Log)) $Log['usuario_id'] = 
+
+		\App\Models\Log::create($Log);
+	}
+
+	public function postGetFavorites()
+	{
+		$Usuario = Helper::getUsuario();
+		
+		$Recientes = [];
+		$DaRecientes = \App\Models\Recientes::where('usuario_id', $Usuario->id)->limit(50)->get();
+
+		foreach ($DaRecientes as $R) {
+			if(!array_key_exists($R->Url, $Recientes) AND count($Recientes) < 7) $Recientes[$R->Url] = $R;
+		}
+
+		$Recientes = array_values($Recientes);
+
+		return compact('Recientes');
+	}
+
+	public function postUploadImage()
+	{
+		extract(request()->all()); //width, height, imagemode
+		$img = \Image::make($_FILES['file']['tmp_name']);
+		
+		if($imagemode == 'Recortar'){      $img->fit($width, $height); }
+		if($imagemode == 'Ajustar Ancho'){ $img->resize($width, null,    function ($constraint){ $constraint->aspectRatio(); }); }
+		if($imagemode == 'Ajustar Alto'){  $img->resize(null,   $height, function ($constraint){ $constraint->aspectRatio(); }); }
+		if($imagemode == 'Contener'){      $img->fit($width, $height); }
+
+		$uid = uniqid('image_');
+		$savepath = "temp/$uid.jpg";
+
+		$img->save($savepath);
+
+		return $savepath;
+	}
 
 }

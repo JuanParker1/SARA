@@ -71,6 +71,12 @@
 							<md-option ng-value="Op" ng-repeat="Op in [0,1,2]">{{ Op }}</md-option>
 						</md-select>
 					</md-input-container>
+					<md-input-container class="no-margin-top margin-bottom">
+						<md-tooltip md-direction="top">Frecuencia</md-tooltip>
+						<md-select ng-model="VarSel.Frecuencia" aria-label=s>
+							<md-option ng-repeat="(k,F) in Frecuencias" ng-value="k">{{ F }}</md-option>
+						</md-select>
+					</md-input-container>
 				</div>
 				
 				<div layout>
@@ -178,7 +184,8 @@
 					<md-menu-item><md-button ng-click="copyVar()"><md-icon md-font-icon="fa-copy margin-right fa-fw"></md-icon>Copiar Variable</md-button></md-menu-item>
 				</md-menu-content>
 			</md-menu>
-			<md-button class="border bg-white mh30 h30 lh30 no-margin-left" ng-click="getVariableData([VarSel.id])">
+			<md-button class="border bg-white mh30 h30 lh30 no-margin-left" ng-click="getVariableData([VarSel.id], VarSel.Tipo)"
+				ng-show="VarSel.Tipo !== 'Manual'">
 				<md-icon md-font-icon="fa-cloud-download-alt" class="margin-right s20 fa-lg" style="transform: translateY(1px) translateX(-3px);"></md-icon>Obtener Datos
 			</md-button>
 			<md-button class="md-icon-button no-margin" aria-label="b" ng-click="viewVariableDiag(VarSel.id)">

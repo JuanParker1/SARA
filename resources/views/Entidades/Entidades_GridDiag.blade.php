@@ -64,8 +64,23 @@
 								</md-button>
 							</td>
 							<td md-cell ng-repeat="C in Grid.columnas | filter:{Visible:true}"
-								ng-class="{ 'md-cell-compress': $first }" >
-								{{ ::R[C.header_index] }}
+								ng-class="{ 'md-cell-compress': ($first || inArray(C.campo.Tipo, ['Lista', 'Imagen'])) }" >
+								<div ng-if="C.campo.Tipo == 'Lista'" class="w100p">
+									<div ng-repeat="Op in [getOpcionLista(R[C.header_index], C.campo.Config)]">
+										<div class="lista-pill" ng-style="{ backgroundColor: Op.color, color: calcTextColor(Op.color) }">
+											<md-icon ng-if="Op.icono" md-font-icon="{{ Op.icono }}" class="text-inherit fa-fw"></md-icon>
+											{{ Op.desc || Op.value }}
+										</div>
+									</div>
+								</div>
+
+								<div ng-if="C.campo.Tipo == 'Imagen'" ng-click="previewCampo(C, R[C.header_index])">
+									<img ng-src="{{ ::R[C.header_index].url }}" height="30" style="margin-bottom: -3px;">
+								</div>
+								<div ng-if="C.campo.Tipo == 'TextoLargo'" class="w100p">{{ ::R[C.header_index] | limitTo:50 }}
+									<md-icon md-svg-icon="md-more-h" ng-show="R[C.header_index].length > 50" class="s20 Pointer" ng-click="previewCampo(C, R[C.header_index])"></md-icon>
+								</div>
+								<div ng-if="!inArray(C.campo.Tipo, ['Lista', 'Imagen','TextoLargo'])" class="w100p">{{ ::R[C.header_index] }}</div>
 							</td>
 						</tr>
 					</tbody>
@@ -76,5 +91,17 @@
 
 		</div>
 	</div>
+
+	<!--<div id="previewCampoOverlay" layout layout-align="center center" ng-show="previewCampo">
+		<img src="/img/carros/1.jpg?5f0639db02f22" class="border-radius">
+	</div>
+
+	<style type="text/css">
+		#previewCampoOverlay{
+			background: rgba(0, 0, 0, 0.7);
+			position: absolute;
+			top: 0; bottom: 0; left: 0; right: 0;
+		}
+	</style>-->
 
 </md-dialog>

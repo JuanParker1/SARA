@@ -2,15 +2,18 @@
 
 	<md-toolbar class="md-short bg-white border-bottom" md-theme="Snow_White">
 		<div class="md-toolbar-tools">
-			<h2><b>Actualizar Variables</b></h2>
+			<h2><b>Actualizar Variables ({{ Variables.length }})</b></h2>
 			<div class="w20"></div>
+			<md-select ng-model="TipoVar" aria-label=s class="md-no-underline" style="margin: 0px 10px 0 0px;"
+				ng-change="getVariables()">
+				<md-option ng-value="Op" ng-repeat="Op in ['Valor Fijo', 'Calculado de Entidad', 'Manual']">{{ Op }}</md-option>
+			</md-select>
 			<md-datepicker class="compact lh30 h30 margin-right" ng-model="PeriodoIni" md-max-date="PeriodoFin" md-mode="month" md-date-locale="periodDateLocale" md-hide-icons="calendar" aria-label="f" ng-change="calcPeriodos()"></md-datepicker>
 			<md-datepicker class="compact lh30 h30 margin-right" ng-model="PeriodoFin" md-min-date="PeriodoIni" md-mode="month" md-date-locale="periodDateLocale" md-hide-icons="calendar" aria-label="f" ng-change="calcPeriodos()"></md-datepicker>
 
-			<md-button class="md-icon-button" aria-label="Button" ng-click="getCurrentData()" hide>
-				<md-icon md-font-icon="fa-bolt"></md-icon>
-			</md-button>
 			<span flex></span>
+
+
 			<md-select ng-model="Anio" aria-label="a">
 			  <md-option ng-value="A" ng-repeat="A in Anios">{{ A }}</md-option>
 			</md-select>
@@ -20,17 +23,23 @@
 		</div>
 	</md-toolbar>
 
-	<div flex layout=column class="overflow-y hasScroll">
+	<div flex layout=column class="overflow-y darkScroll" ng-if="Variables">
 		<md-table-container class="border-bottom">
 			<table md-table class="md-table-short table-col-compress" md-row-select="true" multiple ng-model="selectedRows">
 				<thead md-head class="">
+
 					<th class="text-left h30">Variable</th>
 					<th ng-repeat="M in Meses" md-numeric class="text-right padding-right" ng-class="{ 'bg-lightgrey' : cellSelected(false,M) }">{{ M[1] }}</th>
 					<th></th>
 				</thead>
 				<tbody md-body>
 					<tr md-row class="" ng-repeat="V in Variables" md-select="V.id" md-select-id="id" ng-class="{ 'text-clear': !inArray(V.id, selectedRows) }">
-						<td md-cell class="">{{ V.Variable }}</td>
+						<td md-cell class="">
+							<div layout=column style="padding: 3px 0;">
+								<div>{{ V.Variable }}</div>
+								<div class="text-clear">{{ V.proceso.Proceso }}</div>
+							</div>
+						</td>
 						<td md-cell class="text-right mw50" ng-repeat="M in Meses" ng-class="{ 'bg-lightgrey' : cellSelected(V,M) }">
 							<div layout=column>
 								<div>{{ V.valores[Anio+M[0]].val }}</div>

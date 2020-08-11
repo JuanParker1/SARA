@@ -235,6 +235,32 @@ angular.module('appFunctions', [])
 				parent: Config.parent,
 			});
 		};
+
+		Rs.TableDialog = (Elements, Config) => {
+			var DefConfig = {
+				controller: 'TableDialogCtrl',
+				templateUrl: '/templates/dialogs/TableSelector.html',
+				clickOutsideToClose: true,
+				fullscreen: true,
+				Theme: 'default', Flex: 95,
+				Title: 'Seleccionar',
+				primaryId: 'id', pluck: true,
+				Columns: [
+					{ Nombre: 'id', Desc: 'Id.', numeric: true }
+				],
+				selected: []
+			};
+			var Config = angular.extend(DefConfig, Config);
+
+			return $mdDialog.show({
+				controller: Config.controller,
+				templateUrl: Config.templateUrl,
+				locals: { Config : Config, Elements: Elements },
+				clickOutsideToClose: Config.clickOutsideToClose,
+				fullscreen: Config.fullscreen,
+				multiple: true,
+			});
+		}
 		
 		Rs.Confirm = function(params){
 			var DefConfig = {
@@ -319,29 +345,37 @@ angular.module('appFunctions', [])
 			}
 			
 			var fs = [];
-	    	var routes = [];
+	    	var routes = {};
 	    	var defaultOpen = Rs.def(defaultOpen, false);
 	    	var modeB    = Rs.def(modeB, false);
 
 	    	angular.forEach(arr, (e) => {
 	    		var r = e[ruta];
     			rex = r.split('\\');
+    			
     			for (var i = 0; i < rex.length; i++) {
     				for (var n = 0; n <= i; n++) {
     					
     					var subroute = rex.slice(0,n+1).join('\\');
-    					if(subroute != "" && !routes.includes(subroute)){
-    						routes.push(subroute);
-    						var show = defaultOpen || (n == 0);
+    					if(subroute != "" && !Object.keys(routes).includes(subroute)){
+    						routes[subroute] = 0;
+
+    						var parent_route = subroute.split('\\').slice(0, -1).join('\\');
+    						
+    						var show = defaultOpen || (n <= 1);
+    						var open = defaultOpen || (n == 0);
+    						
+    						if(n > 0) routes[parent_route]++;
 
     						//if( !modeB || ( modeB && e.children > 0 ) ){
-    							fs.push({ i: fs.length, type: 'folder', name: rex[n], depth: n, open: defaultOpen, show: show, route: subroute });
+    							fs.push({ i: fs.length, type: 'folder', name: rex[n], depth: n, open: open, show: show, route: subroute });
     						//};
 
     					};
 	    				
     				};
     			};
+
     			var depth = (r == "") ? 0 : (rex.length);
     			var show = defaultOpen || (depth == 0);
 
@@ -351,8 +385,10 @@ angular.module('appFunctions', [])
     			
 	    	});
 
-	    	//console.log(fs);
-
+	    	angular.forEach(fs, f => {
+	    		f.children = routes[f.route];
+	    	});
+	    	
 	    	return fs;
 		};
 
@@ -380,6 +416,7 @@ angular.module('appFunctions', [])
 		};
 
 		Rs.calcTextColor = (base_color) => {
+			if(!base_color) return 'black';
 		    var r, g, b, hsp;
 		    if(base_color.match(/^rgb/)) {
 		        color = base_color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
@@ -394,7 +431,7 @@ angular.module('appFunctions', [])
 		    // HSP (Highly Sensitive Poo) equation from http://alienryderflex.com/hsp.html
 		    hsp = Math.sqrt( 0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b) );
 		    var textColor = (hsp>127.5) ? 'black' : 'white';
-		    console.log(base_color, hsp, textColor);
+		    //console.log(base_color, hsp, textColor);
 		    return textColor;
 		};
 
@@ -433,11 +470,11 @@ angular.module('appFunctions', [])
             return d3.format(',.'+Decimales)(d);
 		};
 
-		Rs.getVariableData = (Variables) => {
+		Rs.getVariableData = (Variables, Tipo) => {
 			$mdDialog.show({
 				controller: 'VariablesGetDataDiagCtrl',
 				templateUrl: '/Frag/Variables.VariablesGetDataDiag',
-				locals: { Variables : Variables },
+				locals: { Variables : Variables, Tipo: Tipo },
 				clickOutsideToClose: false, fullscreen: true, multiple: true,
 			});
 		};
@@ -472,7 +509,7 @@ angular.module('appFunctions', [])
 				templateUrl: '/Frag/Scorecards.ScorecardDiag',
 				clickOutsideToClose: false, fullscreen: true, multiple: true,
 				onComplete: (scope, element) => {
-					scope.getScorecard(scorecard_id);
+					scope.getScorecard(scorecard_id, {});
 				}
 			});
 		};

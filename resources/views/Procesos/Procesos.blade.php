@@ -13,7 +13,7 @@
 			<div class="padding-left text-clear">Procesos</div>
 			<span flex></span>
 			<md-button class="md-icon-button no-margin" aria-label="b" ng-click="createEmpresa()">
-				<md-icon md-font-icon="fa-plus"></md-icon>
+				<md-icon md-svg-icon="md-plus"></md-icon>
 				<md-tooltip md-direction=left>Agregar Empresa</md-tooltip>
 			</md-button>
 		</div>
@@ -29,7 +29,10 @@
 				</div>
 				<div ng-show="F.type == 'file'" flex layout class="Pointer" ng-click="openProceso(F.file)" 
 					ng-class="{ 'text-bold' : F.file.id == FuncionSel.id }">
-					<div flex style="padding: 5px 0 5px 12px">{{ F.file.Proceso }}</div>
+					<div flex style="padding: 5px 0 5px 24px" layout>
+						<md-icon md-font-icon="{{ getProcesoIcon(F.file.Tipo) }}" class="fa-fw s15 margin-right-5"></md-icon>
+						<div flex>{{ F.file.Proceso }}</div>
+					</div>
 				</div>
 			</div>
 
@@ -50,9 +53,15 @@
 			<md-input-container class=" no-margin-bottom md-title" flex>
 				<input type="text" ng-model="ProcesoSel.Proceso" aria-label=s placeholder="Titulo">
 			</md-input-container>
-			<md-input-container class="w70">
+			<md-input-container class="w120">
 				<input type="text" ng-model="ProcesoSel.CDC" aria-label=s placeholder="CDC">
 			</md-input-container>
+			<md-input-container class="w120">
+				<input type="text" ng-model="ProcesoSel.Op1" aria-label=s placeholder="Op1">
+			</md-input-container>
+
+			<div class="text-clear" style="margin: 27px 7px 0;">{{ ProcesoSel.id }}</div>
+
 			<md-input-container class=" no-margin-bottom">
 				<label>Tipo</label>
 				<md-select ng-model="ProcesoSel.Tipo" aria-label=s>
@@ -75,12 +84,12 @@
 				@include('Procesos.Procesos_Integrantes')
 
 				<div layout=column class="margin-left-5 border border-radius bg-theme">
-					<div class="md-subheader margin">Subprocesos</div>
+					<div class="md-subheader margin">Subnodos</div>
 					<div ng-repeat="P in Procesos | filter:{ padre_id: ProcesoSel.id }:true" class="padding-5-10 border-top Pointer text-13px" 
 						ng-click="openProceso(P)">{{ P.Proceso }}</div>
 				</div>
 
-				<div class="h30"></div>
+			<div class="h30"></div>
 
 			</div>
 			<div flex class="overflow-y hasScroll">

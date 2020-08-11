@@ -13,6 +13,7 @@ use App\Models\IndicadorMeta;
 use App\Models\Variable;
 use App\Models\VariableValor;
 use App\Models\Scorecard;
+use App\Models\Proceso;
 use App\Functions\Helper;
 
 class IndicadoresController extends Controller
@@ -22,6 +23,42 @@ class IndicadoresController extends Controller
     {
         $CRUD = new CRUD('App\Models\Indicador');
         return $CRUD->call(request()->fn, request()->ops);
+    }
+
+    public function postAddIndicador()
+    {
+        extract(request()->all()); //$newInd
+
+        $DaInd = new Indicador();
+        $DaInd->fillit_columns($newInd);
+        $DaInd->save();
+
+        foreach ($newInd['variables'] as $k => $Var ) {
+            
+            $DaVar = new Variable();
+            $DaVar->fillit_columns($Var);
+            $DaVar->proceso_id = $DaInd->proceso_id;
+            $DaVar->save();
+
+            $DaIndVar = new IndicadorVariable([
+                'indicador_id' => $DaInd->id,
+                'Letra'        => strtolower(\PHPExcel_Cell::stringFromColumnIndex(($k))),
+                'Tipo'         => 'Variable',     
+                'variable_id'  => $DaVar->id,
+            ]);
+            $DaIndVar->save();
+        }
+
+        if($newInd['Meta']){
+            $DaMeta = new IndicadorMeta([
+                'indicador_id' => $DaInd->id,
+                'PeriodoDesde' => 200001,
+                'Meta'         => $newInd['Meta']
+            ]);
+            $DaMeta->save();
+        }
+
+        //return $DaInd;
     }
 
     public function postGet()
@@ -251,11 +288,74 @@ class IndicadoresController extends Controller
 
 
     public function getLoadSolgeinVals()
-    {
+    {        
+        $filename = 'temp/Datos Sogein 2020-06.xls';
+    
+        $Regs = Helper::readTableFile($filename, [
+            'col_ini' => 1, 'col_fin' => 5, 'row_ini' => 7, 'row_fin' => null,
+            'headers' => ['Variable','Nivel',' Nombre del nivel','Mes','Valor Real']
+        ]);
+
+        $Procesos = Proceso::whereNotNull('Op1')->get()->keyBy('Op1');
+        //$Indicadores = Indicador::get(['id', 'Indicador', 'proceso_id']);
+        $Indicadores = [];
+        $Variables   = Variable::where('Tipo', 'Manual')->get(['id', 'Variable', 'proceso_id']);
+
+        //$Variable = $Variables->first(function ($key, $I){ return ($I['Variable'] == "Alojamientos Ocupados Consotá" ); });
+        //dd($Variable);
+
+        $Regs = $Regs->filter(function ($reg) { return !is_null($reg['Valor Real']) AND (!in_array($reg['Nivel'], ['.1'])); })->map(function($reg) use ($Procesos, $Indicadores, $Variables){
+            $reg['proceso_id']  = null;
+            $reg['indicador_id'] = null;
+            $reg['variable_id'] = null;
+
+            $Proceso = $Procesos->get($reg['Nivel']);
+            if($Proceso){
+                $reg['proceso_id'] = $Proceso->id;
+
+                //$Indicador = $Indicadores->first(function ($key, $I) use ($reg){ return ($I['Indicador'] == $reg['Variable']  ); });
+                //if($Indicador) $reg['indicador_id'] = $Indicador->id;
+
+                $Variable = $Variables->first(function ($key, $V) use ($reg){
+                    return ( ($V['Variable'] == $reg['Variable']) AND ($V['proceso_id'] == $reg['proceso_id'] ) ); 
+                });
+                if($Variable) $reg['variable_id'] = $Variable->id;
+            }
+            
+            return $reg;
+        });
+
+        foreach ($Regs as $reg) {
+            if($reg['variable_id']){
+                $ValorPeriodo = VariableValor::where('variable_id', $reg['variable_id'])->where('Periodo', $reg['Mes'])->first();
+
+                if(!$ValorPeriodo){
+                    $newValor = new VariableValor([
+                        'variable_id' => $reg['variable_id'],
+                        'Periodo'     => $reg['Mes'],
+                        'Valor'       => $reg['Valor Real']
+                    ]);
+                    $newValor->save();
+                }
+            }
+        }
+
+        //Helper::tablearArray($Regs);
+
+        //return Helper::streamCSV($Regs);
+
+        dd('Done');
+
         \Excel::setDelimiter(';');
 
-        $regs = \Excel::selectSheetsByIndex(0)->load('temp/Valores_Indicadores_SOLGEIN_ADMFINSER.xlsx', function($reader){   
+        $regs = \Excel::selectSheetsByIndex(0)->load('temp/Indicadores Solgein 2020-03-04.xlsx', function($reader){
+
+
+            //$reader->dump();
         })->get();
+
+        exit();
+        dd($regs->toObject());
 
         $inds = collect($regs)->groupBy('cod_indicador')->map(function($var){
             $nodo = $var[0]['nodo'];

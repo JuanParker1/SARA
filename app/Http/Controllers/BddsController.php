@@ -10,6 +10,8 @@ use App\Functions\CRUD;
 
 use App\Models\BDD;
 use App\Functions\ConnHelper;
+use App\Functions\GridHelper;
+use App\Functions\CamposHelper;
 use DB;
 
 class BddsController extends Controller
@@ -64,5 +66,49 @@ class BddsController extends Controller
         return $CRUD->call(request()->fn, request()->ops);
     }
 
+
+
+
+    //Listas
+    public function postListas()
+    {
+        $CRUD = new CRUD('App\Models\BDDListas');
+        return $CRUD->call(request()->fn, request()->ops);
+    }
+
+    public function postGetListas()
+    {
+        extract(request()->all()); //bdd_id
+        return \App\Models\BDDListas::where('bdd_id', $bdd_id)->get();
+    }
+
+    public function postGetIndices()
+    {
+        extract(request()->all());
+
+        $Lista = \App\Models\BDDListas::where('id', $lista_id)->with('bdd')->first();
+        $Conn = ConnHelper::getConn($Lista->bdd);
+        $Indice = GridHelper::getTableName($Lista->Indice, $Lista->bdd->Op3);
+        $Indices = collect($Conn->table($Indice[2])->get([ $Lista->IndiceCod, $Lista->IndiceDes ]))->transform(function($Row) use ($Lista){
+            return [ 'IndiceCod' => $Row[ $Lista->IndiceCod ], 'IndiceDes' => utf8_encode(trim($Row[ $Lista->IndiceDes ])) ];
+        });
+
+        return compact('Indices');
+    }
+
+    public function postGetListadetalles()
+    {
+        extract(request()->all()); //lista_id, indice_cod
+        $Lista = \App\Models\BDDListas::where('id', $lista_id)->with('bdd')->first();
+        $Conn = ConnHelper::getConn($Lista->bdd);
+        
+        $Detalle = GridHelper::getTableName($Lista->Detalle, $Lista->bdd->Op3);
+
+        $Detalles = collect($Conn->table($Detalle[2])->where($Lista->Llave, $indice_cod)->get([ $Lista->DetalleCod, $Lista->DetalleDes ]))->transform(function($Row) use ($Lista){
+            return [ 'DetalleCod' => trim($Row[ $Lista->DetalleCod ]), 'DetalleDes' => utf8_encode(trim($Row[ $Lista->DetalleDes ])) ];
+        });
+
+        return $Detalles;
+    } 
 
 }

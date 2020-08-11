@@ -145,6 +145,14 @@ class UsuarioController extends Controller
 		
 		if(!$token) return response()->json(['Msg' => 'Usuario no autorizado'], 400);
 
+		$Email = Crypt::decrypt($token);
+        if(strtolower($Email) == 'corrego@comfamiliar.com'){
+
+            $IP = request()->ip();
+            if(!in_array($IP, [ '127.0.0.1', '10.25.40.108', '10.25.20.252' ])) 
+            	return response()->json(['Msg' => 'Usuario no autorizado'], 400);
+        };
+
 		$Usuario = new Usuario();
 		$Usuario = $Usuario->fromToken($token);
 		$Usuario->getSecciones();

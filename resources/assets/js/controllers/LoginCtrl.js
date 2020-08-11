@@ -23,7 +23,15 @@ angular.module('LoginCtrl', [])
 			$http.post('api/Usuario/login', { Email: Ctrl.User, Pass: Ctrl.Pass }).then(function(r){
 				var token = r.data;
 				$localStorage.token = token;
-				$state.go('Home');
+
+				if($localStorage.returnUrl){
+					let returnUrl = angular.copy($localStorage.returnUrl);
+					delete $localStorage.returnUrl;
+					location.replace("/#/"+returnUrl);
+				}else{
+					$state.go('Home');
+				}
+				
 			}, function(r){
 				Ctrl.ShowErr(r.data.Msg); 
 				Ctrl.Pass = '';

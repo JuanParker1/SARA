@@ -107,3 +107,16 @@
 		{{ C.campo_title }}
 	</md-checkbox>
 </div>
+
+<div ng-if="C.campo.Tipo == 'Imagen'" layout=column class="">
+	<md-subheader class="label" style="margin-top: -13px;">{{ C.campo_title }}</md-subheader>
+	<div class="padding-5" ng-if="Config.modo !== 'Crear'">
+		<img ng-src="{{ C.val.url }}" style="border-radius: 3px;">
+	</div>
+	<div class="" layout layout-align="center center" ng-if="Config.modo !== 'Crear'">
+		<md-button class="no-margin bg-lightgrey-5 h30 mh30 lh30 text-14px" ngf-select="uploadImage(C, $file)" accept="image/*">
+			<md-icon md-svg-icon="md-image" class="margin-right"></md-icon>Seleccionar...
+		</md-button>
+	</div>
+	<div ng-if="Config.modo == 'Crear'" class="text-clear padding">No disponible al crear</div>
+</div>

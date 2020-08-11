@@ -1,6 +1,6 @@
 angular.module('BDDCtrl', [])
-.controller('BDDCtrl', ['$scope', '$rootScope', '$injector',
-	function($scope, $rootScope, $injector) {
+.controller('BDDCtrl', ['$scope', '$rootScope', '$injector', '$mdDialog', 
+	function($scope, $rootScope, $injector, $mdDialog) {
 
 		console.info('BDDCtrl');
 		var Ctrl = $scope;
@@ -9,6 +9,16 @@ angular.module('BDDCtrl', [])
 		Rs.mainTheme = 'Snow_White';
 		Ctrl.BDDSidenav = true;
 		Ctrl.BDDFavSidenav = false;
+
+		Ctrl.SectionSel = 'Listas';
+		Ctrl.SeccionesBDD = [
+			[ 'ConsultaSQL', 'fa-bolt',	'Consulta SQL'  ],
+			[ 'Listas', 	 'fa-list', 'Listas'		 ]
+		];
+
+		Ctrl.changeSection = (S) => {
+			Ctrl.SectionSel = S[0];
+		}
 
 		Ctrl.BDDsCRUD = $injector.get('CRUD').config({ base_url: '/api/Bdds' });
 
@@ -20,7 +30,10 @@ angular.module('BDDCtrl', [])
 
 		Ctrl.openBDD = (B) => {
 			Ctrl.BDDSel = B;
-			Ctrl.getFavoritos();
+			Ctrl.FavsCRUD.setScope(  'bddid', Ctrl.BDDSel.id).get();
+			Ctrl.ListasCRUD.setScope('bddid', Ctrl.BDDSel.id).get().then(() => {
+				//Ctrl.browseLista(Ctrl.ListasCRUD.rows[0]);
+			});
 			//Ctrl.executeQuery(); //REmove
 		};
 
@@ -93,11 +106,6 @@ angular.module('BDDCtrl', [])
 			]
 		});
 
-		Ctrl.getFavoritos = () => {
-			Ctrl.FavsCRUD.setScope('bddid', Ctrl.BDDSel.id);
-			Ctrl.FavsCRUD.get();
-		};
-
 		Ctrl.useFav = (F) => {
 			if(Ctrl.executingQuery) return;
 
@@ -134,5 +142,48 @@ angular.module('BDDCtrl', [])
 			});
 		};
 
+
+
+		//Panel de Listas
+		Ctrl.ListasCRUD = $injector.get('CRUD').config({ base_url: '/api/Bdds/listas' });
+
+		Ctrl.addLista = () => {
+			Ctrl.ListasCRUD.dialog({
+				bdd_id: Ctrl.BDDSel.id
+			}, {
+				title: 'Crear Proveedor de Listas',
+				class: 'w400',
+				except: [ 'bdd_id' ]
+			}).then((R) => {
+				if(!R) return;
+				Ctrl.ListasCRUD.add(R);
+			});
+		}
+
+		Ctrl.editLista = (L) => {
+			Ctrl.ListasCRUD.dialog(L, {
+				title: 'Editar Proveedor de Listas',
+				class: 'w400',
+				except: [ 'bdd_id' ]
+			}).then((R) => {
+				if(!R) return;
+				if(R=='DELETE') return Ctrl.ListasCRUD.delete(L);
+				Ctrl.ListasCRUD.update(R);
+			});
+		}
+
+		Ctrl.browseListas = () => {
+
+			let Config = {
+				bdd_id: Ctrl.BDDSel.id,
+			};
+
+			$mdDialog.show({
+				controller: 'BDD_ListasDiagCtrl',
+				templateUrl: '/Frag/BDD.BDD_ListasDiag',
+				locals: { Config: Config },
+				clickOutsideToClose: true, fullscreen: false, multiple: true,
+			});
+		}
 	}
 ]);

@@ -146,6 +146,8 @@ angular.module('EntidadesCtrl', [])
 			Ctrl.CamposCRUD.setScope('entidad', Ctrl.EntidadSel.id);
 			return Ctrl.CamposCRUD.get().then(() => {
 				Ctrl.loadingEntidad = false;
+
+				//Ctrl.configImagen(Ctrl.CamposCRUD.rows[1]); //FIX
 				//Ctrl.configLista(Ctrl.CamposCRUD.rows[3]); FIX
 			});
 
@@ -179,7 +181,7 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.addCampo = (newCampo) => {
 			newCampo.Columna = newCampo.Columna.trim();
 			if(newCampo.Columna == '') return Rs.showToast('Falta Columna', 'Error');
-			if(Rs.found(newCampo.Columna, Ctrl.CamposCRUD.rows, 'Columna')) return;
+			//if(Rs.found(newCampo.Columna, Ctrl.CamposCRUD.rows, 'Columna')) return; //FIX - Puedo repetir Columnas
 			newCampo.entidad_id = Ctrl.EntidadSel.id;
 			newCampo.Indice = Ctrl.CamposCRUD.rows.length;
 			Ctrl.CamposCRUD.add(newCampo).then(() => {
@@ -253,7 +255,6 @@ angular.module('EntidadesCtrl', [])
 		};
 
 		Ctrl.configLista = (C) => {
-			console.log(C);
 			$mdDialog.show({
 				controller: 'Entidades_Campos_ListaConfigCtrl',
 				templateUrl: 'Frag/Entidades.Entidades_Campos_ListaConfig',
@@ -263,8 +264,21 @@ angular.module('EntidadesCtrl', [])
 				locals: { C: C }
 			}).then((newC) => {
 				if(!newC) return;
-				C = newC;
-				C.changed = true;
+				C = newC; C.changed = true;
+			});
+		};
+
+		Ctrl.configImagen = (C) => {
+			$mdDialog.show({
+				controller: 'Entidades_Campos_ImagenConfigCtrl',
+				templateUrl: 'Frag/Entidades.Entidades_Campos_ImagenConfig',
+				clickOutsideToClose: false,
+				fullscreen: false,
+				multiple: true,
+				locals: { C: C }
+			}).then((newC) => {
+				if(!newC) return;
+				C = newC; C.changed = true;
 			});
 		};
 

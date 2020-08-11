@@ -1,11 +1,4 @@
-<div layout=column class="padding-right w270 border-right">
-
-	<div layout>
-		<md-button class="md-icon-button no-margin" aria-label="Button" ng-click="BDDSidenav = !BDDSidenav">
-			<md-icon md-svg-icon="md-bars"></md-icon>
-		</md-button>
-		<div class="md-title lh40">{{ BDDSel.Nombre }}</div>
-	</div>
+<div layout=column class="padding-right-5 w250 border-right">
 
 	<form flex layout=column class="overflow-y darkScroll padding-left" ng-submit="updateBDD()">
 		
@@ -39,14 +32,14 @@
 
 		<span flex></span>
 
-		<div layout=column layout-gt-xs=row class="border-top">
-			<md-button class="md-icon-button md-warning" aria-label="b" ng-click="removeBDD()">
+		<div layout=column layout-gt-xs=row class="border-top padding-but-left">
+			<md-button class="md-icon-button md-warning no-margin no-padding" aria-label="b" ng-click="removeBDD()">
 				<md-icon md-font-icon="fa-trash"></md-icon>
 				<md-tooltip md-direction=right>Eliminar</md-tooltip>
 			</md-button>
 			<span flex></span>
-			<md-button class="no-margin-right" ng-click="testBDD()">Probar</md-button>
-			<md-button class="md-primary md-raised no-margin-right" type="submit">Guardar</md-button>
+			<md-button class="no-margin" ng-click="testBDD()">Probar</md-button>
+			<md-button class="md-primary md-raised no-margin" type="submit">Guardar</md-button>
 		</div>
 
 	</form>

@@ -37,8 +37,24 @@ angular.module('appRoutes', [])
 						url: '/:subsection',
 						templateUrl: function (params) { return '/Home/'+params.section+'/'+params.subsection; },
 					})
-					.state('App', { url: '/a', templateUrl: '/a' })
-					.state('App.App', { url: '/:app_id' });
+					.state('App', { 
+						url: '/a', templateUrl: '/a',
+						resolve: {
+							promiseObj:  function($rootScope, $localStorage, $http){
+								var Rs = $rootScope;
+								Rs.Storage = $localStorage;
+								return $http.post('api/Usuario/check-token', { token: Rs.Storage.token });
+							},
+							controller: function($rootScope, $localStorage, promiseObj){
+								var Rs = $rootScope;
+								Rs.Usuario 		= promiseObj.data;
+								$localStorage.token = Rs.Usuario.token;
+							}
+						},
+						controller: 'MainCtrl'
+					})
+					.state('App.App', { url: '/:app_id' })
+					.state('App.App.Page', { url: '/:page_id' });
 
 			$urlRouterProvider.otherwise('/Home');
 			
@@ -66,6 +82,7 @@ angular.module('appRoutes', [])
 							//location.reload();
 							
 							//var r = confirm("Su sesión expiró, por favor ingrese nuevamente");
+							$localStorage.returnUrl = location.hash.substr(2);
 							location.replace("/#/Login");
 						  }
 

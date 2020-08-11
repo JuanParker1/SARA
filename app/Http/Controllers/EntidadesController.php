@@ -167,7 +167,23 @@ class EntidadesController extends Controller
         return $CRUD->call(request()->fn, request()->ops);
     }
 
-    
+    public static function convert_from_latin1_to_utf8_recursively($dat)
+    {
+      if (is_string($dat)) {
+         return utf8_encode($dat);
+      } elseif (is_array($dat)) {
+         $ret = [];
+         foreach ($dat as $i => $d) $ret[ $i ] = self::convert_from_latin1_to_utf8_recursively($d);
+
+         return $ret;
+      } elseif (is_object($dat)) {
+         foreach ($dat as $i => $d) $dat->$i = self::convert_from_latin1_to_utf8_recursively($d);
+
+         return $dat;
+      } else {
+         return $dat;
+      }
+    }
 
     public function postGridsGetData()
     {
@@ -180,6 +196,7 @@ class EntidadesController extends Controller
         GridHelper::addCols($Grid, $q);
         GridHelper::addFilters($Grid->filtros, $Grid, $q);
         GridHelper::addOrders($Grid, $q);
+
         $Data = GridHelper::getData($Grid, $q, true);
 
         return compact('Grid', 'Data');
@@ -194,6 +211,8 @@ class EntidadesController extends Controller
         GridHelper::addGuideCol($Grid);
         foreach ($DaGrid['columnas'] as $C) { $q->addSelect([DB::raw($C['select'])]); };
         foreach ($DaGrid['uniones']  as $U) { $q->leftJoin(DB::raw($U[0]), DB::raw($U[1]),$U[2],DB::raw($U[3])); };
+        
+        //dd($DaGrid['filtros']);
         GridHelper::addRestric($q, $DaGrid['filtros']);
 
         $Data = GridHelper::getData($Grid, $q, true);
@@ -253,17 +272,32 @@ class EntidadesController extends Controller
 
         foreach ($Editor['campos'] as $F) {
             if($F['campo_id'] == $campo_llaveprim) continue;
+            if($F['campo']['Tipo'] == 'Imagen') continue;
             $Columna = CamposHelper::getColName("",$F['campo']['Columna']);
             $Obj[$Columna] = CamposHelper::prepDatoUp($F['campo'], $F['val']);
         };
 
         if(is_null($llaveprim_val)){ //Nuevo elemento
+            //dd(collect([$Obj]));
             EntidadHelper::insertRows($Editor['entidad'], collect([$Obj]));
         }else{
             EntidadHelper::updateRow($Editor['entidad'], [ $llaveprim_col, $llaveprim_val ], collect($Obj));
         };
 
-        return compact('Obj', 'llaveprim_val', 'Editor', 'Config');
+        //Ajuste de Imágenes
+        if(!is_null($llaveprim_val)){
+            foreach ($Editor['campos'] as $F) {
+                if( $F['campo']['Tipo'] == 'Imagen' AND $F['val']['changed'] ){
+                    $url_temp = public_path($F['val']['url']);
+                    $img_ruta = public_path(str_replace('$id', $F['val']['id'], $F['campo']['Config']['img_ruta']));
+                    
+                    \File::makeDirectory(dirname($img_ruta), 0777, true, true);
+                    rename($url_temp, $img_ruta);
+                }
+            };
+        }
+
+        //return compact('llaveprim_val', 'Editor', 'Config');
     }
 
 

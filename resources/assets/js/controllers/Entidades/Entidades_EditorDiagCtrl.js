@@ -1,6 +1,6 @@
 angular.module('Entidades_EditorDiagCtrl', [])
-.controller('Entidades_EditorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout',
-	function($scope, $rootScope, $mdDialog, $filter, $timeout) {
+.controller('Entidades_EditorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', 'Upload',
+	function($scope, $rootScope, $mdDialog, $filter, $timeout, Upload) {
 
 		console.info('Entidades_EditorDiagCtrl');
 		var Ctrl = $scope;
@@ -55,6 +55,10 @@ angular.module('Entidades_EditorDiagCtrl', [])
 			Rs.http('api/Entidades/editor-save', { Editor: Ctrl.Editor, Config: Ctrl.Config }).then(() => {
 				Ctrl.loading = false;
 				$mdDialog.hide(true);
+			}, (d) => {
+				Ctrl.loading = false;
+				console.log(d);
+				Rs.showToast('Ha ocurrido un error, por favor guarde la información e intente nuevamente.', 'Error');
 			});
 		};
 
@@ -68,6 +72,23 @@ angular.module('Entidades_EditorDiagCtrl', [])
 			console.log(C.val);
 		};
 
+		//Subir imágen
+		Ctrl.uploadImage = (C, file) => {
+			if(!file) return;
+			let data = {
+				width: C.campo.Config.img_width,
+				height: C.campo.Config.img_height,
+				imagemode: C.campo.Config.img_imagemode
+			};
 
+			Upload.upload({
+            	url: C.campo.Config.img_uploader, method: 'POST', 
+            	file: file,
+            	data: data
+	        }).then(function(r) {
+	        	C.val.changed = true;
+	            C.val.url = r.data;
+	        });
+		};
 	}
 ]);

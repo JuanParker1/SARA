@@ -78,7 +78,13 @@ class GridHelper
     	$header_index = 0;
         foreach ($Grid->columnas as $C) {
             
-            $Col = $C->campo->getColName($C['tabla_consec']);
+            try{
+                $Col = $C->campo->getColName($C['tabla_consec']);
+            } catch (Exception $e) {
+                dd('Damn');
+                dd($e->getMessage());
+            }
+            
             $C['select'] = "$Col AS c$header_index";
             $C['header_numeric'] = in_array($C->campo->Tipo, ['Entero','Decimal','Dinero']);
             $C['header_index'] = $header_index; $header_index++;
@@ -151,7 +157,12 @@ class GridHelper
 
     public static function addRestric($q, $restricciones, $t = false)
     {
+       
+
         foreach ($restricciones as $R) {
+
+            //if($R['id'] == 39) dd($R['Comparador']);
+
             if($t) $R['columna_name'] = CamposHelper::getColName($t, $R['campo']['Columna']);
             $Valor = CamposHelper::prepFilterVal($R['val'], $R['campo']);
             self::addRestricRun($q, $R['columna_name'], $R['Comparador'], $Valor);

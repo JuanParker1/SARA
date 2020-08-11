@@ -81,6 +81,13 @@
 		<div class="bg-lightgrey border-rounded h25 lh25 ng-binding padding-0-10" style="border: 1px solid #c5c5c5; margin: 1px 0 0 5px;">{{ C.Config.opciones.length }} Opciones</div>
 	</div>
 
+	<div ng-if="inArray(C.Tipo, ['Imagen'])" layout>
+		<md-button class="md-icon-button no-margin s30" aria-label="b" ng-click="configImagen(C)">
+			<md-icon md-svg-icon="md-settings" class="s20"></md-icon>
+			<md-tooltip md-direction=right>Configuración de Imágen</md-tooltip>
+		</md-button>
+	</div>
+
 </td>
 <td md-cell class="">
 

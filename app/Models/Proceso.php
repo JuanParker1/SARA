@@ -62,6 +62,18 @@ class Proceso extends MyModel
 		}
 	}
 
+	public function recolectarUp(&$Arr)
+	{
+		if(!is_null($this->padre_id)){
+			$Padre = $this->padre()->first();
+			if(!in_array($Padre->id, $Arr)){
+				$Arr[] = $Padre->id;
+				$Padre->recolectarUp($Arr);
+			}
+			
+		}
+	}
+
 	//Eventos
 	public static function boot()
     {
