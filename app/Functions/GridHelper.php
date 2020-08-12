@@ -178,6 +178,9 @@ class GridHelper
         if($Comparador == 'like'){                               return $q->where($columna_name, 'like', "%$Valor%"); };
         if($Comparador == 'like_'){                              return $q->where($columna_name, 'like', "$Valor%");  };
         if($Comparador == '_like'){                              return $q->where($columna_name, 'like', "%$Valor");  };
+        if($Comparador == 'notlike'){                            return $q->where($columna_name, 'not like', "%$Valor%"); };
+        if($Comparador == 'notlike_'){                           return $q->where($columna_name, 'not like', "$Valor%");  };
+        if($Comparador == '_notlike'){                           return $q->where($columna_name, 'not like', "%$Valor");  };
         if($Comparador == 'in'){                                 return $q->whereIn($columna_name, $Valor);           };
         if($Comparador == 'not_in'){                             return $q->whereNotIn($columna_name, $Valor);        };
         if($Comparador == 'lista'){ 

@@ -7,6 +7,9 @@
 			<md-option value="like">Contiene</md-option>
 			<md-option value="like_">Empieza con</md-option>
 			<md-option value="_like">Termina con</md-option>
+			<md-option value="notlike">No Contiene</md-option>
+			<md-option value="notlike_">No Empieza con</md-option>
+			<md-option value="_notlike">No Termina con</md-option>
 			<md-option value="nulo">Es nulo</md-option>
 			<md-option value="no_nulo">No es nulo</md-option>
 		</md-select>
