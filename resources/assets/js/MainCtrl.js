@@ -1,5 +1,5 @@
 angular.module('MainCtrl', [])
-.controller('MainCtrl', ['$rootScope', 'appFunctions', '$http', '$mdDialog', '$mdSidenav', '$mdToast', '$q', '$state', '$location', '$localStorage', '$mdMedia', 
+.controller('MainCtrl', ['$rootScope', 'appFunctions', '$http', '$mdDialog', '$mdSidenav', '$mdToast', '$q', '$state', '$location', '$localStorage', '$mdMedia',
 	function($rootScope, appFunctions, $http, $mdDialog, $mdSidenav, $mdToast, $q, $state, $location, $localStorage, $mdMedia) {
 
 		console.info('MainCtrl');
@@ -42,8 +42,18 @@ angular.module('MainCtrl', [])
 			Rs.OpenSidebar('SectionsNav');
 		};
 
+		Rs.retroalimentarDiag = (Subject) => {
+			$mdDialog.show({
+				templateUrl: 'Frag/Core.RetroalimentarDiag',
+				controller: 'RetroalimentarDiagCtrl',
+				locals: { Subject: Subject },
+				multiple: true, clickOutsideToClose: true
+			});
+		};
 
-
+		if (window.self != window.top) {
+			$(document.body).addClass("in-iframe");
+		}
 		
 	}
 ]);

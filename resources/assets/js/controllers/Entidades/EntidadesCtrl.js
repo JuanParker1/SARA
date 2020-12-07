@@ -10,6 +10,7 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.loadingEntidad = false;
 		Ctrl.showCampos = true;
 		if(!Rs.Storage.EntidadSubseccion) Rs.Storage.EntidadSubseccion = 'General';
+		Ctrl.filterEntidades = '';
 
 		Ctrl.EntidadesCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades', 					order_by: ['Nombre'] });
 		Ctrl.CamposCRUD 		= $injector.get('CRUD').config({ base_url: '/api/Entidades/campos', 			order_by: ['Indice'] });
@@ -52,9 +53,15 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.getEntidades = () => {
 
 			Ctrl.EntidadesCRUD.setScope('bdd', Ctrl.BddSel.id);
-
 			Ctrl.EntidadesCRUD.get().then(() => {
-				Ctrl.getFsEntidades();
+				//Ctrl.getFsEntidades();
+				var ids_procesos = Ctrl.EntidadesCRUD.rows.map(e => e.proceso_id).filter((v, i, a) => a.indexOf(v) === i);
+				Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos.filter(p => ids_procesos.includes(p.id)),'Ruta','Proceso',false,true);
+				angular.forEach(Ctrl.ProcesosFS, (P) => {
+					if(P.type == 'folder'){
+						P.file = Ctrl.Procesos.find(p => p.Ruta == P.route);
+					}
+				});
 
 				if(Rs.Storage.EntidadSelId){
 					var entidad_sel_id = Rs.getIndex(Ctrl.EntidadesCRUD.rows, Rs.Storage.EntidadSelId);
@@ -69,6 +76,18 @@ angular.module('EntidadesCtrl', [])
 			Ctrl.filterEntidades = "";
 			Ctrl.FsEntidades = Rs.FsGet(Ctrl.EntidadesCRUD.rows,'Ruta','Entidad');
 		};
+
+		Ctrl.getEntidadesFiltered = () => {
+			//EntidadesCRUD.rows | filter:{ proceso_id: ProcesoSelId }:true | filter:filterEntidades | orderBy:'Nombre'
+			if(Ctrl.filterEntidades.trim() == ''){
+				return $filter('filter')(Ctrl.EntidadesCRUD.rows, { proceso_id: Ctrl.ProcesoSelId }, true);
+			}else{
+				return $filter('filter')(Ctrl.EntidadesCRUD.rows, Ctrl.filterEntidades);
+			}
+			//return [];
+		}
+
+		Ctrl.openProceso = (P) => { Ctrl.ProcesoSelId = P.id; }
 
 		Ctrl.searchEntidades = () => {
 			if(Ctrl.filterEntidades == ""){
@@ -85,14 +104,19 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.openEntidad = (E) => {
 			if(!E) return;
 			if(Ctrl.EntidadSel){ if(Ctrl.EntidadSel.id == E.id) return; }
-			Rs.Storage.EntidadSelId = E.id;
-			Rs.Storage.BddSelId = E.bdd_id;
+			
 			Ctrl.loadingEntidad = true;
 			Ctrl.EntidadSel = E;
+			Ctrl.ProcesoSelId = E.proceso_id;
 
 			//Rs.Refresh();
 
 			Ctrl.getCampos().then(Ctrl.getRestricciones);
+		}
+
+		Ctrl.fijarEntidad = () => {
+			Rs.Storage.EntidadSelId = Ctrl.EntidadSel.id;
+			Rs.Storage.BddSelId = Ctrl.EntidadSel.bdd_id;
 		}
 
 		Ctrl.addEntidad = () => {
@@ -101,11 +125,9 @@ angular.module('EntidadesCtrl', [])
 			Rs.BasicDialog({
 				Title: 'Crear Entidad', Flex: 50,
 				Fields: [
-					{ Nombre: 'Nombre',  	Value: '', Required: true, flex: 40 },
-					{ Nombre: 'Tabla',   	Value: '', Required: true, flex: 20 },
-					{ Nombre: 'Proceso',   	Value: '', Required: true, flex: 40, Type: 'list', List: Ctrl.Procesos, Item_Val: 'id', Item_Show: 'Proceso' },
-					//{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.FsEntidades },
-					//{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
+					{ Nombre: 'Nombre',  	Value: '', 					Required: true, flex: 50 },
+					{ Nombre: 'Tabla',   	Value: '', 					Required: true, flex: 50 },
+					{ Nombre: 'Proceso',   	Value: Ctrl.ProcesoSelId, 	Required: true, flex: 100, Type: 'list', List: Ctrl.Procesos, Item_Val: 'id', Item_Show: 'Proceso' },
 				],
 			}).then((r) => {
 				if(!r) return;
@@ -282,6 +304,32 @@ angular.module('EntidadesCtrl', [])
 			});
 		};
 
+		//Lista Avanzada
+		Ctrl.browseListas = (C) => {
+
+			let Config = {
+				bdd_id: Ctrl.BddSel.id,
+			};
+
+			console.log(C);
+
+			$mdDialog.show({
+				controller: 'BDD_ListasDiagCtrl',
+				templateUrl: '/Frag/BDD.BDD_ListasDiag',
+				locals: { Config: Config },
+				clickOutsideToClose: true, fullscreen: false, multiple: true,
+			}).then((L) => {
+				if(!L) return;
+				//var newC = angular.copy(C);
+				if(C.Config == null) C.Config = {};
+				C.Config = angular.extend(C.Config, L);
+				//C = newC;
+				C.changed = true;
+			});
+		}
+
+
+
 		//Restricciones
 		Ctrl.getRestricciones = () => {
 			Ctrl.RestricCRUD.setScope('entidad', Ctrl.EntidadSel.id);
@@ -305,6 +353,10 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.stopEv = ev => {
 			ev.stopPropagation();
 		};
+
+
+
+
 
 		//Start Up
 		Rs.navTo('Home.Section', { section: 'Entidades' });

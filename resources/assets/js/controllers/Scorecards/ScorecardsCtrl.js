@@ -1,6 +1,6 @@
 angular.module('ScorecardsCtrl', [])
-.controller('ScorecardsCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$timeout',
-	function($scope, $rootScope, $injector, $filter, $timeout) {
+.controller('ScorecardsCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$timeout', '$mdDialog', 
+	function($scope, $rootScope, $injector, $filter, $timeout, $mdDialog) {
 
 		console.info('ScorecardsCtrl');
 		var Ctrl = $scope;
@@ -13,6 +13,7 @@ angular.module('ScorecardsCtrl', [])
 		Ctrl.NodosCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/nodos', query_call_arr: [['getElementos',null],['getRutas',null]] });
 		Ctrl.IndicadoresCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores' });
 		Ctrl.VariablesCRUD 	 = $injector.get('CRUD').config({ base_url: '/api/Variables' });
+		Ctrl.NodosSelected = [];
 
 		Ctrl.getScorecards = () => {
 			Ctrl.ScorecardsCRUD.get().then(() => {
@@ -50,18 +51,24 @@ angular.module('ScorecardsCtrl', [])
 				Ctrl.NodosCRUD.add({
 					scorecard_id: Ctrl.ScoSel.id, Nodo: f.Nombre, padre_id: f.Padre, Indice: Ctrl.NodoSel.subnodos.length, tipo: 'Nodo', peso: f.Peso 
 				}).then(() => {
-					Ctrl.getFs();
+					Ctrl.openNodo(Ctrl.NodoSel);
 				});
 			});
 		};
 
+		Ctrl.deleteScorecardNodo = () => {
+			if(Ctrl.NodoSel.indicadores.length > 0 || Ctrl.NodoSel.subnodos.length > 0 ) return Rs.showToast('Solo se pueden eliminar nodos vacíos', 'Error');
+			Ctrl.NodosCRUD.delete(Ctrl.NodoSel).then(() => {
+				Ctrl.openScorecard(Ctrl.ScoSel);
+			});
+		}
+
 		Ctrl.openNodo = (Nodo) => {
 			
 			Ctrl.NodoSel = Nodo;
-
 			Ctrl.NodoSel.indicadores = $filter('orderBy')(Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo !== 'Nodo' && N.padre_id == Nodo.id) }), 'Indice');
 			Ctrl.NodoSel.subnodos    = Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo ==  'Nodo'      && N.padre_id == Nodo.id) });
-
+			Ctrl.NodosSelected = [];
 			//Rs.viewScorecardDiag(Ctrl.ScoSel.id); //FIX
 
 		};
@@ -79,6 +86,7 @@ angular.module('ScorecardsCtrl', [])
 					{ Nombre: 'proceso.Proceso',  Desc: 'Nodo',       numeric: false, orderBy: 'Ruta' },
 					{ Nombre: 'Indicador', 	 	  Desc: 'Indicador',  numeric: false, orderBy: 'Indicador' },
 					{ Nombre: 'proceso.Tipo',     Desc: 'Tipo Nodo',  numeric: false, orderBy: false },
+					{ Nombre: 'updated_at',       Desc: 'Actualizado',  numeric: false, orderBy: 'updated_at' },
 				],
 				orderBy: 'Ruta', select: 'Row.id'
 			}).then(Selected => {
@@ -112,6 +120,7 @@ angular.module('ScorecardsCtrl', [])
 				],
 			}).then(r => {
 				if(!r) return;
+
 				var f = Rs.prepFields(r.Fields);
 				var Indice = Ctrl.NodoSel.indicadores.length;
 				Ctrl.NodosCRUD.add({
@@ -157,7 +166,8 @@ angular.module('ScorecardsCtrl', [])
 			Rs.Storage.ScorecardSel = V.id;
 			Ctrl.NodoSel = Rs.def(Nodo, null);
 			Ctrl.NodosCRUD.setScope('scorecard', Ctrl.ScoSel.id).get().then(() => {
-				Ctrl.openNodo(Ctrl.NodosCRUD.rows[0]);
+				if(!Nodo) Nodo = Ctrl.NodosCRUD.rows[0];
+				Ctrl.openNodo(Nodo);
 				Ctrl.getFs();
 			});
 		};
@@ -204,6 +214,51 @@ angular.module('ScorecardsCtrl', [])
 				Ctrl.openNodo(Ctrl.NodoSel);
 			});
 
+		}
+
+		//Nuevo multiple delete
+		Ctrl.deleteNodosInd = () => {
+			if(Ctrl.NodosSelected.length == 0) return;
+			return Rs.confirmDelete({
+				Title: '¿Eliminar estos '+Ctrl.NodosSelected.length+' Indicadores/Variables ?',
+			}).then(d => {
+				if(!d) return;
+				Ctrl.NodosCRUD.ops.selected = angular.copy(Ctrl.NodosSelected);
+				Ctrl.NodosCRUD.deleteMultiple().then(() => {
+					return Ctrl.reindexarNodo(Ctrl.NodoSel);
+				});
+			})
+		}
+
+		Ctrl.reindexarNodo = (Nodo) => {
+			return Rs.http('api/Scorecards/reindexar', { Nodo: Nodo }).then(() => {
+				Ctrl.openScorecard(Ctrl.ScoSel, Ctrl.NodoSel);
+			});
+		}
+
+		Ctrl.moveNodosInd = () => {
+			return $mdDialog.show({
+				controller: 'Scorecards_NodoSelectorCtrl',
+				templateUrl: 'Frag/Scorecards.Scorecards_NodoSelector',
+				locals: { NodosFS: angular.copy(Ctrl.NodosFS) },
+				clickOutsideToClose: true,
+				fullscreen: true,
+				multiple: true,
+			}).then(N => {
+				if(!N) return;
+				Rs.http('api/Scorecards/move-inds', { Inds: Ctrl.NodosSelected, nodo_destino_id: N.id }).then(() => {
+					Ctrl.openScorecard(Ctrl.ScoSel, Ctrl.NodoSel);
+				});
+
+				//console.log(N);
+			});
+		}
+
+		Ctrl.eraseCacheNodosInd = () => {
+			Rs.http('api/Scorecards/erase-cache', { Inds: Ctrl.NodosSelected }).then(() => {
+				//Ctrl.openScorecard(Ctrl.ScoSel, Ctrl.NodoSel);
+				Rs.showToast('Caché Borrada', 'Success');
+			});
 		}
 
 

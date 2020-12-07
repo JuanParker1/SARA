@@ -15,6 +15,8 @@ class IndicadorMeta extends MyModel
     	'Meta2' => 'float'
     ];
     protected $appends = [];
+    protected $touches = ['daindicador'];
+
 
     public function columns()
 	{
@@ -22,10 +24,15 @@ class IndicadorMeta extends MyModel
 		return [
 			[ 'id',					'id',				null, true, false, null, 100 ],
 			[ 'indicador_id',		'indicador_id',		null, true, false, null, 100 ],
-			[ 'PeriodoDesde',		'PeriodoDesde',		null, true, false, null, 100 ],
-			[ 'Meta',				'Meta',				null, true, false, null, 100 ],
-			[ 'Meta2',				'Meta2',			null, true, false, null, 100 ],
+			[ 'PeriodoDesde',		'Periodo Desde',	null, true, false, null, 35 ],
+			[ 'Meta',				'Meta',				null, true, false, null, 35 ],
+			[ 'Meta2',				'Meta Max.',		null, true, false, null, 30 ],
 		];
+	}
+
+	public function daindicador()
+	{
+		return $this->belongsTo('App\Models\Indicador');
 	}
 
 	public function scopeIndicador($query,$id)
@@ -37,4 +44,6 @@ class IndicadorMeta extends MyModel
 	{
 		return $query->where('PeriodoDesde', '<=', ($Year*100)+$mesFin)->orderBy('PeriodoDesde', 'DESC');
 	}
+
+	
 }

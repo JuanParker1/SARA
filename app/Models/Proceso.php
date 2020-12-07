@@ -26,6 +26,7 @@ class Proceso extends MyModel
 			[ 'responsable_id',			'responsable_id',	null, true, false, null, 100 ],
 			[ 'CDC',					'CDC',				null, true, false, null, 100 ],
 			[ 'Ruta',					'Ruta',				null, true, false, null, 100 ],
+			[ 'Introduccion',			'Introduccion',		null, true, false, null, 100 ],
 		];
 	}
 
@@ -42,6 +43,16 @@ class Proceso extends MyModel
 	public function padre()
 	{
 		return $this->belongsTo('\App\Models\Proceso', 'padre_id');
+	}
+
+	public function indicadores()
+	{
+		return $this->hasMany('\App\Models\Indicador', 'proceso_id')->orderBy('Indicador');
+	}
+
+	public function asignaciones()
+	{
+		return $this->hasMany('\App\Models\UsuarioAsignacion', 'nodo_id');
 	}
 
 	public function getFullrutaAttribute()
@@ -73,6 +84,28 @@ class Proceso extends MyModel
 			
 		}
 	}
+
+
+	public function getEquipo()
+	{
+		$this->equipo = $this->asignaciones->groupBy('perfil_id')->values()->sortBy(function ($Perfil) {
+		    return $Perfil[0]['perfil']['Orden'];
+		});
+	}
+
+	public function getBg()
+	{
+		$bg_url = "img/procesos_bgs/{$this->id}.jpg";
+
+		if(file_exists($bg_url)){
+			$this->Bg = $bg_url.'?'.$this->updated_at->timestamp;
+		}else{
+			$this->Bg = 'img/bg_data1.jpg';
+		}
+
+		
+	}
+
 
 	//Eventos
 	public static function boot()

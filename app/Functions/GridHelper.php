@@ -265,7 +265,16 @@ class GridHelper
     }
 
 
+    public static  function prepColumns($Grid)
+    {
+        foreach ($Grid->columnas as $Col) {
+            
+            if($Col->campo->Tipo == 'ListaAvanzada'){
+                $Col->campo['opciones'] = ConnHelper::getListaValores($Col->campo['Config']['lista_id'], $Col->campo['Config']['indice_cod']);
+            }
 
+        }
+    }
 
 
 }

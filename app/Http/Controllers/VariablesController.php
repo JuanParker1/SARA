@@ -74,6 +74,9 @@ class VariablesController extends Controller
         $V = VariableValor::firstOrCreate(compact('variable_id','Periodo'));
         $V->Valor = $Valor;
         $V->save();
+
+        H::touchIndicadores();
+
     }
 
     public function postGetVariables()
@@ -177,6 +180,59 @@ class VariablesController extends Controller
 
         }
     }
+
+
+    public function postConvertirEnIndicador()
+    {
+        extract(request()->all()); //Variable
+
+        $Ind = new \App\Models\Indicador([
+            'proceso_id' => $Variable['proceso_id'],
+            'Indicador' => $Variable['Variable'], 
+            'Definicion' => '', 
+            'TipoDato' => $Variable['TipoDato'],  
+            'Decimales' => $Variable['Decimales'], 
+            'Formula' => '',   
+            'Sentido' => 'ASC',   
+        ]);
+        $Ind->save();
+
+        
+        //Cambiar las asignaciones actuales
+        \App\Models\IndicadorVariable::where([
+            'Tipo' => 'Variable',  'variable_id' => $Variable['id']
+        ])->update([
+            'Tipo' => 'Indicador', 'variable_id' => $Ind->id
+        ]);
+
+        //Añadir la variable como componente
+        /*$IndComp = new \App\Models\IndicadorVariable([
+            'indicador_id' => $Ind->id,
+            'Letra' => 'a',
+            'Tipo' => 'Variable',
+            'variable_id' => $Variable['id'],
+        ]);
+        $IndComp->save();*/
+
+        $DaVariable = Variable::where('id', $Variable['id'])->first();
+        $DaVariable->delete();
+
+        return compact('Ind', 'IndComp');
+
+    }
+
+
+
+    public function postDeleteVariable()
+    {
+        extract(request()->all()); //Variable
+
+        $DaVariable = Variable::where('id', $Variable['id'])->first();
+        $DaVariable->delete();
+    }
+
+
+
 
 
 

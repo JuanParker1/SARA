@@ -15,20 +15,21 @@ class CamposHelper
 	public static function getTipos()
 	{
 		$TC = [
-			'Entidad'     => [ 'Icon' => 'md-pawn', 			'Divide' => true, 	'Defaults' => [  null, null, null,             null, null] ],
-			'Texto'       => [ 'Icon' => 'md-format-quote', 	'Divide' => false, 	'Defaults' => [  null, null, null,             null, null] ],
-            'TextoLargo'  => [ 'Icon' => 'md-insert-comment',   'Divide' => true,   'Defaults' => [  1000, null, null,             null, null] ],
-			'Lista'       => [ 'Icon' => 'md-list-view', 	    'Divide' => true, 	'Defaults' => [  null, null, null,             '[]', null] ],
-			'Entero'      => [ 'Icon' => 'my-entero', 			'Divide' => false, 	'Defaults' => [  null, null, null,             null, null] ],
-			'Decimal'     => [ 'Icon' => 'my-decimal', 			'Divide' => false, 	'Defaults' => [  null, null,    1,             null, null] ],
-			'Dinero'      => [ 'Icon' => 'md-money', 			'Divide' => true, 	'Defaults' => [  null, null,    1,             null, null] ],
-			'Booleano'    => [ 'Icon' => 'md-toggle-on', 		'Divide' => true, 	'Defaults' => [  null, null, null,             'Si', 'No'] ],
-            'Periodo'     => [ 'Icon' => 'md-calendar',         'Divide' => false,  'Defaults' => [  null, null, null,             null, null] ],
-			'Fecha'       => [ 'Icon' => 'md-calendar-event', 	'Divide' => false, 	'Defaults' => [  null, null, null,          'Y-m-d', null] ],
-			'Hora'        => [ 'Icon' => 'md-time', 			'Divide' => false, 	'Defaults' => [  null, null, null,          'H:i:s', null] ],
-			'FechaHora'   => [ 'Icon' => 'md-timer', 			'Divide' => true, 	'Defaults' => [  null, null, null,    'Y-m-d H:i:s', null] ],
-            'Color'       => [ 'Icon' => 'md-color',            'Divide' => false,  'Defaults' => [  null, null, null,             null, null] ],
-			'Imagen'   	  => [ 'Icon' => 'md-image', 			'Divide' => false, 	'Defaults' => [  null, null, null,             null, null] ],
+			'Entidad'        => [ 'Icon' => 'md-pawn', 			     'Divide' => true, 	       'Defaults' => [  null, null, null,             null, null] ],
+			'Texto'          => [ 'Icon' => 'md-format-quote', 	     'Divide' => false, 	   'Defaults' => [  null, null, null,             null, null] ],
+            'TextoLargo'     => [ 'Icon' => 'md-insert-comment',     'Divide' => true,         'Defaults' => [  1000, null, null,             null, null] ],
+            'Lista'          => [ 'Icon' => 'md-list-view',          'Divide' => false,        'Defaults' => [  null, null, null,             '[]', null] ],
+			'ListaAvanzada'  => [ 'Icon' => 'md-list-alt', 	         'Divide' => true, 	       'Defaults' => [  null, null, null,             '[]', null] ],
+			'Entero'         => [ 'Icon' => 'my-entero', 			 'Divide' => false, 	   'Defaults' => [  null, null, null,             null, null] ],
+			'Decimal'        => [ 'Icon' => 'my-decimal', 			 'Divide' => false, 	   'Defaults' => [  null, null,    1,             null, null] ],
+			'Dinero'         => [ 'Icon' => 'md-money', 			 'Divide' => true, 	       'Defaults' => [  null, null,    1,             null, null] ],
+			'Booleano'       => [ 'Icon' => 'md-toggle-on', 		 'Divide' => true, 	       'Defaults' => [  null, null, null,             'Si', 'No'] ],
+            'Periodo'        => [ 'Icon' => 'md-calendar',           'Divide' => false,        'Defaults' => [  null, null, null,             null, null] ],
+			'Fecha'          => [ 'Icon' => 'md-calendar-event', 	 'Divide' => false, 	   'Defaults' => [  null, null, null,          'Y-m-d', null] ],
+			'Hora'           => [ 'Icon' => 'md-time', 			     'Divide' => false, 	   'Defaults' => [  null, null, null,          'H:i:s', null] ],
+			'FechaHora'      => [ 'Icon' => 'md-timer', 			 'Divide' => true, 	       'Defaults' => [  null, null, null,    'Y-m-d H:i:s', null] ],
+            'Color'          => [ 'Icon' => 'md-color',              'Divide' => false,        'Defaults' => [  null, null, null,             null, null] ],
+			'Imagen'   	     => [ 'Icon' => 'md-image', 			 'Divide' => false, 	   'Defaults' => [  null, null, null,             null, null] ],
 		];
 
 		$TC['Fecha']['Formatos']      = [ ['Y-m-d','2019-12-31'], ['Ymd', '20191231'] ];
@@ -46,6 +47,9 @@ class CamposHelper
             ['-1 month','El mes pasado'],               
             ['first day of this month','Primer día de este mes'],       
             ['this week','Primer día de esta semana'],  
+            ['-5 days','Hace 5 días'],  
+            ['-4 days','Hace 4 días'],  
+            ['-3 days','Hace 3 días'],  
             ['-2 days','Antier'],                       
             ['yesterday','Ayer'],                       
             ['today','Hoy'],                        
@@ -131,19 +135,26 @@ class CamposHelper
         return $D;
     }
 
-    public static function prepDatoUp($Campo, $D)
+    public static function prepDatoUp($Campo, $D, $F)
     {
         if(is_null($D)) return $D;
 
         if($Campo['Tipo'] == 'FechaHora'){
-            $Date = Carbon::createFromFormat('Y-m-d H:i', $D);
-            $D = $Date->format($Campo['Op4']);
+            $Date = Carbon::parse($D);
+            $D = $Date->setTimezone(config('app.timezone'))->format($Campo['Op4']);
         };
 
         if(in_array($Campo['Tipo'], ['Texto','TextoLargo','Lista'])){ 
             if(config('app.encode_utf8')) $D = utf8_decode($D);
             $D = trim($D);
         };
+
+        if($Campo['Tipo'] == 'ListaAvanzada'){
+            if ($Campo['Op4'] == 'AddDate' AND $D == '_SELECT_DATE_') {
+                $Date = Carbon::parse($F['val_aux']);
+                $D = $Date->setTimezone(config('app.timezone'))->toDateString();
+            }
+        }
 
         return $D;
     }
@@ -190,6 +201,7 @@ class CamposHelper
             $Date  = Carbon::parse($Valor);
             $Valor = $Date->format($Campo['Op4']);
         };
+
         return $Valor;
     }
 
@@ -197,7 +209,12 @@ class CamposHelper
     public static function getColName($base, $Columna)
     {
         $base = ($base == "") ? "" : "$base.";
-        return str_replace('.', $base, $Columna);
+
+        $Columna = preg_replace('/([a-z]|[0-9])\K(\.)/i', ':::', $Columna);
+        $Columna = str_replace('.', $base, $Columna);
+        $Columna = str_replace(':::', '.', $Columna);
+
+        return $Columna;
     }
 
     public static function getSysVariable($Var)

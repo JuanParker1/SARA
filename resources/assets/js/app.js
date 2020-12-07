@@ -23,6 +23,7 @@ angular.module('SARA', [
 	'appFunctions',
 	'CRUD',
 	'CRUDDialogCtrl',
+
 	
 	'Filters',
 	'enterStroke',
@@ -43,6 +44,7 @@ angular.module('SARA', [
 	'IconSelectDiagCtrl',
 	'ExternalLinkCtrl',
 	'TableDialogCtrl',
+	'RetroalimentarDiagCtrl',
 
 	'MainCtrl',
 	'LoginCtrl',
@@ -78,6 +80,7 @@ angular.module('SARA', [
 		'Indicadores_IndicadorDiagCtrl',
 
 	'ScorecardsCtrl',
+		'Scorecards_NodoSelectorCtrl',
 		'Scorecards_ScorecardDiagCtrl',
 
 	'AppsCtrl',
@@ -91,4 +94,7 @@ angular.module('SARA', [
 	'MiProcesoCtrl',
 
 	'ConsultasSQLCtrl',
+
+	'Integraciones_SOMACtrl',
+	'Integraciones_SolgeinCtrl',
 ]);

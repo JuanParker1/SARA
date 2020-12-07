@@ -20,7 +20,12 @@ angular.module('ImageEditor_DialogCtrl', [])
 			Preview: false,				//Mostrar vista previa
 			PreviewClass: '',			//md-img-round
 			RemoveOpt: false,			//Si es texto muestra la opcion de borrar
-			Daten: null					//La data a enviar al servidor
+			Daten: null,				//La data a enviar al servidor
+			Class: '',
+			UploadUrl: '/api/Main/upload-image',
+			UploadPath: null,
+			ImageMode: null,
+			RemoveImage: false
 		};
 
 		Ctrl.RotationCanvas = document.createElement("canvas");
@@ -76,14 +81,16 @@ angular.module('ImageEditor_DialogCtrl', [])
 
 			var Daten = {
 				file: Upload.dataUrltoBlob(Ctrl.cropper.croppedImage),
-				Quality: 90
+				Quality: 90,
+				savepath: Ctrl.Config.UploadPath,
+				imagemode: Ctrl.Config.ImageMode
 			};
 
 			angular.extend(Daten, Config.Daten);
 
 			Upload.upload({
 
-				url: '/api/Archivos/upload-img',
+				url: Ctrl.Config.UploadUrl,
 				data: Daten,
 
 			}).then(function (res) {

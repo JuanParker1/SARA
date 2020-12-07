@@ -1,7 +1,7 @@
-<div flex layout=column class="overflow-y hasScroll padding-0-10" ng-show="Modo == 'Mes'">
+<div flex layout=column class="overflow-y hasScroll padding-0-10" ng-if="Modo == 'Mes'">
 	
 	<div layout layout-wrap>
-		<scorecard-nodo nodo="Sco.nodo" periodo="(Anio*100)+Mes" flex=100></scorecard-nodo>
+		<scorecard-nodo nodo="Sco.nodo" periodo="Periodo" flex=100></scorecard-nodo>
 	</div>
 
 	<div class="h50"></div>

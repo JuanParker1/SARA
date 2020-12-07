@@ -16,15 +16,15 @@
 
 	<div flex layout=column>
 		
-		<md-table-container flex class="overflow-y">
-			<table md-table class="md-table-short border-bottom" md-row-select multiple ng-model="Config.selected">
+		<md-table-container flex class="overflow-y" md-virtual-repeat-container>
+			<table md-table class="md-table-short border-bottom" md-row-select multiple="{{ Config.multiple }}" ng-model="Config.selected">
 				<thead md-head md-order="Config.orderBy">
 					<tr md-row>
 						<th md-column ng-repeat="C in Config.Columns" md-numeric="C.numeric" md-order-by="C.orderBy">{{ C.Desc }}</th>
 					</tr>
 				</thead>
 				<tbody md-body>
-					<tr md-row ng-repeat="Row in Elements | filter:filterRows | orderBy:Config.orderBy"
+					<tr md-row md-virtual-repeat="Row in Elements | filter:filterRows | orderBy:Config.orderBy"
 						md-select="Row" md-select-id="{{ Config.primaryId }}">
 						<td md-cell class="md-cell-compress" ng-repeat="C in Config.Columns">
 							{{ getProp(Row, C.Nombre) }}

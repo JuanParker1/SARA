@@ -1,6 +1,6 @@
 angular.module('InicioCtrl', [])
-.controller('InicioCtrl', ['$scope', '$rootScope', '$filter',
-	function($scope, $rootScope, $filter) {
+.controller('InicioCtrl', ['$scope', '$rootScope', '$filter', '$mdMedia', '$window',
+	function($scope, $rootScope, $filter, $mdMedia, $window) {
 
 		console.info('InicioCtrl');
 		var Ctrl = $scope;
@@ -9,7 +9,9 @@ angular.module('InicioCtrl', [])
 
 		//Rs.mainTheme = 'Snow_White';
 		Rs.mainTheme = 'Black';
-		Rs.InicioSidenavOpen = true;
+		Rs.InicioSidenavOpen = $mdMedia('min-width: 750px');
+
+
 
 		Ctrl.makeFavorite = (A,make) => {
 			A.favorito = make;
@@ -27,18 +29,16 @@ angular.module('InicioCtrl', [])
 		Ctrl.searchMode = false;
 		Ctrl.searchText = '';
 		Ctrl.searchGroups = [
-			{ Titulo: 'Tableros',    Value: 'Tablero', 		Icono: 'fa-th-large' },
+			{ Titulo: 'Reportes',    Value: 'Reporte', 	    Icono: 'fa-clipboard' },
 			{ Titulo: 'Indicadores', Value: 'Indicador', 	Icono: 'fa-chart-line' },
 			{ Titulo: 'Variables',   Value: 'Variable', 	Icono: 'fa-superscript' },
-			{ Titulo: 'Reportes',    Value: 'Reporte', 	    Icono: 'fa-table' },
 			{ Titulo: 'Procesos',    Value: 'Proceso', 	    Icono: 'fa-cube' },
-			{ Titulo: 'Funciones',   Value: 'Funcion', 	    Icono: 'fa-cube' },
 		];
 		Ctrl.searchGroupSel = 0;
 
 		Ctrl.mainSearch = () => {
 			//Ctrl.searchResults = null;
-			if(Ctrl.searchText.trim() == ''){
+			if(Ctrl.searchText.trim() == '' || Ctrl.searchText.trim().length < 3){
 				Ctrl.searchMode = false;
 				return;
 			}
@@ -64,7 +64,11 @@ angular.module('InicioCtrl', [])
 		Ctrl.mainSearch();
 
 		Ctrl.showSearchRes = (R) => {
-			if(R.Tipo == 'Tablero')   return Rs.viewScorecardDiag(R.id);
+			if(R.Tipo == 'Reporte')   {
+				console.log("#/a/" + R.Slug, R);
+				$window.open(("#/a/" + R.Slug), '_blank');
+				//href="{{ Usuario.Url }}#/a/{{ A.Slug }}" target="_blank"
+			};
 			if(R.Tipo == 'Indicador') return Rs.viewIndicadorDiag(R.id);
 			if(R.Tipo == 'Variable')  return Rs.viewVariableDiag(R.id);
 		};

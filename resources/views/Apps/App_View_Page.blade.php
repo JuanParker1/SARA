@@ -1,7 +1,7 @@
 <div layout=column flex ng-repeat="P in [PageSel]">
 
 	<div flex ng-if="P.Tipo == 'ExternalUrl'">
-		<iframe ng-src="{{ getIframeUrl(P.Config.url) }}"></iframe>			
+		<iframe ng-src="{{ getIframeUrl(P.Config.url) }}" class="iframeEmbeded"></iframe>			
 	</div>
 
 	<div flex layout ng-if="P.Tipo == 'Scorecard'" ng-controller="Scorecards_ScorecardDiagCtrl" ng-init="getScorecard(P.Config.element_id, P.Config)">

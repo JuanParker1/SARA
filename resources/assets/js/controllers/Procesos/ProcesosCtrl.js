@@ -11,8 +11,12 @@ angular.module('ProcesosCtrl', [])
 		Ctrl.ProcesoSel = null;
 		Ctrl.ProcesosNav = true;
 		Ctrl.TiposProcesos = [ 
+			{ id: 'Empresa', 		Nombre: 'Empresa', 		    Icono: 'fa-building' },
+			{ id: 'Subdireccion',   Nombre: 'Subdirección', 	Icono: 'fa-cubes' },
 			{ id: 'Agrupador', 		Nombre: 'Agrupador', 		Icono: 'fa-cubes' },
+			{ id: 'MacroProceso', 	Nombre: 'MacroProceso', 	Icono: 'fa-cube' },
 			{ id: 'Proceso', 		Nombre: 'Proceso', 			Icono: 'fa-cube' },
+			{ id: 'SubProceso', 	Nombre: 'SubProceso', 		Icono: 'fa-cube' },
 			{ id: 'Concesionario', 	Nombre: 'Concesionario', 	Icono: 'external-link-square-alt' },
 			{ id: 'Programa', 		Nombre: 'Programa',			Icono: 'fa-crosshairs' },
 			{ id: 'Utilitario', 	Nombre: 'Utilitario', 		Icono: 'fa-cog' }

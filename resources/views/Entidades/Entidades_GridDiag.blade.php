@@ -57,10 +57,11 @@
 					<tbody md-body> <!-- md-virtual-repeat -->
 						<tr md-row class="md-row-hover" ng-repeat="R in Data"> <!-- | filter:filterRows | orderBy:orderRows -->
 							<td md-cell class="md-cell-compress " ng-if="Grid.Config.row_buttons.length > 0" style="padding: 0 5px !important;">
-								<md-button class="md-icon-button s30 no-padding" aria-label="b" ng-repeat="B in Grid.Config.row_buttons" 
+								<md-button class="md-icon-button s30 no-padding" aria-label="b" 
+									ng-repeat="B in Grid.Config.row_buttons" 
 									ng-click="triggerButton(B,R)">
-									<md-icon md-font-icon="fa-fw {{ B.icono }} text-16px focus-on-hover"></md-icon>
-									<md-tooltip md-direction="right" md-delay=500>{{ B.texto }}</md-tooltip>
+									<md-icon md-font-icon="fa-fw {{ ::B.icono }} text-16px focus-on-hover"></md-icon>
+									<md-tooltip md-direction="right" md-delay=500>{{ ::B.texto }}</md-tooltip>
 								</md-button>
 							</td>
 							<td md-cell ng-repeat="C in Grid.columnas | filter:{Visible:true}"
@@ -91,17 +92,5 @@
 
 		</div>
 	</div>
-
-	<!--<div id="previewCampoOverlay" layout layout-align="center center" ng-show="previewCampo">
-		<img src="/img/carros/1.jpg?5f0639db02f22" class="border-radius">
-	</div>
-
-	<style type="text/css">
-		#previewCampoOverlay{
-			background: rgba(0, 0, 0, 0.7);
-			position: absolute;
-			top: 0; bottom: 0; left: 0; right: 0;
-		}
-	</style>-->
 
 </md-dialog>

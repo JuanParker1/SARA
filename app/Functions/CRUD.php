@@ -48,7 +48,7 @@ class CRUD
 		$debug = [];
 
 		$wheres = collect($Ops['where'])->values();
-		$Query = $this->Model->limit($Ops['limit']);
+		$Query = $this->Model->query(); //->limit($Ops['limit'])
 
 		if(!empty($Ops['only_columns'])){
 			$Ops['only_columns'][] = $Ops['primary_key'];
@@ -58,7 +58,8 @@ class CRUD
 		foreach ($wheres as $w) {
 			$Query = $Query->where($w[0],$w[1],$w[2]);
 		};
-		$Query->limit($Ops['limit']);
+
+		if($Ops['limit']) $Query->limit($Ops['limit']);
 		
 		$debug = [];
 		//Scopes

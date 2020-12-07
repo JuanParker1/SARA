@@ -47,4 +47,21 @@ class ConnHelper
 
 		return $Conn;
 	}
+
+	public static function getListaValores($lista_id, $indice_cod)
+	{
+		$Lista = \App\Models\BDDListas::where('id', $lista_id)->with('bdd')->first();
+        $Conn = self::getConn($Lista->bdd);
+        
+        $Detalle = \App\Functions\GridHelper::getTableName($Lista->Detalle, $Lista->bdd->Op3);
+
+        $Detalles = collect($Conn->table($Detalle[2])->where($Lista->Llave, $indice_cod)->get([ $Lista->DetalleCod, $Lista->DetalleDes ]))->transform(function($Row) use ($Lista){
+            return [ 'value' => trim($Row[ $Lista->DetalleCod ]), 'desc' => utf8_encode(trim($Row[ $Lista->DetalleDes ])) ];
+        });
+
+        return $Detalles;
+	}
+
+
+
 }

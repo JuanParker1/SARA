@@ -191,6 +191,7 @@ class EntidadesController extends Controller
         $Grid    = GridHelper::getGrid($grid_id);
         $q       = GridHelper::getQ($Grid->entidad);
 
+        //GridHelper::prepColumns($Grid);
         GridHelper::calcJoins($Grid);
         GridHelper::addJoins($Grid, $q);
         GridHelper::addCols($Grid, $q);
@@ -214,6 +215,7 @@ class EntidadesController extends Controller
         
         //dd($DaGrid['filtros']);
         GridHelper::addRestric($q, $DaGrid['filtros']);
+        GridHelper::addOrders($Grid, $q);
 
         $Data = GridHelper::getData($Grid, $q, true);
         return compact('Grid', 'Data');
@@ -272,10 +274,13 @@ class EntidadesController extends Controller
 
         foreach ($Editor['campos'] as $F) {
             if($F['campo_id'] == $campo_llaveprim) continue;
+            if($Config['modo'] != 'Crear' && !$F['Editable']) continue;
             if($F['campo']['Tipo'] == 'Imagen') continue;
             $Columna = CamposHelper::getColName("",$F['campo']['Columna']);
-            $Obj[$Columna] = CamposHelper::prepDatoUp($F['campo'], $F['val']);
+            $Obj[$Columna] = CamposHelper::prepDatoUp($F['campo'], $F['val'], $F);
         };
+
+        if(empty($Obj)) return;
 
         if(is_null($llaveprim_val)){ //Nuevo elemento
             //dd(collect([$Obj]));

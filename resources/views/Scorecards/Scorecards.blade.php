@@ -1,6 +1,6 @@
 <div flex id="Scorecards" layout ng-controller="ScorecardsCtrl">
 	
-	<md-sidenav class="bg-white border-right w280" layout=column 
+	<md-sidenav class="bg-white border-right w320" layout=column 
 		md-is-open="ScorecardsNav"
 		md-is-locked-open="$mdMedia('gt-xs') && ScorecardsNav">
 		
@@ -17,16 +17,18 @@
 		<div layout=column flex class="overflow-y darkScroll padding-top-5">
 
 			<div ng-repeat="F in NodosFS" class="mh25 borders-bottom padding-0-5 relative text-13px"
-				md-ink-ripple layout ng-show="F.show">
+				md-ink-ripple layout ng-show="F.show "><!-- && F.type == 'folder' -->
 				<div ng-style="{ width: (F.depth * 12) }"></div>
 				<div ng-show="F.type == 'folder'" flex layout class="">
 					<md-icon md-font-icon="fa-chevron-right  fa-fw transition Pointer" ng-class="{'fa-rotate-90':F.open}" ng-click="FsOpenFolder(NodosFS, F)"></md-icon>
 					<div flex style="padding: 5px 0" class="Pointer" ng-click="openNodo(F.file)">{{ F.name }}</div>
-					<div style="padding: 4px" class="text-clear text-right">{{ F.file.peso }}</div>
+					<div style="padding: 4px" class="text-clear text-right" hide>{{ F.file.peso }}</div>
 				</div>
 				<div ng-show="F.type == 'file'" flex layout>
-					<div flex style="padding: 5px 0 5px 12px">{{ F.file.Nodo }}</div>
-					<div style="padding: 5px" class="text-clear text-right">{{ F.file.peso }}</div>
+					<div flex style="padding: 5px 0 5px 12px" layout=column>
+						<div>{{ F.file.Nodo }}</div>
+						<div class="text-clear">{{ F.file.elemento.proceso.Proceso }}</div>
+					</div>
 				</div>
 			</div>
 
@@ -83,12 +85,16 @@
 		</div>
 
 		<div layout class="border-top bg-lightgrey-5">
-			<md-menu hide>
+			<md-menu>
 				<md-button ng-click="$mdMenu.open($event)" class="md-icon-button no-margin" aria-label="m">
 					<md-icon md-svg-icon="md-more-v"></md-icon>
 				</md-button>
 				<md-menu-content>
-					<md-menu-item><md-button ng-click="deleteScorecardNodo()"><md-icon md-font-icon="fa-trash margin-right fa-fw"></md-icon>Eliminar Nodo</md-button></md-menu-item>
+					<md-menu-item ng-show="NodosSelected.length > 0"><md-button ng-click="eraseCacheNodosInd()" class=""><md-icon md-font-icon="fa-eraser margin-right fa-fw"></md-icon>Borrar la Caché de {{ NodosSelected.length }} Indicadores</md-button></md-menu-item>
+					<md-menu-item ng-show="NodosSelected.length > 0"><md-button ng-click="moveNodosInd()" class=""><md-icon md-font-icon="fa-sign-out-alt margin-right fa-fw"></md-icon>Mover {{ NodosSelected.length }} Indicadores</md-button></md-menu-item>
+					<md-menu-item ng-show="NodosSelected.length > 0"><md-button ng-click="deleteNodosInd()" class="md-warn"><md-icon md-font-icon="fa-trash margin-right fa-fw"></md-icon>Eliminar {{ NodosSelected.length }} Indicadores</md-button></md-menu-item>
+					<md-menu-item><md-button ng-click="reindexarNodo(NodoSel)"><md-icon md-font-icon="fa-redo margin-right fa-fw"></md-icon>Reindexar Indicadores / Valores</md-button></md-menu-item>
+					<md-menu-item><md-button ng-click="deleteScorecardNodo()" class="md-warn"><md-icon md-font-icon="fa-trash margin-right fa-fw"></md-icon>Eliminar Nodo Actual</md-button></md-menu-item>
 				</md-menu-content>
 			</md-menu>
 			<md-button class="md-icon-button no-margin" aria-label="b" ng-click="viewScorecardDiag(ScoSel.id)">

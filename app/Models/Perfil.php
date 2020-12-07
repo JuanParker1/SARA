@@ -21,6 +21,8 @@ class Perfil extends MyModel
 		return [
 			[ 'id',						'id',				null, true, false, null, 100 ],
 			[ 'Perfil',					'Perfil',			null, true, false, null, 100 ],
+			[ 'Perfil_Show',			'Perfil_Show',			null, true, false, null, 100 ],
+			[ 'Orden',					'Orden',			null, true, false, null, 100 ],
 		];
 	}
 }

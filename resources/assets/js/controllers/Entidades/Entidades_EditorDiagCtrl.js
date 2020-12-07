@@ -26,8 +26,15 @@ angular.module('Entidades_EditorDiagCtrl', [])
 		Ctrl.prepEditor = (Editor) => {
 			angular.forEach(Editor.campos, (C) => {
 				if(Rs.inArray(C.campo.Tipo, ['Fecha','Hora','FechaHora'])){
-					C.dateval = (C.val == null) ? null : moment(C.val).toDate();
+					C.val = Rs.parseDate(C.val);
 				};
+
+				if(C.campo.Tipo == 'ListaAvanzada'){
+					if(C.campo.Op4 == 'AddDate' && C.val == '_SELECT_DATE_'){
+						C.val_aux = Rs.parseDate(C.val_aux);
+					}
+				}
+
 			});
 
 			Ctrl.Editor = Editor;
@@ -65,11 +72,11 @@ angular.module('Entidades_EditorDiagCtrl', [])
 
 		//Fields Changed
 		Ctrl.changedField = (C) => {
-			if(C.campo.Tipo == 'FechaHora'){
+			/*if(C.campo.Tipo == 'FechaHora'){
 				C.val = moment(C.dateval).format('YYYY-MM-DD HH:mm');
 			};
 
-			console.log(C.val);
+			console.log(C.val);*/
 		};
 
 		//Subir imágen

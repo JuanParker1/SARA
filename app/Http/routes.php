@@ -21,6 +21,8 @@ Route::get('/Home/{section}/{subsection}',  'MainController@getSubsection');
 Route::get('/Frag/{fragment}',  			'MainController@getFragment');
 Route::post('/file',  						'MainController@getFile');
 Route::get('/a', 		  					'MainController@getApp');
+Route::get('/int', 		  					'MainController@getBase');
+Route::get('/int/{int_id}', 		  		'MainController@getIntView');
 Route::get('/ip', 		  					'MainController@getIP');
 
 Route::controller('/api/Main',       	'MainController');
@@ -33,6 +35,7 @@ Route::controller('/api/Indicadores',   'IndicadoresController');
 Route::controller('/api/Scorecards',   	'ScorecardsController');
 Route::controller('/api/Procesos',   	'ProcesosController');
 Route::controller('/api/ConsultasSQL',  'ConsultasSQLController');
+Route::controller('/api/Integraciones', 'IntegracionesController');
 
 
 

@@ -12,34 +12,55 @@
 			</md-select>
 		</div>
 
-		<div layout class="border-bottom" layout-align="center center" style="height: 41px">
-			<div class="md-toolbar-searchbar" flex layout>
-				<md-icon md-font-icon="fa-search" class="fa-fw" style="margin: 8px 4px 0 8px;"></md-icon>
-				<input flex type="search" placeholder="Buscar..." ng-model="filterEntidades" class="no-padding" ng-change="searchEntidades()" ng-model-options="{ debounce : 500 }">
-			</div>
-			<md-button class="md-icon-button no-margin" aria-label="b" ng-click="addEntidad()">
-				<md-icon md-svg-icon="md-plus"></md-icon>
-				<md-tooltip md-direction=left>Agregar Entidad</md-tooltip>
-			</md-button>
-		</div>
+		<md-progress-linear md-mode="indeterminate" ng-show="EntidadesCRUD.ops.loading"></md-progress-linear>
 
-		<div class="overflow-y darkScroll padding-top-5" flex>
+		<div class="overflow-y darkScroll padding-top-5" flex=40>
 
-			<div ng-repeat="F in FsEntidades" class="mh25 borders-bottom padding-0-5 relative text-13px show-child-on-hover"
+			<div ng-repeat="F in ProcesosFS" class="mh25 borders-bottom padding-0-5 relative text-13px show-child-on-hover"
 				md-ink-ripple layout ng-show="F.show">
 				<div ng-style="{ width: (F.depth * 12) }"></div>
-				<div ng-show="F.type == 'folder'" flex layout ng-click="FsOpenFolder(FsEntidades, F)" class="Pointer">
-					<md-icon md-font-icon="fa-chevron-right  fa-fw transition" ng-class="{'fa-rotate-90':F.open}"></md-icon>
-					<div flex style="padding: 5px 0">{{ F.name }}</div>
+				<div ng-show="F.type == 'folder'" flex layout  class="Pointer">
+					<md-icon md-font-icon="fa-chevron-right  fa-fw transition Pointer" ng-class="{'fa-rotate-90':F.open }" ng-click="FsOpenFolder(ProcesosFS, F)"></md-icon>
+					<div flex class="Pointer" style="padding: 5px 0" ng-click="openProceso(F.file)"
+						ng-class="{ 'text-bold' : F.file.id == ProcesoSelId }">{{ F.name }}</div>
 				</div>
-				<div ng-show="F.type == 'file'" flex layout class="Pointer" ng-click="openEntidad(F.file)" 
-					ng-class="{ 'text-bold' : F.file.id == EntidadSel.id }">
-					<div flex style="padding: 5px 0 5px 12px">{{ F.file.Nombre }}</div>
+				<div ng-show="F.type == 'file'" flex layout class="Pointer" ng-click="openProceso(F.file)" 
+					ng-class="{ 'text-bold' : F.file.id == ProcesoSelId }">
+					<div flex style="padding: 5px 0 5px 24px" layout>
+						<div flex>{{ F.file.Proceso }}</div>
+					</div>
 				</div>
 			</div>
 
 			<div class="h30"></div>
 		</div>
+
+		<div layout class="border-top" layout-align="center center">
+			<div class="md-toolbar-searchbar" flex layout>
+				<md-icon md-font-icon="fa-search" class="fa-fw" style="margin: 4px 5px 0 5px;"></md-icon>
+				<input flex type="search" placeholder="Buscar..." ng-model="filterEntidades" class="no-padding" ng-change="searchEntidades()" ng-model-options="{ debounce : 500 }">
+			</div>
+			<md-button class="md-icon-button no-margin no-padding s30" aria-label="b" ng-click="addEntidad()">
+				<md-icon md-svg-icon="md-plus"></md-icon>
+				<md-tooltip md-direction=left>Agregar Entidad</md-tooltip>
+			</md-button>
+		</div>
+
+		<div class="overflow-y darkScroll border-top " flex layout=column>
+			
+			<md-subheader class="no-padding margin-top margin-left text-clear" 
+				ng-repeat="P in Procesos | filter:{ id: ProcesoSelId }:true "
+				ng-show="ProcesoSelId && (filterEntidades == '')">{{ P.Proceso }}</md-subheader>
+
+			<div ng-repeat="E in getEntidadesFiltered() | orderBy:'Nombre'" class="padding-top padding-left Pointer" ng-click="openEntidad(E)"
+				ng-class="{ 'text-bold': ( E.id == EntidadSel.id ) }">
+				<div class="text-14px">{{ E.Nombre }}</div>
+			</div>
+
+			<div class="h50"></div>
+
+		</div>
+
 	</div>
 	</md-sidenav>
 
@@ -68,9 +89,16 @@
 
 	    	<div layout flex></div>
 			
-			<md-tabs class="w450" hide>
-				<md-tab ng-repeat="S in ['General','Grids','Editores','Cargadores']" ng-click="navToSubsection(S)" label="{{ S }}" md-active="State.route[3] == S"></md-tab>
-		    </md-tabs>
+			<md-button class="md-icon-button s40 text-clear" ng-show="!Storage.EntidadSelId" ng-click="fijarEntidad()">
+	    		<md-icon md-font-icon="fa-thumbtack fa-rotate-90"></md-icon>
+	    		<md-tooltip md-direction=left>Fijar</md-tooltip>
+	    	</md-button>
+
+	    	<md-button class="md-icon-button s40" ng-show="Storage.EntidadSelId" ng-click="Storage.EntidadSelId = false">
+	    		<md-icon md-font-icon="fa-thumbtack"></md-icon>
+	    		<md-tooltip md-direction=left>No Fijar</md-tooltip>
+	    	</md-button>
+
 		</div>
 
 		<div flex layout class="bg-lightgrey-5" ui-view>

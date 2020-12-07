@@ -16,6 +16,7 @@ use Crypt;
 use App\Functions\Autenticacion;
 use Cache;
 use GuzzleHttp\Client;
+use App\Functions\Helper;
 
 class UsuarioController extends Controller
 {
@@ -130,6 +131,24 @@ class UsuarioController extends Controller
 	}
 
 
+	function getValidarComfa($usuario, $clave)
+	{
+		$token = md5($usuario.$clave);
+		$usuarioe= base64_encode($usuario);
+		$clavee= base64_encode($clave);
+
+		$ctx = stream_context_create(array( 
+			'http' => array( 
+				'timeout' => 10
+				)
+			)
+		);
+
+		$url = "http://sec.comfamiliar.com/login/" . $usuarioe . "/" . $clavee . "/" . $token . ".xml";
+		return $url;
+	}
+
+
 
 	public function postCheckToken()
 	{
@@ -146,12 +165,12 @@ class UsuarioController extends Controller
 		if(!$token) return response()->json(['Msg' => 'Usuario no autorizado'], 400);
 
 		$Email = Crypt::decrypt($token);
-        if(strtolower($Email) == 'corrego@comfamiliar.com'){
+        /*if(strtolower($Email) == 'corrego@comfamiliar.com'){
 
             $IP = request()->ip();
             if(!in_array($IP, [ '127.0.0.1', '10.25.40.108', '10.25.20.252' ])) 
             	return response()->json(['Msg' => 'Usuario no autorizado'], 400);
-        };
+        };*/
 
 		$Usuario = new Usuario();
 		$Usuario = $Usuario->fromToken($token);
@@ -159,8 +178,8 @@ class UsuarioController extends Controller
 		$Usuario->getApps();
 		$Usuario['token'] = $token;
 		$Usuario['url']   = config('app.url');
-		$Usuario['app_name']   = config('app.name');
-
+		$Usuario['app_name']   = Helper::getAppName();
+		$Usuario['procesos_updated_at'] = \App\Models\Proceso::max('updated_at');
 		//new Log('USER.ENTER', null);
 
 		return $Usuario;

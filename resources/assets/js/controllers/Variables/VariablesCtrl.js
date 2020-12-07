@@ -1,6 +1,6 @@
 angular.module('VariablesCtrl', [])
-.controller('VariablesCtrl', ['$scope', '$rootScope', '$injector', '$filter',
-	function($scope, $rootScope, $injector, $filter) {
+.controller('VariablesCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$mdEditDialog', '$mdDialog',
+	function($scope, $rootScope, $injector, $filter, $mdEditDialog, $mdDialog) {
 
 		console.info('VariablesCtrl');
 		var Ctrl = $scope;
@@ -9,9 +9,11 @@ angular.module('VariablesCtrl', [])
 		Ctrl.VariablesNav = true;
 		Rs.mainTheme = 'Snow_White';
 		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Variables' });
-		Ctrl.Grids = Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
+		Ctrl.filterVariables = '';
 
-		Ctrl.tiposDatoVar = ['Numero','Porcentaje','Moneda'];
+		Ctrl.Cancel = $mdDialog.cancel;
+
+		Ctrl.tiposDatoVar = ['Numero','Porcentaje','Moneda','Millones'];
 		Ctrl.Frecuencias = {
 			0: 'Diario',
 			1: 'Mensual',
@@ -32,19 +34,53 @@ angular.module('VariablesCtrl', [])
 
 		Ctrl.getVariables = () => {
 
-			Rs.http('api/Procesos', {}, Ctrl, 'Procesos');
+			if(Ctrl.variable_id) return Ctrl.prepVariableDiag();
 
-			Ctrl.VariablesCRUD.get().then(() => {
+			Promise.all([
+				Rs.getProcesos(Ctrl),
+				Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids')
+			]).then(() => {
 
-				
-				Ctrl.getFs();
+				Ctrl.VariablesCRUD.get().then(() => {
 
-				if(Rs.Storage.VariableSel){
-					var variable_sel_id = Rs.getIndex(Ctrl.VariablesCRUD.rows, Rs.Storage.VariableSel);
-					Ctrl.openVariable(Ctrl.VariablesCRUD.rows[variable_sel_id]);
-				};
+					var ids_procesos = Ctrl.VariablesCRUD.rows.map(e => e.proceso_id).filter((v, i, a) => a.indexOf(v) === i);
+					Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos.filter(p => ids_procesos.includes(p.id)),'Ruta','Proceso',false,true);
+					angular.forEach(Ctrl.ProcesosFS, (P) => {
+						if(P.type == 'folder'){
+							P.file = Ctrl.Procesos.find(p => p.Ruta == P.route);
+						}
+					});
+
+					//Ctrl.getFs();
+
+					if(Rs.Storage.VariableSel){
+						var variable_sel_id = Rs.getIndex(Ctrl.VariablesCRUD.rows, Rs.Storage.VariableSel);
+						Ctrl.openVariable(Ctrl.VariablesCRUD.rows[variable_sel_id]);
+					};
+				});
+
 			});
 		};
+
+		Ctrl.prepVariableDiag = () => {
+			Ctrl.Procesos = Ctrl.$parent.Procesos;
+			Ctrl.ProcesosFS = Ctrl.$parent.ProcesosFS;
+			Ctrl.Grids = Ctrl.$parent.Grids;
+			Ctrl.VariablesCRUD = Ctrl.$parent.VariablesCRUD;
+
+			var variable_sel_id = Rs.getIndex(Ctrl.VariablesCRUD.rows, Ctrl.variable_id);
+			Ctrl.openVariable(Ctrl.VariablesCRUD.rows[variable_sel_id]);
+		}
+
+		Ctrl.openProceso = (P) => { Ctrl.ProcesoSelId = P.id; }
+
+		Ctrl.getVariablesFiltered = () => {
+			if(Ctrl.filterVariables.trim() == ''){
+				return $filter('filter')(Ctrl.VariablesCRUD.rows, { proceso_id: Ctrl.ProcesoSelId }, true);
+			}else{
+				return $filter('filter')(Ctrl.VariablesCRUD.rows, Ctrl.filterVariables);
+			}
+		}
 
 		Ctrl.getFs = () => {
 			Ctrl.filterVariables = "";
@@ -66,19 +102,14 @@ angular.module('VariablesCtrl', [])
 			};
 		};
 
-		Ctrl.addVariable = (route) => {
-			if(route){
-				proceso_id = Rs.def(Ctrl.Procesos.filter(e => e.Ruta == route).pop().id, null);
-			}else{
-				proceso_id = null;
-			};
+		Ctrl.addVariable = () => {
 			
 			Ctrl.getFs();
 			Rs.BasicDialog({
 				Title: 'Crear Variable', Flex: 50,
 				Fields: [
-					{ Nombre: 'Nombre',  Value: '', 		Required: true, flex: 60 },
-					{ Nombre: 'Proceso', Value: proceso_id, Required: true, flex: 40, Type: 'list', List: Ctrl.Procesos, Item_Val: 'id', Item_Show: 'Proceso' },
+					{ Nombre: 'Nombre',  Value: '', 				Required: true, flex: 100 },
+					{ Nombre: 'Proceso', Value: Ctrl.ProcesoSelId, Required: true, flex: 100, Type: 'list', List: Ctrl.Procesos, Item_Val: 'id', Item_Show: 'Proceso' },
 					//{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.VariablesFS },
 					//{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
 				],
@@ -96,14 +127,14 @@ angular.module('VariablesCtrl', [])
 		};
 
 		Ctrl.openVariable = (V) => {
-			//Rs.viewVariableDiag(V.id);
 			Rs.http('/api/Variables/get-variable', { id: V.id }, Ctrl, 'VarSel').then(() => {
-				
 				//Rs.getVariableData([Ctrl.VarSel.id]);
-				//Rs.viewVariableDiag(Ctrl.VarSel.id);
+				//
+				Ctrl.ProcesoSelId = Ctrl.VarSel.proceso_id;
 				Rs.Storage.VariableSel = Ctrl.VarSel.id;
+
+				//Rs.viewVariableDiag(Ctrl.VarSel.id);
 			});
-			//Ctrl.VarSel = V;
 		};
 
 		Ctrl.updateVariable = () => {
@@ -129,6 +160,8 @@ angular.module('VariablesCtrl', [])
 
 		Ctrl.editValor = (Periodo) => {
 			var Valor = angular.isDefined(Ctrl.VarSel.valores[Periodo]) ? Ctrl.VarSel.valores[Periodo].Valor : null;
+			
+
 			Rs.BasicDialog({
 				Title: 'Cambiar valor '+Periodo,
 				Confirm: { Text: 'Cambiar' }, Flex: 20,
@@ -144,6 +177,30 @@ angular.module('VariablesCtrl', [])
 				});
 			});
 		};
+
+		Ctrl.editValor2 = (event, Periodo) => {
+			event.stopPropagation(); // in case autoselect is enabled
+
+			var Valor = angular.isDefined(Ctrl.VarSel.valores[Periodo]) ? Ctrl.VarSel.valores[Periodo].Valor : null;
+			if(Ctrl.VarSel.TipoDato == 'Porcentaje') Valor *= 100;
+			
+			return $mdEditDialog.small({
+				modelValue:  Valor,
+				targetEvent: event,
+				placeholder: Periodo, title: Periodo,
+				save: function (input) {
+					var newValor = parseFloat(input.$modelValue);
+					if(Number.isNaN(newValor)) newValor = null;
+					if(Ctrl.VarSel.TipoDato == 'Porcentaje') newValor /= 100;
+					if(newValor == Valor) return;
+
+					Rs.http('/api/Variables/update-valor', { variable_id: Ctrl.VarSel.id, Periodo: Periodo, Valor: newValor }).then(() => {
+						Ctrl.openVariable(Ctrl.VarSel);
+					});
+
+				}
+			});
+		}
 
 		Ctrl.copyVar = () => {
 			Rs.BasicDialog({

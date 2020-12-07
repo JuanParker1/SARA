@@ -21,20 +21,25 @@ class MainController extends Controller
     		return view('Offline');
     	};
 
+    	$AppName = Helper::getAppName();
 
-    	if(request()->has('token')){
+    	/*if(request()->has('token')){
     		$token = request()->token;
     		session(['token_sec' => $token]);
     		return redirect('/');
-    	};
+    	};*/
 
-    	return view('Base');
+    	return view('Base', compact('AppName'));
     }
     public function getLogin(){ 
     	return view('Login'); 
    	}
    	public function getApp(){ 
     	return view('Apps.App_View');
+   	}
+   	
+   	public function getIntView($IntId){ 
+    	return view('Integraciones.'.$IntId);
    	}
     
     public function getHome(){  return view('Home'); }
@@ -86,9 +91,15 @@ class MainController extends Controller
 
 	public function getTest()
 	{
-		$User = \App\Models\Usuario::where('Email', 'corrego@comfamiliar.com')->first();
-		$Pass = \Crypt::decrypt($User->Password);
-		return $User;
+		function a($value)
+		{
+			if($value < 3) return $value;
+			return a($value - 1) * a($value - 2);
+		}
+
+		//$User = \App\Models\Usuario::where('Email', 'corrego@comfamiliar.com')->first();
+		//$Pass = \Crypt::decrypt($User->Password);
+		return a(5);
 	}
 
 	public function getIP()
@@ -116,6 +127,8 @@ class MainController extends Controller
 	public function postMainSearch()
 	{
 		extract(request()->all()); //searchText
+		$Usuario = Helper::getUsuario();
+		$Usuario->getApps();
 
 		$searchText = trim($searchText);
 
@@ -141,15 +154,28 @@ class MainController extends Controller
 		if($Variables->count() > 0) $groups[] = 'Variables'; 
 
 		//Scorecards
-		$Scorecards = \App\Models\Scorecard::buscar($searchText)->get()->transform(function($E){
+		/*$Scorecards = \App\Models\Scorecard::buscar($searchText)->get()->transform(function($E){
 			$E['Tipo'] = 'Tablero';
 			$E['Secundario'] = null;
 			$E['Icono'] = 'fa-th-large';
 			return $E;
 		});
-		if($Scorecards->count() > 0) $groups[] = 'Tableros'; 
+		if($Scorecards->count() > 0) $groups[] = 'Tableros';*/
 
-		$res = $res->merge($Scorecards);
+		//Informes
+		$Informes = $Usuario->Apps->filter(function($I) use ($searchText){
+			return !(stripos( $I['Titulo'], $searchText) === FALSE);
+		})->map(function($I){
+			$I['Tipo'] = 'Reporte';
+			return $I;
+		});
+		if($Informes->count() > 0) $groups[] = 'Reportes'; 
+	
+
+
+
+
+		$res = $res->merge($Informes);
 		$res = $res->merge($Indicadores);
 		$res = $res->merge($Variables);
 		
@@ -186,7 +212,7 @@ class MainController extends Controller
 
 	public function postUploadImage()
 	{
-		extract(request()->all()); //width, height, imagemode
+		extract(request()->all()); //width, height, imagemode, savepath
 		$img = \Image::make($_FILES['file']['tmp_name']);
 		
 		if($imagemode == 'Recortar'){      $img->fit($width, $height); }
@@ -194,12 +220,28 @@ class MainController extends Controller
 		if($imagemode == 'Ajustar Alto'){  $img->resize(null,   $height, function ($constraint){ $constraint->aspectRatio(); }); }
 		if($imagemode == 'Contener'){      $img->fit($width, $height); }
 
-		$uid = uniqid('image_');
-		$savepath = "temp/$uid.jpg";
+		if(!isset($savepath) OR $savepath == 'null'){
+			$uid = uniqid('image_');
+			$savepath = "temp/$uid.jpg";
+		};
 
 		$img->save($savepath);
 
 		return $savepath;
+	}
+
+
+	public function postFeedback()
+	{
+		extract(request()->all()); //$Subject, $feedbackComment, $usuario_id
+		$feedback = new \App\Models\Feedback([
+			'Tema' => $Subject,
+			'Comentario' => $feedbackComment,
+			'usuario_id' => $usuario_id
+		]);
+
+		$feedback->save();
+
 	}
 
 }

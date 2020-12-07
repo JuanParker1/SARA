@@ -20,7 +20,7 @@
 		<div ng-repeat="C in ComentariosCRUD.rows" md-whiteframe=2 class="comment" layout=column>
 			<div layout class="margin-bottom-5">
 				<b flex>{{ C.autor.Nombres }}</b>
-				<div class="comment_pill">{{ C.Op1 }}</div>
+				<div class="comment_pill" style="height: 18px">{{ C.Op1 }}</div>
 			</div>
 			<p class="no-margin">
 

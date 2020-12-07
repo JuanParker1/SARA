@@ -2,11 +2,11 @@
 
 
 	<div layout layout-align="center start" class="padding-left margin-bottom">
-		<div layout=column>
+		<div layout=column class="lh40 margin-left-5">
 			<div class="text-16px"><span>{{ Var.Variable }}</span></div>
 			<div class="text-13px text-clear">{{ Var.Descripcion }}</div>
 		</div>
-		<div class="text-clear margin-left">{{ Var.proceso.Proceso }}</div>
+		<div class="text-clear margin-left lh40">{{ Var.proceso.Proceso }}</div>
 		<span flex></span>
 		<md-button class="md-icon-button" aria-label="Button" ng-click="Cancel()">
 			<md-icon md-svg-icon="md-close"></md-icon>

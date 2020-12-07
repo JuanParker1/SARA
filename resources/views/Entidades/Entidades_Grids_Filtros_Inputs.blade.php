@@ -1,16 +1,20 @@
-<div ng-if="inArray(R.campo.Tipo, ['Texto','TextoLargo','Entidad'])" layout>
+<div ng-if="inArray(R.campo.Tipo, ['Texto','TextoLargo'])" layout>
 
 	<md-input-container class="no-padding no-margin">
-		<md-select ng-model="R.Comparador" class="" aria-label="s" ng-change="markChanged(R)">
+		<md-select ng-model="R.Comparador" aria-label="s" ng-change="markChanged(R)" class="h30">
+			<md-option value="=">Es</md-option>
 			<md-option value="lista">Lista</md-option>
 			<md-option value="query">Busqueda</md-option>
-			<md-option value="radios">Radios (Selección única)</md-option>
 		</md-select>
 	</md-input-container>
 
 	<div ng-if="inArray(R.Comparador, ['lista'])">
-		<md-chips ng-model="R.val" class="h30" placeholder="Valores por defecto" ng-change="markChanged(R)"></md-chips>
+		<md-chips ng-model="R.Valor" class="h30" placeholder="Valores por defecto" ng-change="markChanged(R)"></md-chips>
 	</div>
+
+	<md-input-container ng-if="inArray(R.Comparador, ['=', 'query'])" class="no-margin" md-no-float>
+		<input type="text" ng-model="R.Valor" placeholder="Valor por Defecto">
+	</md-input-container>
 
 </div>
 

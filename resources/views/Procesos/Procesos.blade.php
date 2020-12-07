@@ -30,7 +30,7 @@
 				<div ng-show="F.type == 'file'" flex layout class="Pointer" ng-click="openProceso(F.file)" 
 					ng-class="{ 'text-bold' : F.file.id == FuncionSel.id }">
 					<div flex style="padding: 5px 0 5px 24px" layout>
-						<md-icon md-font-icon="{{ getProcesoIcon(F.file.Tipo) }}" class="fa-fw s15 margin-right-5"></md-icon>
+						<md-icon md-font-icon="{{ getProcesoIcon(F.file.Tipo) }}" class="fa-fw s15 margin-right-5" hide></md-icon>
 						<div flex>{{ F.file.Proceso }}</div>
 					</div>
 				</div>

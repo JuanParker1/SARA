@@ -25,4 +25,6 @@ class VariableValor extends MyModel
     {
         return $query->where('Periodo', '>=', ($year*100)+$mesIni)->where('Periodo', '<=', ($year*100)+$mesFin);
     }
+
+    
 }

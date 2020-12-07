@@ -1,19 +1,12 @@
 <div id="Home" flex layout="column" mds-theme="{{ mainTheme }}" ng-class="'theme-'+mainTheme">
-	<md-toolbar class="md-short border-bottom bg-theme">
+	<md-toolbar id="HomeToolbar" class="md-short border-bottom bg-theme">
 		<div class="md-toolbar-tools no-padding" layout>
 
 			<md-button class="md-icon-button w40 mw40" aria-label="Button" ng-click="mainSidenav()" style="margin-left: 4px;margin-right: 1px;" hide>
 				<md-icon md-svg-icon="md-bars"></md-icon>
 			</md-button>
 			<img src="img/Logo.png" class="w25 h25" style="margin: 0 12px">
-			<h3 class="md-headline text-bold" hide-xs>{{ Usuario.app_name }}</h3>
-
-			<span flex></span>
-
-			<div class="md-toolbar-searchbar text-clear text-15px" layout hide>
-				<md-icon md-font-icon="fa-search" class="fa-fw" style="margin: 8px 4px 0 8px;"></md-icon>
-				<input flex type="search" placeholder="Buscar..." ng-model="a" class="no-padding w100">
-			</div>
+			<h3 class="md-headline text-bold" hides-xs md-truncate flex>{{ Usuario.app_name }}</h3>
 
 			@include('Core.UserMenu')
 			
@@ -22,7 +15,7 @@
 
 	<div flex layout>
 		
-		<div class="w50 bg-theme transition border-right overflow-y hasScroll" layout=column>
+		<div id="HomeNavigation" class="w50 bg-theme transition border-right overflow-y hasScroll" layout=column>
 			<div layout layout-align="center center" class="Seccion" ng-class="{ 'itemsel' : State.route.length < 3 }" md-ink-ripple ng-click="navTo('Home')" 
 				style="margin-bottom: 1px;">
 				<md-icon class="fa-fw fa-lg" md-font-icon="fa-home"></md-icon>

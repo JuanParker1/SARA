@@ -139,6 +139,9 @@ angular.module('Filters', [])
 	}]).filter('numberformat', ['$filter', function ($filter) {
 		return function (input, tipodato, decimales) {
 			if(!input) return input;
+
+			if(tipodato == 'Millones') return "$ " + $filter('number')((input/1000000), decimales) + "M";
+
 			if(tipodato == 'Porcentaje') input = input * 100;
 			var number = $filter('number')(input, decimales);
 			if(tipodato == 'Porcentaje') return number + "%";
@@ -156,5 +159,9 @@ angular.module('Filters', [])
 			if(!input) return input;
 			var arr = input.split(' ');
 			return arr[index-1];
+		};
+	}).filter('getype', function() {
+		return function(input) {
+			return typeof input;
 		};
 	});

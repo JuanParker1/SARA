@@ -1,17 +1,25 @@
-<div flex layout=column class="overflow-y hasScroll transition" ng-show="Modo == 'Año'" ng-class="{ 'opacity-0': Loading }">
+<div flex layout=column class="overflow-y hasScroll transition" ng-if="Modo == 'Año'" ng-class="{ 'opacity-0': Loading }">
 
 	<md-table-container class="border-bottom">
-		<table md-table class="md-table-short table-col-compress">
+		<table md-table class="md-table-short table-col-compress table-nowrap">
+			<colgroup>
+				<col span="2">
+				<col  ng-repeat="M in Meses" ng-class="{ 'bg-black-5': M[0] == Mes }">
+				<col>
+			</colgroup>
 			<thead md-head>
 				<tr md-row class="">
-					<th md-column></th>
-					<th md-column md-numeric ng-repeat="M in Meses" class="mw45">{{ M[1] }}</th>
+					<th md-column>
+						<div layout><div class="ProcesoSel_pill">{{ ProcesoSelName }}</div></div>
+					</th>
 					<th md-column md-numeric>Meta</th>
+					<th md-column md-numeric ng-repeat="M in Meses" class="mw45">{{ M[1] }}</th>
 					<th md-column></th>
 				</tr>
 			</thead>
 			<tbody md-body class="text-14px Pointer" >
-				<tr md-row ng-repeat="N in Sco.nodos_flat" class="md-row-hover Pointer ng-hide" ng-click="decideAction(N)" ng-show="N.show">
+				<tr md-row ng-repeat="N in Sco.nodos_flat" class="md-row-hover Pointer ng-hide" ng-click="decideAction(N)" 
+					ng-show="N.show">
 					<td md-cell style="padding: 0 !important">
 						<div class="w100p Pointer" layout ng-click="openFlatLevel(N, $event)">
 							<div ng-style="{ width: 10 * N.depth }"></div>
@@ -25,6 +33,14 @@
 								<div>{{ N.Nodo }} <span ng-if="N.tipo == 'Nodo'" class="text-clear">&nbsp;{{ N.cant_indicadores + N.cant_variables }}</span></div>
 								<div class="text-clear" ngs-if="N.tipo == 'Indicador'">{{ N.elemento.proceso.Proceso }}</div>
 							</div>
+						</div>
+					</td>
+					<td md-cell>
+						<div class="w100p" ng-if="N.tipo == 'Indicador'" ng-repeat="E in [ N.valores[Anio+'12'] ] ">
+							{{ E.meta_val }}
+							<md-icon class="s15 margin-left-5" md-font-icon="{{ Sentidos[N.elemento.Sentido].icon}} fa-fw">
+								<md-tooltip md-direction=left>{{ Sentidos[N.elemento.Sentido].desc }}</md-tooltip>
+							</md-icon>
 						</div>
 					</td>
 					<td md-cell ng-repeat="M in Meses" class="scorecard_mescell">
@@ -44,14 +60,8 @@
 						</div>
 
 					</td>
-					<td md-cell>
-						<div class="w100p" ng-if="N.tipo == 'Indicador'" ng-repeat="E in [ N.valores[Anio+'12'] ] ">
-							{{ E.meta_val }}
-							<md-icon class="s15 margin-left-5" md-font-icon="{{ Sentidos[N.elemento.Sentido].icon}} fa-fw">
-								<md-tooltip md-direction=left>{{ Sentidos[N.elemento.Sentido].desc }}</md-tooltip>
-							</md-icon>
-						</div>
-					</td>
+					<td md-cell><pre hide>{{ N.cump_porc_prom | json }}</pre></td>
+					
 				</tr>
 			</tbody>
 		</table>
@@ -65,5 +75,12 @@
 	.scorecard_mescell > div{
 		font-size: 1.15em;
 		font-weight: 400;
+	}
+
+	.ProcesoSel_pill{
+		background: #3e3e3e;
+		color: white;
+		padding: 2px 10px;
+		border-radius: 15px;
 	}
 </style>

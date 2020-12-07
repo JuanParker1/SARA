@@ -99,6 +99,28 @@ class ScorecardNodo extends MyModel
 		}
 	}
 
+	public function getFullRuta($Nodos)
+	{
+		$Nodos = collect($Nodos)->keyBy('id');
+
+		foreach ($Nodos as &$N){
+			if($N['tipo'] == 'Nodo'){
+				if(is_null($N['padre_id'])){ 
+					$N['Ruta'] = $N['Nodo'];
+				}else{
+					$N['Ruta'] = $Nodos[$N['padre_id']]['Ruta'] .'\\'. $N['Indice'] .'. '. $N['Nodo'];
+				}
+			}
+		}
+
+		foreach ($Nodos as &$N){
+			if($N['tipo'] !== 'Nodo'){
+				$N['Ruta'] = $Nodos[$N['padre_id']]['Ruta'];
+			}
+		}
+	}
+
+
 	public function getElementos($Nodos)
 	{
 		$var_ids = [];
@@ -166,15 +188,141 @@ class ScorecardNodo extends MyModel
 		}
 	}
 
-	public function calculate($Periodos)
+	public function getValoresCache(&$Nodos, $Anio)
+	{
+		$nodos_ids = $Nodos->pluck('id');
+		$NodosValores = \App\Models\ScorecardNodoValores::whereIn('nodo_id', $nodos_ids)->where('Anio', $Anio)->get()->keyBy('nodo_id');
+
+
+		//dd($NodosValores);
+		$Nodos->transform(function($N) use ($NodosValores, &$DeleteNV){
+			if($NodosValores->has($N->id)){
+				$NodoValores = $NodosValores[$N->id];
+
+				if($NodoValores->created_at > $N->elemento->updated_at){
+					$N->valores = $NodoValores->valores['valores'];
+				}
+			}
+			return $N;
+		});
+
+		$NodosValores = null;
+		//if(!empty($DeleteNV)) \App\Models\ScorecardNodoValores::whereIn('id', $DeleteNV)->delete();
+
+	}
+
+	public function calculate($Periodos, &$NodoValores)
 	{
 		foreach ($this->nodos as $nodo) {
-			$nodo->calculate($Periodos);	
+			$nodo->calculate($Periodos, $NodoValores);	
 		}
 		
 		$this->puntos_totales = $this->nodos->sum('peso');
-		if($this->tipo == 'Indicador' AND $this->elemento) $this->valores = $this->elemento->calcVals(round($Periodos[0]/100));
-		if($this->tipo == 'Variable'  AND $this->elemento) $this->valores = $this->elemento->getVals( round($Periodos[0]/100));
+		$Anio = round($Periodos[0]/100);
+
+		if($this->tipo == 'Indicador' AND $this->elemento AND !$this->valores){
+			$this->valores = $this->elemento->calcVals($Anio);
+			$NodoValores->push([
+				'nodo_id' => $this->id, 
+				'Anio'    => $Anio,
+				'valores' => json_encode([ 'valores' => $this->valores ])
+			]);
+		}
+
+		if($this->tipo == 'Variable'  AND $this->elemento AND !$this->valores){
+			$this->valores = $this->elemento->getVals( $Anio);
+
+			$NodoValores->push([
+				'nodo_id' => $this->id, 
+				'Anio'    => $Anio,
+				'valores' => json_encode([ 'valores' => $this->valores ])
+			]);
+		}
+
+		if($this->tipo == 'Nodo'){ //Conteo de Variables e Indicadores
+			foreach ($this->nodos as $subnodo) {
+				if($subnodo->tipo == 'Indicador'){
+					$this->cant_indicadores++;
+				}
+
+				if($subnodo->tipo == 'Variable' AND $subnodo->valores){
+					$this->cant_variables++;
+				}
+
+				if($subnodo->tipo == 'Nodo'){
+
+					$this->cant_indicadores += $subnodo->cant_indicadores;
+					$this->cant_variables   += $subnodo->cant_variables;
+
+				}
+			}
+		}
+		
+	}
+
+	public function filterCumplimientos($filters)
+	{
+		$this->nodos = $this->nodos->filter(function($nodo) use ($filters){
+			if($nodo->tipo == 'Nodo') return true;
+			if($nodo->tipo == 'Variable') return ($filters['cumplimiento'] == 'no_value');
+
+			if($nodo->tipo == 'Indicador'){
+
+				$valor = $nodo->valores[$filters['Periodo']];
+
+				if($filters['cumplimiento'] == 'no_value'){    return is_null($valor['cump_porc']); }
+				else if($filters['cumplimiento'] == 'red'){    return (!is_null($valor['cump_porc']) AND $valor['cump_porc'] < 0.85); }
+				else if($filters['cumplimiento'] == 'yellow'){ return ($valor['cump_porc'] >= 0.85   AND $valor['cump_porc'] < 1); }
+				else if($filters['cumplimiento'] == 'green'){  return $valor['cump_porc'] >= 1; }
+			}
+
+			return false;
+		});
+
+		foreach ($this->nodos as $nodo) {
+			if($nodo->tipo == 'Nodo') $nodo->filterCumplimientos($filters);
+		}
+	}
+
+	public function recountSubnodos()
+	{
+		foreach ($this->nodos as $subnodo) {
+			if($subnodo->tipo == 'Nodo') $subnodo->recountSubnodos();
+		}
+
+		$this->cant_variables = 0;
+		$this->cant_indicadores = 0;
+
+		foreach ($this->nodos as $subnodo) {
+			if($subnodo->tipo == 'Variable')  $this->cant_variables++;
+			if($subnodo->tipo == 'Indicador') $this->cant_indicadores++;
+			if($subnodo->tipo == 'Nodo'){
+				$this->cant_variables   += $subnodo->cant_variables;
+				$this->cant_indicadores += $subnodo->cant_indicadores;
+			}
+		}
+	}
+
+	public function purgeNodos()
+	{
+		$this->nodos = $this->nodos->filter(function($nodo){
+			if($nodo->tipo != 'Nodo') return true;
+			return ($nodo->cant_indicadores + $nodo->cant_variables) > 0;
+		});
+
+		foreach ($this->nodos as $nodo) {
+			if($nodo->tipo == 'Nodo') $nodo->purgeNodos();
+		}
+	}
+
+
+
+	public function calculateNodos($Periodos)
+	{
+		foreach ($this->nodos as $nodo) {
+			if($nodo->tipo == 'Nodo') $nodo->calculateNodos($Periodos);	
+		}
+
 		if($this->tipo == 'Nodo'){
 			$calc = array_fill_keys($Periodos, [ 'puntos' => 0, 'incalculables' => 0 ]);
 
@@ -182,36 +330,39 @@ class ScorecardNodo extends MyModel
 				
 				if($subnodo->tipo == 'Indicador'){
 					
-					$this->cant_indicadores++;
+					$cum_porc_total = 0;
+					$meses_calculables = 0;
 
 					foreach ($subnodo->valores as $per => $val) {
 
 						if($val['calculable']){
 							$calc[$per]['puntos'] += $subnodo->peso * $val['cump_porc'];
+							$cum_porc_total += $val['cump_porc'];
+							$meses_calculables++;
 						}else{
 							$calc[$per]['incalculables']++;
 						}
 					}
+
+					$cump_porc_prom = ($meses_calculables > 0) ? ($cum_porc_total / $meses_calculables) : 0;
+					$subnodo->cump_porc_prom = $cump_porc_prom;
 				}
 
 				if($subnodo->tipo == 'Variable' AND $subnodo->valores){
 					
-					$this->cant_variables++;
-
 					foreach ($Periodos as $per){
 
 						if(!is_null($subnodo->valores[$per]['Valor'])){
 							$calc[$per]['puntos'] += $subnodo->peso;
 						}else{
-							$calc[$per]['incalculables']++;
+							//$calc[$per]['incalculables']++;
 						}
 					}
+
+					$subnodo->cump_porc_prom = 1;
 				}
 
 				if($subnodo->tipo == 'Nodo'){
-
-					$this->cant_indicadores += $subnodo->cant_indicadores;
-					$this->cant_variables   += $subnodo->cant_variables;
 
 					foreach ($subnodo->calc as $per => $cal) {
 						if($cal['calculable']){
@@ -220,6 +371,8 @@ class ScorecardNodo extends MyModel
 							$calc[$per]['incalculables']++;
 						}
 					}
+
+					$subnodo->cump_porc_prom = 1000;
 				}
 			}
 
@@ -232,7 +385,24 @@ class ScorecardNodo extends MyModel
 
 			$this->calc = $calc;
 		}
-		
+	}
+
+	public function reorder($filters)
+	{
+		foreach ($this->nodos as $subnodo) {
+			$subnodo->reorder($filters);
+		}
+
+		$this->nodos = $this->nodos->sortBy(function($N) use ($filters){
+			if($N->tipo == 'Nodo') return 1000;
+			if($N->tipo == 'Variable') return 1;
+			if($N->tipo == 'Indicador'){
+				$cump_porc = $N->valores[$filters['Periodo']]['cump_porc'];
+				return is_null($cump_porc) ? -1 : $cump_porc;
+			}
+		});
+
+		//$this->nodos = $this->nodos->sortBy('cump_porc_prom');
 	}
 
 	public function flatten(&$NodosFlat, $depth, $open_to_level)
@@ -245,7 +415,7 @@ class ScorecardNodo extends MyModel
 			'depth' => $depth, 'tipo' => $this->tipo, 'nodos_cant' => $this->nodos_cant, 
 			'cant_indicadores' => $this->cant_indicadores, 'cant_variables' => $this->cant_variables, 
 			'calc' => $this->calc, 'valores' => $this->valores, 'elemento' => $this->elemento, 'open' => $open, 'show' => $show,
-			'ruta' => $this->ruta
+			'ruta' => $this->ruta, 'cump_porc_prom' => $this->cump_porc_prom
 		];
 
 		$depth++;
@@ -263,6 +433,29 @@ class ScorecardNodo extends MyModel
 		foreach ($this->nodos as $nodo) {
 			$nodo->pluck_procesos($Procesos);
 		}
+	}
+
+	public function reindexar()
+	{
+		//Subnodos
+        $Subnodos = \App\Models\ScorecardNodo::where('Tipo', 'Nodo')->where('padre_id', $this->id)->orderBy('Indice')->get();
+        foreach ($Subnodos as $k => $Subnodo) {
+            $newIndex = ($k + 1);
+            if($Subnodo->Indice != $newIndex){
+                $Subnodo->Indice = $newIndex;
+                $Subnodo->save();
+            }
+        }
+
+        //Indicadores
+        $Indicadores = \App\Models\ScorecardNodo::where('Tipo', '<>','Nodo')->where('padre_id', $this->id)->orderBy('Indice')->get();
+        foreach ($Indicadores as $k => $IndNodo) {
+            $newIndex = ($k + 1);
+            if($IndNodo->Indice != $newIndex){
+                $IndNodo->Indice = $newIndex;
+                $IndNodo->save();
+            }
+        }
 	}
 
 }

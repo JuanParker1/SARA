@@ -6,6 +6,7 @@ use App\Models\Core\MyModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\IndicadorVariable;
 use App\Models\IndicadorMeta;
+use App\Models\IndicadorValor;
 use App\Models\Variable;
 use App\Functions\FormulaParser;
 use App\Functions\Helper;
@@ -32,7 +33,6 @@ class Indicador extends MyModel
 			[ 'proceso_id',				'proceso_id',		null, true, false, null, 100 ],
 			[ 'Indicador',				'Indicador',		null, true, false, null, 100 ],
 			[ 'Definicion',				'Definición',		null, true, false, null, 100 ],
-			[ 'Unidad',					'Unidad',			null, true, false, null, 100 ],
 			[ 'TipoDato',				'TipoDato',			null, true, false, null, 100 ],
 			[ 'Decimales',				'Decimales',		null, true, false, null, 100 ],
 			[ 'Formula',				'Formula',			null, true, false, null, 100 ],
@@ -53,11 +53,25 @@ class Indicador extends MyModel
 
 
 	//Calcular Variables
-	public function calcVals($Anio, $mesIni = 1, $mesFin = 12)
+	public function calcVals($Anio = false, $mesIni = 1, $mesFin = 12)
 	{
-		$decimales = ($this->TipoDato == 'Porcentaje') ? $this->Decimales + 2 : $this->Decimales;
+		
+		if(!$Anio) $Anio = intval(date("Y"));
+		$PeriodoMin = intval(($Anio*100)+$mesIni);
+        $PeriodoMax = intval(($Anio*100)+$mesFin);
 
-		//return [];
+        //$IndValores = IndicadorValor::indicador($this->id)->whereBetween('Periodo', [$PeriodoMin, $PeriodoMax])->get()->keyBy('Periodo');
+        //if(!empty($IndValores)) return $IndValores->toArray();
+
+        $def = [
+			'mes' => 0, 'calculable' => true, 
+			'Valor' => null, 'val' => null,
+			'meta_Valor' => null, 'meta2_Valor' => null, 'meta_val' => null, 'cump' => null,
+			'cump_porc' => null
+		];
+		$valores = array_fill_keys(Helper::getPeriodos($PeriodoMin,$PeriodoMax), $def);
+
+		$decimales = ($this->TipoDato == 'Porcentaje') ? $this->Decimales + 2 : $this->Decimales;
 
 		//Variables
 		if(!$this->variables){
@@ -72,24 +86,15 @@ class Indicador extends MyModel
 					}else{
 						$desagregables[$campo['id']] = $campo;
 					};
-
-					
 				}
 			}
 			$this->desagregables = collect($desagregables)->values();
 			$this->desagregados  = collect($desagregados)->values();
 		}
 
-
-
 		$this->metas     = IndicadorMeta::indicador($this->id)->year($Anio,$mesFin)->get();
-		$def = [
-			'mes' => 0, 'calculable' => true, 
-			'Valor' => null, 'val' => null,
-			'meta_Valor' => null, 'meta2_Valor' => null, 'meta_val' => null, 'cump' => null,
-			'cump_porc' => null
-		];
-		$valores = array_fill_keys(Helper::getPeriodos((($Anio*100)+$mesIni),(($Anio*100)+$mesFin)), $def);
+		
+
 
 		foreach ($this->variables as $c) {
 			if($c->Tipo == 'Variable'){
@@ -109,6 +114,8 @@ class Indicador extends MyModel
 		foreach ($valores as $target_per => &$v) {
 
 			$v['mes'] = intval(substr($target_per, 4, 2));
+			$v['Periodo'] = $target_per;
+			$v['indicador_id'] = $this->id;
 
 			//Obtener Componentes
 			$comp = [];
@@ -147,8 +154,13 @@ class Indicador extends MyModel
 			$v['cump_porc'] = Helper::calcCump($v['Valor'], $v['meta_Valor'], $this->Sentido, 'porc', $v['meta2_Valor']);
 			$v['color']     = Helper::getIndicatorColor($v['cump_porc']);
 			
+			/*$IndVal = IndicadorValor::firstOrNew([
+				'indicador_id' => $v['indicador_id'],
+				'Periodo'      => $v['Periodo']
+			]);
+			$IndVal->fill($v);
+			$IndVal->save();*/
 		}
-
 
 		return $valores;
 	}

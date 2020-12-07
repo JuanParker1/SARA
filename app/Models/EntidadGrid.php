@@ -50,4 +50,35 @@ class EntidadGrid extends MyModel
 		return $this->hasMany('\App\Models\EntidadGridFiltro', 'grid_id')->orderBy('Indice', 'ASC');
 	}
 
+
+	
+
+	public static function boot()
+    {
+        parent::boot();
+
+        self::saving(function($model){
+            
+            $Config = $model->Config;
+
+            function filtrarNulls($ArrayElm){  }
+
+            foreach ($Config['main_buttons'] as &$mb) {
+            	$mb['campos'] = array_filter($mb['campos'], function($ArrayElm){
+            		return !is_null($ArrayElm);
+            	});
+            }
+
+            foreach ($Config['row_buttons'] as &$mb) {
+            	$mb['campos'] = array_filter($mb['campos'], function($ArrayElm){
+            		return !is_null($ArrayElm);
+            	});
+            }
+
+            $model->Config = $Config;
+        });
+    }
+
+
+
 }

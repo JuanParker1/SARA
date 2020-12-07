@@ -67,6 +67,9 @@ button{
 .border-right{ border-right: 1px solid #e1e1e1 !important; }
 .border-left{ border-left: 1px solid #d8d8d8 !important; }
 .border-radius{ border-radius: 5px; }
+.border-radius-top{    border-top-left-radius: 5px; border-top-right-radius: 5px; }
+.border-radius-bottom{ border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; }
+
 .border-rounded{ border-radius: 500px; }
 .border-left-dash{ border-left: 1px dashed #cecece; }
 
@@ -151,6 +154,7 @@ button{
 .mw100m30 { min-width:  ~"calc(100% - 30px)"; }
 
 .seam-top{ box-shadow: 0 -10px 10px -10px rgba(0, 0, 0, 0.2); }
+.seam-left { box-shadow: -10px 0 10px -10px rgb(0, 0, 0, 0.2); }
 .seam-bottom{ box-shadow: 0 10px 10px -10px rgba(0, 0, 0, 0.2); z-index: 1; }
 .seam-inner-top{ box-shadow: inset 0 50px 30px -60px; }
 
@@ -181,6 +185,14 @@ button{
     box-shadow: inset 0 0 0 1px #0000001f;
 }
 
+.minipill{
+    font-size: 13px;
+    background: #e4e4e4;
+    padding: 2px 12px;
+    border-radius: 10px;	
+}
+
+
 
 .bg-white{ background-color: white !important; }
 .bg-lightgrey-2{ background-color: #f0f0f0 !important; }
@@ -196,6 +208,7 @@ button{
 .bg-black-2{ background-color: #2d2d2d !important; color: white !important; }
 .bg-black-3{ background-color: #3a3a3a !important; color: white !important; }
 .bg-black-4{ background-color: #232323 !important; color: white !important; }
+.bg-black-5{ background-color: #333333 !important; color: white !important; }
 .bg-warmblue{ background-color: #006bac !important; color: white !important; }
 
 
@@ -363,6 +376,7 @@ md-tooltip{
 .text-18px{ font-size: 18px; }
 .text-20px{ font-size: 20px; line-height: 25px; }
 .text-25px{ font-size: 25px; }
+.text-30px{ font-size: 30px; }
 
 .text-300{ font-weight: 300; }
 .text-400{ font-weight: 400; }

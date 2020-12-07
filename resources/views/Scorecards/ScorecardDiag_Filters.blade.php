@@ -12,15 +12,39 @@
 	md-is-locked-open="sidenavSel">
 
 	<div flex layout=column class="w250" ng-show="sidenavSel == 'Filtros'">
-		<div flex layout=column>
+		<div flex layout=column class="overflow-y hasScroll">
 			
-			<div class="h30 lh30 padding-left text-bold text-clear ng-binding">Filtros</div>
+			<div class="h30 lh30 padding-left text-clear ng-binding margin-bottom-5"><md-icon md-font-icon="fa-filter"></md-icon>Filtros</div>
+
+			<div class="md-subheader padding-0-10">Periodo de Análisis</div>
+			<div layout>
+				<md-datepicker ng-model="PeriodoDate" md-mode="month" class="periodoDatepicker" md-max-date="MaxDate"
+					md-date-locale="{ formatDate: formatPeriodo }" ng-change="getPeriodoParts()"></md-datepicker>
+			</div>
 
 			<div layout class="h30 lh30 md-subheader padding-0-10">
+				<div flex>Cumplimiento</div>
+				<md-button class="md-icon-button s30 no-margin no-padding " ng-click="filters.cumplimiento = false" 
+					ng-show="filters.cumplimiento">
+					<md-icon md-font-icon="fas fa-eraser"></md-icon>
+					<md-tooltip md-direction="left">Borrar Filtro</md-tooltip>
+				</md-button>
+			</div>
+			<div layout style="padding: 0 10px 0" class="margin-bottom">
+				<div ng-repeat="C in filtrosCumplimiento" flex layout layout-align="center center" 
+					class="Pointer padding-5 border-radius" 
+					ng-click="filters.cumplimiento = C[0]"
+					ng-class="{ 'bg-darkgrey' : C[0] == filters.cumplimiento }">
+					<div class="s20 border-rounded" style="background-color: {{ C[2] }}"></div>
+					<md-tooltip>{{ C[1] }}</md-tooltip>
+				</div>
+			</div>
+
+			<div layout class="h30 lh30 md-subheader padding-0-10" style="transform: translateY(6px);">
 				<div flex>Proceso</div>
 				<md-button class="md-icon-button s30 no-margin no-padding " ng-click="filters.proceso_ruta = false" ng-show="filters.proceso_ruta">
 					<md-icon md-font-icon="fas fa-eraser"></md-icon>
-					<md-tooltip md-direction="left">Borrar</md-tooltip>
+					<md-tooltip md-direction="left">Borrar Filtro</md-tooltip>
 				</md-button>
 			</div>
 			
@@ -36,6 +60,7 @@
 			</div>
 
 		</div>
+		<md-button class="" ng-click="clearCache()"  ng-show="Usuario.id == 183">Borrar Cache</md-button>
 		<md-button class="md-raised bg-ocean" ng-click="getScorecard(Sco.id, {})">
 			<md-icon md-font-icon="fa-filter text-white margin-right"></md-icon>Filtrar
 		</md-button>

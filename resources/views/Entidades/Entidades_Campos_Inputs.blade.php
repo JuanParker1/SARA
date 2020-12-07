@@ -27,22 +27,22 @@
 
 	<div ng-if="inArray(C.Tipo, ['Texto','TextoLargo'])">
 		<md-input-container md-no-float class="no-padding no-margin w70">
-			<input type="number" ng-model="C.Op2" class="h30" min="1" max="255" aria-label="L" placeholder="Long." ng-change="markChanged(C)">
+			<input ng-model="C.Op2" class="h30" aria-label="L" placeholder="Long." ng-change="markChanged(C)">
 			<md-tooltip md-direction=right>Longitud Máxima</md-tooltip>
 		</md-input-container>
 	</div>
 
 	<div ng-if="inArray(C.Tipo, ['Entero','Decimal'])">
-		<md-input-container md-no-float class="no-padding no-margin w70">
-			<input type="number" ng-model="C.Op1" class="h30" aria-label="L" placeholder="Min" ng-change="markChanged(C)">
+		<md-input-container md-no-float class="no-padding no-margin w50">
+			<input type="text" ng-model="C.Op1" class="h30" aria-label="L" placeholder="Min" ng-change="markChanged(C)">
 			<md-tooltip md-direction=right>Mínimo</md-tooltip>
 		</md-input-container>
-		<md-input-container md-no-float class="no-padding no-margin w70">
-			<input type="number" ng-model="C.Op2" class="h30" aria-label="L" placeholder="Max" ng-change="markChanged(C)">
+		<md-input-container md-no-float class="no-padding no-margin w50">
+			<input type="text" ng-model="C.Op2" class="h30" aria-label="L" placeholder="Max" ng-change="markChanged(C)">
 			<md-tooltip md-direction=right>Máximo</md-tooltip>
 		</md-input-container>
-		<md-input-container md-no-float class="no-padding no-margin w70" ng-if="C.Tipo == 'Decimal'">
-			<input type="number" ng-model="C.Op3" class="h30" aria-label="L" placeholder="Dec" ng-change="markChanged(C)">
+		<md-input-container md-no-float class="no-padding no-margin w50" ng-if="C.Tipo == 'Decimal'">
+			<input type="text" ng-model="C.Op3" class="h30" aria-label="L" placeholder="Dec" ng-change="markChanged(C)">
 			<md-tooltip md-direction=right>Decimales</md-tooltip>
 		</md-input-container>
 	</div>
@@ -78,7 +78,23 @@
 			<md-icon md-svg-icon="md-settings" class="s20"></md-icon>
 			<md-tooltip md-direction=right>Configuración de Lista</md-tooltip>
 		</md-button>
-		<div class="bg-lightgrey border-rounded h25 lh25 ng-binding padding-0-10" style="border: 1px solid #c5c5c5; margin: 1px 0 0 5px;">{{ C.Config.opciones.length }} Opciones</div>
+		<div ng-click="configLista(C)" class="Pointer bg-lightgrey border-rounded h25 lh25 ng-binding padding-0-10" style="border: 1px solid #c5c5c5; margin: 1px 0 0 5px;">{{ C.Config.opciones.length }} Opciones</div>
+	</div>
+
+
+	<div ng-if="inArray(C.Tipo, ['ListaAvanzada'])" layout>
+		<md-button class="md-icon-button no-margin s30" aria-label="b" ng-click="browseListas(C)">
+			<md-icon md-svg-icon="md-settings" class="s20"></md-icon>
+			<md-tooltip md-direction=right>Seleccionar Lista</md-tooltip>
+		</md-button>
+		<div ng-click="browseListas(C)" class="Pointer bg-lightgrey border-rounded h25 lh25 ng-binding padding-0-10" style="border: 1px solid #c5c5c5; margin: 1px 0 0 5px;"><b>{{ C.Config.indice_cod }}</b> {{ C.Config.indice_des }}</div>
+
+		<md-select ng-model="C.Op4" ng-change="markChanged(C)" class="margin-left-5">
+			<md-option ng-value='null'></md-option>
+			<md-option value='AddString'>Con Otro...</md-option>
+			<md-option value='AddDate'>Con Fecha</md-option>
+		</md-select>
+
 	</div>
 
 	<div ng-if="inArray(C.Tipo, ['Imagen'])" layout>
@@ -91,7 +107,7 @@
 </td>
 <td md-cell class="">
 
-	<div ng-if="inArray(C.Tipo, ['Texto','TextoLargo','Entidad'])">
+	<div ng-if="inArray(C.Tipo, ['Texto','TextoLargo','Entidad', 'ListaAvanzada'])">
 		<md-input-container md-no-float class="no-padding no-margin">
 			<input type="text" ng-model="C.Defecto" class="h30" aria-label="L" placeholder="Valor por Defecto" autocomplete="new-password" ng-change="markChanged(C)">
 		</md-input-container>
@@ -100,8 +116,7 @@
 	
 	<div ng-if="inArray(C.Tipo, ['Entero','Decimal'])">
 		<md-input-container md-no-float class="no-padding no-margin">
-			<input type="number" ng-model="C.Defecto" class="h30" aria-label="L" placeholder="Valor por Defecto" autocomplete="new-password"
-				ng-min="C.Op1" ng-max="C.Op2" ng-change="markChanged(C)">
+			<input type="" ng-model="C.Defecto" class="h30" aria-label="L" placeholder="Valor por Defecto" autocomplete="new-password" ng-change="markChanged(C)">
 		</md-input-container>
 	</div>
 

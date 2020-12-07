@@ -6,7 +6,17 @@ use App\Functions\FormulaParser;
 
 class Helper
 {
-	public static function getElm($Collection, $Value, $Key = 'id')
+	public static function getAppName()
+    {
+        $AppName = config('app.name');
+        $BaseUrl = \URL::to('/');
+        if($BaseUrl == 'http://sara.local') $AppName = 'PI - Plataforma Información';
+        if($BaseUrl == 'https://pi.comfamiliar.com') $AppName = 'PI - Plataforma Información';
+
+        return $AppName;
+    }
+
+    public static function getElm($Collection, $Value, $Key = 'id')
     {
         return collect($Collection)->filter(function ($elm) use ($Key, $Value){
             return $elm[$Key] == $Value;
@@ -20,6 +30,7 @@ class Helper
             case 'Numero':                  $val = number_format($val,$decimales,',','.'); break;
             case 'Porcentaje':              $val = ($val == 0) ? "0%" : number_format(($val*100),$decimales,',','.')."%"; break;
             case 'Moneda':                  $val = "$ ".number_format($val,$decimales,',','.'); break;
+            case 'Millones':                $val = "$ ".number_format(($val/1000000),$decimales,',','.')."M"; break;
         }
         return $val;
     }
@@ -46,13 +57,13 @@ class Helper
     public static function getPeriodos($periodoIni,$periodoFin)
     {
         $Periodos = [];
-        if($periodoFin < $periodoIni) return $Periodos;
+        if($periodoFin < $periodoIni OR !$periodoIni OR !$periodoFin) return $Periodos;
 
         $Anio = intval(substr($periodoIni, 0, 4));
         $Mes  = intval(substr($periodoIni, 4, 2));
 
         while($periodoIni <= $periodoFin){
-            $Periodos[] = $periodoIni;
+            $Periodos[] = intval($periodoIni);
 
             $Mes++;
             if($Mes == 13){ $Anio++; $Mes = 1; }
@@ -102,7 +113,6 @@ class Helper
         }
 
         //if(in_array($formula, ['(a + b + c) / d'])) return null;
-
         //echo $formula."<br>";
 
         try {
@@ -110,15 +120,17 @@ class Helper
             $parser->setVariables($comps);
             $res = $parser->getResult();
 
-            
+            //dd($res);
+
             if($res && $res[0] == 'done' && !is_nan($res[1]) ){
                 //print_r(is_nan($res[1]));
                 return $res[1];
             }else{
-                return null;
+                return 0;
             }
 
         } catch (\Exception $e) {
+            //dd($e);
             return null;
             //echo $e->getMessage(), "\n";
         }
@@ -131,12 +143,14 @@ class Helper
         if($Sentido == 'ASC'){
             
             $cump = ($Valor >= $Meta) ? 1 : 0;
-            $porc = $Valor / $Meta;
+            if($Meta == 0) $porc = ( $Valor >= $Meta ) ? 1 : 0;
+            if($Meta <> 0) $porc = $Valor / $Meta;
         
         }else if($Sentido == 'DES'){
             
             $cump = ($Valor <= $Meta) ? 1 : 0;
-            $porc = 1 - ( ( $Valor - $Meta ) / $Meta );
+            if($Meta == 0) $porc = ( $Valor > $Meta ) ? 0 : 1;
+            if($Meta <> 0) $porc = 1 - ( ( $Valor - $Meta ) / $Meta );
         
         }else if($Sentido == 'RAN' AND !is_null($Meta2)){
 
@@ -293,5 +307,33 @@ class Helper
         $writer->save($filetype);
     }
 
+    public static function getSystemVariable($Variable)
+    {
+        if($Variable == '_USERNAME_') return strstr(self::getUsuario()['Email'], '@', true);
+        return $Variable;
+    }
+
+    public static function prepValComp($string)
+    {
+        $string = str_replace([' '], '', $string);
+        $string = strtolower($string);
+
+        $string = str_replace(
+        array('.','á', 'à', 'ä', 'â', 'ª', 'é', 'è', 'ë', 'ê', 'í', 'ì', 'ï', 'î', 'ó', 'ò', 'ö', 'ô', 'ú', 'ù', 'ü', 'û', 'Ñ', 'ñ', 'Ç', 'ç'),
+        array('','a', 'a', 'a', 'a', 'a', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'n', 'n', 'C', 'c'),
+        $string );
+
+        return $string;
+    }
+
+    public static function touchIndicadores()
+    {
+        $Query = \DB::statement('UPDATE sara_indicadores i
+            JOIN indicadores_updated_at iu ON ( iu.id = i.id ) 
+        SET i.updated_at = iu.updated_at
+        WHERE i.updated_at < iu.updated_at ');
+
+        return $Query;
+    }
 
 }

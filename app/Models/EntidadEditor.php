@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\Core\MyModel;
+use App\Functions\Helper;
+use App\Functions\ConnHelper;
 use App\Functions\EntidadHelper;
 
 class EntidadEditor extends MyModel
@@ -72,7 +74,8 @@ class EntidadEditor extends MyModel
 
 			//Definir el valor
 			if($F->campo->Defecto !== ""){
-				$Valor = $F->campo->Defecto;
+				$Defecto = Helper::getSystemVariable($F->campo->Defecto);
+				$Valor = $Defecto;
 			};
 
 			if($TipoValor == 'Columna'){
@@ -89,8 +92,22 @@ class EntidadEditor extends MyModel
 				$F->val = ( $F->val == $F->campo['Op4'] ) ? $F->val : $F->campo['Op5'];
 			};
 
+			if($TipoCampo == 'ListaAvanzada'){
+				$F->campo->opciones = ConnHelper::getListaValores($F->campo['Config']['lista_id'], $F->campo['Config']['indice_cod']);
+				
+				//Adicional
+				if($F->campo['Op4'] == 'AddDate'){
+
+					if(!in_array($F->val, $F->campo->opciones->pluck('value')->toArray() )){
+						$F->val_aux = $F->val;
+						$F->val = '_SELECT_DATE_';
+					};
+				}
+
+			}
+
 			//Definir Editable
-			$F->Editable = $F->Editable;
+			//$F->Editable = $F->Editable;
 			if($primary_key) $F->Editable = false;
 
 			//Definir Requerido

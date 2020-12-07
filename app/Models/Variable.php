@@ -10,6 +10,7 @@ use App\Models\EntidadCampo;
 use App\Functions\Helper AS H;
 use App\Functions\GridHelper;
 use App\Functions\CamposHelper;
+use App\Functions\Helper;
 
 class Variable extends MyModel
 {
@@ -39,6 +40,7 @@ class Variable extends MyModel
 			[ 'Decimales',				'Decimales',		null, true, false, null, 100 ],
 			[ 'Tipo',					'Tipo',				null, true, false, null, 100 ],
 			[ 'Frecuencia',				'Frecuencia',		null, true, false, null, 100 ],
+			[ 'Acumulada',				'Acumulada',		null, true, false, null, 100 ],
 			[ 'grid_id',				'grid_id',			null, true, false, null, 100 ],
 			[ 'ColPeriodo',				'ColPeriodo',		null, true, false, null, 100 ],
 			[ 'Agrupador',				'Agrupador',		null, true, false, null, 100 ],
@@ -186,9 +188,10 @@ class Variable extends MyModel
 	public function getVals($Anio = false, $CalcFrecs = true)
     {
         $Valores = $this->valores($Anio)->get();
-        
-        $PeriodoMin = $Valores->min('Periodo');
-        $PeriodoMax = ($Anio) ? ($Anio*100)+12 : ((intval(date('Y')) * 100) + 12);
+        $Anio = $Anio ? $Anio : intval(date('Y'));
+        $PeriodoMinValores = $Valores->min('Periodo');
+        $PeriodoMin = is_null($PeriodoMinValores) ? (($Anio*100)+1) : $PeriodoMinValores;
+        $PeriodoMax = ($Anio*100)+12;
 
         $PeriodosList = H::getPeriodos($PeriodoMin, $PeriodoMax);
        	$Periodos = array_fill_keys($PeriodosList, [ 'val' => null, 'Valor' => null ]);
@@ -199,7 +202,26 @@ class Variable extends MyModel
             $Periodos[$v->Periodo] = [ 'val' => $v->val, 'Valor' => $v->Valor ];
     	}
 
-    	if($this->Frecuencia > 1 AND $CalcFrecs){
+    	if($this->Acumulada == 'Si' AND $CalcFrecs){
+    		$val_acum = 0;
+
+    		foreach ($Periodos as $P => &$Vals) {
+
+    			if(substr($P, -2) == '01') $val_acum = 0;
+
+				if(is_null($Vals['Valor']) AND $P >= $PeriodoAct) continue;
+
+				$val_acum += $Vals['Valor'];
+				$val_acum_f = Helper::formatVal($val_acum,$this->TipoDato, $this->Decimales);
+				$Vals['Valor'] = $val_acum;
+				$Vals['val'] = $val_acum_f;
+    		}
+
+    	}
+
+    	//if($this->id == 98){ dd($PeriodosList); }
+    	//dd($this->Acumulada);
+    	if($this->Acumulada == 'No' AND $this->Frecuencia > 1 AND $CalcFrecs){
 
     		$FixVals = null;
     		$Frecs = 0;

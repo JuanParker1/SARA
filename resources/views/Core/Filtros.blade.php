@@ -26,6 +26,13 @@
 	</md-input-container>
 </div>
 
+<div ng-if="inArray(F.campo.Tipo, ['Texto','TextoLargo']) && F.Comparador == '='" layout>
+	<div class="text-clear padding-top-5 margin-right">Es</div>
+	<md-input-container flex class="no-margin no-padding text-12px" md-no-float>
+		<input ng-model="F.val" placeholder="Valor" autocomplete="false" name="a"></input>
+	</md-input-container>
+</div>
+
 <div ng-if="F.Comparador == 'query'" layout>
 	<md-input-container flex class="no-margin no-padding text-12px" md-no-float>
 		<input ng-model="F.val" placeholder="Buscar" autocomplete="false" name="a"></input>

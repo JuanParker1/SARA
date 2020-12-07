@@ -37,7 +37,7 @@ angular.module('BDD_ListasDiagCtrl', [])
 		};
 
 		Ctrl.selectLista = () => {
-			$mdDialog.cancel({ lista_id: Ctrl.Config.lista_id, indice_cod: Ctrl.IndiceSel.IndiceCod });
+			$mdDialog.hide({ lista_id: Ctrl.Config.lista_id, indice_cod: Ctrl.IndiceSel.IndiceCod, indice_des: Ctrl.IndiceSel.IndiceDes });
 		};
 
 		Ctrl.Cancel = function(){ $mdDialog.cancel(); }

@@ -54,7 +54,9 @@ angular.module('appRoutes', [])
 						controller: 'MainCtrl'
 					})
 					.state('App.App', { url: '/:app_id' })
-					.state('App.App.Page', { url: '/:page_id' });
+					.state('App.App.Page', { url: '/:page_id' })
+					.state('Integration', { url: '/int', templateUrl: '/int' })
+					.state('Integration.Integration', { url: '/:int_id' });
 
 			$urlRouterProvider.otherwise('/Home');
 			

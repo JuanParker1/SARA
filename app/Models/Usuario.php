@@ -59,7 +59,7 @@ class Usuario extends Model
         return $this->belongsToMany('App\Models\Apps', 'sara_usuario_apps', 'usuario_id', 'app_id')->withPivot('favorito');
     }*/
 
-    public function getApps()
+    public function getApps($withPages = false)
     {
         
         //Obtener los procesos
@@ -78,16 +78,20 @@ class Usuario extends Model
 
         $this->Procesos = $MyProcesos;
 
+        $Apps  = \App\Models\Apps::all();
 
-        $Apps = \App\Models\Apps::all();
+        $Apps = $Apps->filter(function($A) use ($MyProcesosIds){
+            return count(array_intersect($A['Procesos'], $MyProcesosIds)) > 0;
+        })->values();
 
-        /*if($this->isGod){
-            $this->Apps = $Apps;
-        }else{*/
-            $this->Apps = $Apps->filter(function($A) use ($MyProcesosIds){
-                return count(array_intersect($A['Procesos'], $MyProcesosIds)) > 0;
-            })->values();
-        //}
+        if($withPages){
+            foreach ($Apps as $App) {
+                $App->pages = $App->pages()->get();
+            }
+        }
+
+        $this->Apps = $Apps;
+
     }
 
 

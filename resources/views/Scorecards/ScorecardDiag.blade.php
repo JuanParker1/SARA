@@ -13,12 +13,12 @@
 
 			<div layout ng-show="Modo == 'Mes'">
 				<md-button ng-click="periodoAdd(-1)" class="no-margin s30 no-padding md-icon-button"><md-icon class="s30" md-font-icon="fa-fw fa-chevron-left"></md-icon></md-button>
-				<div class="h30 lh30 Pointer" ng-click="Modo = 'Año'">{{ Meses[(Mes-1)][1] +' '+ Anio }}<md-tooltip>Ver Año</md-tooltip></div>
+				<div class="h30 lh30 Pointer" ng-click="Modo = 'Año'">{{ Periodo }}<md-tooltip>Ver Año</md-tooltip></div>
 				<md-button ng-click="periodoAdd( 1)" class="no-margin s30 no-padding md-icon-button"><md-icon class="s30" md-font-icon="fa-fw fa-chevron-right"></md-icon></md-button>
 			</div>
 			<div layout ng-show="Modo == 'Año'">
 				<md-button ng-click="anioAdd(-1)" class="no-margin s30 no-padding md-icon-button"><md-icon class="s30" md-font-icon="fa-fw fa-chevron-left"></md-icon></md-button>
-				<div class="h30 lh30 Pointer" ng-click="Modo = 'Mes'">{{ Anio }}<md-tooltip>Ver Mes</md-tooltip></div>
+				<div class="h30 lh30 Pointer" ng-click="Modo = 'Mes'">{{ PeriodoDate | date:'yyyy' }}<md-tooltip>Ver Mes</md-tooltip></div>
 				<md-button ng-click="anioAdd( 1)" class="no-margin s30 no-padding md-icon-button"><md-icon class="s30" md-font-icon="fa-fw fa-chevron-right"></md-icon></md-button>
 			</div>
 

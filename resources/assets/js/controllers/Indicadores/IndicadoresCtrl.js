@@ -1,6 +1,6 @@
 angular.module('IndicadoresCtrl', [])
-.controller('IndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$mdDialog',
-	function($scope, $rootScope, $injector, $filter, $mdDialog) {
+.controller('IndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$mdDialog', '$http',
+	function($scope, $rootScope, $injector, $filter, $mdDialog, $http) {
 
 		console.info('IndicadoresCtrl');
 		var Ctrl = $scope;
@@ -8,31 +8,48 @@ angular.module('IndicadoresCtrl', [])
 		Ctrl.IndSel = null;
 		Ctrl.IndicadoresNav = true;
 		Rs.mainTheme = 'Snow_White';
-		Ctrl.tiposDatoInd = ['Numero','Porcentaje','Moneda'];
+		Ctrl.tiposDatoInd = ['Numero','Porcentaje','Moneda','Millones'];
 		Ctrl.OpsUsar = [
 			{id: 'Cump', desc: 'Cumplimiento (1/0)'},
 			{id: 'PorcCump', desc: '% de Cumplimiento'},
 			{id: 'Valor', desc: 'Valor del Indicador'},
 		];
+		Ctrl.filterIndicadores = '';
 
-		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Variables' });
+		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Variables', order_by: ['Variable'] });
 		Ctrl.IndicadoresCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores' });
 		Ctrl.IndicadoresVarsCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores/variables' });
 		Ctrl.MetasCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores/metas' });
-
+		Ctrl.NodosCRUD = $injector.get('CRUD').config({ base_url: '/api/Scorecards/nodos', add_append: 'refresh', order_by: ['padre_id'], query_call_arr: [ ['getFullRuta', null] ] });
+		Ctrl.IndicadoresLoaded = false;
 
 		Ctrl.getIndicadores = () => {
 			//return Ctrl.addIndicador(false); //FIX
+			
 			Ctrl.IndicadoresCRUD.get().then(() => {
-				Ctrl.getFs();
+				//Ctrl.getFs();
 
 				if(Rs.Storage.IndicadorSel){
 					var indicador_sel_id = Rs.getIndex(Ctrl.IndicadoresCRUD.rows, Rs.Storage.IndicadorSel);
 					Ctrl.openIndicador(Ctrl.IndicadoresCRUD.rows[indicador_sel_id]); //FIX
 				};
 
+				Ctrl.IndicadoresLoaded = true;
+				//Ctrl.addToTablero(); //FIX
+
 			});
+			
 		};
+
+		Ctrl.openProceso = (P) => { Ctrl.ProcesoSelId = P.id; }
+
+		Ctrl.getIndicadoresFiltered = () => {
+			if(Ctrl.filterIndicadores.trim() == ''){
+				return $filter('filter')(Ctrl.IndicadoresCRUD.rows, { proceso_id: Ctrl.ProcesoSelId }, true);
+			}else{
+				return $filter('filter')(Ctrl.IndicadoresCRUD.rows, Ctrl.filterIndicadores);
+			}
+		}
 
 		Ctrl.getFs = () => {
 			Ctrl.filterIndicadores = "";
@@ -76,35 +93,25 @@ angular.module('IndicadoresCtrl', [])
 			});
 
 			console.log(proceso_id);
-
-			/*Ctrl.getFs();
-			Rs.BasicDialog({
-				Title: 'Crear Indicador', Flex: 50,
-				Fields: [
-					{ Nombre: 'Nombre',  Value: '', Required: true, flex: 60 },				
-					{ Nombre: 'Proceso', Value: proceso_id, Required: true, flex: 40, Type: 'list', List: Ctrl.Procesos, Item_Val: 'id', Item_Show: 'Proceso' },
-					//{ Nombre: 'Ruta',    Value: '', flex: 70, Type: 'fsroute', List: Ctrl.IndicadoresFS },
-					//{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
-				],
-			}).then((r) => {
-				if(!r) return;
-				var f = Rs.prepFields(r.Fields);
-				Ctrl.IndicadoresCRUD.add({
-					//Ruta: Rs.FsCalcRoute(f.Ruta, f['Crear Carpeta']),
-					Indicador: f.Nombre, proceso_id: f.Proceso,
-					Filtros: []
-				}).then(() => {
-					Ctrl.getFs();
-				});
-			});*/
 		};
 
 		Ctrl.openIndicador = (V) => {
 			Ctrl.IndSel = V;
-			Ctrl.IndicadoresVarsCRUD.setScope('indicador', Ctrl.IndSel.id).get();
-			Ctrl.MetasCRUD.setScope('indicador', Ctrl.IndSel.id).get();
-
 			Rs.Storage.IndicadorSel = Ctrl.IndSel.id;
+			Ctrl.ProcesoSelId = Ctrl.IndSel.proceso_id;
+			
+			Promise.all([
+				Ctrl.IndicadoresVarsCRUD.setScope('indicador', Ctrl.IndSel.id).get(),
+				Ctrl.MetasCRUD.setScope('indicador', Ctrl.IndSel.id).get()
+			]).then(() => {
+				
+				//Ctrl.openComponente(Ctrl.IndicadoresVarsCRUD.rows[0]);
+				//Ctrl.searchComponente();
+				
+			});
+
+			
+
 			//Rs.viewIndicadorDiag(Ctrl.IndSel.id); //FIX
 		};
 
@@ -116,30 +123,105 @@ angular.module('IndicadoresCtrl', [])
 			});
 		};
 
-		Ctrl.VariablesCRUD.get().then(() => {
-			Rs.http('api/Procesos', {}, Ctrl, 'Procesos').then(() => {
-				Ctrl.getIndicadores();
+
+
+		Promise.all([
+			Rs.getProcesos(Ctrl),
+			Ctrl.VariablesCRUD.get(),
+			Ctrl.NodosCRUD.get()
+		]).then(() => {
+			var ids_procesos = Ctrl.VariablesCRUD.rows.map(e => e.proceso_id).filter((v, i, a) => a.indexOf(v) === i);
+			Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos.filter(p => ids_procesos.includes(p.id)),'Ruta','Proceso',false,true);
+			angular.forEach(Ctrl.ProcesosFS, (P) => {
+				if(P.type == 'folder'){
+					P.file = Ctrl.Procesos.find(p => p.Ruta == P.route);
+				}
 			});
-			
+
+			Ctrl.NodosFS = Rs.FsGet(Ctrl.NodosCRUD.rows,'Ruta','Nodo',false,true,false);
+			angular.forEach(Ctrl.NodosFS, (P) => {
+				if(P.type == 'folder'){
+					P.file = Ctrl.NodosCRUD.rows.find(p => { return (p.Ruta == P.route && p.tipo == 'Nodo'); });
+				}
+			});
+
+			Ctrl.getIndicadores();
 		});
+			
+
+		Ctrl.reloadIndicador = () => {
+			Promise.all([
+				Ctrl.VariablesCRUD.get(),
+				Ctrl.IndicadoresCRUD.get()
+			]).then( () => {
+				Ctrl.openIndicador(Ctrl.IndSel);
+			});
+		}
 
 
 		Ctrl.addVariable = () => {
-			Rs.BasicDialog({
-				Title: 'Agregar Componente', Flex: 50,
-				Fields: [
-					{ Nombre: 'Variable',    Value: '', Type: 'list', List: Ctrl.VariablesCRUD.rows, Item_Val: 'id', Item_Show: 'Variable' },
-				],
-			}).then((r) => {
-				if(!r) return;
-				var f = Rs.prepFields(r.Fields);
-				Ctrl.IndicadoresVarsCRUD.add({
-					indicador_id: Ctrl.IndSel.id,
-					Letra: String.fromCharCode(97 + Ctrl.IndicadoresVarsCRUD.rows.length),
-					Tipo: 'Variable', variable_id: f.Variable
-				});
+
+			Ctrl.VariablesCRUD.dialog({
+				proceso_id: Ctrl.ProcesoSelId,
+				Filtros: []
+			}, {
+				title: 'Nueva Variable',
+				only: ['Variable']
+			}).then(r => {
+				Ctrl.VariablesCRUD.add(r);
 			});
+
+			/*return Rs.TableDialog(Ctrl.VariablesCRUD.rows, {
+				Title: 'Seleccionar Variable', Flex: 60, 
+				Columns: [
+					{ Nombre: 'proceso.Proceso',  Desc: 'Nodo',       numeric: false, orderBy: 'Ruta' },
+					{ Nombre: 'Variable', 	 	  Desc: 'Variable',  numeric: false, orderBy: 'Variable' }
+				],
+				orderBy: 'Ruta', select: 'Row.id', multiple: true
+			}).then(Selected => {
+				if(!Selected || Selected.length == 0 ) return;
+				
+				Ctrl.addComponente({ Tipo: 'Variable', variable_id: Selected[0] });
+				
+			});*/
+
 		};
+
+		Ctrl.searchComponente = () => {
+
+			var Componentes = Ctrl.VariablesCRUD.rows.map(r => {
+				return {
+					id: 'Var_' + r.id,
+					Tipo: 'Variable', variable_id: r.id, Titulo: r.Variable,
+					Ruta: '1_' + r.Ruta,
+					Nodo: r.proceso.Proceso, 
+				};
+			});
+
+			Componentes = Componentes.concat(Ctrl.IndicadoresCRUD.rows.map(r => {
+				return {
+					id: 'Ind_' + r.id,
+					Tipo: 'Indicador', variable_id: r.id, Titulo: r.Indicador,
+					Ruta: '2_' + r.Ruta,
+					Nodo: r.proceso.Proceso, 
+				};
+			}));
+
+			return Rs.TableDialog(Componentes, {
+				Title: 'Seleccionar Componente', Flex: 60, 
+				Columns: [
+					{ Nombre: 'Tipo',  		Desc: 'Tipo',       numeric: false,  orderBy: 'Tipo' },
+					{ Nombre: 'Nodo',  		Desc: 'Nodo',       numeric: false,  orderBy: 'Ruta' },
+					{ Nombre: 'Titulo', 	Desc: 'Titulo',     numeric: false,  orderBy: 'Titulo' }
+				],
+				orderBy: 'Ruta', select: 'Row', multiple: false, pluck: false
+			}).then(Selected => {
+				if(!Selected || Selected.length == 0) return;
+				var newComp = Selected[0];
+				delete newComp.id;
+				Ctrl.addComponente(newComp);
+			});
+		}
 
 		Ctrl.delVariable = (Var) => {
 			Ctrl.IndicadoresVarsCRUD.delete(Var).then(() => {
@@ -163,7 +245,60 @@ angular.module('IndicadoresCtrl', [])
 			});
 		};
 
+		Ctrl.addComponente = (newComp) => {
+			newComp.indicador_id = Ctrl.IndSel.id;
+			newComp.Letra = String.fromCharCode(97 + Ctrl.IndicadoresVarsCRUD.rows.length);
 
+			Ctrl.IndicadoresVarsCRUD.add(newComp);
+		}
+
+		Ctrl.openComponente = (C) => {
+			if(C.Tipo == 'Variable'){
+				var newCtrl = Ctrl.$new();
+				newCtrl.variable_id = C.variable_id;
+				Rs.viewVariableEditorDiag(newCtrl);
+			}
+
+			if(C.Tipo == 'Indicador'){
+				var indsel = Ctrl.IndicadoresCRUD.rows.filter(i => i.id == C.variable_id )[0];
+				Ctrl.openIndicador(indsel);
+			}
+		}
+
+		Ctrl.deleteComponente = (Comp) => {
+			Ctrl.IndicadoresVarsCRUD.delete(Comp);
+		}
+
+		Ctrl.convertIndicador = (V) => {
+
+			if(Number.isInteger(V)) V = Ctrl.VariablesCRUD.rows.filter(va => (va.id == V) )[0];
+
+			Rs.Confirm({
+				Titulo: '¿Convertir la variable en un indicador?',
+				Detail: 'Se creará un indicador llamado: "' +V.Variable+ '", y se cambiará la asignación en cualquier indicador asociado',
+			}).then(c => {
+				if(!c) return;
+
+				$http.post('/api/Variables/convertir-en-indicador', { Variable: V }).then(() => {
+					Ctrl.reloadIndicador();
+				});
+
+			});
+
+		}
+
+		Ctrl.deleteVariable = (V) => {
+			Rs.confirmDelete({
+				Title: '¿Eliminar la variable: "' +V.Variable+ '"?',
+				Detail: '',
+			}).then(d => {
+				if(!d) return;
+
+				$http.post('/api/Variables/delete-variable', { Variable: V }).then(() => {
+					Ctrl.reloadIndicador();
+				});
+			});
+		}
 
 		//Metas
 		Ctrl.addMeta = () => {
@@ -177,6 +312,7 @@ angular.module('IndicadoresCtrl', [])
 			}else{
 				f.push({Nombre: 'Meta',  			Value: '', Type: 'string', Required: true, flex: 50 });
 			};
+
 			Rs.BasicDialog({
 				Title: 'Crear Meta',
 				Fields: f
@@ -195,10 +331,64 @@ angular.module('IndicadoresCtrl', [])
 			});
 		};
 
+		Ctrl.editMeta = (M) => {
+			var only = ['PeriodoDesde', 'Meta'];
+			if(Ctrl.IndSel.Sentido == 'RAN') only.push('Meta2');
+
+			Ctrl.MetasCRUD.dialog(M, {
+				title: 'Editar Meta',
+				only: only
+			}).then(Meta => {
+				if(!Meta) return;
+				if(Meta == 'DELETE') return Ctrl.MetasCRUD.delete(M);
+				Ctrl.MetasCRUD.update(Meta);
+			});
+		}
+
+		Ctrl.formatPeriodo = (date) => {
+        	var m = moment(date);
+      		return m.isValid() ? m.format('YYYYMM') : '';
+        };
+
 		Ctrl.delMeta = (Meta) => {
 			Ctrl.MetasCRUD.delete(Meta);
 		};
 
 		
+		//Tablero
+		Ctrl.addToTablero = () => {
+
+			return $mdDialog.show({
+				controller: 'Scorecards_NodoSelectorCtrl',
+				templateUrl: 'Frag/Scorecards.Scorecards_NodoSelector',
+				locals: { NodosFS: angular.copy(Ctrl.NodosFS) },
+				clickOutsideToClose: true,
+				fullscreen: true,
+				multiple: true,
+			}).then(Sel => {
+				if(!Sel) return;
+
+				var nodos_ind = Ctrl.NodosCRUD.rows.filter(N => { return N.tipo != 'Nodo' && N.Ruta == Sel.Ruta });
+				var Indice = nodos_ind.length;
+				Ctrl.NodosCRUD.add({
+					scorecard_id: Sel.scorecard_id, Nodo: null, padre_id: Sel.id, Indice: Indice, tipo: 'Indicador', elemento_id: Ctrl.IndSel.id, peso: 1
+				});
+			});
+		}
+
+		Ctrl.deleteToTablero = (N) => {
+			Rs.confirmDelete({
+				Title: '¿Eliminar del Nodo "' +N.Ruta+ '"?',
+				Detail: 'Esta acción no se puede deshacer',
+			}).then(d => {
+				if(d) return Ctrl.NodosCRUD.delete(N);
+			});
+			
+		}
+
+
+
+
+
 	}
 ]);

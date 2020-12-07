@@ -32,7 +32,7 @@
 
 			<div flex layout=column class="overflow-y hasScroll padding-top-20">
 				
-				<md-table-container class="border-bottom">
+				<md-table-container class="border-bottom hasScroll">
 					<table md-table class="md-table-short table-col-compress">
 						<thead md-head>
 							<tr md-row>
@@ -62,7 +62,7 @@
 						</thead>
 						<tbody md-body class="text-14px">
 							<tr md-row class="text-16px md-row-hover">
-								<td md-cell class="w235">Resultado</td><td md-cell class="text-bold" ng-repeat="V in Ind.valores" ><span ng-style="{ color: V.color }">{{ V.val }}</span></td>
+								<td md-cell class="w235">Resultado</td><td md-cell class="text-bold mw70" ng-repeat="V in Ind.valores" ><span ng-style="{ color: V.color }">{{ V.val }}</span></td>
 							</tr>
 							<tr md-row class="md-row-hover">
 								<td md-cell class="">Meta</td><td md-cell class="" ng-repeat="V in Ind.valores">{{ V.meta_val }}</td>
@@ -89,6 +89,9 @@
 							<tr md-row class="md-row-hover Pointer" ng-repeat="comp in Ind.variables" >
 								<td md-cell><div layout layout-align="center center">
 									<div flex class="padding-5-0"><b>{{ comp.Letra }}:</b> {{ comp.variable_name }}</div>
+
+									<div class="bg-black-3 border-rounded" style="padding: 0 5px" ng-show="comp.variable.Acumulada == 'Si'">Acum.<md-tooltip md-direction="right">Acumulada</md-tooltip></div>
+
 									<md-button class="md-icon-button no-margin no-padding s30" aria-label="b" ng-click="viewCompDiag(comp)">
 										<md-icon md-font-icon="fa-external-link-alt fa-fw"></md-icon>
 										<md-tooltip md-direction="left">Ver {{ comp.Tipo }}</md-tooltip>

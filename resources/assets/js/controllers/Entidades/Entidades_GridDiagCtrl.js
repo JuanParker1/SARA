@@ -62,14 +62,14 @@ angular.module('Entidades_GridDiagCtrl', [])
 			Ctrl.pag_go(0);
 		};
 
-		Ctrl.reloadData = () => {
+		Ctrl.reloadData = (emptyFilter = true) => {
 			Ctrl.loadingGrid = true;
 			Rs.http('api/Entidades/grids-reload-data', { Grid: Ctrl.Grid }).then((r) => {
 				Ctrl.Grid.sql  = r.sql;
 				Data = r.Data;
 
 				Ctrl.loadingGrid = false;
-				Ctrl.filterRows = '';
+				if(emptyFilter) Ctrl.filterRows = '';
 				Ctrl.filterData();
 			});
 		};
@@ -124,7 +124,7 @@ angular.module('Entidades_GridDiagCtrl', [])
 				Config = angular.extend(DefConfig, B);
 				Rs.viewEditorDiag(B.accion_element_id, Obj, Config).then((r) => {
 					if(!r) return;
-					Ctrl.reloadData();
+					Ctrl.reloadData(false);
 				});
 			};
 		};

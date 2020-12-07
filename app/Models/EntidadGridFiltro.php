@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Core\MyModel;
 use Carbon\Carbon;
+use App\Functions\Helper;
 
 class EntidadGridFiltro extends MyModel
 {
@@ -64,6 +65,8 @@ class EntidadGridFiltro extends MyModel
         if($this->Comparador == 'lista'){
         	$Valor = is_null($Valor) ? null : json_decode($Valor, true);
         };
+
+        $Valor = Helper::getSystemVariable($Valor);
 
         return $Valor;
 	}

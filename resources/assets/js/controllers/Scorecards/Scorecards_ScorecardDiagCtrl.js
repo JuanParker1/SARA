@@ -15,7 +15,7 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
         Ctrl.Sentidos = Rs.Sentidos;
         Ctrl.periodDateLocale = Rs.periodDateLocale;
         Ctrl.Loading = true;
-
+        Ctrl.Procesos = null;
 
         //Sidenav
         Ctrl.sidenavSel = null;
@@ -28,11 +28,19 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 
 		//Filtros
         Ctrl.filters = {
-        	proceso_ruta: false
+        	proceso_ruta: false,
+        	cumplimiento: false
         };
 
-		Ctrl.Anio  = angular.copy(Rs.AnioActual);
-		Ctrl.Mes   = angular.copy(Rs.MesActual);
+        Ctrl.filtrosCumplimiento = [
+			[ 'green',    'Verde', 	        '#40d802' ],
+			[ 'yellow',   'Amarillo',       '#ffac00' ],
+			[ 'red',      'Rojo',           '#ff2626' ],
+			[ 'no_value', 'Sin Valor/Meta', '#797979' ],
+        ];
+
+		//Ctrl.Anio  = angular.copy(Rs.AnioActual);
+		//Ctrl.Mes   = angular.copy(Rs.MesActual);
 		if(!$localStorage['ScorecardModo']) $localStorage['ScorecardModo'] = 'Año';
 		Ctrl.Modo  = $localStorage['ScorecardModo'];
 		Ctrl.Modos = {
@@ -44,49 +52,75 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 			$localStorage['ScorecardModo'] = Ctrl.Modo;
 		};
 
+		//Periodo
+        Ctrl.PeriodoDate = moment(((Rs.AnioActual*100)+Rs.MesActual), 'YYYYMM').toDate();
+        Ctrl.MaxDate = moment().add(1, 'year').endOf("year").toDate();
+        Ctrl.formatPeriodo = (date) => {
+        	var m = moment(date);
+      		return m.isValid() ? m.format('MMM YYYY') : '';
+        };
+        Ctrl.getPeriodoParts = () => {
+        	var m = moment(Ctrl.PeriodoDate);
+        	Ctrl.Periodo = m.format('YYYYMM');
+        	Ctrl.Mes     = m.format('MM');
+        	Ctrl.Anio    = Ctrl.PeriodoDate.getFullYear();
+        }
+        Ctrl.getPeriodoParts();
+
+
 		Ctrl.periodoAdd = (num) => {
-			var m = angular.copy(Ctrl.Mes) + num;
-			if(m == 0) { m = 12; Ctrl.anioAdd(-1); }
-			if(m == 13){ m =  1; Ctrl.anioAdd( 1); }
-			Ctrl.Mes = m;
+			Ctrl.PeriodoDate = moment(Ctrl.PeriodoDate).add(num, 'month').toDate();
+			Ctrl.getPeriodoParts();
 		};
 
 		Ctrl.anioAdd = (num) => {
-			Ctrl.Anio = Ctrl.Anio + num;
+			Ctrl.PeriodoDate = moment(Ctrl.PeriodoDate).add(num, 'year').toDate();
+			Ctrl.getPeriodoParts();
 			Ctrl.getScorecard(Ctrl.Sco.id);
 		};
 
+
+
         Ctrl.Secciones = [];
+        
 
-        Ctrl.Periodo = moment().toDate();
+        Ctrl.getProcesos =  (scorecard_id, Config) => {
+        	return Rs.http('api/Scorecards/get-procesos', { id: scorecard_id }, Ctrl, 'Procesos').then(() => {
+        		
+        		Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos, 'Ruta','Proceso', false, true);
 
-		Ctrl.getScorecard = (scorecard_id, Config) => {
-			if(!scorecard_id) return;
-			Ctrl.Loading = true;
-
-			
-
-            return Rs.http('api/Scorecards/get-procesos', { id: scorecard_id }).then(Procesos => {
-            	Ctrl.ProcesosFS = Rs.FsGet(Procesos, 'Ruta','Proceso', false, true);
-
-            	if('proceso_id' in Config){
+        		if('proceso_id' in Config){
 					if(Config.proceso_id !== null){
-						var ProcesoSel = Procesos.find( p => p.id == Config.proceso_id );
-						if(ProcesoSel){
-							Ctrl.filters.proceso_ruta = ProcesoSel.Ruta;
+						Ctrl.ProcesoSel = Ctrl.Procesos.find( p => p.id == Config.proceso_id );
+						if(Ctrl.ProcesoSel){
+							Ctrl.filters.proceso_ruta = Ctrl.ProcesoSel.Ruta;
 						}
 					}
 				}
 
-				Rs.http('api/Scorecards/get', { id: scorecard_id, Anio: Ctrl.Anio, filters: Ctrl.filters }, Ctrl, 'Sco').then(() => {
-	            	Ctrl.Loading = false;
+        		return Ctrl.getScorecard(scorecard_id, Config);
+        	});
+        };
 
-	            	Ctrl.SidenavIcons[0][2] = (typeof  Ctrl.filters.proceso_ruta === 'string');
-	            });
+		Ctrl.getScorecard = (scorecard_id, Config) => {
+			if(!scorecard_id) return;
+			Ctrl.Loading = true;
+			Ctrl.ProcesoSelName = '';
 
-            });
+			if(!Ctrl.Procesos) return Ctrl.getProcesos(scorecard_id, Config);
 
-            
+			Ctrl.filters.Periodo = Ctrl.Periodo;
+
+			Rs.http('api/Scorecards/get', { id: scorecard_id, Anio: Ctrl.Anio, filters: Ctrl.filters }, Ctrl, 'Sco').then(() => {
+            	Ctrl.Loading = false;
+            	Ctrl.SidenavIcons[0][2] = (typeof  Ctrl.filters.proceso_ruta === 'string');
+            	
+            	if(Ctrl.filters.proceso_ruta){
+            		Ctrl.ProcesoSel = Ctrl.Procesos.find( p => p.Ruta == Ctrl.filters.proceso_ruta )
+            		Ctrl.ProcesoSelName = Ctrl.filters.proceso_ruta.split('\\').pop();
+            	}
+
+            });    
 		};
 
 		Ctrl.openFlatLevel = (N, ev) => {
@@ -120,6 +154,18 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 		//Filtros
 		Ctrl.lookupProceso = (F) => {
 			Ctrl.filters.proceso_ruta = F.route;
+		}
+
+		Ctrl.clearCache = () => {
+			var nodos_ids = [];
+			angular.forEach(Ctrl.Sco.nodos_flat, N => {
+				if(N.tipo != 'Nodo') nodos_ids.push(N);
+			});
+
+			Rs.http('api/Scorecards/erase-cache', { Inds: nodos_ids }).then(() => {
+				//Ctrl.openScorecard(Ctrl.ScoSel, Ctrl.NodoSel);
+				Rs.showToast('Caché Borrada', 'Success');
+			});
 		}
 
         //Ctrl.getScorecard();

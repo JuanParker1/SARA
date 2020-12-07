@@ -10,8 +10,8 @@
 		Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids');
 		Rs.http('/api/Entidades/cargadores-get', {}, Ctrl, 'Cargadores');
 		Rs.http('/api/Scorecards/all', {}, Ctrl, 'Scorecards');
-		Ctrl.AppsCRUD  = $injector.get('CRUD').config({ base_url: '/api/App/apps', order_by: [ 'Titulo' ] });
-		Ctrl.PagesCRUD = $injector.get('CRUD').config({ base_url: '/api/App/pages' });
+		Ctrl.AppsCRUD  = $injector.get('CRUD').config({ base_url: '/api/App/apps',  order_by: [ 'Titulo' ] });
+		Ctrl.PagesCRUD = $injector.get('CRUD').config({ base_url: '/api/App/pages', order_by: [ 'Indice' ] });
 		Ctrl.TiposPage = [
 			{ id: 'ExternalUrl', Icono: 'fa-external-link-square-alt',  Nombre: 'Url Externa' 	 },
 			{ id: 'Scorecard',   Icono: 'fa-th-large', 					Nombre: 'Dashboard' 	 },
@@ -39,12 +39,14 @@
 			}).then((r) => {
 				if(!r) return;
 				var f = Rs.prepFields(r.Fields);
+				f.Navegacion = 'Superior';
+				f.ToolbarSize = 30;
 				Ctrl.AppsCRUD.add(f);
 			});
 		};
 
 		Ctrl.openApp = (A) => {
-			if(A == Ctrl.AppSel) return;
+			//if(A == Ctrl.AppSel) return;
 			Rs.Storage.AppSelId = A.id;
 			Ctrl.AppSel = A;
 			Ctrl.PageSel = null;
@@ -67,7 +69,7 @@
 
 		Ctrl.updateApp = () => {
 			Ctrl.AppsCRUD.update(Ctrl.AppSel).then(() => {
-				if(Ctrl.PageSel) Ctrl.PagesCRUD.update(Ctrl.PageSel);
+				if(Ctrl.PageSel ) Ctrl.PagesCRUD.update(Ctrl.PageSel);
 				Rs.showToast('Guardado', 'Success');
 			});
 		};
@@ -108,6 +110,35 @@
 
 			Ctrl.PagesCRUD.updateMultiple([PAnt, P]);
 		};
+
+		Ctrl.dragListener = {
+			accept: function (sourceItemHandleScope, destSortableScope) { return true; },
+			orderChanged: () => {
+				var cambios = 0;
+				angular.forEach(Ctrl.PagesCRUD.rows, (C,index) => {
+					if(C.Indice !== index){
+						C.Indice = index;
+						cambios ++;
+					};
+				});
+				if(cambios > 0){
+					Ctrl.PagesCRUD.updateMultiple(Ctrl.PagesCRUD.rows);
+				}
+			}
+		};
+
+		Ctrl.removePage = () => {
+			Rs.confirmDelete({
+				Title: '¿Eliminar la página "'+Ctrl.PageSel.Titulo+'"?',
+			}).then(d => {
+				if(!d) return;
+
+				Ctrl.PagesCRUD.delete(Ctrl.PageSel).then(() => {
+					Ctrl.openApp(Ctrl.AppSel);
+				});
+
+			});
+		}
 
 		Ctrl.prepConfig = () => {
 			Ctrl.PageSel.Config = angular.copy(DefConfig);

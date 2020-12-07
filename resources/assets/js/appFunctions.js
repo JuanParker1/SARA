@@ -136,6 +136,11 @@ angular.module('appFunctions', [])
 			return true;
 		};
 
+		Rs.parseDate = (string) => {
+			if(!string) return null;
+			var date = moment(string); if(!date.isValid()) return null;
+			return date.toDate();
+		}
 
 
 		//Sidenav
@@ -248,7 +253,7 @@ angular.module('appFunctions', [])
 				Columns: [
 					{ Nombre: 'id', Desc: 'Id.', numeric: true }
 				],
-				selected: []
+				selected: [], multiple: true,
 			};
 			var Config = angular.extend(DefConfig, Config);
 
@@ -347,7 +352,7 @@ angular.module('appFunctions', [])
 			var fs = [];
 	    	var routes = {};
 	    	var defaultOpen = Rs.def(defaultOpen, false);
-	    	var modeB    = Rs.def(modeB, false);
+	    	var modeB       = Rs.def(modeB, false);
 
 	    	angular.forEach(arr, (e) => {
 	    		var r = e[ruta];
@@ -438,7 +443,7 @@ angular.module('appFunctions', [])
 
 
 		Rs.AnioActual = new Date().getFullYear();
-		Rs.MesActual  = parseInt(moment().subtract(5,'d').format('MM'));
+		Rs.MesActual  = parseInt(moment().subtract(40,'d').format('MM'));
 		Rs.Meses = [
 			['01','Ene','Enero'],
 			['02','Feb','Febrero'],
@@ -550,6 +555,15 @@ angular.module('appFunctions', [])
 			});
 		};
 
+		Rs.viewVariableEditorDiag = (Ctrl) => {
+			$mdDialog.show({
+				controller: 'VariablesCtrl',
+				templateUrl: '/Frag/Variables.VariableEditorDiag',
+				clickOutsideToClose: false, fullscreen: true, multiple: true,
+				scope: Ctrl, preserveScope: false,
+			});
+		}
+
 		Rs.openApp = (A) => {
 			//console.log('opening...', A);
 			var url = Rs.Usuario.Url+"#/a/"+A.Slug;
@@ -562,6 +576,20 @@ angular.module('appFunctions', [])
 			A.w.focus();
 			
 		};
+
+		Rs.getProcesos = (Ctrl) => {
+			if(!Rs.Storage.procesos_updated_at || !Rs.Storage.Procesos){
+				return Rs.http('api/Procesos', {}).then(P => {
+					Ctrl.Procesos = P;
+					Rs.Storage.Procesos = P;
+					Rs.Storage.procesos_updated_at = Rs.Usuario.procesos_updated_at;
+				});
+			}
+
+			Ctrl.Procesos = Rs.Storage.Procesos;
+			return Promise.resolve();
+			
+		}
 
 		return {};
   }
