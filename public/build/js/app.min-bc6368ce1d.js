@@ -184,241 +184,6 @@ angular.module('LoginCtrl', [])
 		};
 	}
 ]);
-angular.module('BDDCtrl', [])
-.controller('BDDCtrl', ['$scope', '$rootScope', '$injector', '$mdDialog', 
-	function($scope, $rootScope, $injector, $mdDialog) {
-
-		console.info('BDDCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		Rs.mainTheme = 'Snow_White';
-		Ctrl.BDDSidenav = true;
-		Ctrl.BDDFavSidenav = false;
-
-		Ctrl.SectionSel = 'Listas';
-		Ctrl.SeccionesBDD = [
-			[ 'ConsultaSQL', 'fa-bolt',	'Consulta SQL'  ],
-			[ 'Listas', 	 'fa-list', 'Listas'		 ]
-		];
-
-		Ctrl.changeSection = (S) => {
-			Ctrl.SectionSel = S[0];
-		}
-
-		Ctrl.BDDsCRUD = $injector.get('CRUD').config({ base_url: '/api/Bdds' });
-
-		Ctrl.BDDsCRUD.get().then(() => {
-			if(Ctrl.BDDsCRUD.rows.length > 0){
-				Ctrl.openBDD(Ctrl.BDDsCRUD.rows[0]);
-			};
-		});
-
-		Ctrl.openBDD = (B) => {
-			Ctrl.BDDSel = B;
-			Ctrl.FavsCRUD.setScope(  'bddid', Ctrl.BDDSel.id).get();
-			Ctrl.ListasCRUD.setScope('bddid', Ctrl.BDDSel.id).get().then(() => {
-				//Ctrl.browseLista(Ctrl.ListasCRUD.rows[0]);
-			});
-			//Ctrl.executeQuery(); //REmove
-		};
-
-		Ctrl.TiposBDD = {
-			ODBC_DB2:     { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			ODBC_MySQL:   { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			MySQL:  	  { Op1: false, Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			SQLite: 	  { Op1: false, Op2: 'Ruta al Archivo', Op3: 'Base de Datos', Op4: false, Op5: false },
-		};
-
-		Ctrl.addBDD = () => {
-			Rs.BasicDialog({
-				Title: 'Crear Conexión a Base de Datos'
-			}).then((r) => {
-				var Nombre = r.Fields[0].Value.trim();
-				if(Rs.found(Nombre, Ctrl.BDDsCRUD.rows, 'Nombre')) return;
-
-				Ctrl.BDDsCRUD.add({
-					Nombre: Nombre,
-					Tipo: 'ODBC'
-				});
-			});
-		};
-
-		Ctrl.updateBDD = () => {
-			Ctrl.BDDsCRUD.update(Ctrl.BDDSel).then(() => {
-				Rs.showToast('Actualizado', 'Success', 5000, 'bottom right');
-			});
-		};
-
-		Ctrl.removeBDD = () => {
-			Rs.confirmDelete({
-				Title: '¿Borrar la Conexión a la Base de Datos "'+Ctrl.BDDSel.Nombre+'"?'
-			}).then((del) => {
-				if(!del) return;
-				Ctrl.BDDsCRUD.delete(Ctrl.BDDSel).then(() => {
-					Ctrl.BDDSel = null;
-				});
-			});
-		};
-
-		Ctrl.testBDD = () => {
-			Rs.http('/api/Bdds/probar', { BDD: Ctrl.BDDSel }).then((r) => {
-				Rs.showToast('Conexión Exitosa', 'Success', 5000, 'bottom right');
-			});
-		};
-
-		//Panel de Consultas SQL
-		Ctrl.SQLQuery = "";
-		Ctrl.executingQuery = false;
-		Ctrl.QueryRows = null;
-		Ctrl.executeQuery = () => {
-			if(Ctrl.SQLQuery == "" || Ctrl.executingQuery) return;
-			Ctrl.executingQuery = true;
-
-			Rs.http('/api/Bdds/query', { BDD: Ctrl.BDDSel, Query: Ctrl.SQLQuery }).then((r) => {
-				Ctrl.QueryRows = r;
-			}).finally(() => {
-				Ctrl.executingQuery = false;
-			});
-		};
-
-
-
-		//Panel de Favoritos
-		Ctrl.FavsCRUD = $injector.get('CRUD').config({ 
-			base_url: '/api/Bdds/favoritos',
-			query_scopes: [
-				[ 'mine', true ]
-			]
-		});
-
-		Ctrl.useFav = (F) => {
-			if(Ctrl.executingQuery) return;
-
-			Ctrl.SQLQuery = F.Consulta;
-
-			if(F.EjecutarAutom == 'S'){
-				Ctrl.executeQuery();
-			};
-		};
-
-		Ctrl.addFav = () => {
-			Ctrl.FavsCRUD.dialog({
-				Consulta: angular.copy(Ctrl.SQLQuery),
-				EjecutarAutom: 'N',
-				bdd_id: Ctrl.BDDSel.id,
-				usuario_id: Rs.Usuario.id
-			}, {
-				title: 'Crear Favorito',
-				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
-			}).then((R) => {
-				if(!R) return;
-				Ctrl.FavsCRUD.add(R);
-			});
-		};
-
-		Ctrl.editFav = (F) => {
-			Ctrl.FavsCRUD.dialog(angular.copy(F), {
-				title: 'Favorito: ' + F.Nombre,
-				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
-			}).then((R) => {
-				if(!R) return;
-				if(R == 'DELETE') return Ctrl.FavsCRUD.delete(F);
-				Ctrl.FavsCRUD.update(R);
-			});
-		};
-
-
-
-		//Panel de Listas
-		Ctrl.ListasCRUD = $injector.get('CRUD').config({ base_url: '/api/Bdds/listas' });
-
-		Ctrl.addLista = () => {
-			Ctrl.ListasCRUD.dialog({
-				bdd_id: Ctrl.BDDSel.id
-			}, {
-				title: 'Crear Proveedor de Listas',
-				class: 'w400',
-				except: [ 'bdd_id' ]
-			}).then((R) => {
-				if(!R) return;
-				Ctrl.ListasCRUD.add(R);
-			});
-		}
-
-		Ctrl.editLista = (L) => {
-			Ctrl.ListasCRUD.dialog(L, {
-				title: 'Editar Proveedor de Listas',
-				class: 'w400',
-				except: [ 'bdd_id' ]
-			}).then((R) => {
-				if(!R) return;
-				if(R=='DELETE') return Ctrl.ListasCRUD.delete(L);
-				Ctrl.ListasCRUD.update(R);
-			});
-		}
-
-		Ctrl.browseListas = () => {
-
-			let Config = {
-				bdd_id: Ctrl.BDDSel.id,
-			};
-
-			$mdDialog.show({
-				controller: 'BDD_ListasDiagCtrl',
-				templateUrl: '/Frag/BDD.BDD_ListasDiag',
-				locals: { Config: Config },
-				clickOutsideToClose: true, fullscreen: false, multiple: true,
-			});
-		}
-	}
-]);
-angular.module('BDD_ListasDiagCtrl', [])
-.controller(   'BDD_ListasDiagCtrl', ['$scope', '$rootScope', '$mdDialog', 'Config',
-	function ($scope, $rootScope, $mdDialog, Config) {
-
-		console.info('BDD_ListasDiagCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		var DefConfig = {
-		};
-
-		Ctrl.Config = angular.extend(DefConfig, Config);
-
-		//Obtener las listas
-		Rs.http('api/Bdds/get-listas', { bdd_id: Ctrl.Config.bdd_id }, Ctrl, 'Listas').then(() => {
-			if(Ctrl.Listas.length > 0){
-				Ctrl.Config.lista_id = Ctrl.Listas[0].id;
-				Ctrl.getIndices();
-			}
-		});
-
-		//Obtener los indices
-		Ctrl.getIndices = () => {
-			Ctrl.IndiceSel = null;
-
-			Rs.http('api/Bdds/get-indices', { lista_id: Ctrl.Config.lista_id }).then(r => {
-				Ctrl.Indices = r.Indices;
-				//Ctrl.openLista(Ctrl.Listas[2]);
-			});
-		}
-		
-
-		Ctrl.openIndice = (I) => {
-			Ctrl.IndiceSel = I;
-			Ctrl.Detalles = null;
-			Rs.http('api/Bdds/get-listadetalles', { lista_id: Ctrl.Config.lista_id, indice_cod: I.IndiceCod }, Ctrl, 'Detalles');
-		};
-
-		Ctrl.selectLista = () => {
-			$mdDialog.hide({ lista_id: Ctrl.Config.lista_id, indice_cod: Ctrl.IndiceSel.IndiceCod, indice_des: Ctrl.IndiceSel.IndiceDes });
-		};
-
-		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
-	}
-
-]);
  angular.module('AppsCtrl', [])
 .controller('AppsCtrl', ['$scope', '$rootScope', '$injector', '$http', '$filter', '$window',
 	function($scope, $rootScope, $injector, $http, $filter, $window) {
@@ -678,6 +443,470 @@ angular.module('App_ViewCtrl', [])
 
 	}
 ]);
+angular.module('BDDCtrl', [])
+.controller('BDDCtrl', ['$scope', '$rootScope', '$injector', '$mdDialog', 
+	function($scope, $rootScope, $injector, $mdDialog) {
+
+		console.info('BDDCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Rs.mainTheme = 'Snow_White';
+		Ctrl.BDDSidenav = true;
+		Ctrl.BDDFavSidenav = false;
+
+		Ctrl.SectionSel = 'Listas';
+		Ctrl.SeccionesBDD = [
+			[ 'ConsultaSQL', 'fa-bolt',	'Consulta SQL'  ],
+			[ 'Listas', 	 'fa-list', 'Listas'		 ]
+		];
+
+		Ctrl.changeSection = (S) => {
+			Ctrl.SectionSel = S[0];
+		}
+
+		Ctrl.BDDsCRUD = $injector.get('CRUD').config({ base_url: '/api/Bdds' });
+
+		Ctrl.BDDsCRUD.get().then(() => {
+			if(Ctrl.BDDsCRUD.rows.length > 0){
+				Ctrl.openBDD(Ctrl.BDDsCRUD.rows[0]);
+			};
+		});
+
+		Ctrl.openBDD = (B) => {
+			Ctrl.BDDSel = B;
+			Ctrl.FavsCRUD.setScope(  'bddid', Ctrl.BDDSel.id).get();
+			Ctrl.ListasCRUD.setScope('bddid', Ctrl.BDDSel.id).get().then(() => {
+				//Ctrl.browseLista(Ctrl.ListasCRUD.rows[0]);
+			});
+			//Ctrl.executeQuery(); //REmove
+		};
+
+		Ctrl.TiposBDD = {
+			ODBC_DB2:     { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			ODBC_MySQL:   { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			MySQL:  	  { Op1: false, Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
+			SQLite: 	  { Op1: false, Op2: 'Ruta al Archivo', Op3: 'Base de Datos', Op4: false, Op5: false },
+		};
+
+		Ctrl.addBDD = () => {
+			Rs.BasicDialog({
+				Title: 'Crear Conexión a Base de Datos'
+			}).then((r) => {
+				var Nombre = r.Fields[0].Value.trim();
+				if(Rs.found(Nombre, Ctrl.BDDsCRUD.rows, 'Nombre')) return;
+
+				Ctrl.BDDsCRUD.add({
+					Nombre: Nombre,
+					Tipo: 'ODBC'
+				});
+			});
+		};
+
+		Ctrl.updateBDD = () => {
+			Ctrl.BDDsCRUD.update(Ctrl.BDDSel).then(() => {
+				Rs.showToast('Actualizado', 'Success', 5000, 'bottom right');
+			});
+		};
+
+		Ctrl.removeBDD = () => {
+			Rs.confirmDelete({
+				Title: '¿Borrar la Conexión a la Base de Datos "'+Ctrl.BDDSel.Nombre+'"?'
+			}).then((del) => {
+				if(!del) return;
+				Ctrl.BDDsCRUD.delete(Ctrl.BDDSel).then(() => {
+					Ctrl.BDDSel = null;
+				});
+			});
+		};
+
+		Ctrl.testBDD = () => {
+			Rs.http('/api/Bdds/probar', { BDD: Ctrl.BDDSel }).then((r) => {
+				Rs.showToast('Conexión Exitosa', 'Success', 5000, 'bottom right');
+			});
+		};
+
+		//Panel de Consultas SQL
+		Ctrl.SQLQuery = "";
+		Ctrl.executingQuery = false;
+		Ctrl.QueryRows = null;
+		Ctrl.executeQuery = () => {
+			if(Ctrl.SQLQuery == "" || Ctrl.executingQuery) return;
+			Ctrl.executingQuery = true;
+
+			Rs.http('/api/Bdds/query', { BDD: Ctrl.BDDSel, Query: Ctrl.SQLQuery }).then((r) => {
+				Ctrl.QueryRows = r;
+			}).finally(() => {
+				Ctrl.executingQuery = false;
+			});
+		};
+
+
+
+		//Panel de Favoritos
+		Ctrl.FavsCRUD = $injector.get('CRUD').config({ 
+			base_url: '/api/Bdds/favoritos',
+			query_scopes: [
+				[ 'mine', true ]
+			]
+		});
+
+		Ctrl.useFav = (F) => {
+			if(Ctrl.executingQuery) return;
+
+			Ctrl.SQLQuery = F.Consulta;
+
+			if(F.EjecutarAutom == 'S'){
+				Ctrl.executeQuery();
+			};
+		};
+
+		Ctrl.addFav = () => {
+			Ctrl.FavsCRUD.dialog({
+				Consulta: angular.copy(Ctrl.SQLQuery),
+				EjecutarAutom: 'N',
+				bdd_id: Ctrl.BDDSel.id,
+				usuario_id: Rs.Usuario.id
+			}, {
+				title: 'Crear Favorito',
+				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
+			}).then((R) => {
+				if(!R) return;
+				Ctrl.FavsCRUD.add(R);
+			});
+		};
+
+		Ctrl.editFav = (F) => {
+			Ctrl.FavsCRUD.dialog(angular.copy(F), {
+				title: 'Favorito: ' + F.Nombre,
+				only: [ 'Nombre', 'Consulta', 'EjecutarAutom' ]
+			}).then((R) => {
+				if(!R) return;
+				if(R == 'DELETE') return Ctrl.FavsCRUD.delete(F);
+				Ctrl.FavsCRUD.update(R);
+			});
+		};
+
+
+
+		//Panel de Listas
+		Ctrl.ListasCRUD = $injector.get('CRUD').config({ base_url: '/api/Bdds/listas' });
+
+		Ctrl.addLista = () => {
+			Ctrl.ListasCRUD.dialog({
+				bdd_id: Ctrl.BDDSel.id
+			}, {
+				title: 'Crear Proveedor de Listas',
+				class: 'w400',
+				except: [ 'bdd_id' ]
+			}).then((R) => {
+				if(!R) return;
+				Ctrl.ListasCRUD.add(R);
+			});
+		}
+
+		Ctrl.editLista = (L) => {
+			Ctrl.ListasCRUD.dialog(L, {
+				title: 'Editar Proveedor de Listas',
+				class: 'w400',
+				except: [ 'bdd_id' ]
+			}).then((R) => {
+				if(!R) return;
+				if(R=='DELETE') return Ctrl.ListasCRUD.delete(L);
+				Ctrl.ListasCRUD.update(R);
+			});
+		}
+
+		Ctrl.browseListas = () => {
+
+			let Config = {
+				bdd_id: Ctrl.BDDSel.id,
+			};
+
+			$mdDialog.show({
+				controller: 'BDD_ListasDiagCtrl',
+				templateUrl: '/Frag/BDD.BDD_ListasDiag',
+				locals: { Config: Config },
+				clickOutsideToClose: true, fullscreen: false, multiple: true,
+			});
+		}
+	}
+]);
+angular.module('BDD_ListasDiagCtrl', [])
+.controller(   'BDD_ListasDiagCtrl', ['$scope', '$rootScope', '$mdDialog', 'Config',
+	function ($scope, $rootScope, $mdDialog, Config) {
+
+		console.info('BDD_ListasDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		var DefConfig = {
+		};
+
+		Ctrl.Config = angular.extend(DefConfig, Config);
+
+		//Obtener las listas
+		Rs.http('api/Bdds/get-listas', { bdd_id: Ctrl.Config.bdd_id }, Ctrl, 'Listas').then(() => {
+			if(Ctrl.Listas.length > 0){
+				Ctrl.Config.lista_id = Ctrl.Listas[0].id;
+				Ctrl.getIndices();
+			}
+		});
+
+		//Obtener los indices
+		Ctrl.getIndices = () => {
+			Ctrl.IndiceSel = null;
+
+			Rs.http('api/Bdds/get-indices', { lista_id: Ctrl.Config.lista_id }).then(r => {
+				Ctrl.Indices = r.Indices;
+				//Ctrl.openLista(Ctrl.Listas[2]);
+			});
+		}
+		
+
+		Ctrl.openIndice = (I) => {
+			Ctrl.IndiceSel = I;
+			Ctrl.Detalles = null;
+			Rs.http('api/Bdds/get-listadetalles', { lista_id: Ctrl.Config.lista_id, indice_cod: I.IndiceCod }, Ctrl, 'Detalles');
+		};
+
+		Ctrl.selectLista = () => {
+			$mdDialog.hide({ lista_id: Ctrl.Config.lista_id, indice_cod: Ctrl.IndiceSel.IndiceCod, indice_des: Ctrl.IndiceSel.IndiceDes });
+		};
+
+		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
+	}
+
+]);
+angular.module('BotsCtrl', [])
+.controller('BotsCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$mdDialog',
+	function($scope, $rootScope, $injector, $filter, $mdDialog) {
+
+		console.info('BotsCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Rs.mainTheme = 'Black';
+		Ctrl.BotsNav = true;
+		Ctrl.BotRunning = false;
+
+		Ctrl.EstadosBots = ['Espera', 'Corriendo', 'Inactivo', 'Error'];
+		Ctrl.EstadosBotsDet = {
+			'Espera':    { Color: '#03ab3b' },
+			'Corriendo': { Color: '#d3ff76' },
+			'Inactivo':  { Color: '#545454' },
+			'Error':     { Color: '#ff0000' },
+		};
+
+		Ctrl.BotsCRUD  = $injector.get('CRUD').config({ base_url: '/api/Bots' });
+		Ctrl.PasosCRUD = $injector.get('CRUD').config({ base_url: '/api/Bots/pasos' });
+		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Bots/variables' });
+
+		Ctrl.getBots = () => {
+			Ctrl.BotsCRUD.get().then(() => {
+
+				var bot_sel_id = Rs.Storage.BotSelId ? Rs.getIndex(Ctrl.BotsCRUD.rows, Rs.Storage.BotSelId) : 0;
+				Ctrl.openBot(Ctrl.BotsCRUD.rows[bot_sel_id]);
+			});
+		}
+		
+		Ctrl.addBot = () => {
+			Ctrl.BotsCRUD.dialog({ Estado: 'Inactivo' }, {
+				title: 'Crear Nuevo Bot',
+				only: ['Nombre']
+			}).then(nB => {
+				Ctrl.BotsCRUD.add(nB);
+			});
+		};
+
+		Ctrl.openBot = (B) => { 
+			Ctrl.BotSel = B;
+			Rs.Storage.BotSelId = Ctrl.BotSel.id;
+			Ctrl.BotSel.config.Horas = Ctrl.BotSel.config.Horas.map(H => {
+				var D = moment(H, ['HH:mm']).toDate();
+				return D;
+			});
+			//
+			Ctrl.PasosCRUD.setScope('bot', Ctrl.BotSel.id).get();
+			Ctrl.VariablesCRUD.setScope('bot', Ctrl.BotSel.id).get();
+
+			//Ctrl.seeLogs();
+		}
+
+		Ctrl.saveBot = async () => {
+			var Bot = angular.copy(Ctrl.BotSel);
+			Bot.config.Horas = Bot.config.Horas.map(H => {
+				var D = moment(H).format('HH:mm');
+				console.log(H, D);
+				return D;
+			});
+			await Ctrl.BotsCRUD.update(Bot);
+
+			var Variables = Ctrl.VariablesCRUD.rows.filter(V => V.changed);
+			if(Variables.length > 0) await Ctrl.VariablesCRUD.updateMultiple(Variables);
+
+			await Ctrl.PasosCRUD.updateMultiple(Ctrl.PasosCRUD.rows);
+
+			Rs.showToast('Bot Actualizado', 'Success');
+		}
+ 	
+		Ctrl.DiasSemana = [
+			[ 'Lun', 'Lun'],
+			[ 'Mar', 'Mar'],
+			[ 'Mie', 'Mié'],
+			[ 'Jue', 'Jue'],
+			[ 'Vie', 'Vie'],
+			[ 'Sab', 'Sáb'],
+			[ 'Dom', 'Dom'],
+		];
+
+		Ctrl.addHour = () => {
+			var Horas = Ctrl.BotSel.config.Horas;
+			var Time = (Horas.length > 0) ? moment(Horas[(Horas.length - 1)]) : moment('05:00', ['H:m']);
+			Time.add(1, 'hours');
+			Horas.push(Time.toDate());
+		}
+
+		Ctrl.setHour = (H, kH) => {
+			Ctrl.BotSel.config.Horas[kH] = H;
+		}
+
+		Ctrl.removeHour = (kH) => {
+			Ctrl.BotSel.config.Horas.splice(kH, 1);
+		}
+
+		//Pasos
+		Ctrl.addPaso = () => {
+			var Indice = Ctrl.PasosCRUD.rows.length;
+			Ctrl.PasosCRUD.dialog({
+				Tipo: 'Url', Indice: Indice, bot_id: Ctrl.BotSel.id, config: '[]'
+			}, {
+				title: 'Agregar Paso', class: 'wu600',
+				only: ['Tipo', 'Nombre'],
+				confirmText: 'Agregar'
+			}).then(nP => {
+				if(!nP) return;
+				Ctrl.PasosCRUD.add(nP);
+			});
+		}
+
+		Ctrl.delPaso = (P) => {
+			Rs.confirmDelete({
+				Title: '¿Eliminar el paso: "'+P.Nombre+'"?',
+			}).then((d) => {
+				if(!d) return;
+				Ctrl.PasosCRUD.delete(P);
+			});
+		}
+
+		//Variables
+		Ctrl.addVariable = () => {
+			Ctrl.VariablesCRUD.add({
+				bot_id: Ctrl.BotSel.id
+			});
+		}
+
+		Ctrl.delVariable = (V) => {
+			Ctrl.VariablesCRUD.delete(V);
+		}
+
+
+		//Run
+		Ctrl.runBot = () => {
+			Ctrl.BotRunning = true;
+			Rs.http('/api/Bots/run/' + Ctrl.BotSel.id, {}, false, false, 'GET').finally(() => {
+				Ctrl.BotRunning = false;
+				Ctrl.getBots();
+			});
+		}
+
+
+		Ctrl.seeLogs = () => {
+			$mdDialog.show({
+				controller: 'Bot_LogsCtrl',
+				templateUrl: '/Frag/Bots.Bot_Logs',
+				locals: { Bot : Ctrl.BotSel },
+				clickOutsideToClose: false, fullscreen: true, multiple: true,
+			});
+		}
+
+
+		//ACE
+		Ctrl.aceOptionsJs = {
+			theme:'twilight',
+			mode: 'json',
+			onLoad: (_editor) => {
+				var _session = _editor.getSession();
+				_editor.setFontSize(15);
+				_session.setTabSize(3);
+				_editor.setOptions({
+				    minLines: 1,
+				    maxLines: 5000
+				});
+				//_editor.setUseSoftTabs(true);
+			},
+		};
+
+		Ctrl.aceOptionsSql = {
+			theme:'twilight',
+			mode: 'sql',
+			onLoad: (_editor) => {
+				var _session = _editor.getSession();
+				_editor.setFontSize(13);
+				_session.setTabSize(3);
+				_editor.setOptions({
+				    minLines: 2,
+				    maxLines: 5000
+				});
+				//_editor.setUseSoftTabs(true);
+			},
+		};
+
+
+
+
+		Promise.all([
+			Rs.http('api/Bdds/all', {}, Ctrl, 'Bdds')
+		]).then(() => {
+			Ctrl.getBots();
+		});
+		
+
+
+
+
+	}
+]);
+angular.module('Bot_LogsCtrl', [])
+.controller(   'Bot_LogsCtrl', ['$scope', '$rootScope', '$mdDialog', 'Bot',
+	function ($scope, $rootScope, $mdDialog, Bot) {
+
+		console.info('Bot_LogsCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.Bot = Bot;
+
+		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
+
+		Ctrl.filters = {
+			bot_id: Bot.id,
+			Inicio: moment().add(-2, 'days').toDate(),
+			Fin:    moment().toDate()
+		};
+
+		Ctrl.getLogs = () => {
+			var filters = angular.copy(Ctrl.filters);
+			filters.Inicio = moment(filters.Inicio).format('YYYY-MM-DD');
+			filters.Fin    = moment(filters.Fin).format('YYYY-MM-DD');
+
+			Rs.http('/api/Bots/logs', filters, Ctrl, 'BotLogs');
+
+		}	
+
+		Ctrl.getLogs();
+	}
+
+]);
 angular.module('ConsultasSQLCtrl', [])
 .controller('ConsultasSQLCtrl', ['$scope', '$rootScope', '$injector', '$filter',
 	function($scope, $rootScope, $injector, $filter) {
@@ -741,569 +970,6 @@ angular.module('ConsultasSQLCtrl', [])
 			});
 		}
 		
-	}
-]);
-angular.module('BasicDialogCtrl', [])
-.controller(   'BasicDialogCtrl', ['$scope', 'Config', '$mdDialog', 
-	function ($scope, Config, $mdDialog) {
-
-		var Ctrl = $scope;
-
-		Ctrl.Config = Config;
-		Ctrl.periodDateLocale = {
-			formatDate: (date) => {
-				if(typeof date == 'undefined' || date === null || isNaN(date.getTime()) ){ return null; }else{
-					return moment(date).format('YMM');
-				}
-			}
-		};
-
-		Ctrl.Cancel = function(){
-			$mdDialog.hide();
-		}
-
-		Ctrl.SendData = function(){
-			$mdDialog.hide(Ctrl.Config);
-		}
-
-		Ctrl.selectItem = (Field, item) => {
-			if(!Field.opts.itemVal){
-				Field.Value = item;
-			}else{
-				Field.Value = item[Field.opts.itemVal];
-			}
-			
-		};
-
-		Ctrl.Delete = function(ev) {
-			if(Config.HasDelete){
-				Config.HasDeleteConf = true;
-
-				Ctrl.SendData();
-			}
-		}
-	}
-
-]);
-angular.module('BottomSheetCtrl', [])
-.controller('BottomSheetCtrl', ['$scope', '$rootScope', '$mdBottomSheet', 'Config', 
-	function($scope, $rootScope, $mdBottomSheet, Config) {
-
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-	
-		Ctrl.Cancel = function(){ $mdBottomSheet.cancel(); }
-
-		Ctrl.Config = angular.copy(Config);
-
-		Ctrl.Send = function(Item){
-			$mdBottomSheet.hide(Item);
-		}
-	}
-]);
-angular.module('ConfirmCtrl', [])
-.controller(   'ConfirmCtrl', ['$scope', 'Config', '$mdDialog', 
-	function ($scope, Config, $mdDialog) {
-
-		var Ctrl = $scope;
-
-		Ctrl.Config = Config;
-
-		Ctrl.Cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		Ctrl.Send = function(val){
-			$mdDialog.hide(val);
-		}
-		
-	}
-
-]);
-angular.module('ConfirmDeleteCtrl', [])
-.controller(   'ConfirmDeleteCtrl', ['$scope', 'Config', '$mdDialog', 
-	function ($scope, Config, $mdDialog) {
-
-		var Ctrl = $scope;
-
-		Ctrl.Config = Config;
-
-		Ctrl.Cancel = function(){
-			$mdDialog.hide(false);
-		}
-
-		Ctrl.Delete = function(){
-			$mdDialog.hide(true);
-		}
-		
-	}
-
-]);
-angular.module('CRUDDialogCtrl', [])
-.controller('CRUDDialogCtrl', ['$rootScope', '$scope', '$mdDialog', 'ops', 'config', 'columns', 'Obj', 'rows', 
-	function($rootScope, $scope, $mdDialog, ops, config, columns, Obj, rows) {
-
-		console.info('CRUDDialogCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		Ctrl.config = {};
-		Ctrl.columns = columns;
-		Ctrl.Obj = {};
-		//console.log(columns);
-		//Ctrl.Obj = angular.copy(Obj);
-
-		//Saber si es nuevo
-		Ctrl.new = !(ops.primary_key in Obj);
-		Ctrl.config.confirmText = Ctrl.new ? 'Crear' : 'Guardar';
-		Ctrl.config.title = Ctrl.new ? ('Nuevo '+ops.name) : ('Editando '+ops.name);
-		Ctrl.config.delete_title = '¿Borrar '+ops.name+'?';
-
-		angular.forEach(columns, function(F){
-			if(F.Default !== null){
-				var DefValue = angular.copy(F.Default);
-				Ctrl.Obj[F.Field] = DefValue;
-			};
-
-			F.show = true;
-			if(config.only.length > 0){
-				F.show = Rs.inArray(F.Field, config.only);
-			}else if(config.except.length > 0){
-				F.show = !Rs.inArray(F.Field, config.except);
-			};
-		});
-
-		angular.extend(Ctrl.Obj, Obj);
-		angular.extend(Ctrl.config, config);
-
-		Ctrl.cancel = function(){ $mdDialog.hide(false); };
-
-		Ctrl.sendData = function(){
-			//Verificar los Uniques
-			var Errors = 0;
-			angular.forEach(columns, function(C){
-				if(C.Unique){
-					//console.log(ops.primary_key, Ctrl.Obj[ops.primary_key]);
-					var except = Ctrl.new ? false : [ ops.primary_key, Ctrl.Obj[ops.primary_key] ];
-					var Found = Rs.found(Ctrl.Obj[C.Field], rows, C.Field, undefined, except );
-					if(Found) Errors++;
-				};
-			});
-
-			if(Errors > 0) return false;
-
-			$mdDialog.hide(Ctrl.Obj);
-		};
-
-
-		Ctrl.delete = function(ev){
-			var config = {
-				Title: Ctrl.config.delete_title,
-			};
-
-			Rs.confirmDelete(config).then(function(del){
-				if(del){
-					$mdDialog.hide('DELETE');
-				};
-			});
-		};
-
-
-		
-		//Campos
-		//Ctrl.fields = angular.copy
-
-	}
-]);
-angular.module('ExternalLinkCtrl', [])
-.controller(   'ExternalLinkCtrl', ['$scope', 'Link', '$mdDialog', '$sce',  
-	function ($scope, Link, $mdDialog, $sce) {
-
-		var Ctrl = $scope;
-
-		Ctrl.Link = $sce.trustAsResourceUrl(Link);
-
-		Ctrl.Cancel = function(){
-			$mdDialog.cancel();
-		}
-		
-	}
-
-]);
-angular.module('FileDialogCtrl', [])
-.controller('FileDialogCtrl', ['$scope', '$rootScope', '$http', '$mdDialog', '$mdToast', 'FileSel', 
-	function($scope, $rootScope, $http, $mdDialog, $mdToast, FileSel) {
-
-		console.info('FileDialogCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		Ctrl.FileSel = FileSel;
-		Ctrl.inArray = Rs.inArray;
-
-		//Dialog
-		Ctrl.Cancel = function(){
-			$mdDialog.hide();
-		};
-
-	}
-]);
-angular.module('IconSelectDiagCtrl', [])
-.controller(   'IconSelectDiagCtrl', ['$scope',  '$mdDialog', '$http', '$filter',
-	function ($scope, $mdDialog, $http, $filter) {
-
-		var Ctrl = $scope;
-		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
-		Ctrl.filter = ''; Ctrl.CatSel = null;
-
-		$http.get('/api/Main/iconos').then((r) => {
-			Ctrl.Categorias = r.data.Categorias;
-			Ctrl.IconosRaw	= r.data.Iconos;
-		});
-
-		Ctrl.Iconos = [];
-
-		Ctrl.filterCat = (C) => { Ctrl.CatSel = C; Ctrl.filterIconos(); }
-
-		Ctrl.filterIconos = () => {
-			console.log(Ctrl.CatSel, Ctrl.filter);
-			if(Ctrl.CatSel == null && Ctrl.filter == ''){ Ctrl.Iconos = []; }
-			else if(Ctrl.filter !== ''){   Ctrl.Iconos = $filter('filter')(Ctrl.IconosRaw, Ctrl.filter) }
-			else if(Ctrl.CatSel !== null){ Ctrl.Iconos = $filter('filter')(Ctrl.IconosRaw, { Categoria: Ctrl.CatSel }) };
-		};
-
-		Ctrl.selectIcon = (I) => {
-			$mdDialog.hide(I.IconoFull);
-		};
-		
-	}
-
-]);
-angular.module('ImageEditor_DialogCtrl', [])
-.controller(   'ImageEditor_DialogCtrl', ['$scope', '$rootScope', '$mdDialog', '$mdToast', '$timeout', '$http', 'Upload', 'Config', 
-	function ($scope, $rootScope, $mdDialog, $mdToast, $timeout, $http, Upload, Config) {
-
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		//console.info('-> Image Editor');
-
-		Ctrl.Config = {
-			Theme : 'Snow_White',		//El tema
-			Title: 'Cambiar Imágen',	//El Titulo
-			CanvasWidth:  350,			//Ancho del canvas
-			CanvasHeight: 350,			//Alto del canvas
-			CropWidth:  100,			//Ancho del recorte que se subirá
-			CropHeight: 100,			//Alto del recorte que se subirá
-			MinWidth:  50,				//Ancho mínimo del selector
-			MinHeight: 50,				//Ancho mínimo del selector
-			KeepAspect: true,			//Mantener aspecto
-			Preview: false,				//Mostrar vista previa
-			PreviewClass: '',			//md-img-round
-			RemoveOpt: false,			//Si es texto muestra la opcion de borrar
-			Daten: null,				//La data a enviar al servidor
-			Class: '',
-			UploadUrl: '/api/Main/upload-image',
-			UploadPath: null,
-			ImageMode: null,
-			RemoveImage: false
-		};
-
-		Ctrl.RotationCanvas = document.createElement("canvas");
-
-		Ctrl.cropper = {};
-		Ctrl.cropper.sourceImage = null;
-		Ctrl.cropper.croppedImage = null;
-		Ctrl.bounds = {};
-
-		Ctrl.Progress = null;
-
-		angular.extend(Ctrl.Config, Config);
-
-		Ctrl.CancelText = Ctrl.Config.RemoveOpt ? Ctrl.Config.RemoveOpt : 'Cancelar';
-		
-		Ctrl.CancelBtn = function(){
-			if(!Ctrl.Config.RemoveOpt){
-				Ctrl.Cancel();
-			}else{
-				$http.post('/api/Upload/remove', { Path: Ctrl.Config.Daten.Path }).then(function(){
-					$mdDialog.hide({Removed: true});
-				});
-			}
-		}
-
-		Ctrl.Cancel = function(){
-			$mdDialog.hide();
-		}
-
-		Ctrl.Rotar = function(dir){
-			var canvas = Ctrl.RotationCanvas;
-			var ctx = canvas.getContext("2d");
-
-			var image = new Image();
-			image.src = Ctrl.cropper.sourceImage;
-			image.onload = function() {
-				canvas.width = image.height;
-				canvas.height = image.width;
-				ctx.rotate(dir * Math.PI / 180);
-				ctx.translate(0, -canvas.width);
-				ctx.drawImage(image, 0, 0); 
-				Ctrl.cropper.sourceImage = canvas.toDataURL();
-			};
-		}
-
-		Ctrl.$watch('Ctrl.cropper.sourceImage', function(nv, ov){
-			if(nv){
-				console.log('Imagen Cargada');
-			}
-		});
-
-		Ctrl.SendImage = function(){
-
-			var Daten = {
-				file: Upload.dataUrltoBlob(Ctrl.cropper.croppedImage),
-				Quality: 90,
-				savepath: Ctrl.Config.UploadPath,
-				imagemode: Ctrl.Config.ImageMode
-			};
-
-			angular.extend(Daten, Config.Daten);
-
-			Upload.upload({
-
-				url: Ctrl.Config.UploadUrl,
-				data: Daten,
-
-			}).then(function (res) {
-				
-				$timeout(function () {
-					$mdDialog.hide(res.data);
-				});
-
-			}, function (response) {
-				if (response.status > 0){
-					
-					var Msg = response.status + ': ' + response.data;
-					var errTxt = '<md-toast class="md-toast-error"><span flex>' + Msg + '<span></md-toast>';
-
-					$mdToast.show({
-						template: errTxt,
-						hideDelay: 5000
-					});
-
-				}
-			}, function (evt) {
-				Ctrl.Progress = parseInt(100.0 * evt.loaded / evt.total);
-			});
-
-		}
-
-		//console.log(angular.element(document.querySelector('#Canvas')));
-	}
-
-]);
-angular.module('ImportCtrl', [])
-.controller('ImportCtrl', ['$scope', '$rootScope', '$http', '$mdDialog', 'Upload', 'Config',
-	function($scope, $rootScope, $http, $mdDialog, Upload, Config) {
-
-		console.info('ImportCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		var DefConfig = {
-			Paso: 1,
-		};
-		Ctrl.Config = Config;
-
-		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
-
-		Ctrl.Pasos = [ '',
-			'Paso 1: Diligenciar la plantilla',
-			'Paso 2: Verificar datos a importar',
-			'Paso 3: Importando',
-			'Finalizado',
-			'Errores encontrados',
-			'Error al cargar el archivo'
-		];
-
-		Ctrl.Config.Paso = 1;
-
-		Ctrl.DownloadPlantilla = function(){
-			$http.get(Ctrl.Config.PlantillaUrl, { responseType: 'arraybuffer' }).then(function(r) {
-        		var blob = new Blob([r.data], { type: "application/vnd.ms-excel; charset=UTF-8" });
-		        var filename = Ctrl.Config.PlantillaUrl.split('/').pop();
-		        saveAs(blob, filename);
-        	});
-		};
-
-
-		Ctrl.UploadTemplate = function(file, invalidfile){
-			if(file) {
-	            Upload.upload({
-					url: '/api/Upload/file',
-					data: {
-						file: file,
-						Path: Ctrl.Config.Upload.Path,
-						Name: Ctrl.Config.Upload.Name,
-					}
-				}).then(function(r){
-					if(r.status == 200){
-						Ctrl.VerifyData();
-					}else{
-						Ctrl.Config.Paso = 6;
-					};
-				});
-			};
-		};
-
-		Ctrl.VerifyData = function(){
-			Ctrl.Config.Paso = 2;
-			$http.post(Ctrl.Config.VerifyUrl, { Config: Ctrl.Config }).then(function(r){
-				var Msgs = r.data;
-				console.log(Msgs);
-				if(Msgs.length == 0){
-					Ctrl.Config.Paso = 3;
-				}else{ //Hubo errores en la verificacion
-					Ctrl.Config.Paso = 5;
-					Ctrl.Errores = Msgs;
-				}
-			});
-		}
-
-		//Ctrl.VerifyData();
-
-		Ctrl.DownloadErrors = function(){
-			var Headers = [ 'Fila', 'Error' ];
-			var e = {
-        		filename: 'Errores_Importacion',
-        		ext: 'xls',
-        		sheets: [
-        			{
-						name: 'Errores',
-						headers: Headers,
-						rows: Ctrl.Errores,
-					}
-        		]
-			};
-			Rs.DownloadExcel(e);
-		};
-
-		//console.log(Ctrl.Config.PlantillaUrl);
-
-	}
-]);
-angular.module('ListSelectorCtrl', [])
-.controller('ListSelectorCtrl', ['$scope', '$rootScope', '$http', '$mdDialog', 'List', 'Config',
-	function($scope, $rootScope, $http, $mdDialog, List, Config) {
-
-		//console.info('ListSelectorCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.Config = Config;
-		Ctrl.Searching = false;
-
-		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
-
-		Ctrl.getData = function(){
-			Ctrl.Searching = true;
-			//Traer los datos del servidor
-			$http({
-				method: Ctrl.Config.remoteMethod,
-				url: Ctrl.Config.remoteUrl,
-				data: Ctrl.Config.remoteData,
-			}).then(function(r){
-				Ctrl.Searching = false;
-				Ctrl.List = r.data;
-			}, function(){
-				Ctrl.Searching = false;
-			});
-		};
-
-		//Si pasan la lista usarla
-		if(List !== null){
-			Ctrl.List = List;
-		}else if(Ctrl.Config.remoteUrl){
-			Ctrl.getData();
-		};
-
-		Ctrl.changeSearch = function(){
-
-			if(Ctrl.Config.remoteQuery){
-				if(Ctrl.Searching) return false;
-				Ctrl.Config.remoteData.filter = Ctrl.Search;
-				Ctrl.getData();
-			}else{
-				Ctrl.SearchFilter = Ctrl.Search;
-			}
-		}
-
-		Ctrl.Resp = function(Row){
-			$mdDialog.hide(Row);
-		}
-
-
-	}
-]);
-angular.module('RetroalimentarDiagCtrl', [])
-.controller(   'RetroalimentarDiagCtrl', ['$scope', '$rootScope', '$mdDialog', 'Subject',
-	function ($scope, $rootScope, $mdDialog, Subject) {
-
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.Stage = 'Writting';
-		
-
-		Ctrl.Cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		Ctrl.feedbackComment = '';
-		Ctrl.Subject = Subject;
-
-		Ctrl.enviarFeedback = () => {
-
-			if(Ctrl.feedbackComment.trim() == '') return Rs.showToast('Por favor incluya un comentario', 'Error');
-
-			Ctrl.Stage = 'Sending';
-
-			Rs.http('api/Main/feedback', { Subject: Ctrl.Subject, feedbackComment: Ctrl.feedbackComment, usuario_id: Rs.Usuario.id }).then(() => {
-				Ctrl.Stage = 'Sent';
-			});
-
-		}
-	}
-
-]);
-angular.module('TableDialogCtrl', [])
-.controller('TableDialogCtrl', ['$scope', '$rootScope', '$mdDialog', 'Elements', 'Config',
-	function($scope, $rootScope, $mdDialog, Elements, Config) {
-
-		//console.info('TableDialogCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.Config = Config;
-		Ctrl.Searching = false;
-		Ctrl.Elements = Elements;
-
-		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
-
-		Ctrl.getProp = (Obj, Prop) => {
-			return Prop.split('.').reduce(function(a, b) {
-				return a[b];
-			}, Obj);
-		}
-
-		Ctrl.Resp = function(){
-
-			if(Config.pluck){
-				var Sel = Ctrl.Config.selected.map( e => e[Config.primaryId] );
-			}else{
-				var Sel = Ctrl.Config.selected;
-			}
-
-			$mdDialog.hide(Sel);
-		}
-
-
 	}
 ]);
 angular.module('EntidadesCamposCtrl', [])
@@ -2748,6 +2414,582 @@ angular.module('Entidades_VerCamposCtrl', [])
 		};
 	}
 ]);
+angular.module('BasicDialogCtrl', [])
+.controller(   'BasicDialogCtrl', ['$scope', 'Config', '$mdDialog', 
+	function ($scope, Config, $mdDialog) {
+
+		var Ctrl = $scope;
+
+		Ctrl.Config = Config;
+		Ctrl.periodDateLocale = {
+			formatDate: (date) => {
+				if(typeof date == 'undefined' || date === null || isNaN(date.getTime()) ){ return null; }else{
+					return moment(date).format('YMM');
+				}
+			}
+		};
+
+		Ctrl.Cancel = function(){
+			$mdDialog.hide();
+		}
+
+		Ctrl.SendData = function(){
+			$mdDialog.hide(Ctrl.Config);
+		}
+
+		Ctrl.selectItem = (Field, item) => {
+			if(!Field.opts.itemVal){
+				Field.Value = item;
+			}else{
+				Field.Value = item[Field.opts.itemVal];
+			}
+			
+		};
+
+		Ctrl.Delete = function(ev) {
+			if(Config.HasDelete){
+				Config.HasDeleteConf = true;
+
+				Ctrl.SendData();
+			}
+		}
+	}
+
+]);
+angular.module('BottomSheetCtrl', [])
+.controller('BottomSheetCtrl', ['$scope', '$rootScope', '$mdBottomSheet', 'Config', 
+	function($scope, $rootScope, $mdBottomSheet, Config) {
+
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+	
+		Ctrl.Cancel = function(){ $mdBottomSheet.cancel(); }
+
+		Ctrl.Config = angular.copy(Config);
+
+		Ctrl.Send = function(Item){
+			$mdBottomSheet.hide(Item);
+		}
+	}
+]);
+angular.module('ConfirmCtrl', [])
+.controller(   'ConfirmCtrl', ['$scope', 'Config', '$mdDialog', 
+	function ($scope, Config, $mdDialog) {
+
+		var Ctrl = $scope;
+
+		Ctrl.Config = Config;
+
+		Ctrl.Cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		Ctrl.Send = function(val){
+			$mdDialog.hide(val);
+		}
+		
+	}
+
+]);
+angular.module('ConfirmDeleteCtrl', [])
+.controller(   'ConfirmDeleteCtrl', ['$scope', 'Config', '$mdDialog', 
+	function ($scope, Config, $mdDialog) {
+
+		var Ctrl = $scope;
+
+		Ctrl.Config = Config;
+
+		Ctrl.Cancel = function(){
+			$mdDialog.hide(false);
+		}
+
+		Ctrl.Delete = function(){
+			$mdDialog.hide(true);
+		}
+		
+	}
+
+]);
+angular.module('CRUDDialogCtrl', [])
+.controller('CRUDDialogCtrl', ['$rootScope', '$scope', '$mdDialog', 'ops', 'config', 'columns', 'Obj', 'rows', 
+	function($rootScope, $scope, $mdDialog, ops, config, columns, Obj, rows) {
+
+		console.info('CRUDDialogCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.config = {};
+		Ctrl.columns = columns;
+		Ctrl.Obj = {};
+		//console.log(columns);
+		//Ctrl.Obj = angular.copy(Obj);
+
+		//Saber si es nuevo
+		Ctrl.new = !(ops.primary_key in Obj);
+		Ctrl.config.confirmText = Ctrl.new ? 'Crear' : 'Guardar';
+		Ctrl.config.title = Ctrl.new ? ('Nuevo '+ops.name) : ('Editando '+ops.name);
+		Ctrl.config.delete_title = '¿Borrar '+ops.name+'?';
+
+		angular.forEach(columns, function(F){
+			if(F.Default !== null){
+				var DefValue = angular.copy(F.Default);
+				Ctrl.Obj[F.Field] = DefValue;
+			};
+
+			F.show = true;
+			if(config.only.length > 0){
+				F.show = Rs.inArray(F.Field, config.only);
+			}else if(config.except.length > 0){
+				F.show = !Rs.inArray(F.Field, config.except);
+			};
+		});
+
+		angular.extend(Ctrl.Obj, Obj);
+		angular.extend(Ctrl.config, config);
+
+		Ctrl.cancel = function(){ $mdDialog.hide(false); };
+
+		Ctrl.sendData = function(){
+			//Verificar los Uniques
+			var Errors = 0;
+			angular.forEach(columns, function(C){
+				if(C.Unique){
+					//console.log(ops.primary_key, Ctrl.Obj[ops.primary_key]);
+					var except = Ctrl.new ? false : [ ops.primary_key, Ctrl.Obj[ops.primary_key] ];
+					var Found = Rs.found(Ctrl.Obj[C.Field], rows, C.Field, undefined, except );
+					if(Found) Errors++;
+				};
+			});
+
+			if(Errors > 0) return false;
+
+			$mdDialog.hide(Ctrl.Obj);
+		};
+
+
+		Ctrl.delete = function(ev){
+			var config = {
+				Title: Ctrl.config.delete_title,
+			};
+
+			Rs.confirmDelete(config).then(function(del){
+				if(del){
+					$mdDialog.hide('DELETE');
+				};
+			});
+		};
+
+
+		
+		//Campos
+		//Ctrl.fields = angular.copy
+
+	}
+]);
+angular.module('ExternalLinkCtrl', [])
+.controller(   'ExternalLinkCtrl', ['$scope', 'Link', '$mdDialog', '$sce',  
+	function ($scope, Link, $mdDialog, $sce) {
+
+		var Ctrl = $scope;
+
+		Ctrl.Link = $sce.trustAsResourceUrl(Link);
+
+		Ctrl.Cancel = function(){
+			$mdDialog.cancel();
+		}
+		
+	}
+
+]);
+angular.module('FileDialogCtrl', [])
+.controller('FileDialogCtrl', ['$scope', '$rootScope', '$http', '$mdDialog', '$mdToast', 'FileSel', 
+	function($scope, $rootScope, $http, $mdDialog, $mdToast, FileSel) {
+
+		console.info('FileDialogCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.FileSel = FileSel;
+		Ctrl.inArray = Rs.inArray;
+
+		//Dialog
+		Ctrl.Cancel = function(){
+			$mdDialog.hide();
+		};
+
+	}
+]);
+angular.module('IconSelectDiagCtrl', [])
+.controller(   'IconSelectDiagCtrl', ['$scope',  '$mdDialog', '$http', '$filter',
+	function ($scope, $mdDialog, $http, $filter) {
+
+		var Ctrl = $scope;
+		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
+		Ctrl.filter = ''; Ctrl.CatSel = null;
+
+		$http.get('/api/Main/iconos').then((r) => {
+			Ctrl.Categorias = r.data.Categorias;
+			Ctrl.IconosRaw	= r.data.Iconos;
+		});
+
+		Ctrl.Iconos = [];
+
+		Ctrl.filterCat = (C) => { Ctrl.CatSel = C; Ctrl.filterIconos(); }
+
+		Ctrl.filterIconos = () => {
+			console.log(Ctrl.CatSel, Ctrl.filter);
+			if(Ctrl.CatSel == null && Ctrl.filter == ''){ Ctrl.Iconos = []; }
+			else if(Ctrl.filter !== ''){   Ctrl.Iconos = $filter('filter')(Ctrl.IconosRaw, Ctrl.filter) }
+			else if(Ctrl.CatSel !== null){ Ctrl.Iconos = $filter('filter')(Ctrl.IconosRaw, { Categoria: Ctrl.CatSel }) };
+		};
+
+		Ctrl.selectIcon = (I) => {
+			$mdDialog.hide(I.IconoFull);
+		};
+		
+	}
+
+]);
+angular.module('ImageEditor_DialogCtrl', [])
+.controller(   'ImageEditor_DialogCtrl', ['$scope', '$rootScope', '$mdDialog', '$mdToast', '$timeout', '$http', 'Upload', 'Config', 
+	function ($scope, $rootScope, $mdDialog, $mdToast, $timeout, $http, Upload, Config) {
+
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		//console.info('-> Image Editor');
+
+		Ctrl.Config = {
+			Theme : 'Snow_White',		//El tema
+			Title: 'Cambiar Imágen',	//El Titulo
+			CanvasWidth:  350,			//Ancho del canvas
+			CanvasHeight: 350,			//Alto del canvas
+			CropWidth:  100,			//Ancho del recorte que se subirá
+			CropHeight: 100,			//Alto del recorte que se subirá
+			MinWidth:  50,				//Ancho mínimo del selector
+			MinHeight: 50,				//Ancho mínimo del selector
+			KeepAspect: true,			//Mantener aspecto
+			Preview: false,				//Mostrar vista previa
+			PreviewClass: '',			//md-img-round
+			RemoveOpt: false,			//Si es texto muestra la opcion de borrar
+			Daten: null,				//La data a enviar al servidor
+			Class: '',
+			UploadUrl: '/api/Main/upload-image',
+			UploadPath: null,
+			ImageMode: null,
+			RemoveImage: false
+		};
+
+		Ctrl.RotationCanvas = document.createElement("canvas");
+
+		Ctrl.cropper = {};
+		Ctrl.cropper.sourceImage = null;
+		Ctrl.cropper.croppedImage = null;
+		Ctrl.bounds = {};
+
+		Ctrl.Progress = null;
+
+		angular.extend(Ctrl.Config, Config);
+
+		Ctrl.CancelText = Ctrl.Config.RemoveOpt ? Ctrl.Config.RemoveOpt : 'Cancelar';
+		
+		Ctrl.CancelBtn = function(){
+			if(!Ctrl.Config.RemoveOpt){
+				Ctrl.Cancel();
+			}else{
+				$http.post('/api/Upload/remove', { Path: Ctrl.Config.Daten.Path }).then(function(){
+					$mdDialog.hide({Removed: true});
+				});
+			}
+		}
+
+		Ctrl.Cancel = function(){
+			$mdDialog.hide();
+		}
+
+		Ctrl.Rotar = function(dir){
+			var canvas = Ctrl.RotationCanvas;
+			var ctx = canvas.getContext("2d");
+
+			var image = new Image();
+			image.src = Ctrl.cropper.sourceImage;
+			image.onload = function() {
+				canvas.width = image.height;
+				canvas.height = image.width;
+				ctx.rotate(dir * Math.PI / 180);
+				ctx.translate(0, -canvas.width);
+				ctx.drawImage(image, 0, 0); 
+				Ctrl.cropper.sourceImage = canvas.toDataURL();
+			};
+		}
+
+		Ctrl.$watch('Ctrl.cropper.sourceImage', function(nv, ov){
+			if(nv){
+				console.log('Imagen Cargada');
+			}
+		});
+
+		Ctrl.SendImage = function(){
+
+			var Daten = {
+				file: Upload.dataUrltoBlob(Ctrl.cropper.croppedImage),
+				Quality: 90,
+				savepath: Ctrl.Config.UploadPath,
+				imagemode: Ctrl.Config.ImageMode
+			};
+
+			angular.extend(Daten, Config.Daten);
+
+			Upload.upload({
+
+				url: Ctrl.Config.UploadUrl,
+				data: Daten,
+
+			}).then(function (res) {
+				
+				$timeout(function () {
+					$mdDialog.hide(res.data);
+				});
+
+			}, function (response) {
+				if (response.status > 0){
+					
+					var Msg = response.status + ': ' + response.data;
+					var errTxt = '<md-toast class="md-toast-error"><span flex>' + Msg + '<span></md-toast>';
+
+					$mdToast.show({
+						template: errTxt,
+						hideDelay: 5000
+					});
+
+				}
+			}, function (evt) {
+				Ctrl.Progress = parseInt(100.0 * evt.loaded / evt.total);
+			});
+
+		}
+
+		//console.log(angular.element(document.querySelector('#Canvas')));
+	}
+
+]);
+angular.module('ImportCtrl', [])
+.controller('ImportCtrl', ['$scope', '$rootScope', '$http', '$mdDialog', 'Upload', 'Config',
+	function($scope, $rootScope, $http, $mdDialog, Upload, Config) {
+
+		console.info('ImportCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		var DefConfig = {
+			Paso: 1,
+		};
+		Ctrl.Config = Config;
+
+		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
+
+		Ctrl.Pasos = [ '',
+			'Paso 1: Diligenciar la plantilla',
+			'Paso 2: Verificar datos a importar',
+			'Paso 3: Importando',
+			'Finalizado',
+			'Errores encontrados',
+			'Error al cargar el archivo'
+		];
+
+		Ctrl.Config.Paso = 1;
+
+		Ctrl.DownloadPlantilla = function(){
+			$http.get(Ctrl.Config.PlantillaUrl, { responseType: 'arraybuffer' }).then(function(r) {
+        		var blob = new Blob([r.data], { type: "application/vnd.ms-excel; charset=UTF-8" });
+		        var filename = Ctrl.Config.PlantillaUrl.split('/').pop();
+		        saveAs(blob, filename);
+        	});
+		};
+
+
+		Ctrl.UploadTemplate = function(file, invalidfile){
+			if(file) {
+	            Upload.upload({
+					url: '/api/Upload/file',
+					data: {
+						file: file,
+						Path: Ctrl.Config.Upload.Path,
+						Name: Ctrl.Config.Upload.Name,
+					}
+				}).then(function(r){
+					if(r.status == 200){
+						Ctrl.VerifyData();
+					}else{
+						Ctrl.Config.Paso = 6;
+					};
+				});
+			};
+		};
+
+		Ctrl.VerifyData = function(){
+			Ctrl.Config.Paso = 2;
+			$http.post(Ctrl.Config.VerifyUrl, { Config: Ctrl.Config }).then(function(r){
+				var Msgs = r.data;
+				console.log(Msgs);
+				if(Msgs.length == 0){
+					Ctrl.Config.Paso = 3;
+				}else{ //Hubo errores en la verificacion
+					Ctrl.Config.Paso = 5;
+					Ctrl.Errores = Msgs;
+				}
+			});
+		}
+
+		//Ctrl.VerifyData();
+
+		Ctrl.DownloadErrors = function(){
+			var Headers = [ 'Fila', 'Error' ];
+			var e = {
+        		filename: 'Errores_Importacion',
+        		ext: 'xls',
+        		sheets: [
+        			{
+						name: 'Errores',
+						headers: Headers,
+						rows: Ctrl.Errores,
+					}
+        		]
+			};
+			Rs.DownloadExcel(e);
+		};
+
+		//console.log(Ctrl.Config.PlantillaUrl);
+
+	}
+]);
+angular.module('ListSelectorCtrl', [])
+.controller('ListSelectorCtrl', ['$scope', '$rootScope', '$http', '$mdDialog', 'List', 'Config',
+	function($scope, $rootScope, $http, $mdDialog, List, Config) {
+
+		//console.info('ListSelectorCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.Config = Config;
+		Ctrl.Searching = false;
+
+		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
+
+		Ctrl.getData = function(){
+			Ctrl.Searching = true;
+			//Traer los datos del servidor
+			$http({
+				method: Ctrl.Config.remoteMethod,
+				url: Ctrl.Config.remoteUrl,
+				data: Ctrl.Config.remoteData,
+			}).then(function(r){
+				Ctrl.Searching = false;
+				Ctrl.List = r.data;
+			}, function(){
+				Ctrl.Searching = false;
+			});
+		};
+
+		//Si pasan la lista usarla
+		if(List !== null){
+			Ctrl.List = List;
+		}else if(Ctrl.Config.remoteUrl){
+			Ctrl.getData();
+		};
+
+		Ctrl.changeSearch = function(){
+
+			if(Ctrl.Config.remoteQuery){
+				if(Ctrl.Searching) return false;
+				Ctrl.Config.remoteData.filter = Ctrl.Search;
+				Ctrl.getData();
+			}else{
+				Ctrl.SearchFilter = Ctrl.Search;
+			}
+		}
+
+		Ctrl.Resp = function(Row){
+			$mdDialog.hide(Row);
+		}
+
+
+	}
+]);
+angular.module('RetroalimentarDiagCtrl', [])
+.controller(   'RetroalimentarDiagCtrl', ['$scope', '$rootScope', '$mdDialog', 'Subject',
+	function ($scope, $rootScope, $mdDialog, Subject) {
+
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.Stage = 'Writting';
+		
+
+		Ctrl.Cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		Ctrl.feedbackComment = '';
+		Ctrl.Subject = Subject;
+
+		Ctrl.enviarFeedback = () => {
+
+			if(Ctrl.feedbackComment.trim() == '') return Rs.showToast('Por favor incluya un comentario', 'Error');
+
+			Ctrl.Stage = 'Sending';
+
+			Rs.http('api/Main/feedback', { Subject: Ctrl.Subject, feedbackComment: Ctrl.feedbackComment, usuario_id: Rs.Usuario.id }).then(() => {
+				Ctrl.Stage = 'Sent';
+			});
+
+		}
+	}
+
+]);
+angular.module('TableDialogCtrl', [])
+.controller('TableDialogCtrl', ['$scope', '$rootScope', '$mdDialog', 'Elements', 'Config',
+	function($scope, $rootScope, $mdDialog, Elements, Config) {
+
+		//console.info('TableDialogCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.Config = Config;
+		Ctrl.Searching = false;
+		Ctrl.Elements = Elements;
+
+		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
+
+		Ctrl.getProp = (Obj, Prop) => {
+			return Prop.split('.').reduce(function(a, b) {
+				return a[b];
+			}, Obj);
+		}
+
+		Ctrl.Resp = function(){
+
+			if(Config.pluck){
+				var Sel = Ctrl.Config.selected.map( e => e[Config.primaryId] );
+			}else{
+				var Sel = Ctrl.Config.selected;
+			}
+
+			$mdDialog.hide(Sel);
+		}
+
+
+	}
+]);
+angular.module('FuncionesCtrl', [])
+.controller('FuncionesCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('FuncionesCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.FuncionSel = null;
+		Ctrl.FuncionesNav = true;
+		Rs.mainTheme = 'Snow_White';
+		
+	}
+]);
 angular.module('IndicadoresCtrl', [])
 .controller('IndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$mdDialog', '$http',
 	function($scope, $rootScope, $injector, $filter, $mdDialog, $http) {
@@ -3428,19 +3670,6 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 	}
 ]);
 
-angular.module('FuncionesCtrl', [])
-.controller('FuncionesCtrl', ['$scope', '$rootScope', '$injector', '$filter',
-	function($scope, $rootScope, $injector, $filter) {
-
-		console.info('FuncionesCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.FuncionSel = null;
-		Ctrl.FuncionesNav = true;
-		Rs.mainTheme = 'Snow_White';
-		
-	}
-]);
 angular.module('IngresarDatosCtrl', [])
 .controller('IngresarDatosCtrl', ['$scope', '$rootScope', '$injector', '$filter',
 	function($scope, $rootScope, $injector, $filter) {
@@ -3551,6 +3780,42 @@ angular.module('IngresarDatosCtrl', [])
 			});
 		};
 
+	}
+]);
+angular.module('Integraciones_RUAFCtrl', [])
+.controller('Integraciones_RUAFCtrl', ['$scope', '$rootScope', '$http', 'Upload', 
+	function($scope, $rootScope, $http, Upload) {
+
+		console.info('Integraciones_RUAFCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.Status = 'Iddle';
+		//Ctrl.Status = 'Error';
+		//Ctrl.EndedMsg = "445 Variables identificadas \n 0 Variables cargadas";
+
+		Ctrl.uploadFile = (file) => {
+			if(!file) return false;
+
+			Ctrl.Status = 'Uploading';
+
+			Upload.upload({
+	            url: '/api/Integraciones/ruaf',
+	            data: {file: file}
+	        }).then((r) => {
+	        	Ctrl.EndedMsg = r.data.regs + " Registros Cargados";
+	        	Ctrl.Status = 'Ended';
+	        }).catch((r) => {
+	        	Ctrl.EndedMsg = 'Se presentó un error, por favor intente más tarde \n o notifique al área encargada.';
+	        	Ctrl.Status = 'Error';
+	        });
+		}
+
+		Ctrl.ReloadStatus = () => {
+			Ctrl.Status = 'Iddle';
+			Ctrl.EndedMsg = null;
+		}
+		
 	}
 ]);
 angular.module('Integraciones_SolgeinCtrl', [])
@@ -3705,6 +3970,55 @@ angular.module('MiProcesoCtrl', [])
 		var first_proceso = {id:50};
 		if(first_proceso) Ctrl.getProceso(first_proceso.id);
 		
+		
+	}
+]);
+angular.module('MisIndicadoresCtrl', [])
+.controller('MisIndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('MisIndicadoresCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Rs.mainTheme = 'Black';
+
+		Ctrl.ProcesoSel = false;
+		Ctrl.Anio  = angular.copy(Rs.AnioActual);
+		Ctrl.Mes   = angular.copy(Rs.MesActual);
+		Ctrl.filterIndicadoresText = '';
+		Ctrl.Loading = true;
+
+		var Indicadores = [];
+		Ctrl.anioAdd = (num) => {Ctrl.Anio = Ctrl.Anio + num; Ctrl.getIndicadores(); };
+
+		Ctrl.getIndicadores = () => {
+			Ctrl.Loading = true;
+			Ctrl.hasEdited = false;
+			Rs.http('api/Indicadores/get-usuario', { Usuario: Rs.Usuario, Anio: Ctrl.Anio }).then((r) => {
+				Indicadores = r;
+				Ctrl.filterIndicadores();
+			});
+		};
+
+		Ctrl.getIndicadores();
+
+		Ctrl.filteredIndicadores = [];
+		Ctrl.filterIndicadores = () => {
+			var Vars = angular.copy(Indicadores);
+			
+			if(Ctrl.ProcesoSel){ 
+				Vars = $filter('filter')(Vars, { proceso_id: Ctrl.ProcesoSel }, true);
+			}
+
+			if(Ctrl.filterIndicadoresText.trim() !== ''){
+				Vars = $filter('filter')(Vars, Ctrl.filterIndicadoresText);
+			}
+
+			Ctrl.filteredIndicadores = Vars;
+			Ctrl.Loading = false;
+		}
+
+
 		
 	}
 ]);
@@ -3867,55 +4181,6 @@ angular.module('ProcesosCtrl', [])
 			Ctrl.IndicadoresCRUD.setScope('proceso',  Ctrl.ProcesoSel.id).get();
 		}
 
-	}
-]);
-angular.module('MisIndicadoresCtrl', [])
-.controller('MisIndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter',
-	function($scope, $rootScope, $injector, $filter) {
-
-		console.info('MisIndicadoresCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Rs.mainTheme = 'Black';
-
-		Ctrl.ProcesoSel = false;
-		Ctrl.Anio  = angular.copy(Rs.AnioActual);
-		Ctrl.Mes   = angular.copy(Rs.MesActual);
-		Ctrl.filterIndicadoresText = '';
-		Ctrl.Loading = true;
-
-		var Indicadores = [];
-		Ctrl.anioAdd = (num) => {Ctrl.Anio = Ctrl.Anio + num; Ctrl.getIndicadores(); };
-
-		Ctrl.getIndicadores = () => {
-			Ctrl.Loading = true;
-			Ctrl.hasEdited = false;
-			Rs.http('api/Indicadores/get-usuario', { Usuario: Rs.Usuario, Anio: Ctrl.Anio }).then((r) => {
-				Indicadores = r;
-				Ctrl.filterIndicadores();
-			});
-		};
-
-		Ctrl.getIndicadores();
-
-		Ctrl.filteredIndicadores = [];
-		Ctrl.filterIndicadores = () => {
-			var Vars = angular.copy(Indicadores);
-			
-			if(Ctrl.ProcesoSel){ 
-				Vars = $filter('filter')(Vars, { proceso_id: Ctrl.ProcesoSel }, true);
-			}
-
-			if(Ctrl.filterIndicadoresText.trim() !== ''){
-				Vars = $filter('filter')(Vars, Ctrl.filterIndicadoresText);
-			}
-
-			Ctrl.filteredIndicadores = Vars;
-			Ctrl.Loading = false;
-		}
-
-
-		
 	}
 ]);
 angular.module('ScorecardsCtrl', [])
@@ -5519,6 +5784,7 @@ angular.module('SARA', [
 	'as.sortable',
 	'ngCsv',
 	'angular-img-cropper',
+	'ui.ace',
 
 	'scorecardNodo',
 
@@ -5601,6 +5867,10 @@ angular.module('SARA', [
 
 	'Integraciones_SOMACtrl',
 	'Integraciones_SolgeinCtrl',
+	'Integraciones_RUAFCtrl',
+
+	'BotsCtrl',
+		'Bot_LogsCtrl'
 ]);
 
 angular.module('appConfig', [])

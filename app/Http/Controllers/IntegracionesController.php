@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use App\Functions\ConnHelper;
 use App\Functions\Helper;
 use App\Http\Controllers\Integraciones\SOMA;
+use App\Http\Controllers\Integraciones\RUAF;
 
 class IntegracionesController extends Controller
 {
@@ -22,6 +23,11 @@ class IntegracionesController extends Controller
     public function postSomaSend()
     {
         return SOMA::send();
+    }
+
+     public function postRuaf()
+    {
+        return RUAF::upload();
     }
 
 

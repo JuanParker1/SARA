@@ -15,6 +15,7 @@ angular.module('SARA', [
 	'as.sortable',
 	'ngCsv',
 	'angular-img-cropper',
+	'ui.ace',
 
 	'scorecardNodo',
 
@@ -97,4 +98,8 @@ angular.module('SARA', [
 
 	'Integraciones_SOMACtrl',
 	'Integraciones_SolgeinCtrl',
+	'Integraciones_RUAFCtrl',
+
+	'BotsCtrl',
+		'Bot_LogsCtrl'
 ]);

@@ -6,6 +6,12 @@ use DB;
 
 class ConnHelper
 {
+	public static function getBDDConn($id)
+	{
+		$BDD = \App\Models\BDD::where('id', $id)->first();
+		return self::getConn($BDD);
+	}
+
 	public static function getConn($BDD)
 	{
 		$conection_name = 'database.connections.db_'.$BDD->id;

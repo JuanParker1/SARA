@@ -36,6 +36,7 @@ Route::controller('/api/Scorecards',   	'ScorecardsController');
 Route::controller('/api/Procesos',   	'ProcesosController');
 Route::controller('/api/ConsultasSQL',  'ConsultasSQLController');
 Route::controller('/api/Integraciones', 'IntegracionesController');
+Route::controller('/api/Bots', 			'BotsController');
 
 
 

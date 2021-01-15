@@ -111,6 +111,7 @@ class ScorecardsController extends Controller
         extract(request()->all()); //$id, $Anio, $filters
         set_time_limit(10*60);
         ini_set('memory_limit','2G');
+
         $Periodos = Helper::getPeriodos(($Anio*100)+01,($Anio*100)+12);
         $Sco = Scorecard::where('id', $id)->first();
         $ScoN = new ScorecardNodo();
@@ -145,8 +146,8 @@ class ScorecardsController extends Controller
         $Nodo->calculate($Periodos, $NodoValores);
         if($filters AND $filters['cumplimiento']){
             $Nodo->filterCumplimientos($filters);
-            $Nodo->recountSubnodos();
         }
+        $Nodo->recountSubnodos();
         $Nodo->purgeNodos();
         $Nodo->calculateNodos($Periodos);
         $Nodo->reorder($filters);

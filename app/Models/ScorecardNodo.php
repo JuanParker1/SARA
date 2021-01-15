@@ -195,7 +195,7 @@ class ScorecardNodo extends MyModel
 
 
 		//dd($NodosValores);
-		$Nodos->transform(function($N) use ($NodosValores, &$DeleteNV){
+		$Nodos->transform(function($N) use ($NodosValores){
 			if($NodosValores->has($N->id)){
 				$NodoValores = $NodosValores[$N->id];
 
@@ -217,7 +217,7 @@ class ScorecardNodo extends MyModel
 			$nodo->calculate($Periodos, $NodoValores);	
 		}
 		
-		$this->puntos_totales = $this->nodos->sum('peso');
+		//$this->puntos_totales = $this->nodos->sum('peso');
 		$Anio = round($Periodos[0]/100);
 
 		if($this->tipo == 'Indicador' AND $this->elemento AND !$this->valores){
@@ -239,6 +239,7 @@ class ScorecardNodo extends MyModel
 			]);
 		}
 
+		/*
 		if($this->tipo == 'Nodo'){ //Conteo de Variables e Indicadores
 			foreach ($this->nodos as $subnodo) {
 				if($subnodo->tipo == 'Indicador'){
@@ -256,7 +257,7 @@ class ScorecardNodo extends MyModel
 
 				}
 			}
-		}
+		}*/
 		
 	}
 
@@ -324,6 +325,8 @@ class ScorecardNodo extends MyModel
 		}
 
 		if($this->tipo == 'Nodo'){
+
+			$this->puntos_totales = $this->nodos->sum('peso');
 			$calc = array_fill_keys($Periodos, [ 'puntos' => 0, 'incalculables' => 0 ]);
 
 			foreach ($this->nodos as $subnodo) {

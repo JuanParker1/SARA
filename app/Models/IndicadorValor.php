@@ -11,11 +11,7 @@ class IndicadorValor extends MyModel
 	protected $hidden = [];
 	protected $primaryKey = 'id';
     protected $casts = [
-    	'calculable' => 'boolean',
-    	'Valor' => 'float',
-    	'meta_Valor' => 'float',
-    	'meta2_Valor' => 'float',
-    	'comp' => 'array'
+        'valores' => 'array'
     ];
     protected $appends = [];
 
@@ -23,5 +19,10 @@ class IndicadorValor extends MyModel
     public function scopeIndicador($q, $indicador_id)
     {
         return $q->where('indicador_id', $indicador_id);
+    }
+
+    public function scopeAnio($q, $anio)
+    {
+        return $q->where('Anio', $anio);
     }
 }
