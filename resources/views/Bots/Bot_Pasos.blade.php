@@ -1,5 +1,10 @@
-<md-card class="bg-theme margin-but-bottom" layout=column ng-repeat="P in PasosCRUD.rows | orderBy:'Indice' ">
-	<div layout class="h40" layout-align="center center">
+<md-card class="bg-theme margin-but-bottom " layout=column ng-repeat="P in PasosCRUD.rows | orderBy:'Indice' ">
+	<div layout class="h40 padding-left-5" layout-align="center center">
+
+		<md-button class="md-icon-button no-margin drag-handle no-padding s30" aria-label="b" ass-sortable-item-handle>
+			<md-icon md-svg-icon="md-drag-handle"></md-icon>
+		</md-button>
+
 		<md-button ng-click="P.config.open = !P.config.open" class="md-icon-button no-margin" aria-label="m">
 			<md-icon md-font-icon="fa-chevron-right fa-fw transition" ng-class="{ 'fa-rotate-90': P.config.open }"></md-icon>
 		</md-button>
