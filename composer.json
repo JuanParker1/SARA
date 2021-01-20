@@ -11,7 +11,7 @@
         "intervention/image": "^2.3",
         "maatwebsite/excel": "~2.0",
         "tck/odbc": "dev-master",
-        "phpoffice/phpspreadsheet": "^1.12"
+        "phpoffice/phpspreadsheet": "^1.16"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
