@@ -79,6 +79,7 @@ angular.module('SARA', [
 	'IndicadoresCtrl',
 		'Indicadores_AddDiagCtrl',
 		'Indicadores_IndicadorDiagCtrl',
+		//'Indicadores_IndicadorDiag_ValorMenuCtrl',
 
 	'ScorecardsCtrl',
 		'Scorecards_NodoSelectorCtrl',
@@ -99,6 +100,8 @@ angular.module('SARA', [
 	'Integraciones_SOMACtrl',
 	'Integraciones_SolgeinCtrl',
 	'Integraciones_RUAFCtrl',
+	'Integraciones_EnterpriseCtrl',
+	'Integraciones_IkonoCtrl',
 
 	'BotsCtrl',
 		'Bot_LogsCtrl'

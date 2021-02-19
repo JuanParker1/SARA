@@ -42,7 +42,7 @@ class ProcesosController extends Controller
 
     public function postGetProceso()
     {
-        extract(request()->all()); //proceso_id
+        extract(request()->all()); //proceso_id, $Anio
 
         $Proceso = Proceso::where('id', $proceso_id)
             ->with([
@@ -59,9 +59,10 @@ class ProcesosController extends Controller
         $subprocesos_ids = collect($Subprocesos)->pluck('id');
 
         $Proceso->subprocesos_all = $Subprocesos;
-        $IndicadoresSup = \App\Models\Indicador::whereIn('proceso_id', $subprocesos_ids)->orderBy('Ruta', 'Indicador')->get();
 
-        $Proceso->indicadores_subprocesos = $IndicadoresSup;
+        Helper::loadIndicadoresValores($Proceso->indicadores, $Anio);
+        //$IndicadoresSup = \App\Models\Indicador::whereIn('proceso_id', $subprocesos_ids)->orderBy('Ruta', 'Indicador')->get();
+        //$Proceso->indicadores_subprocesos = $IndicadoresSup;
 
         return $Proceso;
     }

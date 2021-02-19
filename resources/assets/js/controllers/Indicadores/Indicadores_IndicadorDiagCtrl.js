@@ -1,12 +1,12 @@
 angular.module('Indicadores_IndicadorDiagCtrl', [])
-.controller('Indicadores_IndicadorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'indicador_id', '$timeout', '$injector',
-	function($scope, $rootScope, $mdDialog, $filter, indicador_id, $timeout, $injector) {
+.controller('Indicadores_IndicadorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'indicador_id', '$timeout', '$injector', '$mdPanel',
+	function($scope, $rootScope, $mdDialog, $filter, indicador_id, $timeout, $injector, $mdPanel) {
 
 		console.info('Indicadores_IndicadorDiagCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 
-		Ctrl.Cancel = () => { $mdDialog.cancel(); }
+		Ctrl.Cancel = () => { d3.selectAll('.nvtooltip').style('opacity', 0); $mdDialog.cancel(); }
 
         Ctrl.SidenavIcons = [
             ['fa-comment',      'Mejoramiento',     false],
@@ -32,7 +32,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 
 		Ctrl.getIndicadores = () => {
 
-			Rs.http('api/Indicadores/get', { id: indicador_id, Anio: Ctrl.Anio }, Ctrl, 'Ind').then(() => {
+			Rs.http('api/Indicadores/get', { id: indicador_id, Anio: Ctrl.Anio, modoComparativo: Ctrl.modoComparativo }, Ctrl, 'Ind').then(() => {
 
 				angular.forEach(Ctrl.Ind.valores, (m,k) => {
 					var i = parseInt(m.mes);
@@ -218,6 +218,17 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
            
             Rs.http('api/Indicadores/get-desagregacion', { Indicador: Ctrl.Ind, Anio: Ctrl.Anio, desag_campos: Ctrl.Ind.desagregados }, Ctrl, 'Desagregacion');
         };
+
+
+
+        //Menu Valores
+        Ctrl.openMenuValores = (ev, Comp, M) => {
+            if(Comp.Tipo == 'Indicador') return Rs.viewIndicadorDiag(Comp.variable_id);
+            var Val = Comp.valores[Ctrl.Anio+M[0]];
+            Rs.viewVariableMenu(ev, Comp.variable, Ctrl.Anio+M[0], Val, Ctrl.getIndicadores);
+        }
+
+
 
 	}
 ]);

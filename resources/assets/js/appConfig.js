@@ -90,9 +90,8 @@ angular.module('appConfig', [])
 		$mdDateLocaleProvider.shortDays = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'];
 
 		$mdDateLocaleProvider.parseDate = function(dateString) {
-
+			//console.log('Parsing Date...', dateString);
 			var m = moment(dateString);
-			//console.log('Parsing Date...', dateString, '-->', m.toDate());
 			return m.isValid() ? m.toDate() : new Date(NaN);
 		};
 

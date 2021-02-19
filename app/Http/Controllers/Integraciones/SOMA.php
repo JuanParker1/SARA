@@ -30,7 +30,7 @@ class SOMA {
 
                 if(in_array($C, ['DIAG_PPAL', 'DIAG_REL'])){
                 	if(!$Valor){ $Valor = 'Z000'; }
-                	if(in_array($Valor, ['0885','1941','1332','2135','0555','2105','0582'])){ $Valor = 'Z001'; } 
+                	if(in_array($Valor, ['0885','1941','1332','2135','0555','2105','0582','1447'])){ $Valor = 'Z001'; } 
                 }
 
         	}

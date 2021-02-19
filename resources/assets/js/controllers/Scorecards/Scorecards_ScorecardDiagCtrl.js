@@ -55,6 +55,10 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 		//Periodo
         Ctrl.PeriodoDate = moment(((Rs.AnioActual*100)+Rs.MesActual), 'YYYYMM').toDate();
         Ctrl.MaxDate = moment().add(1, 'year').endOf("year").toDate();
+        Ctrl.parsePeriodo = function(dateString) {
+			var m = moment(dateString, 'MMM YYYY');
+			return m.isValid() ? m.toDate() : new Date(NaN);
+		};
         Ctrl.formatPeriodo = (date) => {
         	var m = moment(date);
       		return m.isValid() ? m.format('MMM YYYY') : '';

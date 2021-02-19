@@ -148,7 +148,7 @@ class VariablesController extends Controller
         $ids = [];
         foreach ($Variables as $V) {
             foreach ($V['newValores'] as $Periodo => $nv) {
-                if(!$overwriteValues AND isset($V['valores'][$Periodo])){
+                if(!$overwriteValues AND isset($V['valores'][$Periodo]['val'])){
                     if($V['valores'][$Periodo]['Valor'] == $nv['Valor']) continue;
                 };
                 VariableValor::updateOrCreate([ 'variable_id' => $V['id'], 'Periodo' => $Periodo ],[ 'Valor' => $nv['Valor'] ]);
@@ -160,6 +160,9 @@ class VariablesController extends Controller
         foreach ($Variables as $V) {
             $V->valores = $V->getVals();
         }
+
+        H::touchIndicadores(); 
+
         return $Variables;
     }
 

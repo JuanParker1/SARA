@@ -170,6 +170,20 @@ class Helper
         if( $Modo == 'porc' ) return $porc;
 
     }
+
+    public static function loadIndicadoresValores($Indicadores, $Anio)
+    {
+        $inds_id = $Indicadores->pluck('id');
+        $IndicadoresValores = \App\Models\IndicadorValor::anio($Anio)->whereIn('indicador_id', $inds_id)->get()->keyBy('indicador_id');
+
+        foreach ($Indicadores as $Ind) {
+            if($IndicadoresValores->has($Ind->id)){
+                $Ind->valores = $IndicadoresValores[$Ind->id]['valores'];
+            }
+        }
+
+        //dd($IndicadoresValores);
+    }
     
     
     public static function getUsuario()

@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Functions\CRUD;
 use App\Models\Indicador;
 use App\Models\IndicadorVariable;
+use App\Models\IndicadorValor;
 use App\Models\Variable;
 use App\Models\VariableValor;
 use App\Models\Scorecard;
@@ -140,10 +141,10 @@ class ScorecardsController extends Controller
 
         
         $NodosFlat = [];
-        $NodoValores = collect([]);
+        $IndicadorValores = collect([]);
         
         $Nodo->getChildren(true, $Nodos);
-        $Nodo->calculate($Periodos, $NodoValores);
+        $Nodo->calculate($Periodos, $IndicadorValores);
         if($filters AND $filters['cumplimiento']){
             $Nodo->filterCumplimientos($filters);
         }
@@ -152,12 +153,12 @@ class ScorecardsController extends Controller
         $Nodo->calculateNodos($Periodos);
         $Nodo->reorder($filters);
 
-        if(count($NodoValores) > 0){
-            $nodos_ids = $NodoValores->pluck('nodo_id');
-            ScorecardNodoValores::whereIn('nodo_id', $nodos_ids)->where('Anio', $Anio)->delete();
-            ScorecardNodoValores::insert($NodoValores->toArray());
+        if(count($IndicadorValores) > 0){
+            $indicadores_ids = $IndicadorValores->pluck('indicador_id');
+            IndicadorValor::whereIn('indicador_id', $indicadores_ids)->where('Anio', $Anio)->delete();
+            IndicadorValor::insert($IndicadorValores->toArray());
         }
-
+        
         $Nodo->flatten($NodosFlat, 0, $Sco->config['open_to_level']);
 
 
@@ -206,7 +207,7 @@ class ScorecardsController extends Controller
     public function postEraseCache()
     {
         extract(request()->all()); //$Inds
-        $nodos_ids = collect($Inds)->pluck('id');
-        $NodosValores =  \App\Models\ScorecardNodoValores::whereIn('nodo_id', $nodos_ids)->delete();
+        $inds_ids = collect($Inds)->filter(function($N){ return $N['tipo'] == 'Indicador'; })->map(function($N){ return $N['elemento']['id']; });
+        \App\Models\IndicadorValor::whereIn('indicador_id', $inds_ids)->delete();
     }
 }

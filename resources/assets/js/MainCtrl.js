@@ -51,6 +51,18 @@ angular.module('MainCtrl', [])
 			});
 		};
 
+
+		Rs.agregators = [
+			{ id: 'count', 			Nombre: 'Contar' },
+			{ id: 'countdistinct',  Nombre: 'Contar Distintos' },
+			{ id: 'sum',  			Nombre: 'Suma' },
+			{ id: 'avg',  			Nombre: 'Promedio' },
+			{ id: 'min',  			Nombre: 'Mínimo' },
+			{ id: 'max',  			Nombre: 'Máximo' },
+		];
+
+
+
 		if (window.self != window.top) {
 			$(document.body).addClass("in-iframe");
 		}

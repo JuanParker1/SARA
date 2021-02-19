@@ -1,6 +1,6 @@
-<div class="w30" style="padding-top: 1px; border-right: 1px solid #3c3c3c;">
+<div class="w40" style="padding-top: 1px; border-right: 1px solid #3c3c3c;">
 	<div ng-repeat="S in SidenavIcons" layout layout-align="center center" 
-		class="s30 Pointer relative" ng-class="{ 'text-clear': sidenavSel != S[1] }"
+		class="s40 Pointer relative" ng-class="{ 'text-clear': sidenavSel != S[1] }"
 		ng-click="openSidenavElm(S)">
 		<md-icon md-font-icon="{{ S[0] }} fa-fw"></md-icon>
 		<md-tooltip md-direction="right" md-delay="500">{{ S[1] }}</md-tooltip>
@@ -14,12 +14,17 @@
 	<div flex layout=column class="w250" ng-show="sidenavSel == 'Filtros'">
 		<div flex layout=column class="overflow-y hasScroll">
 			
-			<div class="h30 lh30 padding-left text-clear ng-binding margin-bottom-5"><md-icon md-font-icon="fa-filter"></md-icon>Filtros</div>
+			<div class="h40 lh40 padding-left text-clear ng-binding margin-bottom" layout layout-align="center center">
+				<md-icon md-font-icon="fa-filter"></md-icon><div flex>Filtros</div>
+				<md-button class="md-icon-button no-margin" aria-label="Button" ng-click="sidenavSel = ''">
+					<md-icon md-svg-icon="md-close" class=""></md-icon>
+				</md-button>
+			</div>
 
 			<div class="md-subheader padding-0-10">Periodo de Análisis</div>
 			<div layout>
 				<md-datepicker ng-model="PeriodoDate" md-mode="month" class="periodoDatepicker" md-max-date="MaxDate"
-					md-date-locale="{ formatDate: formatPeriodo }" ng-change="getPeriodoParts()"></md-datepicker>
+					md-date-locale="{ formatDate: formatPeriodo, parseDate: parsePeriodo }" ng-change="getPeriodoParts()"></md-datepicker>
 			</div>
 
 			<div layout class="h30 lh30 md-subheader padding-0-10">
@@ -60,7 +65,7 @@
 			</div>
 
 		</div>
-		<md-button class="" ng-click="clearCache()"  ng-show="Usuario.id == 183">Borrar Cache</md-button>
+		<md-button class="no-margin-bottom" ng-click="clearCache()"  ng-show="Usuario.id == 183">Borrar Cache</md-button>
 		<md-button class="md-raised bg-ocean" ng-click="getScorecard(Sco.id, {})">
 			<md-icon md-font-icon="fa-filter text-white margin-right"></md-icon>Filtrar
 		</md-button>

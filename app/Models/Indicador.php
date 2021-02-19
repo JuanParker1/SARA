@@ -80,13 +80,16 @@ class Indicador extends MyModel
 			$desagregados = [];
 			
 			foreach ($this->variables as $V) {
-				foreach ($V->variable->getDesagregables() as $campo) {
-					if(in_array($campo['id'], [])){ //TODO poner desagregaciones posibles
-						$desagregados[$campo['id']] = $campo;
-					}else{
-						$desagregables[$campo['id']] = $campo;
-					};
+				if($V->variable){
+					foreach ($V->variable->getDesagregables() as $campo) {
+						if(in_array($campo['id'], [])){ //TODO poner desagregaciones posibles
+							$desagregados[$campo['id']] = $campo;
+						}else{
+							$desagregables[$campo['id']] = $campo;
+						};
+					}
 				}
+				
 			}
 			$this->desagregables = collect($desagregables)->values();
 			$this->desagregados  = collect($desagregados)->values();
@@ -99,8 +102,12 @@ class Indicador extends MyModel
 		foreach ($this->variables as $c) {
 			if($c->Tipo == 'Variable'){
 				$Var = Variable::where('id',$c->variable_id)->first();
+
+				if(!$Var) dd($this);
+
 				$c->valores = collect($Var->getVals(false));
 				$c->variable_name = $Var->Variable;
+
 			}else if($c->Tipo == 'Indicador'){
 				$Ind = self::where('id',$c->variable_id)->first();
 				$c->valores = collect($Ind->calcVals($Anio,$mesIni,$mesFin));

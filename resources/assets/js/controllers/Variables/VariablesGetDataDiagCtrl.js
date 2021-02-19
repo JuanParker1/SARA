@@ -13,10 +13,10 @@ angular.module('VariablesGetDataDiagCtrl', [])
 		Ctrl.Anio  = angular.copy(Rs.AnioActual);
 		Ctrl.PeriodoIni = moment().subtract(1, 'months').toDate();
 		Ctrl.PeriodoFin = moment().subtract(1, 'months').toDate();
-		Ctrl.Anios = [3,2,1,0].map((n) => { return Ctrl.Anio-n});
+		Ctrl.Anios = [3,2,1,0,-1].map((n) => { return Ctrl.Anio-n});
 
 		
-		Ctrl.overwriteValues = false;
+		Ctrl.overwriteValues = true;
 
 		Ctrl.periodDateLocale = Rs.periodDateLocale;
 		Ctrl.TipoVar = Tipo || 'Calculado de Entidad';

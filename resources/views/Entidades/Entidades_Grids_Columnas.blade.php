@@ -13,12 +13,16 @@
 							<md-icon md-font-icon="fa-grip-lines" class="s30"></md-icon>
 						</md-button>
 					</td>
-					<td md-cell class=""><div layout layout-align="start center" class="text-13px">
+					<td md-cell class="">
+						<div layout layout-align="start center" class="text-13px">
 						<div class="text-clear" ng-repeat="E in Co.Ruta track by $index">
 							<span class="">{{ getEntidad(E).Nombre  }}</span><md-icon md-font-icon="fa-chevron-right" class="s20 fa-fw text-12px"></md-icon>
 						</div>
-						<div><md-icon md-svg-icon="{{ TiposCampo[Co.campo.Tipo].Icon }}" class="s20 margin-right-5"></md-icon>{{ Co.Cabecera || Co.campo.Alias || Co.campo.Columna }}</div>
-					</div></td>
+						<div flex layout>
+							<md-icon md-svg-icon="{{ TiposCampo[Co.campo.Tipo].Icon }}" class="s20 margin-right-5"></md-icon>
+							<div flex md-truncate>{{ Co.Cabecera || Co.campo.Alias || Co.campo.Columna }}</div>
+						</div>
+					</td>
 					<td md-cell class="md-cell-compress">
 						
 						<md-button class="md-icon-button s20 focus-on-hover" aria-label="b" ng-click="editColumna(Co)">

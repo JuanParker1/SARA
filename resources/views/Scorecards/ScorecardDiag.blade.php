@@ -4,7 +4,7 @@
 
 	<div flex layout=column>
 
-		<div layout class="h30 padding-top-5" layout-align="start center">
+		<div layout class="h40 border-bottom" layout-align="start center">
 
 			<div flex layout>
 				<div class="text-16px margin-0-10" md-truncate>{{ Sco.Titulo }}</div>

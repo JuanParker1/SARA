@@ -1,6 +1,6 @@
 angular.module('appFunctions', [])
-.factory('appFunctions', [ '$rootScope', '$http', '$mdDialog', '$mdSidenav', '$mdToast', '$q', '$state', '$location', '$filter', '$window',
-	function($rootScope, $http, $mdDialog, $mdSidenav, $mdToast, $q, $state, $location, $filter, $window){
+.factory('appFunctions', [ '$rootScope', '$http', '$mdDialog', '$mdSidenav', '$mdToast', '$q', '$state', '$location', '$filter', '$window', '$mdPanel', 
+	function($rootScope, $http, $mdDialog, $mdSidenav, $mdToast, $q, $state, $location, $filter, $window, $mdPanel){
 
 		var Rs = $rootScope;
 
@@ -442,7 +442,7 @@ angular.module('appFunctions', [])
 
 
 
-		Rs.AnioActual = new Date().getFullYear();
+		Rs.AnioActual = parseInt(moment().subtract(40,'d').format('YYYY'));
 		Rs.MesActual  = parseInt(moment().subtract(40,'d').format('MM'));
 		Rs.Meses = [
 			['01','Ene','Enero'],
@@ -458,6 +458,7 @@ angular.module('appFunctions', [])
 			['11','Nov','Noviembre'],
 			['12','Dic','Diciembre'],
 		];
+		Rs.PeriodoActual = (Rs.AnioActual * 100) + Rs.MesActual;
 
 		Rs.periodDateLocale = {
 			formatDate: (date) => {
@@ -517,6 +518,26 @@ angular.module('appFunctions', [])
 					scope.getScorecard(scorecard_id, {});
 				}
 			});
+		};
+
+		Rs.viewVariableMenu = (ev, Variable, Periodo, Val, Fn) => {
+			const position = $mdPanel.newPanelPosition().relativeTo(ev.target)
+            .addPanelPosition(
+                $mdPanel.xPosition.ALIGN_START,
+                $mdPanel.yPosition.ALIGN_BOTTOMS 
+            );
+
+            $mdPanel.open({
+                templateUrl: 'Frag/Indicadores.IndicadorDiag_ValorMenu',
+                controller: Indicadores_IndicadorDiag_ValorMenuCtrl, 
+                controllerAs: 'Ctrl',
+                locals: { Periodo: Periodo, Variable: Variable, Val: Val, Fn: Fn },
+                position: position,
+                clickOutsideToClose: true,
+                escapeToClose: true,
+            }).then(a => {
+                //console.log(a);
+            });
 		};
 
 		Rs.changeIcon = (elm, prop) => {

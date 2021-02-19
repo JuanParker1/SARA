@@ -27,7 +27,7 @@
 
 		<div layout layout-align="center center" class="margin-10-0" ng-show="Ind.desagregados.length > 0">
 			<div class="text-clear h30 lh30 margin-0-10">Ver:</div>
-			<md-select ng-model="viewDesagregacionVal" class="no-margin">
+			<md-select ng-model="viewDesagregacionVal" class="no-margin" aria-label=s>
 				<md-option value='All'>Todos</md-option>
 				<md-option value='IndVal'>Resultado</md-option>
 				<md-option ng-repeat="(kV, V) in Ind.variables" ng-value='{{ kV }}'>{{ V.variable_name }}</md-option>

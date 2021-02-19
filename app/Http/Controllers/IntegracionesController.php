@@ -12,6 +12,8 @@ use App\Functions\ConnHelper;
 use App\Functions\Helper;
 use App\Http\Controllers\Integraciones\SOMA;
 use App\Http\Controllers\Integraciones\RUAF;
+use App\Http\Controllers\Integraciones\Enterprise;
+use App\Http\Controllers\Integraciones\Ikono;
 
 class IntegracionesController extends Controller
 {
@@ -25,9 +27,19 @@ class IntegracionesController extends Controller
         return SOMA::send();
     }
 
-     public function postRuaf()
+    public function postRuaf()
     {
         return RUAF::upload();
+    }
+
+    public function postEnterprise()
+    {
+        return Enterprise::upload();
+    }
+
+    public function postIkono()
+    {
+        return Ikono::upload();
     }
 
 

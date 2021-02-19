@@ -23,14 +23,7 @@ angular.module('VariablesCtrl', [])
 			12: 'Anual'
 		};
 
-		Ctrl.agregators = [
-			{ id: 'count', 			Nombre: 'Contar' },
-			{ id: 'countdistinct',  Nombre: 'Contar Distintos' },
-			{ id: 'sum',  			Nombre: 'Suma' },
-			{ id: 'avg',  			Nombre: 'Promedio' },
-			{ id: 'min',  			Nombre: 'Mínimo' },
-			{ id: 'max',  			Nombre: 'Máximo' },
-		];
+		Ctrl.agregators = Rs.agregators;
 
 		Ctrl.getVariables = () => {
 

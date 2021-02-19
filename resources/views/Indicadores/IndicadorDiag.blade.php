@@ -6,14 +6,16 @@
 		
 		<div layout layout-align="center center" class="padding-left">
 			<div layout=column>
-				<div class="text-16px"><span>{{ Ind.Indicador }}</span>
-					<md-icon class="margin-left Pointer" md-font-icon="{{Sentidos[Ind.Sentido].icon}}">
+				<div class="text-16px" layout layout="center center">
+					<div>{{ Ind.Indicador }}</div>
+					<md-icon class="margin-0-10 Pointer" md-font-icon="{{Sentidos[Ind.Sentido].icon}} fa-fw">
 						<md-tooltip md-direction=right>{{ Sentidos[Ind.Sentido].desc }}</md-tooltip>
 					</md-icon>
+					<div class="text-clear" flex>{{ Ind.proceso.Proceso }}</div>
 				</div>
 				<div class="text-13px text-clear">{{ Ind.Definicion }}</div>
 			</div>
-			<div class="text-clear margin-left">{{ Ind.proceso.Proceso }}</div>
+			
 			<span flex></span>
 			<div class="Pointer padding-right" layout layout-align="center center" hide>
 				<div class="s25 bg-lightgrey border-rounded margin-right-5 border" 
@@ -43,7 +45,7 @@
 											<div class="h30 lh30">{{ Anio }}</div>
 											<md-button ng-click="anioAdd( 1)" class="no-margin s30 no-padding md-icon-button"><md-icon class="s20" md-font-icon="fa-fw fa-chevron-right"></md-icon></md-button>
 										</div>
-										<md-switch class="margin-5-0" ng-model="modoComparativo" aria-label="a" ng-change="updateChart()">Ver Comparativo</md-switch>
+										<md-switch class="margin-5-0" ng-model="modoComparativo" aria-label="a" ng-change="getIndicadores()">Ver Comparativo</md-switch>
 										<md-switch hide class="margin-5-0" ng-model="showSidenav"     aria-label="a">Ver Mejoramiento</md-switch>
 									</div>
 								</th>
@@ -62,7 +64,10 @@
 						</thead>
 						<tbody md-body class="text-14px">
 							<tr md-row class="text-16px md-row-hover">
-								<td md-cell class="w235">Resultado</td><td md-cell class="text-bold mw70" ng-repeat="V in Ind.valores" ><span ng-style="{ color: V.color }">{{ V.val }}</span></td>
+								<td md-cell class="w235">Resultado</td>
+								<td md-cell class="text-bold mw70" ng-repeat="V in Ind.valores">
+									<span ng-style="{ color: V.color }">{{ V.val }}</span>
+								</td>
 							</tr>
 							<tr md-row class="md-row-hover">
 								<td md-cell class="">Meta</td><td md-cell class="" ng-repeat="V in Ind.valores">{{ V.meta_val }}</td>
@@ -87,18 +92,19 @@
 								<td md-cell colspan=12></td>
 							</tr>
 							<tr md-row class="md-row-hover Pointer" ng-repeat="comp in Ind.variables" >
-								<td md-cell><div layout layout-align="center center">
-									<div flex class="padding-5-0"><b>{{ comp.Letra }}:</b> {{ comp.variable_name }}</div>
+								<td md-cell>
+									<div layout layout-align="center center">
+										<div flex class="padding-5-0"><b>{{ comp.Letra }}:</b> {{ comp.variable_name }}</div>
 
-									<div class="bg-black-3 border-rounded" style="padding: 0 5px" ng-show="comp.variable.Acumulada == 'Si'">Acum.<md-tooltip md-direction="right">Acumulada</md-tooltip></div>
+										<div class="bg-black-3 border-rounded" style="padding: 0 5px" ng-show="comp.variable.Acumulada == 'Si'">Acum.<md-tooltip md-direction="right">Acumulada</md-tooltip></div>
 
-									<md-button class="md-icon-button no-margin no-padding s30" aria-label="b" ng-click="viewCompDiag(comp)">
-										<md-icon md-font-icon="fa-external-link-alt fa-fw"></md-icon>
-										<md-tooltip md-direction="left">Ver {{ comp.Tipo }}</md-tooltip>
-									</md-button>
-								</div>
+										<md-button class="md-icon-button no-margin no-padding s30" aria-label="b" ng-click="viewCompDiag(comp)">
+											<md-icon md-font-icon="fa-external-link-alt fa-fw"></md-icon>
+											<md-tooltip md-direction="left">Ver {{ comp.Tipo }}</md-tooltip>
+										</md-button>
+									</div>
 								</td>
-								<td md-cell ng-repeat="M in Meses">{{ comp.valores[Anio+M[0]].val }}</td>
+								<td md-cell ng-repeat="M in Meses" ng-click="openMenuValores($event, comp, M)">{{ comp.valores[Anio+M[0]].val }}</td>
 							</tr>
 
 							<tr md-row><td md-cell colspan=13></td></tr>

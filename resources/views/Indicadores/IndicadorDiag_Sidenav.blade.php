@@ -9,7 +9,7 @@
 </div>
 
 <md-sidenav md-is-locked-open="$mdMedia('gt-md') && sidenavSel" md-is-open="sidenavSel"  
-	class="md-sidenav-right w300 text-white" layout=column>
+	class="md-sidenav-right w320 text-white" layout=column>
 
 		
 	@include('Indicadores.IndicadorDiag_Sidenav_Mejora')

@@ -6,8 +6,8 @@ angular.module('ConsultasSQLCtrl', [])
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 
-		Ctrl.FechaIni = '2020-08-01';
-		Ctrl.FechaFin = '2020-12-31';
+		Ctrl.FechaIni = '2021-01-01';
+		Ctrl.FechaFin = '2021-01-31';
 
 		Ctrl.FechaAct = angular.copy(Ctrl.FechaIni);
 

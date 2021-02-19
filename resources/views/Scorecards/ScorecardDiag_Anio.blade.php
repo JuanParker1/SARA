@@ -4,8 +4,8 @@
 		<table md-table class="md-table-short table-col-compress table-nowrap">
 			<colgroup>
 				<col span="2">
-				<col  ng-repeat="M in Meses" ng-class="{ 'bg-black-5': M[0] == Mes }">
-				<col>
+				<col  ng-repeat="M in Meses" ng-class="{ 'bg-black-5': M[0] == Mes }"><col>
+				<col></col>
 			</colgroup>
 			<thead md-head>
 				<tr md-row class="">

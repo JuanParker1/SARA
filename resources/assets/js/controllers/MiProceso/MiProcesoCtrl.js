@@ -38,21 +38,22 @@ angular.module('MiProcesoCtrl', [])
 			});
 		}
 
-		Ctrl.SubSecciones = {
-			General: ['General'],
-			Equipo:  ['Equipo'],
-			Indicadores:  ['Indicadores'],
+		Ctrl.SelectedTab = 2;
+		Ctrl.SubSecciones = [
+			['General'		,'General' ],
+			['Equipo'		,'Equipo' ],
+			['Indicadores'	,'Indicadores' ],
 			//Logros:  ['Logros'],
-			
-		};
+		];
 
 		Ctrl.goToTab = (id) => {
-			var tab_index = Object.keys(Ctrl.SubSecciones).indexOf(id);
+			var tab_index = Rs.getIndex(Ctrl.SubSecciones, id, 0);
+			//Object.keys(Ctrl.SubSecciones).indexOf(id);
 			Ctrl.SelectedTab = tab_index;
 		}
 
 		Ctrl.getProceso = (proceso_id) => {
-			Rs.http('api/Procesos/get-proceso', { proceso_id: proceso_id }, Ctrl, 'ProcesoSel').then(r => {
+			Rs.http('api/Procesos/get-proceso', { proceso_id: proceso_id, Anio: Ctrl.Anio }, Ctrl, 'ProcesoSel').then(r => {
 
 			});
 		}

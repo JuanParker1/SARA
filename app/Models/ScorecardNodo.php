@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Core\MyModel;
 use App\Functions\Helper;
+use Carbon\Carbon;
 
 class ScorecardNodo extends MyModel
 {
@@ -190,31 +191,38 @@ class ScorecardNodo extends MyModel
 
 	public function getValoresCache(&$Nodos, $Anio)
 	{
-		$nodos_ids = $Nodos->pluck('id');
-		$NodosValores = \App\Models\ScorecardNodoValores::whereIn('nodo_id', $nodos_ids)->where('Anio', $Anio)->get()->keyBy('nodo_id');
+		//return;
+		$indicadores_ids = $Nodos->filter(function($N){ return $N->tipo == 'Indicador'; })->pluck('elemento_id');
 
+		//$nodos_ids = $Nodos->pluck('id');
+		//$NodosValores = \App\Models\ScorecardNodoValores::whereIn('nodo_id', $nodos_ids)->where('Anio', $Anio)->get()->keyBy('nodo_id');
 
-		//dd($NodosValores);
-		$Nodos->transform(function($N) use ($NodosValores){
-			if($NodosValores->has($N->id)){
-				$NodoValores = $NodosValores[$N->id];
+		$IndicadorValores = \App\Models\IndicadorValor::Anio($Anio)->whereIn('indicador_id', $indicadores_ids)->get()->keyBy('indicador_id');
 
-				if($NodoValores->created_at > $N->elemento->updated_at){
-					$N->valores = $NodoValores->valores['valores'];
+		//dd($IndicadorValores->toArray());
+
+		//dd($Nodos->toArray());
+		$Nodos->transform(function($N) use ($IndicadorValores){
+			if($N->tipo == 'Indicador' && $IndicadorValores->has($N->elemento_id)){
+				
+				$NodoValores = $IndicadorValores[$N->elemento_id];
+
+				if($NodoValores->updated_at > $N->elemento->updated_at){
+					$N->valores = $NodoValores->valores;
 				}
 			}
 			return $N;
 		});
 
-		$NodosValores = null;
+		$IndicadorValores = null;
 		//if(!empty($DeleteNV)) \App\Models\ScorecardNodoValores::whereIn('id', $DeleteNV)->delete();
 
 	}
 
-	public function calculate($Periodos, &$NodoValores)
+	public function calculate($Periodos, &$IndicadorValores)
 	{
 		foreach ($this->nodos as $nodo) {
-			$nodo->calculate($Periodos, $NodoValores);	
+			$nodo->calculate($Periodos, $IndicadorValores);	
 		}
 		
 		//$this->puntos_totales = $this->nodos->sum('peso');
@@ -222,21 +230,16 @@ class ScorecardNodo extends MyModel
 
 		if($this->tipo == 'Indicador' AND $this->elemento AND !$this->valores){
 			$this->valores = $this->elemento->calcVals($Anio);
-			$NodoValores->push([
-				'nodo_id' => $this->id, 
+			$IndicadorValores->push([
+				'indicador_id' => $this->elemento_id, 
 				'Anio'    => $Anio,
-				'valores' => json_encode([ 'valores' => $this->valores ])
+				'valores' => json_encode($this->valores),
+				'updated_at' => Carbon::now()
 			]);
 		}
 
 		if($this->tipo == 'Variable'  AND $this->elemento AND !$this->valores){
 			$this->valores = $this->elemento->getVals( $Anio);
-
-			$NodoValores->push([
-				'nodo_id' => $this->id, 
-				'Anio'    => $Anio,
-				'valores' => json_encode([ 'valores' => $this->valores ])
-			]);
 		}
 
 		/*

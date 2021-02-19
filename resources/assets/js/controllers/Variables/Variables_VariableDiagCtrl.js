@@ -89,6 +89,11 @@ angular.module('Variables_VariableDiagCtrl', [])
 
         Ctrl.getVariables();
 
+        //Menu
+        Ctrl.openMenuValores = (ev, Periodo) => {
+            var Val = Ctrl.Var.valores[Periodo].Valor;
+            Rs.viewVariableMenu(ev, Ctrl.Var, Periodo, Val, Ctrl.getVariables);
+        };
 
         //Desagregacion
         Ctrl.addedDesagregado = ($chip) => {
