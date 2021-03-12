@@ -121,10 +121,7 @@ class EntidadesController extends Controller
 
     public function postGridsGet()
     {
-        return EntidadGrid::with(['entidad'])->get()->transform(function($G){
-            $G->TituloComp = $G->entidad->Nombre .' - '. $G->Titulo;
-            return $G;
-        })->sortBy('TituloComp');
+        return EntidadGrid::with(['entidad'])->get();
     }
 
 

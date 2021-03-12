@@ -52,10 +52,10 @@ angular.module('Entidades_GridsCtrl', [])
 
 		Ctrl.addColumna = (C, Ruta, Llaves) => {
 			
-			if(Llaves.length == 0){
-				Indice = Ctrl.GridColumnasCRUD.rows.length;
-			}else{
-				var Indice = Rs.getIndex( Ctrl.GridColumnasCRUD.rows, Llaves[1], 'campo_id' );
+			var Indice = Ctrl.GridColumnasCRUD.rows.length;
+
+			if(Llaves.length > 1){
+				Indice = Rs.getIndex( Ctrl.GridColumnasCRUD.rows, Llaves[1], 'campo_id' );
 			};
 
 			return Ctrl.GridColumnasCRUD.add({

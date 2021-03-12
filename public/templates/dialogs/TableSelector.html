@@ -16,7 +16,7 @@
 
 	<div flex layout=column>
 		
-		<md-table-container flex class="overflow-y" md-virtual-repeat-container>
+		<md-table-container flex class="overflow-y" mdd-virtual-repeat-container>
 			<table md-table class="md-table-short border-bottom" md-row-select multiple="{{ Config.multiple }}" ng-model="Config.selected">
 				<thead md-head md-order="Config.orderBy">
 					<tr md-row>
@@ -24,7 +24,7 @@
 					</tr>
 				</thead>
 				<tbody md-body>
-					<tr md-row md-virtual-repeat="Row in Elements | filter:filterRows | orderBy:Config.orderBy"
+					<tr md-row ng-repeat="Row in Elements | filter:filterRows | orderBy:Config.orderBy"
 						md-select="Row" md-select-id="{{ Config.primaryId }}">
 						<td md-cell class="md-cell-compress" ng-repeat="C in Config.Columns">
 							{{ getProp(Row, C.Nombre) }}

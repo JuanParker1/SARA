@@ -91,7 +91,7 @@
 								<td md-cell>Formula: {{ Ind.Formula }}</td>
 								<td md-cell colspan=12></td>
 							</tr>
-							<tr md-row class="md-row-hover Pointer" ng-repeat="comp in Ind.variables" >
+							<tr md-row class="" ng-repeat="comp in Ind.variables" >
 								<td md-cell>
 									<div layout layout-align="center center">
 										<div flex class="padding-5-0"><b>{{ comp.Letra }}:</b> {{ comp.variable_name }}</div>
@@ -104,7 +104,7 @@
 										</md-button>
 									</div>
 								</td>
-								<td md-cell ng-repeat="M in Meses" ng-click="openMenuValores($event, comp, M)">{{ comp.valores[Anio+M[0]].val }}</td>
+								<td md-cell class="cell-hoverable" ng-repeat="M in Meses" ng-click="openMenuValores($event, comp, M)">{{ comp.valores[Anio+M[0]].val }}</td>
 							</tr>
 
 							<tr md-row><td md-cell colspan=13></td></tr>
@@ -158,5 +158,15 @@
 		</div>
 
 	</div>
+
+	<style type="text/css">
+		
+		.cell-hoverable{ transition: all 0.3s; }
+
+		.cell-hoverable:hover{
+			background-color: #3c3c3c;
+		}
+
+	</style>
 
 </md-dialog>

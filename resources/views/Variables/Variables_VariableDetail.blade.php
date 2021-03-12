@@ -65,29 +65,38 @@
 		<div class="bg-white border border-radius text-14px" layout=column ng-show="VarSel.Tipo == 'Calculado de Entidad'">
 			<div class="md-subheader padding-but-bottom">Configuración de Entidad</div>
 			<div layout layout-wrap class="padding-5">
-				<md-input-container class="margin-bottom-5 md-no-float" flex=50>
+				<!--<md-input-container class="margin-bottom-5 md-no-float" flex=50>
 					<label>Entidad - Grid</label>
 					<md-select ng-model="VarSel.grid_id">
 						<md-option ng-value="Op.id" ng-repeat="Op in Grids">
 							<span class="text-clear">{{ Op.entidad.Nombre }} - </span><span class="">{{ Op.Titulo }}</span>
 						</md-option>
 					</md-select>
-				</md-input-container>
-				<md-input-container class="margin-bottom-5" flex=50 flex-gt-sm=20>
+				</md-input-container>-->
+
+				<div class="border-radius margin-5 padding-5-10 mw200 bg-lightgrey-5 border Pointer" ng-click="seleccionarEntidadGrid()">
+					<div class="text-clear" ng-show="VarSel.grid_id === null">Seleccionar Entidad - Grid</div>
+					<div class="" ng-show="VarSel.grid_id !== null" layout=column ng-repeat="G in Grids | filter:{ id:VarSel.grid_id }:true">
+						<div class="">{{ G.entidad.Nombre }}</div>
+						<div class="text-clear">{{ G.Titulo }}</div>
+					</div>
+				</div>
+
+				<md-input-container class="margin-bottom-5" flex=50 flex-gt-sm=20 ng-show="VarSel.grid_id !== null">
 					<label>Columna Periodo</label>
 					<md-select ng-model="VarSel.ColPeriodo">
-						<md-option ng-value="Op.id" ng-repeat="Op in VarSel.grid.columnas | include:['Periodo','Fecha','FechaHora']:'tipo_campo' ">
+						<md-option ng-value="Op.id" ng-repeat="Op in VarSel.grid.columnas | include:['Periodo']:'tipo_campo' ">
 							<md-icon md-svg-icon="{{ TiposCampo[Op.tipo_campo].Icon }}" class="margin-right-5 s20"></md-icon>{{ Op.column_title }}
 						</md-option>
 					</md-select>
 				</md-input-container>
-				<md-input-container class="margin-bottom-5" flex=50 flex-gt-sm=15>
+				<md-input-container class="margin-bottom-5" flex=50 flex-gt-sm=15 ng-show="VarSel.grid_id !== null">
 					<label>Agrupador</label>
 					<md-select ng-model="VarSel.Agrupador">
 						<md-option ng-value="Op.id" ng-repeat="Op in agregators">{{ Op.Nombre }}</md-option>
 					</md-select>
 				</md-input-container>
-				<md-input-container class="margin-bottom-5" flex=50 flex-gt-sm=15>
+				<md-input-container class="margin-bottom-5" flex=50 flex-gt-sm=15 ng-show="VarSel.grid_id !== null">
 					<label>Columna</label>
 					<md-select ng-model="VarSel.Col">
 						<md-option ng-value="Op.id" ng-repeat="Op in VarSel.grid.columnas">
@@ -106,7 +115,7 @@
 						<md-button class="md-icon-button no-margin no-padding s30" ng-click="removeArrayElm(VarSel.Filtros, kR)"><md-icon md-svg-icon="md-close"></md-icon></md-button>
 					</div>
 				</div>
-				<md-input-container flex=100 class="no-margin" layout>
+				<md-input-container flex=100 class="no-margin" layout ng-show="VarSel.grid_id !== null">
 					<md-select ng-model="newFiltro" placeholder="Agregar Filtro" ng-change="addFiltro()">
 					  <md-option ng-value="Op" ng-repeat="Op in VarSel.grid.columnas">
 					  		<md-icon md-svg-icon="{{ TiposCampo[Op.campo.Tipo].Icon }}" class="margin-right-5 s20"></md-icon>{{ Op.column_title }}

@@ -226,6 +226,29 @@ angular.module('VariablesCtrl', [])
 			});
 		};
 
+
+		Ctrl.seleccionarEntidadGrid = () => {
+
+			Rs.TableDialog(Ctrl.Grids, {
+				Title: 'Seleccionar Grid', Flex: 60,
+				primaryId: 'id', pluck: true,
+				Columns: [
+					{ Nombre: 'entidad.proceso.Proceso', Desc: 'Proceso', numeric: false },
+					{ Nombre: 'entidad.Nombre', Desc: 'Entidad', numeric: false },
+					{ Nombre: 'Titulo', 		Desc: 'Grid',    numeric: false }
+				],
+				selected: [], multiple: false, orderBy: 'Titulo',
+			}).then(r => {
+				if(!r) return;
+				
+				Ctrl.VarSel.grid_id = r[0];
+				Ctrl.updateVariable();
+
+			});
+
+		}
+
+
 		Ctrl.getVariables();
 	}
 ]);

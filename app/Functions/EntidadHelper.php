@@ -48,7 +48,8 @@ class EntidadHelper
         //return $Entidad;
         $res = collect($q->get())->transform(function($row){
             return  collect($row)->transform(function($D){
-                return utf8_encode(trim($D));
+                if(config('app.encode_utf8')) $D = utf8_encode($D);
+                return trim($D);
             });
         });
 

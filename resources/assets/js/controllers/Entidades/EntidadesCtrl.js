@@ -162,6 +162,21 @@ angular.module('EntidadesCtrl', [])
 		};
 
 
+		Ctrl.seleccionarEntidad = (Campo) => {
+			Rs.TableDialog(Ctrl.EntidadesCRUD.rows, {
+				Title: 'Seleccionar Entidad', Flex: 30,
+				primaryId: 'id', pluck: true,
+				Columns: [
+					{ Nombre: 'Nombre', Desc: 'Entidad', numeric: false }
+				],
+				selected: [], multiple: false,
+			}).then(r => {
+				if(!r) return;
+				Campo.Op1 = r[0];
+			});
+		}
+
+
 		//Campos
 		Ctrl.getCampos = () => {
 	

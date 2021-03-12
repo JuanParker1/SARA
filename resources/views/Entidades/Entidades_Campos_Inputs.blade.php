@@ -66,11 +66,18 @@
 		</md-input-container>
 	</div>
 
-	<div ng-if="inArray(C.Tipo, ['Entidad'])">
-		<md-select ng-model="C.Op1" aria-label="s" ng-change="markChanged(C)" class="text-bold">
+	<div ng-if="inArray(C.Tipo, ['Entidad'])" layout>
+		<!--<md-select ng-model="C.Op1" aria-label="s" ng-change="markChanged(C)" class="text-bold">
 		  <md-option ng-value="Op.id" ng-repeat="Op in EntidadesCRUD.rows | filter:{ 'bdd_id':BddSel.id }:true"
 		  	ng-if="Op.id !== EntidadSel.id">{{ Op.Nombre }}</md-option>
-		</md-select>
+		</md-select>-->
+		<md-button class="md-icon-button no-margin s30" aria-label="b" ng-click="seleccionarEntidad(C)">
+			<md-icon md-svg-icon="md-settings" class="s20"></md-icon>
+			<md-tooltip md-direction=right>Configurar Entidad</md-tooltip>
+		</md-button>
+		<div ng-click="seleccionarEntidad(C)" class="Pointer bg-lightgrey border-rounded h25 lh25 ng-binding padding-0-10" 
+			style="border: 1px solid #c5c5c5; margin: 1px 0 0 5px;"
+			ng-repeat="Op in EntidadesCRUD.rows | filter:{ 'id': C.Op1 }:true">{{ Op.Nombre }}</div>
 	</div>
 
 	<div ng-if="inArray(C.Tipo, ['Lista'])" layout>
@@ -89,7 +96,7 @@
 		</md-button>
 		<div ng-click="browseListas(C)" class="Pointer bg-lightgrey border-rounded h25 lh25 ng-binding padding-0-10" style="border: 1px solid #c5c5c5; margin: 1px 0 0 5px;"><b>{{ C.Config.indice_cod }}</b> {{ C.Config.indice_des }}</div>
 
-		<md-select ng-model="C.Op4" ng-change="markChanged(C)" class="margin-left-5">
+		<md-select ng-model="C.Op4" ng-change="markChanged(C)" class="margin-left-5" aria-label=s>
 			<md-option ng-value='null'></md-option>
 			<md-option value='AddString'>Con Otro...</md-option>
 			<md-option value='AddDate'>Con Fecha</md-option>
