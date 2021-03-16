@@ -33,6 +33,11 @@ class Scorecard extends MyModel
 		return $this->hasMany('\App\Models\ScorecardCard', 'scorecard_id')->orderBy('Indice');
 	}
 
+	public function nodos()
+	{
+		return $this->hasMany('\App\Models\ScorecardNodo', 'scorecard_id');
+	}
+
 	public function getConfigAttribute($Config)
 	{
 		$Default = [

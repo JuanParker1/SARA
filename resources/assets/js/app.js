@@ -90,6 +90,7 @@ angular.module('SARA', [
 
 	'FuncionesCtrl',
 	'ProcesosCtrl',
+		'Procesos_MapaNodosDiagCtrl',
 
 	'IngresarDatosCtrl',
 	'MisIndicadoresCtrl',

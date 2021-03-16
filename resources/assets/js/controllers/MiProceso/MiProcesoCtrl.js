@@ -7,6 +7,7 @@ angular.module('MiProcesoCtrl', [])
 		var Rs = $rootScope;
 		Rs.mainTheme = 'Snow_White';
 
+
 		Ctrl.ProcesoSel = false;
 		Ctrl.Anio  = angular.copy(Rs.AnioActual);
 		Ctrl.Mes   = angular.copy(Rs.MesActual);
@@ -38,7 +39,7 @@ angular.module('MiProcesoCtrl', [])
 			});
 		}
 
-		Ctrl.SelectedTab = 2;
+		Ctrl.SelectedTab = 0;
 		Ctrl.SubSecciones = [
 			['General'		,'General' ],
 			['Equipo'		,'Equipo' ],
@@ -61,22 +62,67 @@ angular.module('MiProcesoCtrl', [])
 
 		//Introduccion
 		Ctrl.addedIntro = false;
-		Ctrl.markIntro = () => {
-			Ctrl.addedIntro = true;
-		}
+		Ctrl.markIntro = () => { Ctrl.addedIntro = true; }
 		Ctrl.saveIntro = () => {
-			console.log('aaaa');
-			Ctrl.addedIntro = false;
+			Rs.http('api/Procesos/update', { Proceso: Ctrl.ProcesoSel  }).then(r => {
+				Ctrl.addedIntro = false;
+			});
+			
+		}
+
+		Ctrl.viewTableroDiag = (T) => {
+			//Rs.viewScorecardDiag(T.id);
+			$mdDialog.show({
+				controller: 'Scorecards_ScorecardDiagCtrl',
+				templateUrl: '/Frag/Scorecards.ScorecardDiag',
+				clickOutsideToClose: false, fullscreen: true, multiple: true,
+				onComplete: (scope, element) => {
+					scope.getScorecard(T.id, { proceso_id: Ctrl.ProcesoSel.id });
+				}
+			});
+		}
+
+
+		Ctrl.verMapaNodos = () => {
+			$mdDialog.show({
+				controller: 'Procesos_MapaNodosDiagCtrl',
+				templateUrl: '/Frag/Procesos.Procesos_MapaNodosDiag',
+				clickOutsideToClose: false, fullscreen: true, multiple: true,
+				locals: { ProcesosFS: Ctrl.ProcesosFS }
+			}).then(P => {
+				if(!P) return;
+				Ctrl.getProceso(P.id)
+			});
 		}
 
 
 
-		var first_proceso = Rs.Usuario.Procesos.find((P) => {
-			return (P.Tipo !== 'Utilitario');
+		Promise.all([
+			Rs.getProcesos(Ctrl)
+		]).then(() => {
+
+			Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos,'Ruta','Proceso',false,true);
+
+			//console.table(Ctrl.ProcesosFS);
+
+			angular.forEach(Ctrl.ProcesosFS, (P) => {
+				if(P.type == 'folder'){
+					P.file = Ctrl.Procesos.find(p => (p.Ruta == P.route && p.Proceso == P.name) );
+				}
+			});
+
+			var first_proceso = Rs.Usuario.Procesos.find((P) => {
+				return (P.Tipo !== 'Utilitario');
+			});
+			//var first_proceso = {id:50};
+			if(first_proceso) Ctrl.getProceso(first_proceso.id);
+			//Ctrl.verMapaNodos();
 		});
-		var first_proceso = {id:50};
-		if(first_proceso) Ctrl.getProceso(first_proceso.id);
+
 		
 		
+		
+
+
 	}
 ]);

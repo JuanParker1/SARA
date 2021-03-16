@@ -13,6 +13,11 @@
 	<input type="number" ng-model="C.val" name="c{{ C.id }}" ng-required="{{ C.Requerido }}" ng-disabled="!C.Editable">
 </md-input-container>
 
+<md-input-container class="" ng-if="inArray(C.campo.Tipo, ['Decimal'])">
+	<label>{{ C.campo_title }}</label>
+	<input type="number" ng-model="C.val" name="c{{ C.id }}" ng-required="{{ C.Requerido }}" ng-disabled="!C.Editable" step="any">
+</md-input-container>
+
 <md-input-container class="" ng-if="inArray(C.campo.Tipo, ['Dinero'])">
 	<label>{{ C.campo_title }}</label>
 	<input type="text" ng-model="C.val" name="c{{ C.id }}" ng-required="{{ C.Requerido }}" ui-money-mask="0" ng-disabled="!C.Editable">

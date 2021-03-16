@@ -70,4 +70,29 @@
 			<md-icon md-font-icon="fa-filter text-white margin-right"></md-icon>Filtrar
 		</md-button>
 	</div>
+
+
+	<div flex layout=column class="w250" ng-show="sidenavSel == 'Descargar'">
+		<div flex layout=column class="overflow-y hasScroll">
+
+			<div class="h40 lh40 padding-left text-clear ng-binding margin-bottom" layout layout-align="center center">
+				<md-icon md-font-icon="fa-sign-in-alt fa-rotate-90 fa-fw"></md-icon><div flex>Descargar</div>
+				<md-button class="md-icon-button no-margin" aria-label="Button" ng-click="sidenavSel = ''">
+					<md-icon md-svg-icon="md-close" class=""></md-icon>
+				</md-button>
+			</div>
+
+			<div flex layout=column class="padding-0-10">
+				<span flex></span>
+				<md-button class="no-margin h40 md-raised bg-warmblue"
+					ng-click="downloadIndicadores()">Descargar Datos</md-button>
+				<span flex></span>
+			</div>
+			
+
+		</div>
+	</div>
+
+
+
 </md-sidenav>

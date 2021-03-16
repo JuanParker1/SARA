@@ -92,6 +92,10 @@ class EntidadEditor extends MyModel
 				$F->val = ( $F->val == $F->campo['Op4'] ) ? $F->val : $F->campo['Op5'];
 			};
 
+			if($TipoCampo == 'Decimal'){
+				$F->val = floatval($F->val);
+			};
+
 			if($TipoCampo == 'ListaAvanzada'){
 				$F->campo->opciones = ConnHelper::getListaValores($F->campo['Config']['lista_id'], $F->campo['Config']['indice_cod']);
 				

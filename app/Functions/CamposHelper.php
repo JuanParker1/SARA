@@ -139,6 +139,10 @@ class CamposHelper
     {
         if(is_null($D)) return $D;
 
+        if($Campo['Tipo'] == 'Decimal'){
+            $D = round($D, $Campo['Op3']);
+        };
+
         if($Campo['Tipo'] == 'FechaHora'){
             $Date = Carbon::parse($D);
             $D = $Date->setTimezone(config('app.timezone'))->format($Campo['Op4']);

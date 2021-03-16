@@ -4,7 +4,7 @@
 		
 		<div class="teammember" layout=column layout-align="center center"
 			ng-repeat="TM in ProcesoSel.asignaciones">
-			<div class="teammember_image" style="background-image: url({{ 'http://sec.comfamiliar.com/images/fotosEmpleados/' + TM.usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>
+			<div class="teammember_image" style="background-image: url({{ 'https://sec.comfamiliar.com/images/fotosEmpleados/' + TM.usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>
 			<div class="teammember_name">{{ TM.usuario.Nombres }}</div>
 		</div>
 
@@ -19,3 +19,5 @@
 		<div class="teammember_name" style="height: 44px">Ver Todos</div>
 	</div>
 </div>
+
+<div class="h30"></div>

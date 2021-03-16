@@ -421,7 +421,8 @@ class ScorecardNodo extends MyModel
 			'depth' => $depth, 'tipo' => $this->tipo, 'nodos_cant' => $this->nodos_cant, 
 			'cant_indicadores' => $this->cant_indicadores, 'cant_variables' => $this->cant_variables, 
 			'calc' => $this->calc, 'valores' => $this->valores, 'elemento' => $this->elemento, 'open' => $open, 'show' => $show,
-			'ruta' => $this->ruta, 'cump_porc_prom' => $this->cump_porc_prom
+			'ruta' => $this->ruta, 'cump_porc_prom' => $this->cump_porc_prom,
+			'peso' => $this->peso
 		];
 
 		$depth++;

@@ -12,7 +12,7 @@
 			<div class="padding-left " layout=column>
 				<div class=" " style="text-shadow: 0 0 30px white;" layout layout-align="center center">
 					<div class="Pointer text-30px margin-right">{{ ProcesoSel.Proceso }}</div>
-					<md-button class="no-margin md-icon-button md-raised no-padding s30">
+					<md-button class="no-margin md-icon-button md-raised no-padding s30" ng-click="verMapaNodos()">
 						<md-tooltip>Ver Mapa de Nodos</md-tooltip>
 						<md-icon md-font-icon="fa-sitemap text-13px"></md-icon>
 					</md-button>

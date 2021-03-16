@@ -59,8 +59,31 @@ class ProcesosController extends Controller
         $subprocesos_ids = collect($Subprocesos)->pluck('id');
 
         $Proceso->subprocesos_all = $Subprocesos;
-
         Helper::loadIndicadoresValores($Proceso->indicadores, $Anio);
+
+        //Obtener los Tableros
+        $TablerosRaw = \App\Models\Scorecard::with(['nodos'])->get();
+        $IndsAll  = \App\Models\Indicador::get()->keyBy('id');
+        $Tableros = [];
+
+        foreach ($TablerosRaw as $T) {
+            $found = false;
+
+            foreach ($T->nodos as $N) {
+                if($N->tipo == 'Indicador'){
+                    $Ind = $IndsAll[$N->elemento_id];
+                    if(substr($Ind->proceso->Ruta, 0, strlen($Proceso->Ruta)) === $Proceso->Ruta){
+                        $found = true; break;
+                    }
+                }
+            }
+
+            if($found) $Tableros[] = $T;
+        }
+
+        $Proceso->tableros = $Tableros;
+
+
         //$IndicadoresSup = \App\Models\Indicador::whereIn('proceso_id', $subprocesos_ids)->orderBy('Ruta', 'Indicador')->get();
         //$Proceso->indicadores_subprocesos = $IndicadoresSup;
 
