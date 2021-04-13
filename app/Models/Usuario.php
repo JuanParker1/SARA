@@ -14,6 +14,7 @@ class Usuario extends Model
 	protected $guarded = ['id'];
 	protected $hidden = ['Password'];
 	protected $primaryKey = 'id';
+    protected $appends = [ 'avatar' ];
     protected $casts = [
         'isGod' => 'boolean',
     ];
@@ -102,6 +103,18 @@ class Usuario extends Model
 
         $Usuario = Usuario::where('Email', $Email)->first();
         return $Usuario;
+    }
+
+
+
+    //Attributos
+    public function getAvatarAttribute()
+    {
+        if (file_exists( public_path() . '/img/avatars/' . $this->id . '.jpg')) {
+            return "img/avatars/$this->id.jpg?".$this->updated_at->timestamp;
+        } else {
+            return 'img/avatars/default.png';
+        }   
     }
 
 

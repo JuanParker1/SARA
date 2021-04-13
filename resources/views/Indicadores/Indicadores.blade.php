@@ -1,6 +1,6 @@
-<div flex id="Indicadores" layout ng-controller="IndicadoresCtrl">
+<md-content flex id="Indicadores" layout ng-controller="IndicadoresCtrl" class="no-bg">
 	
-	<md-sidenav class="bg-white border-right w350" layout=column 
+	<md-sidenav class="bg-white border-right w300" layout=column 
 		md-is-open="IndicadoresNav"
 		md-is-locked-open="$mdMedia('gt-xs') && IndicadoresNav">
 
@@ -140,4 +140,4 @@
 
 	</div>
 
-</div>
+</md-content>

@@ -599,7 +599,7 @@ angular.module('appFunctions', [])
 		};
 
 		Rs.getProcesos = (Ctrl) => {
-			if(!Rs.Storage.procesos_updated_at || !Rs.Storage.Procesos){
+			if(!Rs.Storage.procesos_updated_at || !Rs.Storage.Procesos || Rs.Storage.procesos_updated_at != Rs.Usuario.procesos_updated_at){
 				return Rs.http('api/Procesos', {}).then(P => {
 					Ctrl.Procesos = P;
 					Rs.Storage.Procesos = P;
@@ -608,8 +608,16 @@ angular.module('appFunctions', [])
 			}
 
 			Ctrl.Procesos = Rs.Storage.Procesos;
-			return Promise.resolve();
-			
+			return Promise.resolve();	
+		}
+
+		Rs.getProcesosFS = (Ctrl) => {
+			Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos,'Ruta','Proceso',false,true);
+			angular.forEach(Ctrl.ProcesosFS, (P) => {
+				if(P.type == 'folder' && P.route){
+					P.file = Ctrl.Procesos.find(p => p.Ruta == P.route && P.name == p.Proceso);
+				}
+			});
 		}
 
 		return {};

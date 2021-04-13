@@ -38,7 +38,7 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.getBdds = () => {
 
 			Promise.all([
-				Rs.http('api/Procesos', {}, Ctrl, 'Procesos'),
+				Rs.getProcesos(Ctrl),
 				Rs.http('api/Bdds/all', {}, Ctrl, 'Bdds')
 			]).then(() => {
 				if(Ctrl.Bdds.length > 0){
@@ -54,21 +54,15 @@ angular.module('EntidadesCtrl', [])
 
 			Ctrl.EntidadesCRUD.setScope('bdd', Ctrl.BddSel.id);
 			Ctrl.EntidadesCRUD.get().then(() => {
-				//Ctrl.getFsEntidades();
-				var ids_procesos = Ctrl.EntidadesCRUD.rows.map(e => e.proceso_id).filter((v, i, a) => a.indexOf(v) === i);
-				Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos.filter(p => ids_procesos.includes(p.id)),'Ruta','Proceso',false,true);
-				angular.forEach(Ctrl.ProcesosFS, (P) => {
-					if(P.type == 'folder'){
-						P.file = Ctrl.Procesos.find(p => p.Ruta == P.route);
-					}
-				});
+				
+				Rs.getProcesosFS(Ctrl);
 
 				if(Rs.Storage.EntidadSelId){
 					var entidad_sel_id = Rs.getIndex(Ctrl.EntidadesCRUD.rows, Rs.Storage.EntidadSelId);
 					Ctrl.openEntidad(Ctrl.EntidadesCRUD.rows[entidad_sel_id]);
 				};
 
-				Ctrl.navToSubsection(Rs.Storage.EntidadSubseccion);
+				Ctrl.navToSubsection('General'); //Rs.Storage.EntidadSubseccion
 			});
 		};
 
@@ -87,7 +81,9 @@ angular.module('EntidadesCtrl', [])
 			//return [];
 		}
 
-		Ctrl.openProceso = (P) => { Ctrl.ProcesoSelId = P.id; }
+		Ctrl.openProceso = (P) => { 
+			Ctrl.ProcesoSelId = P.id;
+		}
 
 		Ctrl.searchEntidades = () => {
 			if(Ctrl.filterEntidades == ""){
