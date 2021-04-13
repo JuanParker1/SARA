@@ -1598,7 +1598,7 @@ angular.module('EntidadesCtrl', [])
 		Ctrl.getBdds = () => {
 
 			Promise.all([
-				Rs.http('api/Procesos', {}, Ctrl, 'Procesos'),
+				Rs.getProcesos(Ctrl),
 				Rs.http('api/Bdds/all', {}, Ctrl, 'Bdds')
 			]).then(() => {
 				if(Ctrl.Bdds.length > 0){
@@ -1614,21 +1614,15 @@ angular.module('EntidadesCtrl', [])
 
 			Ctrl.EntidadesCRUD.setScope('bdd', Ctrl.BddSel.id);
 			Ctrl.EntidadesCRUD.get().then(() => {
-				//Ctrl.getFsEntidades();
-				var ids_procesos = Ctrl.EntidadesCRUD.rows.map(e => e.proceso_id).filter((v, i, a) => a.indexOf(v) === i);
-				Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos.filter(p => ids_procesos.includes(p.id)),'Ruta','Proceso',false,true);
-				angular.forEach(Ctrl.ProcesosFS, (P) => {
-					if(P.type == 'folder'){
-						P.file = Ctrl.Procesos.find(p => p.Ruta == P.route);
-					}
-				});
+				
+				Rs.getProcesosFS(Ctrl);
 
 				if(Rs.Storage.EntidadSelId){
 					var entidad_sel_id = Rs.getIndex(Ctrl.EntidadesCRUD.rows, Rs.Storage.EntidadSelId);
 					Ctrl.openEntidad(Ctrl.EntidadesCRUD.rows[entidad_sel_id]);
 				};
 
-				Ctrl.navToSubsection(Rs.Storage.EntidadSubseccion);
+				Ctrl.navToSubsection('General'); //Rs.Storage.EntidadSubseccion
 			});
 		};
 
@@ -1647,7 +1641,9 @@ angular.module('EntidadesCtrl', [])
 			//return [];
 		}
 
-		Ctrl.openProceso = (P) => { Ctrl.ProcesoSelId = P.id; }
+		Ctrl.openProceso = (P) => { 
+			Ctrl.ProcesoSelId = P.id;
+		}
 
 		Ctrl.searchEntidades = () => {
 			if(Ctrl.filterEntidades == ""){
@@ -3042,7 +3038,7 @@ angular.module('IndicadoresCtrl', [])
 		Ctrl.filterIndicadores = '';
 
 		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Variables', order_by: ['Variable'] });
-		Ctrl.IndicadoresCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores' });
+		Ctrl.IndicadoresCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores', offline: ['Indicadores', 'updated_at', (60*24*7)] });
 		Ctrl.IndicadoresVarsCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores/variables' });
 		Ctrl.MetasCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores/metas' });
 		Ctrl.NodosCRUD = $injector.get('CRUD').config({ base_url: '/api/Scorecards/nodos', add_append: 'refresh', order_by: ['padre_id'], query_call_arr: [ ['getFullRuta', null] ] });
@@ -3054,12 +3050,30 @@ angular.module('IndicadoresCtrl', [])
 			Ctrl.IndicadoresCRUD.get().then(() => {
 				//Ctrl.getFs();
 
+				console.timeEnd('Obtener Indicadores');
+				Ctrl.IndicadoresLoaded = true;
+
+				console.time('Obtener Variables');
+				Ctrl.VariablesCRUD.get().then(() => {
+					console.timeEnd('Obtener Variables');
+				});
+
 				if(Rs.Storage.IndicadorSel){
 					var indicador_sel_id = Rs.getIndex(Ctrl.IndicadoresCRUD.rows, Rs.Storage.IndicadorSel);
 					Ctrl.openIndicador(Ctrl.IndicadoresCRUD.rows[indicador_sel_id]); //FIX
 				};
 
-				Ctrl.IndicadoresLoaded = true;
+				
+
+				Ctrl.NodosCRUD.get().then(() => {
+					Ctrl.NodosFS = Rs.FsGet(Ctrl.NodosCRUD.rows,'Ruta','Nodo',false,true,false);
+					angular.forEach(Ctrl.NodosFS, (P) => {
+						if(P.type == 'folder'){
+							P.file = Ctrl.NodosCRUD.rows.find(p => { return (p.Ruta == P.route && p.tipo == 'Nodo'); });
+						}
+					});
+				});
+
 				//Ctrl.addToTablero(); //FIX
 
 			});
@@ -3150,28 +3164,7 @@ angular.module('IndicadoresCtrl', [])
 
 
 
-		Promise.all([
-			Rs.getProcesos(Ctrl),
-			Ctrl.VariablesCRUD.get(),
-			Ctrl.NodosCRUD.get()
-		]).then(() => {
-			var ids_procesos = Ctrl.VariablesCRUD.rows.map(e => e.proceso_id).filter((v, i, a) => a.indexOf(v) === i);
-			Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos.filter(p => ids_procesos.includes(p.id)),'Ruta','Proceso',false,true);
-			angular.forEach(Ctrl.ProcesosFS, (P) => {
-				if(P.type == 'folder'){
-					P.file = Ctrl.Procesos.find(p => p.Ruta == P.route);
-				}
-			});
-
-			Ctrl.NodosFS = Rs.FsGet(Ctrl.NodosCRUD.rows,'Ruta','Nodo',false,true,false);
-			angular.forEach(Ctrl.NodosFS, (P) => {
-				if(P.type == 'folder'){
-					P.file = Ctrl.NodosCRUD.rows.find(p => { return (p.Ruta == P.route && p.tipo == 'Nodo'); });
-				}
-			});
-
-			Ctrl.getIndicadores();
-		});
+		
 			
 
 		Ctrl.reloadIndicador = () => {
@@ -3195,20 +3188,6 @@ angular.module('IndicadoresCtrl', [])
 			}).then(r => {
 				Ctrl.VariablesCRUD.add(r);
 			});
-
-			/*return Rs.TableDialog(Ctrl.VariablesCRUD.rows, {
-				Title: 'Seleccionar Variable', Flex: 60, 
-				Columns: [
-					{ Nombre: 'proceso.Proceso',  Desc: 'Nodo',       numeric: false, orderBy: 'Ruta' },
-					{ Nombre: 'Variable', 	 	  Desc: 'Variable',  numeric: false, orderBy: 'Variable' }
-				],
-				orderBy: 'Ruta', select: 'Row.id', multiple: true
-			}).then(Selected => {
-				if(!Selected || Selected.length == 0 ) return;
-				
-				Ctrl.addComponente({ Tipo: 'Variable', variable_id: Selected[0] });
-				
-			});*/
 
 		};
 
@@ -3411,8 +3390,18 @@ angular.module('IndicadoresCtrl', [])
 			
 		}
 
-
-
+		console.time('Resolver Promesas');
+		
+		Promise.all([
+			Rs.getProcesos(Ctrl)
+			//,Ctrl.VariablesCRUD.get()
+		]).then(() => {
+			
+			console.timeEnd('Resolver Promesas');
+			console.time('Obtener Indicadores');
+			Rs.getProcesosFS(Ctrl);
+			Ctrl.getIndicadores();
+		});
 
 
 	}
@@ -5060,15 +5049,7 @@ angular.module('VariablesCtrl', [])
 
 				Ctrl.VariablesCRUD.get().then(() => {
 
-					var ids_procesos = Ctrl.VariablesCRUD.rows.map(e => e.proceso_id).filter((v, i, a) => a.indexOf(v) === i);
-					Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos.filter(p => ids_procesos.includes(p.id)),'Ruta','Proceso',false,true);
-					angular.forEach(Ctrl.ProcesosFS, (P) => {
-						if(P.type == 'folder'){
-							P.file = Ctrl.Procesos.find(p => p.Ruta == P.route);
-						}
-					});
-
-					//Ctrl.getFs();
+					Rs.getProcesosFS(Ctrl);
 
 					if(Rs.Storage.VariableSel){
 						var variable_sel_id = Rs.getIndex(Ctrl.VariablesCRUD.rows, Rs.Storage.VariableSel);
@@ -5533,7 +5514,8 @@ angular.module('CRUD', [])
 				query_call: [],
 				query_call_arr: [],
 				order_by: [],
-				selected:[]
+				selected:[],
+				offline: false //['Key', (60*24*7)]
 			};
 			t.columns = [];
 			t.rows = [];
@@ -6994,7 +6976,7 @@ angular.module('appFunctions', [])
 		};
 
 		Rs.getProcesos = (Ctrl) => {
-			if(!Rs.Storage.procesos_updated_at || !Rs.Storage.Procesos){
+			if(!Rs.Storage.procesos_updated_at || !Rs.Storage.Procesos || Rs.Storage.procesos_updated_at != Rs.Usuario.procesos_updated_at){
 				return Rs.http('api/Procesos', {}).then(P => {
 					Ctrl.Procesos = P;
 					Rs.Storage.Procesos = P;
@@ -7003,8 +6985,16 @@ angular.module('appFunctions', [])
 			}
 
 			Ctrl.Procesos = Rs.Storage.Procesos;
-			return Promise.resolve();
-			
+			return Promise.resolve();	
+		}
+
+		Rs.getProcesosFS = (Ctrl) => {
+			Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos,'Ruta','Proceso',false,true);
+			angular.forEach(Ctrl.ProcesosFS, (P) => {
+				if(P.type == 'folder' && P.route){
+					P.file = Ctrl.Procesos.find(p => p.Ruta == P.route && P.name == p.Proceso);
+				}
+			});
 		}
 
 		return {};

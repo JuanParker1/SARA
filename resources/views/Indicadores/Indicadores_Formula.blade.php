@@ -13,7 +13,7 @@
 		<div ng-repeat="V in IndicadoresVarsCRUD.rows" layout class="border-top h45 padding-0-5" layout-align="center center">
 
 			<md-input-container class=" w30 no-margin md-no-underline" >
-				<input type="text" ng-model="V.Letra" class="text-bold text-20px text-center" ng-blur="IndicadoresVarsCRUD.update(V)">
+				<input type="text" ng-model="V.Letra" class="text-bold text-20px text-center" ng-blur="IndicadoresVarsCRUD.update(V)" aria-label="L">
 			</md-input-container>
 			<div layout=column ng-repeat="Var in VariablesCRUD.rows | filter:{ id: V.variable_id }:true" flex ng-if="V.Tipo == 'Variable'">
 				<div layout>{{ Var.Variable }}</div>

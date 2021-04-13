@@ -10,7 +10,7 @@ class CRUD
 	{
 		$this->Model = app($ModelName);
 		set_time_limit(5 * 60);
-		DB::enableQueryLog();
+		//DB::enableQueryLog();
 	}
 	
 	public function call($Fn, $Ops)
@@ -88,7 +88,7 @@ class CRUD
 		$debug['sql_bindings'] 	= $Query->getBindings();
 		$debug['attrs'] 		= $this->Model->getAttributes();
 		
-
+		//sleep(3); //FIX
 		$rows = $Query->get();
 
 		if(!empty($Ops['query_call'])){

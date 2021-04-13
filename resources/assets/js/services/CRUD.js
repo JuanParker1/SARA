@@ -25,7 +25,8 @@ angular.module('CRUD', [])
 				query_call: [],
 				query_call_arr: [],
 				order_by: [],
-				selected:[]
+				selected:[],
+				offline: false //['Key', (60*24*7)]
 			};
 			t.columns = [];
 			t.rows = [];

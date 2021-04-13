@@ -36,15 +36,7 @@ angular.module('VariablesCtrl', [])
 
 				Ctrl.VariablesCRUD.get().then(() => {
 
-					var ids_procesos = Ctrl.VariablesCRUD.rows.map(e => e.proceso_id).filter((v, i, a) => a.indexOf(v) === i);
-					Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos.filter(p => ids_procesos.includes(p.id)),'Ruta','Proceso',false,true);
-					angular.forEach(Ctrl.ProcesosFS, (P) => {
-						if(P.type == 'folder'){
-							P.file = Ctrl.Procesos.find(p => p.Ruta == P.route);
-						}
-					});
-
-					//Ctrl.getFs();
+					Rs.getProcesosFS(Ctrl);
 
 					if(Rs.Storage.VariableSel){
 						var variable_sel_id = Rs.getIndex(Ctrl.VariablesCRUD.rows, Rs.Storage.VariableSel);
