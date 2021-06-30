@@ -12,9 +12,11 @@ class EntidadGridFiltro extends MyModel
 	protected $guarded = ['id'];
 	protected $hidden = [];
 	protected $primaryKey = 'id';
-    protected $casts = [];
+    protected $casts = [
+    	'Locked' => 'boolean'
+    ];
     protected $with = [];
-    protected $appends = ['campo','default','val'];
+    protected $appends = ['Valor', 'campo','default','val'];
 
     public function columns()
 	{
@@ -53,6 +55,23 @@ class EntidadGridFiltro extends MyModel
 
 
 	//Accesor
+	public function getValorAttribute()
+	{
+		$Valor = array_key_exists('Valor', $this->attributes) ? $this->attributes['Valor'] : null;
+
+		if($this->campo->Tipo == 'Lista'){
+			if($Valor){
+				$Valor = json_decode($Valor);
+			}
+		};
+
+		if(in_array($this->campo->Tipo, ['Entero', 'Decimal', 'Dinero'])){
+			$Valor = floatval($Valor);
+		};
+
+		return $Valor;
+	}
+
 	public function getDefaultAttribute()
 	{
 		$Valor = $this->Valor;
@@ -63,7 +82,7 @@ class EntidadGridFiltro extends MyModel
         };
 
         if($this->Comparador == 'lista'){
-        	$Valor = is_null($Valor) ? null : json_decode($Valor, true);
+        	if(is_string($Valor)) $Valor = is_null($Valor) ? null : json_decode($Valor, true);
         };
 
         $Valor = Helper::getSystemVariable($Valor);
@@ -77,8 +96,8 @@ class EntidadGridFiltro extends MyModel
 	public function prepSave($F)
 	{
 		if($this->Comparador == 'lista') {
-    		if(is_array($F['val']) AND !empty($F['val'])){
-    			$this->Valor = json_encode($F['val']);
+    		if(is_array($F['Valor']) AND !empty($F['Valor'])){
+    			$this->Valor = json_encode($F['Valor']);
     		}else{
     			$this->Valor = null;
     		};
@@ -96,6 +115,10 @@ class EntidadGridFiltro extends MyModel
         	
         	//dd($model);
 
+        });
+
+        self::created(function($model){
+        	$model->aaa = 1;
         });
 
     }

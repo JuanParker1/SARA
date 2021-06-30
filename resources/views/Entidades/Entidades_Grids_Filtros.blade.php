@@ -20,6 +20,16 @@
 					<td md-cell>
 						@include('Entidades.Entidades_Grids_Filtros_Inputs')
 					</td>
+					<td md-cell class="md-cell-compress">
+						<md-button class="md-icon-button" ng-show="!R.Locked" ng-click="R.Locked = true; markChanged(R)">
+							<md-icon md-font-icon="fa-lock-open"></md-icon>
+							<md-tooltip>Filtro Editable</md-tooltip>
+						</md-button>
+						<md-button class="md-icon-button" ng-show="R.Locked"  ng-click="R.Locked = false; markChanged(R)">
+							<md-icon md-font-icon="fa-lock" style="color: #cf3229"></md-icon>
+							<md-tooltip>Filtro Fijo</md-tooltip>
+						</md-button>
+					</td>
 				</tr>
 			</tbody>
 		</table>

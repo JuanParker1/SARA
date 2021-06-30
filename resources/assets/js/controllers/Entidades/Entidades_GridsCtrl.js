@@ -142,11 +142,15 @@ angular.module('Entidades_GridsCtrl', [])
 
 		Ctrl.addFiltro = (Co) => {
 			var Indice = Ctrl.GridFiltrosCRUD.rows.length;
+			var Ops = Ctrl.TiposCampo[Co.campo.Tipo].Defaults;
 
 			return Ctrl.GridFiltrosCRUD.add({
 				grid_id: Ctrl.GridSel.id,
 				columna_id: Co.id,
-				Indice: Indice
+				Indice: Indice,
+				Valor: Ctrl.TiposCampo[Co.campo.Tipo].DefaultValor,
+				Comparador: Ctrl.TiposCampo[Co.campo.Tipo].DefaultComparador,
+				...Ops
 			}).then(() => {
 				//Ctrl.prepFiltros();
 				Rs.showToast('Filtro Añadido', 'Success');
@@ -237,6 +241,14 @@ angular.module('Entidades_GridsCtrl', [])
 				B = angular.extend(B, nB);
 				Ctrl.GridsCRUD.update(Ctrl.GridSel);
 			});
+		};
+
+		Ctrl.getSelectedText = (Text, Placeholder) => {
+			if(Text === null || !Text) return Placeholder;
+			if(angular.isArray(Text)){
+				return JoinedText = Text.join(', ');
+			};
+			return Text;
 		};
 
 		Ctrl.getGrids();

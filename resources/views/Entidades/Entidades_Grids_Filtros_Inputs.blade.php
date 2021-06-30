@@ -19,6 +19,33 @@
 </div>
 
 <div ng-if="inArray(R.campo.Tipo, ['Entero','Decimal'])">
+	<md-input-container class="no-padding no-margin">
+		<md-select ng-model="R.Comparador" aria-label="s" ng-change="markChanged(R)" class="h30">
+			<md-option value="=">Es</md-option>
+			<md-option value=">">Mayor a</md-option>
+			<md-option value=">=">Mayor o Igual a</md-option>
+			<md-option value="<">Menor a</md-option>
+			<md-option value="<=">Menor o Igual a</md-option>
+		</md-select>
+	</md-input-container>
+	<md-input-container class="no-margin" md-no-float>
+		<input type="number" ng-model="R.Valor" placeholder="Valor" class="text-right w105">
+	</md-input-container>
+</div>
+
+<div ng-if="inArray(R.campo.Tipo, ['Dinero'])" layout>
+	<md-input-container class="no-padding no-margin">
+		<md-select ng-model="R.Comparador" aria-label="s" ng-change="markChanged(R)" class="h30">
+			<md-option value="=">Es</md-option>
+			<md-option value=">">Mayor a</md-option>
+			<md-option value=">=">Mayor o Igual a</md-option>
+			<md-option value="<">Menor a</md-option>
+			<md-option value="<=">Menor o Igual a</md-option>
+		</md-select>
+	</md-input-container>
+	<md-input-container class="no-margin" md-no-float>
+		<input type="text" ng-model="R.Valor" placeholder="Valor" ui-money-mask="0" class="text-right w105">
+	</md-input-container>
 </div>
 
 <div ng-if="inArray(R.campo.Tipo, ['Fecha'])">
@@ -55,6 +82,13 @@
 </div>
 
 
-
-
-
+<div ng-if="inArray(R.campo.Tipo, ['Lista'])" layout>
+	<md-select placeholder="Valor por defecto" ng-model="R.Valor" ng-change="markChanged(R)" multiple 
+		class="block md-select-nowrap" style="max-width: 100%;"
+		md-selected-text="getSelectedText(R.Valor, 'Valor por defecto...')">
+		<md-option ng-repeat="Op in R.campo.Config.opciones" ng-value="Op.value">{{ Op.desc || Op.value }}</md-option>
+	</md-select>
+	<md-button class="md-icon-button" ng-show="R.Valor !== ''" ng-click="R.Valor = ''; markChanged(R)">
+		<md-icon md-font-icon="fa-eraser"></md-icon>
+	</md-button>
+</div>

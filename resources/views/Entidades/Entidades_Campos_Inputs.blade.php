@@ -151,7 +151,7 @@
 	<div ng-if="inArray(C.Tipo, ['Lista'])">
 		<md-select ng-model="C.Defecto" aria-label="s" class="w140" ng-change="markChanged(C)">
 			<md-option ng-value="''">Ninguno</md-option>
-			<md-option ng-value="Op.value" ng-repeat="Op in C.Config.opciones">{{ Op.desc == '' ? Op.value : Op.desc }}</md-option>
+			<md-option ng-value="Op.value" ng-repeat="Op in C.Config.opciones">{{ Op.desc || Op.value }}</md-option>
 		</md-select>
 	</div>
 
