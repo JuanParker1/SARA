@@ -20,7 +20,7 @@
 
 <div ng-if="inArray(R.campo.Tipo, ['Entero','Decimal'])">
 	<md-input-container class="no-padding no-margin">
-		<md-select ng-model="R.Comparador" aria-label="s" ng-change="markChanged(R)" class="h30">
+		<md-select ng-model="R.Comparador" aria-label="si" ng-change="markChanged(R)" class="h30">
 			<md-option value="=">Es</md-option>
 			<md-option value=">">Mayor a</md-option>
 			<md-option value=">=">Mayor o Igual a</md-option>
