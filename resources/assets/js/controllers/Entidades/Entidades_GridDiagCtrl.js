@@ -35,12 +35,10 @@ angular.module('Entidades_GridDiagCtrl', [])
 
 		Ctrl.pag_go = (i) => {
 			var from = (Ctrl.pag_from + (Ctrl.pag_pages*i) );
-			if(from < 0 || from >= Ctrl.load_data_len) return false;
+			if(from < 0 || from > Ctrl.load_data_len) return false;
 			Ctrl.pag_from = from;
 			Ctrl.pag_to = Math.min((Ctrl.pag_from + Ctrl.pag_pages), (Ctrl.load_data_len));
 			Ctrl.Data = filteredData.slice(Ctrl.pag_from, Ctrl.pag_to);
-
-
 		};
 
 		Ctrl.filterData = () => {

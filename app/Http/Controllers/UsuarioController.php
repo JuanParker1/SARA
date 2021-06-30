@@ -249,4 +249,9 @@ class UsuarioController extends Controller
         return $CRUD->call(request()->fn, request()->ops);
 	}
 
+	public function getEncriptar($texto)
+	{
+		return Hash::make($texto);
+	}
+
 }

@@ -15,21 +15,21 @@ class CamposHelper
 	public static function getTipos()
 	{
 		$TC = [
-			'Entidad'        => [ 'Icon' => 'md-pawn', 			     'Divide' => true, 	       'Defaults' => [  null, null, null,             null, null] ],
-			'Texto'          => [ 'Icon' => 'md-format-quote', 	     'Divide' => false, 	   'Defaults' => [  null, null, null,             null, null] ],
-            'TextoLargo'     => [ 'Icon' => 'md-insert-comment',     'Divide' => true,         'Defaults' => [  1000, null, null,             null, null] ],
-            'Lista'          => [ 'Icon' => 'md-list-view',          'Divide' => false,        'Defaults' => [  null, null, null,             '[]', null] ],
-			'ListaAvanzada'  => [ 'Icon' => 'md-list-alt', 	         'Divide' => true, 	       'Defaults' => [  null, null, null,             '[]', null] ],
-			'Entero'         => [ 'Icon' => 'my-entero', 			 'Divide' => false, 	   'Defaults' => [  null, null, null,             null, null] ],
-			'Decimal'        => [ 'Icon' => 'my-decimal', 			 'Divide' => false, 	   'Defaults' => [  null, null,    1,             null, null] ],
-			'Dinero'         => [ 'Icon' => 'md-money', 			 'Divide' => true, 	       'Defaults' => [  null, null,    1,             null, null] ],
-			'Booleano'       => [ 'Icon' => 'md-toggle-on', 		 'Divide' => true, 	       'Defaults' => [  null, null, null,             'Si', 'No'] ],
-            'Periodo'        => [ 'Icon' => 'md-calendar',           'Divide' => false,        'Defaults' => [  null, null, null,             null, null] ],
-			'Fecha'          => [ 'Icon' => 'md-calendar-event', 	 'Divide' => false, 	   'Defaults' => [  null, null, null,          'Y-m-d', null] ],
-			'Hora'           => [ 'Icon' => 'md-time', 			     'Divide' => false, 	   'Defaults' => [  null, null, null,          'H:i:s', null] ],
-			'FechaHora'      => [ 'Icon' => 'md-timer', 			 'Divide' => true, 	       'Defaults' => [  null, null, null,    'Y-m-d H:i:s', null] ],
-            'Color'          => [ 'Icon' => 'md-color',              'Divide' => false,        'Defaults' => [  null, null, null,             null, null] ],
-			'Imagen'   	     => [ 'Icon' => 'md-image', 			 'Divide' => false, 	   'Defaults' => [  null, null, null,             null, null] ],
+			'Entidad'        => [ 'Icon' => 'md-pawn', 			     'Divide' => true, 	       'Defaults' => [    '',   '',    0,               '',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
+			'Texto'          => [ 'Icon' => 'md-format-quote', 	     'Divide' => false, 	   'Defaults' => [    '',   '',    0,               '',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => '='  ],
+            'TextoLargo'     => [ 'Icon' => 'md-insert-comment',     'Divide' => true,         'Defaults' => [  1000,   '',    0,               '',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
+            'Lista'          => [ 'Icon' => 'md-list-view',          'Divide' => false,        'Defaults' => [    '',   '',    0,             '[]',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => 'lista' ],
+			'ListaAvanzada'  => [ 'Icon' => 'md-list-alt', 	         'Divide' => true, 	       'Defaults' => [    '',   '',    0,             '[]',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
+			'Entero'         => [ 'Icon' => 'my-entero', 			 'Divide' => false, 	   'Defaults' => [    '',   '',    0,               '',   ''], 'DefaultValor' => '0',          'DefaultComparador' => '>=' ],
+			'Decimal'        => [ 'Icon' => 'my-decimal', 			 'Divide' => false, 	   'Defaults' => [    '',   '',    1,               '',   ''], 'DefaultValor' => '0',          'DefaultComparador' => '>=' ],
+			'Dinero'         => [ 'Icon' => 'md-money', 			 'Divide' => true, 	       'Defaults' => [    '',   '',    1,               '',   ''], 'DefaultValor' => '0',          'DefaultComparador' => '>=' ],
+			'Booleano'       => [ 'Icon' => 'md-toggle-on', 		 'Divide' => true, 	       'Defaults' => [    '',   '',    0,             'Si', 'No'], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
+            'Periodo'        => [ 'Icon' => 'md-calendar',           'Divide' => false,        'Defaults' => [    '',   '',    0,               '',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
+			'Fecha'          => [ 'Icon' => 'md-calendar-event', 	 'Divide' => false, 	   'Defaults' => [ 'rel',   '',    0,          'Y-m-d',   ''], 'DefaultValor' =>  'today',     'DefaultComparador' => '>=' ],
+			'Hora'           => [ 'Icon' => 'md-time', 			     'Divide' => false, 	   'Defaults' => [    '',   '',    0,          'H:i:s',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
+			'FechaHora'      => [ 'Icon' => 'md-timer', 			 'Divide' => true, 	       'Defaults' => [    '',   '',    0,    'Y-m-d H:i:s',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
+            'Color'          => [ 'Icon' => 'md-color',              'Divide' => false,        'Defaults' => [    '',   '',    0,               '',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
+			'Imagen'   	     => [ 'Icon' => 'md-image', 			 'Divide' => false, 	   'Defaults' => [    '',   '',    0,               '',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
 		];
 
 		$TC['Fecha']['Formatos']      = [ ['Y-m-d','2019-12-31'], ['Ymd', '20191231'] ];
@@ -72,8 +72,6 @@ class CamposHelper
 			$T['Defaults'] = $Def;
 			return $T;
 		});
-
-		
 
 		return $TC;
 	}
@@ -124,7 +122,9 @@ class CamposHelper
             $D = trim($D);
         };
 
-        if($Campo['Tipo'] == 'Dinero'){ return Helper::formatVal($D, "Moneda"); }
+        if($Campo['Tipo'] == 'Dinero'){ 
+            return Helper::formatVal($D, "Moneda");
+        }
 
         if($Campo['Tipo'] == 'Imagen'){
             $img_ruta = str_replace('$id', $D, $Campo['Config']['img_ruta']);

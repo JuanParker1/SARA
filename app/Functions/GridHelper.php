@@ -157,12 +157,8 @@ class GridHelper
 
     public static function addRestric($q, $restricciones, $t = false)
     {
-       
-
         foreach ($restricciones as $R) {
-
             //if($R['id'] == 39) dd($R['Comparador']);
-
             if($t) $R['columna_name'] = CamposHelper::getColName($t, $R['campo']['Columna']);
             $Valor = CamposHelper::prepFilterVal($R['val'], $R['campo']);
             self::addRestricRun($q, $R['columna_name'], $R['Comparador'], $Valor);
@@ -225,12 +221,12 @@ class GridHelper
             $Data = CamposHelper::prepData($Grid->columnas, $q->get());
         }else{
             $Data = $q->get();
-        }; 
+        };
 
         //Prep Filtros Opts
         if($prepOpts){
         	foreach ($Grid->filtros as $F) {
-	            if(in_array($F->Comparador,['lista','radios'])){
+                if(in_array($F->Comparador,['lista','radios'])){
 	                $Ops = $Data->pluck($F['columna']['header_index'])->unique()->sort()->values();
 	                $F['options'] = $Ops;
 	            };
