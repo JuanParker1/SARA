@@ -2,7 +2,7 @@ angular.module('EntidadesCtrl', [])
 .controller('EntidadesCtrl', ['$scope', '$rootScope', '$injector', '$mdDialog', '$filter', '$timeout',
 	function($scope, $rootScope, $injector, $mdDialog, $filter, $timeout) {
 
-		console.info('EntidadesCtrl');
+		console.info('EntidadesCtrl 1');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 		Rs.mainTheme = 'Snow_White';
