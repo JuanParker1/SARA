@@ -36,7 +36,7 @@ angular.module('Entidades_EditorDiagCtrl', [])
 				}
 
 				if(C.campo.Tipo == 'Dinero'){
-					C.val = Number(C.val.replace('$', '').replaceAll('.', '').trim());
+					if(C.val) C.val = Number(C.val.replace('$', '').replaceAll('.', '').trim());
 				}
 
 			});

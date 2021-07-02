@@ -6,7 +6,7 @@ angular.module('EntidadesCtrl', [])
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 		Rs.mainTheme = 'Snow_White';
-		if(!('EntidadSidenav' in Rs.Storage)) Rs.Storage.EntidadSidenav = true;
+		if(!('EntidadSidenav' in Rs.Storage) || !Rs.Storage.EntidadSelId) Rs.Storage.EntidadSidenav = true;
 		Ctrl.loadingEntidad = false;
 		Ctrl.showCampos = true;
 		if(!Rs.Storage.EntidadSubseccion) Rs.Storage.EntidadSubseccion = 'General';

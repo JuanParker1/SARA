@@ -1547,19 +1547,6 @@ angular.module('TableDialogCtrl', [])
 
 	}
 ]);
-angular.module('FuncionesCtrl', [])
-.controller('FuncionesCtrl', ['$scope', '$rootScope', '$injector', '$filter',
-	function($scope, $rootScope, $injector, $filter) {
-
-		console.info('FuncionesCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.FuncionSel = null;
-		Ctrl.FuncionesNav = true;
-		Rs.mainTheme = 'Snow_White';
-		
-	}
-]);
 angular.module('EntidadesCamposCtrl', [])
 .controller('EntidadesCamposCtrl', ['$scope', '$rootScope', 
 	function($scope, $rootScope) {
@@ -1579,7 +1566,7 @@ angular.module('EntidadesCtrl', [])
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 		Rs.mainTheme = 'Snow_White';
-		if(!('EntidadSidenav' in Rs.Storage)) Rs.Storage.EntidadSidenav = true;
+		if(!('EntidadSidenav' in Rs.Storage) || !Rs.Storage.EntidadSelId) Rs.Storage.EntidadSidenav = true;
 		Ctrl.loadingEntidad = false;
 		Ctrl.showCampos = true;
 		if(!Rs.Storage.EntidadSubseccion) Rs.Storage.EntidadSubseccion = 'General';
@@ -2295,7 +2282,7 @@ angular.module('Entidades_EditorDiagCtrl', [])
 				}
 
 				if(C.campo.Tipo == 'Dinero'){
-					C.val = Number(C.val.replace('$', '').replaceAll('.', '').trim());
+					if(C.val) C.val = Number(C.val.replace('$', '').replaceAll('.', '').trim());
 				}
 
 			});
@@ -3031,6 +3018,19 @@ angular.module('Entidades_VerCamposCtrl', [])
 			DaLlaves.push(campo_id);
 			$mdDialog.hide([entidad_id, DaRuta, DaLlaves]);
 		};
+	}
+]);
+angular.module('FuncionesCtrl', [])
+.controller('FuncionesCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('FuncionesCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.FuncionSel = null;
+		Ctrl.FuncionesNav = true;
+		Rs.mainTheme = 'Snow_White';
+		
 	}
 ]);
 angular.module('IndicadoresCtrl', [])

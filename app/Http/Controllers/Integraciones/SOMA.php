@@ -109,8 +109,8 @@ class SOMA {
 		});
 
 		$Auth = [
-            'GCFR' => ['cldape6601', 'sos2017'],
-            'ONC'  => ['ATICA2019',  'sos2019'],
+            'GCFR' => ['cldape6601', 'Juliofam23*'],
+            'ONC'  => ['ATICA2019',  'Mayocom21*'],
         ];
 
         //$url = 'https://pruebascloud.sos.com.co/AutorizadorPrestacionesServiceRESTWeb/rest/validador/pgp';
