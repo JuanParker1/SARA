@@ -67,7 +67,7 @@ class EntidadCampo extends MyModel
 	}
 
 	//Funciones
-	public function getColName($base)
+	public function getColName($base = "")
 	{
 		return \App\Functions\CamposHelper::getColName($base, $this->Columna);
 	}

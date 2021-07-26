@@ -1,6 +1,6 @@
-<div flex layout=column class="overflow-y hasScroll transition" ng-if="Modo == 'Año'" ng-class="{ 'opacity-0': Loading }">
+<div flex layout=column class="overflow hasScroll transition" ng-if="Modo == 'Año'" ng-class="{ 'opacity-0': Loading }">
 
-	<md-table-container class="border-bottom">
+	<md-table-container class="border-bottom hasScroll">
 		<table md-table class="md-table-short table-col-compress table-nowrap">
 			<colgroup>
 				<col span="2">

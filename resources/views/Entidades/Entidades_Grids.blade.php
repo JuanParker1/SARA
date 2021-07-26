@@ -1,6 +1,6 @@
 <div flex layout ng-controller="Entidades_GridsCtrl">
 	
-	<div layout=column class="border-right w200 bg-white">
+	<div layout=column class="border-right w200 bg-white overflow-y hasScroll">
 
 		<div layout class="border-bottom" layout-align="center center" style="height: 41px">
 			<div class="md-toolbar-searchbar" flex layout>

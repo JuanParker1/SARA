@@ -17,9 +17,10 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
         Ctrl.Loading = true;
         Ctrl.Procesos = null;
         Ctrl.FsOpenFolder = Rs.FsOpenFolder;
+        Ctrl.defaultFrecuencias = Object.keys(Rs.Frecuencias);
 
         //Sidenav
-        Ctrl.sidenavSel = null;
+        Ctrl.sidenavSel = null; //FIX
         Ctrl.SidenavIcons = [
 			['fa-filter', 	     					'Filtros'		,false],
 			['fa-sign-in-alt fa-rotate-90 fa-lg', 	'Descargar'		,false],
@@ -31,7 +32,8 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 		//Filtros
         Ctrl.filters = {
         	proceso_ruta: false,
-        	cumplimiento: false
+        	cumplimiento: false,
+        	frecuencia_analisis: ['-1']
         };
 
         Ctrl.filtrosCumplimiento = [
@@ -174,6 +176,10 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 				//Ctrl.openScorecard(Ctrl.ScoSel, Ctrl.NodoSel);
 				Rs.showToast('Caché Borrada', 'Success');
 			});
+		}
+
+		Ctrl.checkFrecuenciaAnalisis = () => {
+			if(Ctrl.filters.frecuencia_analisis.includes('-1')) Ctrl.filters.frecuencia_analisis = ['-1'];
 		}
 
 

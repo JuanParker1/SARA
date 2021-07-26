@@ -105,5 +105,7 @@ angular.module('SARA', [
 	'Integraciones_IkonoCtrl',
 
 	'BotsCtrl',
-		'Bot_LogsCtrl'
+		'Bot_LogsCtrl',
+
+	'ConfiguracionCtrl'
 ]);

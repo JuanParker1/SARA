@@ -1,8 +1,8 @@
 <md-content flex id="Indicadores" layout ng-controller="IndicadoresCtrl" class="no-bg">
 	
 	<md-sidenav class="bg-white border-right w300" layout=column 
-		md-is-open="IndicadoresNav"
-		md-is-locked-open="$mdMedia('gt-xs') && IndicadoresNav">
+		md-is-open="Storage.IndicadoresNav"
+		md-is-locked-open="$mdMedia('gt-xs') && Storage.IndicadoresNav">
 
 		<div layout=column flex>
 
@@ -65,7 +65,7 @@
 	<div flex class="" layout=column ng-show="IndSel !== null">
 		<div flex layout=column class="overflow-y darkScroll padding-5">
 			<div layout class="">
-				<md-button class="md-icon-button no-margin no-padding s30" aria-label="b" ng-click="IndicadoresNav = !IndicadoresNav" 
+				<md-button class="md-icon-button no-margin no-padding s30" aria-label="b" ng-click="Storage.IndicadoresNav = !Storage.IndicadoresNav" 
 					style="margin-top: 2px !important">
 					<md-icon md-svg-icon="md-bars" class=""></md-icon>
 				</md-button>
@@ -96,6 +96,14 @@
 						<md-option ng-value="'DES'"><md-icon class="s20" md-font-icon="fa-fw fa-arrow-down"></md-icon></md-option>
 					</md-select>
 				</md-input-container>
+
+				<md-input-container class=" margin-bottom">
+					<label>Análisis</label>
+					<md-select ng-model="IndSel.FrecuenciaAnalisis" aria-label=s>
+						<md-option ng-repeat="(k,F) in Frecuencias" ng-value="k">{{ F }}</md-option>
+					</md-select>
+				</md-input-container>
+
 			</div>
 
 			<div layout>

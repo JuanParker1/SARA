@@ -130,7 +130,18 @@ class ScorecardsController extends Controller
             });
         }
 
-    
+        //filtrar frecuencia analisis
+        if($filters AND $filters['frecuencia_analisis']){
+            if(!in_array('-1', $filters['frecuencia_analisis'])){
+                $Nodos = $Nodos->filter(function($N) use ($filters){
+                    if(!$N['elemento']) return true;
+                    if($N['tipo'] == 'Indicador') return in_array($N['elemento']['FrecuenciaAnalisis'], $filters['frecuencia_analisis']);
+                    if($N['tipo'] == 'Variable')  return in_array($N['elemento']['Frecuencia'],         $filters['frecuencia_analisis']);
+                    return true;   
+                }); 
+            }
+        }
+
 
         $ScoN->getValoresCache($Nodos, $Anio);
 
@@ -164,7 +175,7 @@ class ScorecardsController extends Controller
 
         foreach ($NodosFlat as $i => &$N) { $N['i'] = $i; };
 
-        $Sco->nodo = $Nodo;
+        //$Sco->nodo = $Nodo;
         $Sco->nodos_flat = $NodosFlat;
 
         return $Sco;

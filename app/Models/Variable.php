@@ -46,6 +46,8 @@ class Variable extends MyModel
 			[ 'Agrupador',				'Agrupador',		null, true, false, null, 100 ],
 			[ 'Col',					'Col',				null, true, false, null, 100 ],
 			[ 'Filtros',				'Filtros',			null, true, false, null, 100 ],
+			[ 'DiasDesde',				'DiasDesde',		null, true, false, null, 100 ],
+			[ 'DiasHasta',				'DiasHasta',		null, true, false, null, 100 ],
 		];
 	}
 

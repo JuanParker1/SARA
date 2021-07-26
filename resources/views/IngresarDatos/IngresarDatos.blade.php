@@ -32,9 +32,9 @@
 
 	</div>
 
-	<div flex layout class="bg-theme" ng-show="!Loading">
+	<div flex layout=column class="bg-theme overflow-y" ng-show="!Loading">
 		
-		<md-table-container flex class="">
+		<md-table-container class="">
 			<table md-table class="md-table-short table-col-compress border-bottom">
 				<thead md-head>
 					<tr md-row class="">
@@ -49,7 +49,7 @@
 					</tr>
 				</thead>
 				<tbody md-body class="text-14px" >
-					<tr md-row ng-repeat="V in filteredVariables | orderBy:'Variable' " class="md-row-hover">
+					<tr md-row ng-repeat="V in filteredVariables | orderBy:'Variable' " class="">
 						<td md-cell class="border-right">
 							{{ V.Variable }}
 							<md-button class="md-icon-button no-margin no-padding s25" ng-click="viewVariableDiag(V.id)">
@@ -57,13 +57,9 @@
 							</md-button>
 						</td>
 
-						<td md-cell ng-repeat="M in Meses" style="padding: 0 !important" class="md-cell-compress">
-							<md-input-container ng-repeat="VP in [ V.valores[Anio+M[0]] ]"
-								class="no-margin no-padding md-no-underline mw70" 
-								ng-class="{ 'bg-lightgrey': VP['readonly'], 'bg-yellow': VP['edited'] }">
-								<input type="text" ng-model="VP['new_Valor']" ng-change="markChanged(VP)" class="text-right border-right padding-right" ui-number-mask="0" 
-									autocomplete="new-password" ng-readonly="VP['readonly']" aria-label=a>
-							</md-input-container>
+						<td md-cell ng-repeat="M in Meses" style="padding: 0 5px 0 0 !important" class="md-cell-compress Pointer border-right grey-on-hover">
+							<div ng-repeat="VP in [ V.valores[Anio+M[0]] ]" class="w100p mh30 lh30 text-right"
+								ng-click="openVariableMenu($event, V, VP, M)">{{ VP.val }}</div>
 						</td>
 						
 						<td md-cell></td>
@@ -71,6 +67,8 @@
 				</tbody>
 			</table>
 		</md-table-container>
+
+		<div class="mh50 h50"></div>
 
 	</div>
 
@@ -80,3 +78,11 @@
 	</div>
 
 </div>
+
+
+<style type="text/css">
+	.grey-on-hover:hover{
+		background-color: #e8e8e8;
+		transition: all 0.3s;
+	}
+</style>

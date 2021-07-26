@@ -32,7 +32,7 @@
 		</md-input-container>
 	</div>
 
-	<div ng-if="inArray(C.Tipo, ['Entero','Decimal'])">
+	<div ng-if="inArray(C.Tipo, ['Entero','Decimal','Dinero'])">
 		<md-input-container md-no-float class="no-padding no-margin w50">
 			<input type="text" ng-model="C.Op1" class="h30" aria-label="L" placeholder="Min" ng-change="markChanged(C)">
 			<md-tooltip md-direction=right>Mínimo</md-tooltip>
@@ -44,6 +44,17 @@
 		<md-input-container md-no-float class="no-padding no-margin w50" ng-if="C.Tipo == 'Decimal'">
 			<input type="text" ng-model="C.Op3" class="h30" aria-label="L" placeholder="Dec" ng-change="markChanged(C)">
 			<md-tooltip md-direction=right>Decimales</md-tooltip>
+		</md-input-container>
+	</div>
+
+	<div ng-if="inArray(C.Tipo, ['Porcentaje'])">
+		<md-input-container md-no-float class="no-padding no-margin w50">
+			<input type="text" ng-model="C.Op4" class="h30" aria-label="L" placeholder="Min" ng-keyup="markChanged(C)" ui-percentage-mask="0">
+			<md-tooltip md-direction=right>Mínimo</md-tooltip>
+		</md-input-container>
+		<md-input-container md-no-float class="no-padding no-margin w50">
+			<input type="text" ng-model="C.Op5" class="h30" aria-label="L" placeholder="Max" ng-keyup="markChanged(C)" ui-percentage-mask="0">
+			<md-tooltip md-direction=right>Máximo</md-tooltip>
 		</md-input-container>
 	</div>
 

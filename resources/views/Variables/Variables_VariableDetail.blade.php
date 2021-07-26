@@ -1,6 +1,6 @@
 <div flex layout=column class="padding-5 overflow-y darkScroll">
 		<div layout class="">
-			<md-button class="md-icon-button no-margin no-padding s30" aria-label="b" ng-click="VariablesNav = !VariablesNav" style="margin-top: 2px !important">
+			<md-button class="md-icon-button no-margin no-padding s30 no-show-on-dialog" aria-label="b" ng-click="Storage.VariablesNav = !Storage.VariablesNav" style="margin-top: 2px !important">
 				<md-icon md-svg-icon="md-bars" class=""></md-icon>
 			</md-button>
 			<md-input-container class="margin-bottom" flex>
@@ -10,7 +10,7 @@
 			<md-input-container class="margin-bottom">
 				<label>Tipo</label>
 				<md-select ng-model="VarSel.Tipo" aria-label=s>
-					<md-option ng-value="Op" ng-repeat="Op in ['Valor Fijo', 'Calculado de Entidad', 'Manual']">{{ Op }}</md-option>
+					<md-option ng-value="Op" ng-repeat="Op in ['Manual', 'Calculado de Entidad']">{{ Op }}</md-option>
 				</md-select>
 			</md-input-container>
 			<div class="w15"></div>
@@ -39,7 +39,7 @@
 					<md-option ng-value="'No'">No</md-option>
 				</md-select>
 			</md-input-container>
-			<md-button class="md-icon-button no-margin" aria-label="Button" ng-click="Cancel()">
+			<md-button class="md-icon-button no-margin show-only-on-dialog" aria-label="Button" ng-click="Cancel()">
 				<md-icon md-svg-icon="md-close"></md-icon>
 			</md-button>
 		</div>
@@ -65,14 +65,6 @@
 		<div class="bg-white border border-radius text-14px" layout=column ng-show="VarSel.Tipo == 'Calculado de Entidad'">
 			<div class="md-subheader padding-but-bottom">Configuración de Entidad</div>
 			<div layout layout-wrap class="padding-5">
-				<!--<md-input-container class="margin-bottom-5 md-no-float" flex=50>
-					<label>Entidad - Grid</label>
-					<md-select ng-model="VarSel.grid_id">
-						<md-option ng-value="Op.id" ng-repeat="Op in Grids">
-							<span class="text-clear">{{ Op.entidad.Nombre }} - </span><span class="">{{ Op.Titulo }}</span>
-						</md-option>
-					</md-select>
-				</md-input-container>-->
 
 				<div class="border-radius margin-5 padding-5-10 mw200 bg-lightgrey-5 border Pointer" ng-click="seleccionarEntidadGrid()">
 					<div class="text-clear" ng-show="VarSel.grid_id === null">Seleccionar Entidad - Grid</div>
@@ -107,12 +99,12 @@
 
 				<div flex=100 layout=column class="padding-5 margin-top-5" ng-show="VarSel.Filtros.length > 0">
 					<div class="md-subheader border-bottom padding-bottom-5" >Condiciones</div>
-					<div layout ng-repeat="(kR,R) in VarSel.Filtros" class="h30 lh30 border-bottom">
+					<div layout ng-repeat="(kR,R) in VarSel.Filtros" class="mh30 lh30 border-bottom">
 						<md-icon md-svg-icon="{{ TiposCampo[R.tipo_campo].Icon }}" class="margin-right-5 s20"></md-icon>
-						<div class="margin-right mw150">{{ R.column_title }}</div>
+						<div class="margin-right mw150" layout layout-align="start center">{{ R.column_title }}</div>
 						@include('Entidades.Entidades_Restricciones_Inputs')
-						<span flex></span>
-						<md-button class="md-icon-button no-margin no-padding s30" ng-click="removeArrayElm(VarSel.Filtros, kR)"><md-icon md-svg-icon="md-close"></md-icon></md-button>
+						<md-button class="md-icon-button no-margin no-padding s30 focus-on-hover" ng-click="viewDistinctValues(R)"><md-icon md-svg-icon="md-list"><md-tooltip md-direction=left>Ver Valores</md-tooltip></md-icon></md-button>
+						<md-button class="md-icon-button no-margin no-padding s30 focus-on-hover" ng-click="removeArrayElm(VarSel.Filtros, kR)"><md-icon md-svg-icon="md-close"><md-tooltip md-direction=left>Remover</md-tooltip></md-icon></md-button>
 					</div>
 				</div>
 				<md-input-container flex=100 class="no-margin" layout ng-show="VarSel.grid_id !== null">
@@ -137,13 +129,30 @@
 						<tr md-row class="" ng-repeat="A in [AnioActual-2, AnioActual-1, AnioActual, AnioActual + 1]">
 							<td md-cell class="w30 text-bold">{{ A }}</td>
 							<td md-cell class="text-right mw50 Pointer md-cell-hover" ng-repeat="M in Meses"
-								ngs-click="editValor(A+M[0])"
 								ng-click="editValor2($event, A+M[0])">{{ VarSel.valores[A+M[0]].val }}</td>
 						</tr>
 					</tbody>
 				</table>
 			</md-table-container>
 		</div>
+
+		<div layout=column ng-show="VarSel.Tipo == 'Manual'" class="margin-top-20 padding-left-5">
+			<div class="md-subheader">Opciones de Diligenciamiento</div>
+			<p class="margin-top margin-bottom text-clear text-14px">Los valores de esta variable pueden ser editados por los usuarios en estos dias a partir de la fecha de cierre.</p>
+			<div layout>
+				<md-input-container flex>
+					<label>Días Desde (Por Defecto: {{ Configuracion.VARIABLES_DIAS_DESDE.Valor }})</label>
+					<input type="number" ng-model="VarSel.DiasDesde" autocomplete="off">
+				</md-input-container>
+
+				<md-input-container flex>
+					<label>Días Hasta (Por Defecto: {{ Configuracion.VARIABLES_DIAS_HASTA.Valor }})</label>
+					<input type="number" ng-model="VarSel.DiasHasta" autocomplete="off">
+				</md-input-container>
+			</div>
+		</div>
+		
+
 
 		<div class="h50"></div>
 

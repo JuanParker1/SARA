@@ -1,7 +1,7 @@
-<div ng-if="inArray(R.campo.Tipo, ['Texto','TextoLargo','Booleano','Entidad'])">
+<div flex ng-if="inArray(R.campo.Tipo, ['Texto','TextoLargo','Booleano','Entidad','Lista'])" layout layout-align="start center">
 
 	<md-input-container class="no-padding no-margin">
-		<md-select ng-model="R.Comparador" class="mw120" aria-label="s" ng-change="markChanged(R)">
+		<md-select ng-model="R.Comparador" class="mw120 md-no-underline" aria-label="s" ng-change="prepComparador(R)">
 			<md-option value="=">Es</md-option>
 			<md-option value="!=">No Es</md-option>
 			<md-option value="like">Contiene</md-option>
@@ -10,18 +10,42 @@
 			<md-option value="notlike">No Contiene</md-option>
 			<md-option value="notlike_">No Empieza con</md-option>
 			<md-option value="_notlike">No Termina con</md-option>
+			<md-option value="in">Incluye</md-option>
+			<md-option value="not_in">No Incluye</md-option>
 			<md-option value="nulo">Es nulo</md-option>
 			<md-option value="no_nulo">No es nulo</md-option>
 		</md-select>
 	</md-input-container>
 
-	<md-input-container class="no-padding no-margin" md-no-float ng-hide="inArray(R.Comparador, ['nulo','no_nulo'])">
+	<md-input-container class="no-padding no-margin" md-no-float ng-if="!inArray(R.Comparador, ['in','not_in','nulo','no_nulo'])">
 		<input type="text" ng-model="R.Valor" aria-label="v" placeholder="Valor" ng-change="markChanged(R)">
 	</md-input-container>
 
+	<div ng-if="inArray(R.Comparador, ['in','not_in'])" flex layout layout-wrap style="padding-bottom: 0px;">
+		
+		<div ng-repeat="(kV, V) in R.Valor" class="bg-lightgrey-5 text-12px border border-rounded padding-left" 
+			layout style="min-height: 24px; line-height: 23px; margin: 3px 3px 0 0; max-width: 100%;">
+			{{ V }}
+			<md-icon md-svg-icon="md-close" class="s20 focus-on-hover Pointer" style="margin: 1px 3px 0 2px;" 
+				ng-click="removeFiltroOption(R, kV)"></md-icon>
+		</div>
+
+		<md-input-container class="h25 lh25 w100 no-margin no-padding" md-no-float>
+		 	<input type="text" ng-model="R.newValor" placeholder="Agregar" class="no-padding" enter-stroke="pushFiltroOption(R)">
+		</md-input-container>
+
+		<md-button class="md-icon-button bg-lightgrey-5 border s25 no-padding no-margin-left" 
+			style="margin-top: 2px; max-width: 100%;"
+			ng-click="addFiltroOption(R)">
+			<md-icon md-svg-icon="md-search" class="s15"></md-icon>
+			<md-tooltip md-direction=right>Buscar Valores</md-tooltip>
+		</md-button>
+	</div>
+
+
 </div>
 
-<div ng-if="inArray(R.campo.Tipo, ['Entero','Decimal'])">
+<div flex ng-if="inArray(R.campo.Tipo, ['Entero','Decimal'])">
 
 	<md-input-container class="no-padding no-margin">
 		<md-select ng-model="R.Comparador" class="" aria-label="s" ng-change="markChanged(R)">
@@ -66,16 +90,4 @@
 		<md-datepicker ng-model="R.Valor" ng-change="markChanged(R)" placeholder="Valor" aria-label=f></md-datepicker>
 	</md-input-container>
 
-</div>
-
-<div ng-if="inArray(R.campo.Tipo, ['Lista'])" layout>
-	<md-input-container class="no-padding no-margin">
-		<md-select ng-model="R.Comparador" class="mw120 margin-right" aria-label="s" ng-change="markChanged(R)">
-			<md-option value="in">Es</md-option>
-			<md-option value="not_in">No Es</md-option>
-		</md-select>
-	</md-input-container>
-	<md-select ng-model="R.Valor" class="md-select-inline no-margin" flex aria-label="s" ng-change="markChanged(R)" multiple="true">
-		<md-option ng-repeat="Op in R.campo.Config.opciones" ng-value="Op.value">{{ Op.desc || Op.value }}</md-option>
-	</md-select>
 </div>

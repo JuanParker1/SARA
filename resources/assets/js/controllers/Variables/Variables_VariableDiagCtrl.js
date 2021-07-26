@@ -91,7 +91,7 @@ angular.module('Variables_VariableDiagCtrl', [])
 
         //Menu
         Ctrl.openMenuValores = (ev, Periodo) => {
-            var Val = Ctrl.Var.valores[Periodo].Valor;
+            var Val = Ctrl.Var.valores[Periodo] || {};
             Rs.viewVariableMenu(ev, Ctrl.Var, Periodo, Val, Ctrl.getVariables);
         };
 

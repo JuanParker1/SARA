@@ -354,4 +354,39 @@ class Helper
         return $Query;
     }
 
+
+    public static function getConfiguracion()
+    {
+        $ConfDef = [
+            'VARIABLES_DIAS_DESDE' => [ 'Tipo' => 'Numero', 'Valor' => 10 ],
+            'VARIABLES_DIAS_HASTA' => [ 'Tipo' => 'Numero', 'Valor' => 30 ],
+        ];
+        
+        $Conf = \App\Models\Configuracion::get();
+
+        foreach ($Conf as $C) {
+            $ConfDefElm = &$ConfDef[$C->Configuracion];
+            $Valor = $C->Valor;
+            if($ConfDefElm['Tipo'] == 'Numero') $Valor = intval($Valor);
+
+            $ConfDefElm['Valor'] = $Valor;
+        }
+
+        return $ConfDef;
+    }
+
+    public static function saveConfiguracion($Arr)
+    {
+        foreach ($Arr as $ConfKey => $C) {
+            if(!array_key_exists('changed', $C)) continue;
+            if(!$C['changed']) continue;
+            $Conf = \App\Models\Configuracion::firstOrCreate([
+                'Configuracion' => $ConfKey
+            ]);
+            $Conf->Valor = $C['Valor'];
+            $Conf->save();
+        }
+    }
+
+
 }

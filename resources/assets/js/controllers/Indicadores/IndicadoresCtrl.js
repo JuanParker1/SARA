@@ -6,7 +6,7 @@ angular.module('IndicadoresCtrl', [])
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 		Ctrl.IndSel = null;
-		Ctrl.IndicadoresNav = true;
+		if(!('IndicadoresNav' in Rs.Storage) || !Rs.Storage.IndicadorSel) Rs.Storage.IndicadoresNav = true;
 		Rs.mainTheme = 'Snow_White';
 		Ctrl.tiposDatoInd = ['Numero','Porcentaje','Moneda','Millones'];
 		Ctrl.OpsUsar = [
@@ -29,12 +29,12 @@ angular.module('IndicadoresCtrl', [])
 			Ctrl.IndicadoresCRUD.get().then(() => {
 				//Ctrl.getFs();
 
-				console.timeEnd('Obtener Indicadores');
+				//console.timeEnd('Obtener Indicadores');
 				Ctrl.IndicadoresLoaded = true;
 
 				console.time('Obtener Variables');
 				Ctrl.VariablesCRUD.get().then(() => {
-					console.timeEnd('Obtener Variables');
+					//console.timeEnd('Obtener Variables');
 				});
 
 				if(Rs.Storage.IndicadorSel){
@@ -59,7 +59,10 @@ angular.module('IndicadoresCtrl', [])
 			
 		};
 
-		Ctrl.openProceso = (P) => { Ctrl.ProcesoSelId = P.id; }
+		Ctrl.openProceso = (P) => { 
+			Ctrl.ProcesoSelId = P.id;
+			Ctrl.IndSel = null;
+		}
 
 		Ctrl.getIndicadoresFiltered = () => {
 			if(Ctrl.filterIndicadores.trim() == ''){
@@ -90,27 +93,21 @@ angular.module('IndicadoresCtrl', [])
 		};
 
 		Ctrl.addIndicador = (route) => {
-			if(route){
-				var route = route.split('\\').slice(0, -1).join('\\');
-				proceso_id = Rs.def(Ctrl.Procesos.filter(e => e.Ruta == route).pop().id, null);
-			}else{
-				proceso_id = null;
-			};
 
 			$mdDialog.show({
 				controller: 'Indicadores_AddDiagCtrl',
 				templateUrl: 'Frag/Indicadores.Indicadores_AddDiag',
-				locals: { proceso_id: proceso_id, tiposDatoInd : Ctrl.tiposDatoInd, Procesos: Ctrl.Procesos },
+				locals: { proceso_id: Ctrl.ProcesoSelId, tiposDatoInd : Ctrl.tiposDatoInd, Procesos: Ctrl.Procesos },
 				clickOutsideToClose: false, fullscreen: false, multiple: true
 			}).then(newInd => {
 				if(!newInd) return;
-				Rs.http('api/Indicadores/add-indicador', { newInd: newInd }).then(() => {
+				Rs.http('api/Indicadores/add-indicador', { newInd: newInd }).then(r => {
+					Rs.Storage.IndicadorSel = r.id;
 					Rs.showToast('Indicador Agregado', 'Success');
 					Ctrl.getIndicadores();
 				});
 			});
 
-			console.log(proceso_id);
 		};
 
 		Ctrl.openIndicador = (V) => {
@@ -135,7 +132,7 @@ angular.module('IndicadoresCtrl', [])
 
 		Ctrl.updateIndicador = () => {
 			Ctrl.IndicadoresCRUD.update(Ctrl.IndSel).then(() => {
-				Rs.showToast('Indicador Actualizada', 'Success');
+				Rs.showToast('Indicador Actualizado', 'Success');
 				Ctrl.saveVariables();
 				//Ctrl.openIndicador(Ctrl.IndSel);
 			});
@@ -372,11 +369,12 @@ angular.module('IndicadoresCtrl', [])
 		console.time('Resolver Promesas');
 		
 		Promise.all([
-			Rs.getProcesos(Ctrl)
+			Rs.getProcesos(Ctrl),
+			Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids')
 			//,Ctrl.VariablesCRUD.get()
 		]).then(() => {
 			
-			console.timeEnd('Resolver Promesas');
+			//console.timeEnd('Resolver Promesas');
 			console.time('Obtener Indicadores');
 			Rs.getProcesosFS(Ctrl);
 			Ctrl.getIndicadores();
