@@ -139,11 +139,13 @@ class ScorecardNodo extends MyModel
 
 		foreach ($Nodos as $Nodo) {
 			if($Nodo->tipo == 'Variable')  {
-				$Nodo->elemento = $Variables[$Nodo->elemento_id];
+				$Nodo->elemento = $Variables->get($Nodo->elemento_id);
+				if(!$Nodo->elemento) abort(512, "{$Nodo->elemento_id}, {$Nodo->Nodo}, Variable no encontrada");
 				if($Nodo->elemento) $Nodo->Nodo = $Nodo->elemento->Variable;
 			}
 			if($Nodo->tipo == 'Indicador') {
-				$Nodo->elemento = $Indicadores[$Nodo->elemento_id];
+				$Nodo->elemento = $Indicadores->get($Nodo->elemento_id);
+				if(!$Nodo->elemento) abort(512, "{$Nodo->elemento_id}, {$Nodo->Nodo}, Indicador no encontrado");
 				if($Nodo->elemento) $Nodo->Nodo = $Nodo->elemento->Indicador;
 			}
 		};
@@ -207,7 +209,7 @@ class ScorecardNodo extends MyModel
 				
 				$NodoValores = $IndicadorValores[$N->elemento_id];
 
-				if($NodoValores->updated_at > $N->elemento->updated_at){
+				if($N->elemento AND $NodoValores->updated_at > $N->elemento->updated_at){
 					$N->valores = $NodoValores->valores;
 				}
 			}
@@ -334,7 +336,7 @@ class ScorecardNodo extends MyModel
 
 			foreach ($this->nodos as $subnodo) {
 				
-				if($subnodo->tipo == 'Indicador'){
+				if($subnodo->tipo == 'Indicador' AND $subnodo->valores){
 					
 					$cum_porc_total = 0;
 					$meses_calculables = 0;
@@ -402,7 +404,7 @@ class ScorecardNodo extends MyModel
 		$this->nodos = $this->nodos->sortBy(function($N) use ($filters){
 			if($N->tipo == 'Nodo') return 1000;
 			if($N->tipo == 'Variable') return 1;
-			if($N->tipo == 'Indicador'){
+			if($N->tipo == 'Indicador' AND $N->valores){
 				$cump_porc = $N->valores[$filters['Periodo']]['cump_porc'];
 				return is_null($cump_porc) ? -1 : $cump_porc;
 			}
