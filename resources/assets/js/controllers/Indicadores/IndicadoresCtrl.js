@@ -138,7 +138,17 @@ angular.module('IndicadoresCtrl', [])
 			});
 		};
 
-
+		Ctrl.deleteIndicador = () => {
+			Rs.confirmDelete({
+				Title: '¿Eliminar el Indicador: "'+Ctrl.IndSel.Indicador+'"?',
+			}).then(() => {
+				Rs.http('/api/Indicadores/delete', { id: Ctrl.IndSel.id }).then(() => {
+					Ctrl.IndSel = null;
+					Rs.Storage.IndicadorSel = null;
+					Ctrl.getIndicadores();
+				});
+			});
+		}
 
 		
 			

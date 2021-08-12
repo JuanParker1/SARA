@@ -206,8 +206,6 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 
 		Ctrl.downloadIndicadores = () => {
 
-			
-
 	        var SheetData = [
 	        	['Indicador', 'Proceso', 'Sentido', 'Periodo', 'Meta', 'Real', 'Cumplimiento', 'Peso']
 	        ];
@@ -234,27 +232,23 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 	        	if(N.tipo !== 'Nodo'){
 
 	        		angular.forEach(N.valores, P => {
-	        			if(P.calculable){
-	        				let Fila = [
-			        			N.Nodo,
-			        			N.elemento.proceso.Proceso,
-			        			N.elemento.Sentido,
-			        			P.Periodo,
-			        			P.meta_Valor,
-			        			P.Valor,
-			        			P.cump_porc,
-			        			N.peso
-			        		];
+						let Fila = [
+							N.Nodo,
+							N.elemento.proceso.Proceso,
+							N.elemento.Sentido,
+							P.Periodo,
+							P.meta_Valor,
+							P.Valor,
+							P.cump_porc,
+							N.peso
+						];
 
-			        		angular.forEach(N.ruta_arr, RA => {
-			        			Fila.push(RA);
-			        		});
+						angular.forEach(N.ruta_arr, RA => {
+							Fila.push(RA);
+						});
 
-			        		SheetData.push(Fila);
-	        			}
+						SheetData.push(Fila);
 	        		});
-
-	        		
 	        	}
 	        });
 

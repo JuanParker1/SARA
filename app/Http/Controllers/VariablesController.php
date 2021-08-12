@@ -61,7 +61,7 @@ class VariablesController extends Controller
         $Variables = Variable::whereIn('proceso_id', $ProcesosIds)->get();
 
         foreach ($Variables as $V) {
-            $V['valores'] = $V->getVals($Anio);
+            $V['valores'] = $V->getVals($Anio, false);
         }
 
         return $Variables;

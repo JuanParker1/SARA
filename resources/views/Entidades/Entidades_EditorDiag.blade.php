@@ -30,7 +30,8 @@
 
 		<div layout>
 			<span flex></span>
-			<md-button class="md-raised margin-5 text-16px" ng-style="{ backgroundColor: Config.color, color: Config.textcolor }" 
+			<md-button class="md-raised margin-5 text-16px" 
+				ng-style="{ backgroundColor: Config.color, color: Config.textcolor }" 
 				type=submit form=EditorForm>{{ (Config.modo == 'Crear') ? 'Crear' : 'Guardar' }}</md-button>
 		</div>
 	</div>

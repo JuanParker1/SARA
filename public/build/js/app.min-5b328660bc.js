@@ -1578,19 +1578,6 @@ angular.module('TableDialogCtrl', [])
 
 	}
 ]);
-angular.module('FuncionesCtrl', [])
-.controller('FuncionesCtrl', ['$scope', '$rootScope', '$injector', '$filter',
-	function($scope, $rootScope, $injector, $filter) {
-
-		console.info('FuncionesCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.FuncionSel = null;
-		Ctrl.FuncionesNav = true;
-		Rs.mainTheme = 'Snow_White';
-		
-	}
-]);
 angular.module('EntidadesCamposCtrl', [])
 .controller('EntidadesCamposCtrl', ['$scope', '$rootScope', 
 	function($scope, $rootScope) {
@@ -2358,6 +2345,10 @@ angular.module('Entidades_EditorDiagCtrl', [])
 		Ctrl.enviarDatos = (ev) => {
 			//return console.log(ev);
 
+			//Validar Cambios
+			if(Ctrl.EditorForm.$invalid) return Rs.showToast('Falta información, por favor verifique y reintente.', 'Error');
+;
+
 			Ctrl.loading = true;
 			Rs.http('api/Entidades/editor-save', { Editor: Ctrl.Editor, Config: Ctrl.Config }).then(() => {
 				Ctrl.loading = false;
@@ -3070,6 +3061,19 @@ angular.module('Entidades_VerCamposCtrl', [])
 		};
 	}
 ]);
+angular.module('FuncionesCtrl', [])
+.controller('FuncionesCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('FuncionesCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.FuncionSel = null;
+		Ctrl.FuncionesNav = true;
+		Rs.mainTheme = 'Snow_White';
+		
+	}
+]);
 angular.module('IndicadoresCtrl', [])
 .controller('IndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$mdDialog', '$http',
 	function($scope, $rootScope, $injector, $filter, $mdDialog, $http) {
@@ -3210,7 +3214,17 @@ angular.module('IndicadoresCtrl', [])
 			});
 		};
 
-
+		Ctrl.deleteIndicador = () => {
+			Rs.confirmDelete({
+				Title: '¿Eliminar el Indicador: "'+Ctrl.IndSel.Indicador+'"?',
+			}).then(() => {
+				Rs.http('/api/Indicadores/delete', { id: Ctrl.IndSel.id }).then(() => {
+					Ctrl.IndSel = null;
+					Rs.Storage.IndicadorSel = null;
+					Ctrl.getIndicadores();
+				});
+			});
+		}
 
 		
 			
@@ -4982,8 +4996,6 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 
 		Ctrl.downloadIndicadores = () => {
 
-			
-
 	        var SheetData = [
 	        	['Indicador', 'Proceso', 'Sentido', 'Periodo', 'Meta', 'Real', 'Cumplimiento', 'Peso']
 	        ];
@@ -5010,27 +5022,23 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 	        	if(N.tipo !== 'Nodo'){
 
 	        		angular.forEach(N.valores, P => {
-	        			if(P.calculable){
-	        				let Fila = [
-			        			N.Nodo,
-			        			N.elemento.proceso.Proceso,
-			        			N.elemento.Sentido,
-			        			P.Periodo,
-			        			P.meta_Valor,
-			        			P.Valor,
-			        			P.cump_porc,
-			        			N.peso
-			        		];
+						let Fila = [
+							N.Nodo,
+							N.elemento.proceso.Proceso,
+							N.elemento.Sentido,
+							P.Periodo,
+							P.meta_Valor,
+							P.Valor,
+							P.cump_porc,
+							N.peso
+						];
 
-			        		angular.forEach(N.ruta_arr, RA => {
-			        			Fila.push(RA);
-			        		});
+						angular.forEach(N.ruta_arr, RA => {
+							Fila.push(RA);
+						});
 
-			        		SheetData.push(Fila);
-	        			}
+						SheetData.push(Fila);
 	        		});
-
-	        		
 	        	}
 	        });
 
