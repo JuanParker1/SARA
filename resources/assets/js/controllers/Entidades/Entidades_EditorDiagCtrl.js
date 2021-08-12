@@ -68,6 +68,10 @@ angular.module('Entidades_EditorDiagCtrl', [])
 		Ctrl.enviarDatos = (ev) => {
 			//return console.log(ev);
 
+			//Validar Cambios
+			if(Ctrl.EditorForm.$invalid) return Rs.showToast('Falta información, por favor verifique y reintente.', 'Error');
+;
+
 			Ctrl.loading = true;
 			Rs.http('api/Entidades/editor-save', { Editor: Ctrl.Editor, Config: Ctrl.Config }).then(() => {
 				Ctrl.loading = false;

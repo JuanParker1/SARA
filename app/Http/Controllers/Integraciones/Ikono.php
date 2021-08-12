@@ -30,8 +30,6 @@ class Ikono {
             ]
         ]);
 
-        //return $BaseRegs;
-
         $BaseRegs->transform(function($Reg){
             
             foreach (['TESPERA','THABLA','TIVR','TRETENCION'] as $Campo) {
@@ -40,6 +38,7 @@ class Ikono {
 
             $Reg['FECHA'] = substr($Reg['FECHAHORA'], 0, 10);
             $FechaArr = explode('-', $Reg['FECHA']);
+            if(count($FechaArr) < 2) dd($Reg);
             $Reg['PERIODO'] = $FechaArr[0] . $FechaArr[1];
             
             unset($Reg['ANI']);
@@ -49,18 +48,16 @@ class Ikono {
             return $Reg;
         });
 
-
-
         $Bdd = \App\Models\BDD::where('id', 1)->first();
         $Conn = ConnHelper::getConn($Bdd);
 
-        //$Conn->statement('TRUNCATE TABLE BDSALUD.TBSRRUAFNV');
+        $Conn->statement('TRUNCATE TABLE BDSALUD.TBSRRUAFNV');
 
         foreach (array_chunk($BaseRegs->toArray(), 1000) as $Regs) {
             $Conn->table('BDSALUD.TBSRCCLLAM')->insert($Regs);
         }
 
-        //$Conn->table('BDSALUD.TBSRRUAFNV')->insert($BaseRegs->toArray());
+        $Conn->table('BDSALUD.TBSRRUAFNV')->insert($BaseRegs->toArray());
 
         return [ 'regs' => count($BaseRegs) ];
     }

@@ -180,7 +180,21 @@ class IndicadoresController extends Controller
 
     }
 
+    public function postDelete()
+    {
+        extract(request()->all()); //id
+        $Indicador = Indicador::where('id', $id)->first();
 
+        //Borrar Nodos Tableros
+        \App\Models\ScorecardNodo::where('tipo', 'Indicador')->where('elemento_id', $id)->delete();
+
+        //Borrar 
+        $Indicador->metas()->delete();
+        $Indicador->componentes()->delete();
+        $Indicador->valorescache()->delete();
+
+        $Indicador->delete();
+    }
 
 
     //Variables

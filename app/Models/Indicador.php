@@ -46,6 +46,21 @@ class Indicador extends MyModel
 		return $this->belongsTo('\App\Models\Proceso', 'proceso_id');
 	}
 
+	public function metas()
+	{
+		return $this->hasMany('\App\Models\IndicadorMeta', 'indicador_id');
+	}
+
+	public function componentes()
+	{
+		return $this->hasMany('\App\Models\IndicadorVariable', 'indicador_id');
+	}
+
+	public function valorescache()
+	{
+		return $this->hasMany('\App\Models\IndicadorValor', 'indicador_id');
+	}
+
 	//Scope
 	public function scopeProceso($q, $proceso_id)
 	{

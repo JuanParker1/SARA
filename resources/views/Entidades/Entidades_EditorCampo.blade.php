@@ -59,6 +59,9 @@
 	<md-select ng-model="C.val" name="c{{ C.id }}" ng-required="C.Requerido" class="w100p" ng-disabled="!C.Editable">
 		<md-option ng-repeat="Op in C.campo.Config.opciones" ng-value="Op.value">{{ Op.desc == '' ? Op.value : Op.desc }}</md-option>
 	</md-select>
+	<div class="errors" ng-messages="EditorForm['c'+C.id].$error">
+		<div ng-message="required">Requerido</div>
+	</div>
 </md-input-container>
 
 

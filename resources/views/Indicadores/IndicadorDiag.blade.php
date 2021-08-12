@@ -72,6 +72,11 @@
 							<tr md-row class="md-row-hover">
 								<td md-cell class="">Meta</td><td md-cell class="" ng-repeat="V in Ind.valores">{{ V.meta_val }}</td>
 							</tr>
+							<tr md-row class="md-row-hover">
+								<td md-cell class="">Cumplimiento</td><td md-cell class="" ng-repeat="V in Ind.valores">
+									<span ng-show="V.calculable" ng-style="{ color: V.color }">{{ V.cump_porc | percentage:1 }}</span>
+								</td>
+							</tr>
 							
 							<tr md-row class="md-row-hover" ng-show="modoComparativo">
 								<td md-cell class="">Resultado {{ Anio-1 }}</td><td md-cell class="" ng-repeat="V in Ind.valores"><span ng-style="{ color: V.anioAnt_color }">{{ V.anioAnt_val }}</span></td>
