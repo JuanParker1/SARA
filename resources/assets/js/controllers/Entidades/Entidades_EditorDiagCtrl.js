@@ -36,7 +36,13 @@ angular.module('Entidades_EditorDiagCtrl', [])
 				}
 
 				if(C.campo.Tipo == 'Dinero'){
-					C.val = Number(C.val.replace('$', '').replaceAll('.', '').trim());
+					if(C.val) C.val = Number(C.val.replace('$', '').replaceAll('.', '').trim());
+				}
+
+				if(C.campo.Tipo == 'Porcentaje'){
+					if(C.val) C.val = C.val.replace('%', '').replaceAll('.', '').replaceAll(',', '.').trim() / 100;
+					//C.val = '190.0%';
+					console.log(C.val);
 				}
 
 			});

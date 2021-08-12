@@ -6,7 +6,7 @@ angular.module('VariablesCtrl', [])
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 		Ctrl.VarSel = null;
-		Ctrl.VariablesNav = true;
+		if(!('VariablesNav' in Rs.Storage) || !Rs.Storage.VariableSel) Rs.Storage.VariablesNav = true;
 		Rs.mainTheme = 'Snow_White';
 		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Variables' });
 		Ctrl.filterVariables = '';
@@ -14,14 +14,6 @@ angular.module('VariablesCtrl', [])
 		Ctrl.Cancel = $mdDialog.cancel;
 
 		Ctrl.tiposDatoVar = ['Numero','Porcentaje','Moneda','Millones'];
-		Ctrl.Frecuencias = {
-			0: 'Diario',
-			1: 'Mensual',
-			2: 'Bimestral',
-			3: 'Trimestral',
-			6: 'Semestral',
-			12: 'Anual'
-		};
 
 		Ctrl.agregators = Rs.agregators;
 
@@ -119,12 +111,13 @@ angular.module('VariablesCtrl', [])
 				Rs.Storage.VariableSel = Ctrl.VarSel.id;
 
 				//Rs.viewVariableDiag(Ctrl.VarSel.id);
+				//Ctrl.viewDistinctValues(Ctrl.VarSel.Filtros[0]);
 			});
 		};
 
 		Ctrl.updateVariable = () => {
 			Ctrl.VariablesCRUD.update(Ctrl.VarSel).then(() => {
-				Rs.showToast('Variable Actualizada', 'Success');
+				Rs.showToast('Variable Actualizada', 'Success', 1000);
 				Ctrl.openVariable(Ctrl.VarSel);
 			});
 		};
@@ -142,6 +135,53 @@ angular.module('VariablesCtrl', [])
 			});
 			Ctrl.newFiltro = null;
 		};
+
+		Ctrl.prepComparador = (R) => {
+			if(Rs.inArray(R.Comparador, ['in','not_in'])){
+				R.Valor = [];
+			}else{
+				R.Valor = null;
+			}
+		}
+
+		Ctrl.pushFiltroOption = (R) => {
+			var new_valor = angular.copy(R.newValor);
+			if(!new_valor || new_valor.trim() == '') return;
+
+			R.Valor.push(new_valor);
+			R.newValor = null;
+		}
+
+		Ctrl.addFiltroOption = async (R) => {
+
+			if(R.campo.Tipo == 'Lista'){
+				var values = R.campo.Config.opciones.map(e => ({ Nombre: e.value }) );
+			}else{
+				var values = await Rs.http('api/Entidades/grid-get-distinct-values', { grid_id: Ctrl.VarSel.grid_id, campo_id: R.campo_id });
+			}
+				
+			//filter values
+			values = values.filter(e => {
+				return !R.Valor.includes(e.Nombre);
+			});
+
+			Rs.TableDialog(values, {
+				Title: 'Seleccionar Opciones',
+				Columns: [
+					{ Nombre: 'Nombre', Desc: 'Opción', numeric: false }
+				],
+				primaryId: 'Nombre', pluck: true
+			}).then(newValues => {
+				if(!newValues) return;
+				R.Valor = R.Valor.concat(newValues);
+				R.changed = true;
+			});
+		}
+
+		Ctrl.removeFiltroOption = (R, kV) => {
+			R.Valor.splice(kV, 1);
+			R.changed = true;
+		}
 
 		Ctrl.editValor = (Periodo) => {
 			var Valor = angular.isDefined(Ctrl.VarSel.valores[Periodo]) ? Ctrl.VarSel.valores[Periodo].Valor : null;
@@ -179,10 +219,9 @@ angular.module('VariablesCtrl', [])
 					if(Ctrl.VarSel.TipoDato == 'Porcentaje') newValor /= 100;
 					if(newValor == Valor) return;
 
-					Rs.http('/api/Variables/update-valor', { variable_id: Ctrl.VarSel.id, Periodo: Periodo, Valor: newValor }).then(() => {
+					return Rs.http('/api/Variables/update-valor', { variable_id: Ctrl.VarSel.id, Periodo: Periodo, Valor: newValor }).then(() => {
 						Ctrl.openVariable(Ctrl.VarSel);
 					});
-
 				}
 			});
 		}
@@ -240,7 +279,26 @@ angular.module('VariablesCtrl', [])
 
 		}
 
+		Ctrl.viewDistinctValues = (R) => {
+			Rs.http('api/Entidades/grid-get-distinct-values', { grid_id: Ctrl.VarSel.grid_id, campo_id: R.campo_id }).then(values => {
+				Rs.ListSelector(values, {
+					searchPlaceholder: 'Buscar '+R.column_title,
+					class: 'vh100'
+				}).then(value_sel => {
+					if(!value_sel) return;
+					if(Rs.inArray(R.Comparador, ['in','not_in'])){
+						R.Valor.push(value_sel.Nombre);
+					}else{
+						R.Valor = value_sel.Nombre;
+					}
+					
+				});
+			});
+		}
 
-		Ctrl.getVariables();
+		Rs.http('api/Main/get-configuracion', {}, Ctrl, 'Configuracion').then(() => {
+			Ctrl.getVariables();
+		});
+		
 	}
 ]);

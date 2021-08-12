@@ -9,7 +9,7 @@ function Indicadores_IndicadorDiag_ValorMenuCtrl(mdPanelRef, Periodo, Variable, 
 	};
 
 	Ctrl.Periodo = Periodo;
-	Ctrl.PeriodoDesc = Rs.Meses[parseInt(Periodo.substr(-2)) - 1][1] +' '+ parseInt(Periodo/100);
+	Ctrl.PeriodoDesc = Rs.Meses[parseInt(Periodo.substr(-2)) - 1][2] +' '+ parseInt(Periodo/100);
 	Ctrl.Variable = Variable;
 
 
@@ -18,9 +18,12 @@ function Indicadores_IndicadorDiag_ValorMenuCtrl(mdPanelRef, Periodo, Variable, 
 	Ctrl.changed = false;
 	Ctrl.editable = false;
 
-	if(Rs.Usuario.isGod) Ctrl.editable = true;
+	//if(Rs.Usuario.isGod) Ctrl.editable = true;
+	//if(Variable.Tipo == 'Manual' && Periodo >= Rs.PeriodoActual) Ctrl.editable = true;
 
-	if(Variable.Tipo == 'Manual' && Periodo >= Rs.PeriodoActual) Ctrl.editable = true;
+	Rs.http('api/Variables/can-edit', { Variable, Periodo }).then(r => {
+		Ctrl.editable = r.editable;
+	});
 
 	Ctrl.updateValor = () => {
 

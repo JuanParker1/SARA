@@ -227,6 +227,7 @@ angular.module('appFunctions', [])
 				remoteListName: 'Nombre',
 				remoteListLogo: false,
 				searchPlaceholder: 'Buscar',
+				class: ''
 			};
 			var Config = angular.extend(DefConfig, Config);
 

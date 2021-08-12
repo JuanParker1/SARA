@@ -61,7 +61,15 @@ angular.module('MainCtrl', [])
 			{ id: 'max',  			Nombre: 'Máximo' },
 		];
 
-
+		Rs.Frecuencias = {
+			0: 'Diario',
+			1: 'Mensual',
+			2: 'Bimestral',
+			3: 'Trimestral',
+			4: 'Cuatrimestral',
+			6: 'Semestral',
+			12: 'Anual'
+		};
 
 		if (window.self != window.top) {
 			$(document.body).addClass("in-iframe");

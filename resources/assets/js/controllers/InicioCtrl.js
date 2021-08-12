@@ -9,7 +9,7 @@ angular.module('InicioCtrl', [])
 
 		//Rs.mainTheme = 'Snow_White';
 		Rs.mainTheme = 'Black';
-		Rs.InicioSidenavOpen = $mdMedia('min-width: 750px');
+		if(!('InicioSidenav' in Rs.Storage)) Rs.Storage.InicioSidenav = $mdMedia('min-width: 750px');
 
 
 

@@ -28,15 +28,16 @@ class Indicador extends MyModel
 	{
 		//Name, Desc, Type, Required, Unique, Default, Width, Options
 		return [
-			[ 'id',						'id',				null, true, false, null, 100 ],
-			//[ 'Ruta',					'Ruta',				null, true, false, null, 100 ],
-			[ 'proceso_id',				'proceso_id',		null, true, false, null, 100 ],
-			[ 'Indicador',				'Indicador',		null, true, false, null, 100 ],
-			[ 'Definicion',				'Definición',		null, true, false, null, 100 ],
-			[ 'TipoDato',				'TipoDato',			null, true, false, null, 100 ],
-			[ 'Decimales',				'Decimales',		null, true, false, null, 100 ],
-			[ 'Formula',				'Formula',			null, true, false, null, 100 ],
-			[ 'Sentido',				'Sentido',			null, true, false, null, 100 ],
+			[ 'id',						'id',					null, true, false, null, 100 ],
+			//[ 'Ruta',					'Ruta',					null, true, false, null, 100 ],
+			[ 'proceso_id',				'proceso_id',			null, true, false, null, 100 ],
+			[ 'Indicador',				'Indicador',			null, true, false, null, 100 ],
+			[ 'Definicion',				'Definición',			null, true, false, null, 100 ],
+			[ 'TipoDato',				'TipoDato',				null, true, false, null, 100 ],
+			[ 'Decimales',				'Decimales',			null, true, false, null, 100 ],
+			[ 'Formula',				'Formula',				null, true, false, null, 100 ],
+			[ 'Sentido',				'Sentido',				null, true, false, null, 100 ],
+			[ 'FrecuenciaAnalisis',		'FrecuenciaAnalisis',	null, true, false, null, 100 ],
 		];
 	}
 

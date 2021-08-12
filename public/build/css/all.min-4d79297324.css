@@ -81,6 +81,12 @@ table.dataTable.no-footer {
   max-width: 30px;
   border-radius: 50px;
 }
+.cell-hoverable {
+  transition: all 0.3s;
+}
+.cell-hoverable:hover {
+  background-color: #3c3c3c;
+}
 .md-table-short thead.md-head > tr.md-row {
   height: 30px !important;
 }
@@ -464,6 +470,15 @@ md-card-title .md-button.md-icon-button {
   padding: 0px !important;
   width: 30px !important;
 }
+.show-only-on-dialog {
+  display: none;
+}
+md-dialog .show-only-on-dialog {
+  display: block;
+}
+md-dialog .no-show-on-dialog {
+  display: none;
+}
 md-dialog.md-dialog-min-600 md-dialog-content {
   min-width: 600px;
 }
@@ -725,10 +740,16 @@ md-chips.h30 md-chip {
 md-chips.h30 md-chip button.md-chip-remove {
   height: 24px;
   width: 24px;
+  top: -2px;
+  opacity: 0.4;
+  transition: all 0.3s;
 }
 md-chips.h30 md-chip button.md-chip-remove md-icon {
   min-height: 18px;
   min-width: 18px;
+}
+md-chips.h30 md-chip button.md-chip-remove:hover {
+  opacity: 1;
 }
 md-chips.h30 .md-chip-input-container,
 md-chips.h30 .md-chip-input-container input {
@@ -736,6 +757,9 @@ md-chips.h30 .md-chip-input-container input {
   line-height: 30px;
   margin-top: 0 !important;
   font-size: 0.9em;
+}
+md-chips.no-underline md-chips-wrap {
+  box-shadow: none !important;
 }
 md-chips.compact {
   height: 30px;
@@ -860,6 +884,20 @@ md-bottom-sheet.md-grid md-list md-list-item .md-grid-text {
 }
 .historicChart .nv-bars rect {
   width: 15px;
+}
+md-select.md-default-theme[disabled] .md-select-icon,
+md-select[disabled] .md-select-icon,
+md-select.md-default-theme[disabled] .md-select-value,
+md-select[disabled] .md-select-value,
+md-select.md-default-theme[disabled] .md-select-value.md-select-placeholder,
+md-select[disabled] .md-select-value.md-select-placeholder {
+  color: rgba(0, 0, 0, 0.7);
+}
+[disabled] md-input-container.md-default-theme .md-input,
+[disabled] md-input-container .md-input,
+md-input-container.md-default-theme .md-input[disabled],
+md-input-container .md-input[disabled] {
+  color: rgba(0, 0, 0, 0.7);
 }
 html {
   overflow: hidden !important;

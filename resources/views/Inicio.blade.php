@@ -6,7 +6,7 @@
 
 			<div layout layout-align="center center" class="margin-bottom">
 				<h2 flex class="no-margin-top no-margin-bottom md-headline text-300">{{ Saludo }}, {{ Usuario.Nombres | getword:1 }}</h2>
-				<md-button class="no-margin border-rounded bg-theme mh30 h30 lh30 md-whiteframe-3dp" ng-click="InicioSidenavOpen = !InicioSidenavOpen" >
+				<md-button class="no-margin border-rounded bg-theme mh30 h30 lh30 md-whiteframe-3dp" ng-click="Storage.InicioSidenav = !Storage.InicioSidenav" >
 					<md-icon md-font-icon="fa-history margin-right-5" style="transform: translateY(-2px);"></md-icon>Recientes
 				</md-button>
 			</div>
@@ -48,8 +48,8 @@
 		</div>
 
 		<md-sidenav id="InicioSidenav" layout=column class="w300 text-white padding-but-right  md-sidenav-right no-overflow" 
-			md-is-locked-open="$mdMedia('(min-width: 750px)') && InicioSidenavOpen"
-			md-is-open="InicioSidenavOpen">
+			md-is-locked-open="$mdMedia('(min-width: 750px)') && Storage.InicioSidenav"
+			md-is-open="Storage.InicioSidenav">
 
 			<div flex layout=column class="w290 overflow-y hasScroll relative">
 				<label class="text-clear margin-bottom-5 text-14px">Recientes</label>
@@ -66,8 +66,8 @@
 
 				<div class="h30"></div>
 
-				<md-button class="md-icon-button no-margin fixed focus-on-hover" ng-show="InicioSidenavOpen"  
-					style="top: -2px; right: -5px;" ng-click="InicioSidenavOpen = false">
+				<md-button class="md-icon-button no-margin fixed focus-on-hover" ng-show="Storage.InicioSidenav"  
+					style="top: -2px; right: -5px;" ng-click="Storage.InicioSidenav = false">
 					<md-icon md-svg-icon="md-close"></md-icon>
 				</md-button>
 

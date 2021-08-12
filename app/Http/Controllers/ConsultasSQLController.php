@@ -50,7 +50,7 @@ class ConsultasSQLController extends Controller
 			WHERE 1 = 1
 				AND ing.INGFECSALI = $Dia
 				AND ing.INGEXCLU IS NULL 
-				AND ac.CTCCLASF1 NOT IN ('NPO')
+				AND (ac.CTCCLASF1 NOT IN ('NPO') OR ac.CTCCLASF1 IS NULL)
 				--AND ing.INGCODING IN (1640172,1639815) 
 			UNION ALL  -- Citas
 			SELECT ('CIT'||cit.CICODCITA||'_'||ac.ACCODAGR) AS IDEV

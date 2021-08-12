@@ -108,5 +108,10 @@ angular.module('IngresarDatosCtrl', [])
 			});
 		};
 
+
+		Ctrl.openVariableMenu = (ev, V, VP, M) => {
+			Rs.viewVariableMenu(ev, V, Ctrl.Anio+M[0], VP, Ctrl.getVariables);
+		}
+
 	}
 ]);

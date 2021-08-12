@@ -1,6 +1,6 @@
 <div class="w40" style="padding-top: 1px; border-right: 1px solid #3c3c3c;">
 	<div ng-repeat="S in SidenavIcons" layout layout-align="center center" 
-		class="s40 Pointer relative" ng-class="{ 'text-clear': sidenavSel != S[1] }"
+		class="s40 Pointer relative text-15px" ng-class="{ 'text-clear': sidenavSel != S[1] }"
 		ng-click="openSidenavElm(S)">
 		<md-icon md-font-icon="{{ S[0] }} fa-fw"></md-icon>
 		<md-tooltip md-direction="right" md-delay="500">{{ S[1] }}</md-tooltip>
@@ -16,12 +16,12 @@
 			
 			<div class="h40 lh40 padding-left text-clear ng-binding margin-bottom" layout layout-align="center center">
 				<md-icon md-font-icon="fa-filter"></md-icon><div flex>Filtros</div>
-				<md-button class="md-icon-button no-margin" aria-label="Button" ng-click="sidenavSel = ''">
+				<md-button class="md-icon-button no-margin focus-on-hover" aria-label="Button" ng-click="sidenavSel = ''">
 					<md-icon md-svg-icon="md-close" class=""></md-icon>
 				</md-button>
 			</div>
 
-			<div class="md-subheader padding-0-10">Periodo de Análisis</div>
+			<div class="md-subheader padding-0-10">Periodo en Foco</div>
 			<div layout>
 				<md-datepicker ng-model="PeriodoDate" md-mode="month" class="periodoDatepicker" md-max-date="MaxDate"
 					md-date-locale="{ formatDate: formatPeriodo, parseDate: parsePeriodo }" ng-change="getPeriodoParts()"></md-datepicker>
@@ -35,7 +35,7 @@
 					<md-tooltip md-direction="left">Borrar Filtro</md-tooltip>
 				</md-button>
 			</div>
-			<div layout style="padding: 0 10px 0" class="margin-bottom">
+			<div layout style="padding: 0 10px 0" class="">
 				<div ng-repeat="C in filtrosCumplimiento" flex layout layout-align="center center" 
 					class="Pointer padding-5 border-radius" 
 					ng-click="filters.cumplimiento = C[0]"
@@ -63,6 +63,19 @@
 					<div flex class="Pointer" style="padding: 6px 0" ng-click="lookupProceso(F)">{{ F.name }}</div>
 				</div>
 			</div>
+
+			<div layout class="h30 lh30 md-subheader padding-0-10" style="transform: translateY(6px);">
+				<div flex>Frecuencia de Análisis</div>
+			</div>
+			<div class="padding-0-10">
+				<md-select ng-model="filters.frecuencia_analisis" class="no-margin md-no-underline w100p text-14px block md-select-nowrap" multiple 
+					ng-change="checkFrecuenciaAnalisis()" aria-label=s>
+					<md-option value="-1">Todas</md-option>
+					<md-option ng-value="k" ng-repeat="(k, Op) in Frecuencias" ng-if="!inArray('-1', filters.frecuencia_analisis)">{{ Op }}</md-option>
+				</md-select>
+			</div>		
+
+			<div class="mh50"></div>	
 
 		</div>
 		<md-button class="no-margin-bottom" ng-click="clearCache()"  ng-show="Usuario.id == 183">Borrar Cache</md-button>

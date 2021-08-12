@@ -41,14 +41,14 @@
 					</tr>
 				</thead>
 				<tbody md-body>
-					<tr md-row class="text-14px md-row-hover" style="color: #6ab8ff">
+					<tr md-row class="text-14px" style="color: #6ab8ff">
 						<td md-cell class="text-bold mw70">{{ Anio }}</td>
-						<td md-cell class="mw50 Pointer " ng-repeat="M in Meses" ng-click="openMenuValores($event, Anio+M[0])">
+						<td md-cell class="mw50 Pointer cell-hoverable" ng-repeat="M in Meses" ng-click="openMenuValores($event, Anio+M[0])">
 							{{ Var.valores[Anio+M[0]].val }}</td>
 					</tr>
-					<tr md-row class="text-14px md-row-hover">
+					<tr md-row class="text-14px">
 						<td md-cell class="text-bold mw70">{{ Anio - 1 }}</td>
-						<td md-cell class="mw50 Pointer " ng-repeat="M in Meses" ng-click="openMenuValores($event, (Anio-1)+M[0])">
+						<td md-cell class="mw50 Pointer cell-hoverable" ng-repeat="M in Meses" ng-click="openMenuValores($event, (Anio-1)+M[0])">
 							{{ Var.valores[(Anio-1)+M[0]].val }}
 						</td>
 					</tr>

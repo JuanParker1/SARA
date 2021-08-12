@@ -223,6 +223,35 @@ class EntidadesController extends Controller
         return $this->postGridsGetData();
     }
 
+    public function postGridGetDistinctValues()
+    {
+        extract(request()->all()); //grid_id, campo_id
+
+        $Grid    = GridHelper::getGrid($grid_id);
+        $q       = GridHelper::getQ($Grid->entidad);
+        GridHelper::calcJoins($Grid);
+        GridHelper::addJoins($Grid, $q);
+
+        foreach ($Grid->columnas as $C) {
+            if($C['campo_id'] == $campo_id){
+                $Col = DB::raw($C->campo->getColName($C['tabla_consec']));
+                break;
+            }
+        }
+
+        $Values  = $q->select($Col)->orderBy($Col)->limit(1000)->distinct()->get();
+        $Values  = collect($Values)->transform(function($R){
+            if(config('app.encode_utf8')) $R[0] = utf8_encode($R[0]);
+            return [ 'Nombre' => $R[0] ];
+        })->filter(function($R){
+            return (!is_null($R['Nombre']) AND $R['Nombre'] != "");
+        })->values();
+
+        //dd($Values);
+
+        return $Values;
+    }
+
 
 
     //Editores

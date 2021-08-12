@@ -101,6 +101,12 @@ table.dataTable.no-footer {
     }
 }
 
+.cell-hoverable{ transition: all 0.3s; }
+
+.cell-hoverable:hover{
+	background-color: #3c3c3c;
+}
+
 .md-table-short{
 	thead.md-head > tr.md-row {
     	height: 30px !important;
@@ -600,6 +606,11 @@ md-dialog{
 	//border-radius: 7px !important;
 }
 
+.show-only-on-dialog{ display: none; }
+
+md-dialog .show-only-on-dialog{ display: block; }
+md-dialog .no-show-on-dialog{ display: none; }
+
 md-dialog.md-dialog-min-600 md-dialog-content{ min-width: 600px; }
 
 
@@ -893,10 +904,18 @@ md-chips.h30{
 		button.md-chip-remove{
 			height: 24px;
 			width: 24px;
+			top: -2px;
+
+			opacity: 0.4;
+	    	transition: all 0.3s;
 
 			md-icon{
 				min-height: 18px;
 				min-width: 18px;
+			}
+
+			&:hover{
+				opacity: 1;
 			}
 		}
 	}
@@ -908,6 +927,10 @@ md-chips.h30{
 		font-size: 0.9em;
 	}
 
+}
+
+md-chips.no-underline md-chips-wrap{
+	box-shadow: none !important;
 }
 
 md-chips.compact{
@@ -1097,3 +1120,11 @@ md-bottom-sheet.md-grid{
 }
 
 
+// Disabled elements
+md-select.md-default-theme[disabled] .md-select-icon, md-select[disabled] .md-select-icon, md-select.md-default-theme[disabled] .md-select-value, md-select[disabled] .md-select-value, md-select.md-default-theme[disabled] .md-select-value.md-select-placeholder, md-select[disabled] .md-select-value.md-select-placeholder {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+[disabled] md-input-container.md-default-theme .md-input, [disabled] md-input-container .md-input, md-input-container.md-default-theme .md-input[disabled], md-input-container .md-input[disabled] {
+    color: rgba(0, 0, 0, 0.7);
+}

@@ -61,7 +61,15 @@ angular.module('MainCtrl', [])
 			{ id: 'max',  			Nombre: 'Máximo' },
 		];
 
-
+		Rs.Frecuencias = {
+			0: 'Diario',
+			1: 'Mensual',
+			2: 'Bimestral',
+			3: 'Trimestral',
+			4: 'Cuatrimestral',
+			6: 'Semestral',
+			12: 'Anual'
+		};
 
 		if (window.self != window.top) {
 			$(document.body).addClass("in-iframe");
@@ -82,7 +90,7 @@ angular.module('InicioCtrl', [])
 
 		//Rs.mainTheme = 'Snow_White';
 		Rs.mainTheme = 'Black';
-		Rs.InicioSidenavOpen = $mdMedia('min-width: 750px');
+		if(!('InicioSidenav' in Rs.Storage)) Rs.Storage.InicioSidenav = $mdMedia('min-width: 750px');
 
 
 
@@ -690,71 +698,6 @@ angular.module('BDD_ListasDiagCtrl', [])
 	}
 
 ]);
-angular.module('ConsultasSQLCtrl', [])
-.controller('ConsultasSQLCtrl', ['$scope', '$rootScope', '$injector', '$filter',
-	function($scope, $rootScope, $injector, $filter) {
-
-		console.info('ConsultasSQLCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		Ctrl.FechaIni = '2021-01-01';
-		Ctrl.FechaFin = '2021-01-31';
-
-		Ctrl.FechaAct = angular.copy(Ctrl.FechaIni);
-
-		Ctrl.Consultas = [
-			{ Nombre: 'Ejecución PGP', url: '/api/ConsultasSQL/pgp-nt' },
-		];
-		Ctrl.ConsultaSel = Ctrl.Consultas[0];
-
-		Ctrl.Status = 'Stopped';
-
-		Ctrl.Go = () => {
-			Ctrl.Status = 'Playing';
-			Ctrl.Step();
-		};
-
-		Ctrl.Pause = () => {
-			Ctrl.Status = 'Paused';
-		};
-
-		Ctrl.Stop = () => {
-			Ctrl.Status = 'Stopped';
-			Ctrl.FechaAct = moment(angular.copy(Ctrl.FechaIni)).format('YYYY-MM-DD');
-			Ctrl.Report = [];
-		};
-
-		Ctrl.Report = [];
-
-		Ctrl.Step = () => {
-			var startTime = performance.now();
-
-			Rs.http(Ctrl.ConsultaSel.url, { Dia: Ctrl.FechaAct }).then(() => {
-				
-				if(Ctrl.Status == 'Playing'){
-
-					var endTime = performance.now();
-					var timeDiff = (endTime - startTime) / 1000; 
-					var seconds = Math.round(timeDiff);
-					
-					Ctrl.Report.unshift({ Dia: Ctrl.FechaAct, Tiempo: seconds });
-
-					if(Ctrl.FechaAct == Ctrl.FechaFin) return Ctrl.Pause();
-
-					var NewDay = moment(Ctrl.FechaAct).add(1, 'day').format('YYYY-MM-DD');
-					Ctrl.FechaAct =  NewDay;
-					
-
-
-					Ctrl.Step();
-				}
-
-			});
-		}
-		
-	}
-]);
 angular.module('BotsCtrl', [])
 .controller('BotsCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$mdDialog',
 	function($scope, $rootScope, $injector, $filter, $mdDialog) {
@@ -983,6 +926,94 @@ angular.module('Bot_LogsCtrl', [])
 		Ctrl.getLogs();
 	}
 
+]);
+angular.module('ConfiguracionCtrl', [])
+.controller('ConfiguracionCtrl', ['$scope', '$rootScope', '$http', '$injector', '$mdDialog', 
+	function($scope, $rootScope, $http, $injector, $mdDialog) {
+
+		console.info('ConfiguracionCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Rs.mainTheme = 'Black';
+		
+		Rs.http('api/Main/get-configuracion', {}, Ctrl, 'Configuracion');
+
+		Ctrl.markChanged = (Key) => {
+			Ctrl.Configuracion[Key].changed = true;
+		}
+
+		Ctrl.saveConf = () => {
+			Rs.http('api/Main/save-configuracion', { Conf: Ctrl.Configuracion }).then(() => {
+				Rs.showToast('Configuración Guardada', 'Success');
+			});
+		}
+
+	}
+]);
+angular.module('ConsultasSQLCtrl', [])
+.controller('ConsultasSQLCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('ConsultasSQLCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.FechaIni = '2021-01-01';
+		Ctrl.FechaFin = '2021-01-31';
+
+		Ctrl.FechaAct = angular.copy(Ctrl.FechaIni);
+
+		Ctrl.Consultas = [
+			{ Nombre: 'Ejecución PGP', url: '/api/ConsultasSQL/pgp-nt' },
+		];
+		Ctrl.ConsultaSel = Ctrl.Consultas[0];
+
+		Ctrl.Status = 'Stopped';
+
+		Ctrl.Go = () => {
+			Ctrl.Status = 'Playing';
+			Ctrl.Step();
+		};
+
+		Ctrl.Pause = () => {
+			Ctrl.Status = 'Paused';
+		};
+
+		Ctrl.Stop = () => {
+			Ctrl.Status = 'Stopped';
+			Ctrl.FechaAct = moment(angular.copy(Ctrl.FechaIni)).format('YYYY-MM-DD');
+			Ctrl.Report = [];
+		};
+
+		Ctrl.Report = [];
+
+		Ctrl.Step = () => {
+			var startTime = performance.now();
+
+			Rs.http(Ctrl.ConsultaSel.url, { Dia: Ctrl.FechaAct }).then(() => {
+				
+				if(Ctrl.Status == 'Playing'){
+
+					var endTime = performance.now();
+					var timeDiff = (endTime - startTime) / 1000; 
+					var seconds = Math.round(timeDiff);
+					
+					Ctrl.Report.unshift({ Dia: Ctrl.FechaAct, Tiempo: seconds });
+
+					if(Ctrl.FechaAct == Ctrl.FechaFin) return Ctrl.Pause();
+
+					var NewDay = moment(Ctrl.FechaAct).add(1, 'day').format('YYYY-MM-DD');
+					Ctrl.FechaAct =  NewDay;
+					
+
+
+					Ctrl.Step();
+				}
+
+			});
+		}
+		
+	}
 ]);
 angular.module('BasicDialogCtrl', [])
 .controller(   'BasicDialogCtrl', ['$scope', 'Config', '$mdDialog', 
@@ -1547,6 +1578,19 @@ angular.module('TableDialogCtrl', [])
 
 	}
 ]);
+angular.module('FuncionesCtrl', [])
+.controller('FuncionesCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('FuncionesCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.FuncionSel = null;
+		Ctrl.FuncionesNav = true;
+		Rs.mainTheme = 'Snow_White';
+		
+	}
+]);
 angular.module('EntidadesCamposCtrl', [])
 .controller('EntidadesCamposCtrl', ['$scope', '$rootScope', 
 	function($scope, $rootScope) {
@@ -1562,11 +1606,11 @@ angular.module('EntidadesCtrl', [])
 .controller('EntidadesCtrl', ['$scope', '$rootScope', '$injector', '$mdDialog', '$filter', '$timeout',
 	function($scope, $rootScope, $injector, $mdDialog, $filter, $timeout) {
 
-		console.info('EntidadesCtrl');
+		console.info('EntidadesCtrl 1');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 		Rs.mainTheme = 'Snow_White';
-		if(!('EntidadSidenav' in Rs.Storage)) Rs.Storage.EntidadSidenav = true;
+		if(!('EntidadSidenav' in Rs.Storage) || !Rs.Storage.EntidadSelId) Rs.Storage.EntidadSidenav = true;
 		Ctrl.loadingEntidad = false;
 		Ctrl.showCampos = true;
 		if(!Rs.Storage.EntidadSubseccion) Rs.Storage.EntidadSubseccion = 'General';
@@ -2282,7 +2326,13 @@ angular.module('Entidades_EditorDiagCtrl', [])
 				}
 
 				if(C.campo.Tipo == 'Dinero'){
-					C.val = Number(C.val.replace('$', '').replaceAll('.', '').trim());
+					if(C.val) C.val = Number(C.val.replace('$', '').replaceAll('.', '').trim());
+				}
+
+				if(C.campo.Tipo == 'Porcentaje'){
+					if(C.val) C.val = C.val.replace('%', '').replaceAll('.', '').replaceAll(',', '.').trim() / 100;
+					//C.val = '190.0%';
+					console.log(C.val);
 				}
 
 			});
@@ -3028,7 +3078,7 @@ angular.module('IndicadoresCtrl', [])
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 		Ctrl.IndSel = null;
-		Ctrl.IndicadoresNav = true;
+		if(!('IndicadoresNav' in Rs.Storage) || !Rs.Storage.IndicadorSel) Rs.Storage.IndicadoresNav = true;
 		Rs.mainTheme = 'Snow_White';
 		Ctrl.tiposDatoInd = ['Numero','Porcentaje','Moneda','Millones'];
 		Ctrl.OpsUsar = [
@@ -3051,12 +3101,12 @@ angular.module('IndicadoresCtrl', [])
 			Ctrl.IndicadoresCRUD.get().then(() => {
 				//Ctrl.getFs();
 
-				console.timeEnd('Obtener Indicadores');
+				//console.timeEnd('Obtener Indicadores');
 				Ctrl.IndicadoresLoaded = true;
 
 				console.time('Obtener Variables');
 				Ctrl.VariablesCRUD.get().then(() => {
-					console.timeEnd('Obtener Variables');
+					//console.timeEnd('Obtener Variables');
 				});
 
 				if(Rs.Storage.IndicadorSel){
@@ -3081,7 +3131,10 @@ angular.module('IndicadoresCtrl', [])
 			
 		};
 
-		Ctrl.openProceso = (P) => { Ctrl.ProcesoSelId = P.id; }
+		Ctrl.openProceso = (P) => { 
+			Ctrl.ProcesoSelId = P.id;
+			Ctrl.IndSel = null;
+		}
 
 		Ctrl.getIndicadoresFiltered = () => {
 			if(Ctrl.filterIndicadores.trim() == ''){
@@ -3112,27 +3165,21 @@ angular.module('IndicadoresCtrl', [])
 		};
 
 		Ctrl.addIndicador = (route) => {
-			if(route){
-				var route = route.split('\\').slice(0, -1).join('\\');
-				proceso_id = Rs.def(Ctrl.Procesos.filter(e => e.Ruta == route).pop().id, null);
-			}else{
-				proceso_id = null;
-			};
 
 			$mdDialog.show({
 				controller: 'Indicadores_AddDiagCtrl',
 				templateUrl: 'Frag/Indicadores.Indicadores_AddDiag',
-				locals: { proceso_id: proceso_id, tiposDatoInd : Ctrl.tiposDatoInd, Procesos: Ctrl.Procesos },
+				locals: { proceso_id: Ctrl.ProcesoSelId, tiposDatoInd : Ctrl.tiposDatoInd, Procesos: Ctrl.Procesos },
 				clickOutsideToClose: false, fullscreen: false, multiple: true
 			}).then(newInd => {
 				if(!newInd) return;
-				Rs.http('api/Indicadores/add-indicador', { newInd: newInd }).then(() => {
+				Rs.http('api/Indicadores/add-indicador', { newInd: newInd }).then(r => {
+					Rs.Storage.IndicadorSel = r.id;
 					Rs.showToast('Indicador Agregado', 'Success');
 					Ctrl.getIndicadores();
 				});
 			});
 
-			console.log(proceso_id);
 		};
 
 		Ctrl.openIndicador = (V) => {
@@ -3157,7 +3204,7 @@ angular.module('IndicadoresCtrl', [])
 
 		Ctrl.updateIndicador = () => {
 			Ctrl.IndicadoresCRUD.update(Ctrl.IndSel).then(() => {
-				Rs.showToast('Indicador Actualizada', 'Success');
+				Rs.showToast('Indicador Actualizado', 'Success');
 				Ctrl.saveVariables();
 				//Ctrl.openIndicador(Ctrl.IndSel);
 			});
@@ -3394,11 +3441,12 @@ angular.module('IndicadoresCtrl', [])
 		console.time('Resolver Promesas');
 		
 		Promise.all([
-			Rs.getProcesos(Ctrl)
+			Rs.getProcesos(Ctrl),
+			Rs.http('/api/Entidades/grids-get', {}, Ctrl, 'Grids')
 			//,Ctrl.VariablesCRUD.get()
 		]).then(() => {
 			
-			console.timeEnd('Resolver Promesas');
+			//console.timeEnd('Resolver Promesas');
 			console.time('Obtener Indicadores');
 			Rs.getProcesosFS(Ctrl);
 			Ctrl.getIndicadores();
@@ -3418,18 +3466,13 @@ angular.module('Indicadores_AddDiagCtrl', [])
 		Ctrl.Cancel = () => { $mdDialog.cancel(); }
 		Ctrl.tiposDatoInd = tiposDatoInd;
 		Ctrl.tiposDatoVar = ['Numero','Porcentaje','Moneda'];
-		Ctrl.newVariable = '';
 
 		Ctrl.newInd = {
 			TipoDato: "Porcentaje",
 			Decimales: 1,
 			Sentido: 'ASC',
 			Formula: 'a / b',
-			Meta: null,
-			variables: [
-				{ Variable: '', TipoDato: 'Numero', Decimales: 0 },
-				{ Variable: '', TipoDato: 'Numero', Decimales: 0 }
-			]
+			Meta: null
 		};
 		
 
@@ -3440,23 +3483,8 @@ angular.module('Indicadores_AddDiagCtrl', [])
 
 		}
 
-		Ctrl.getLetra = (k) => { return String.fromCharCode(97 + k); }
-
-		Ctrl.removeVar = (k) => { Ctrl.newInd.variables.splice(k,1); }
-
-		Ctrl.addVariable = () => {
-			if(Ctrl.newVariable.trim() == '') return;
-			
-			Ctrl.newInd.variables.push({
-				Variable: Ctrl.newVariable, TipoDato: 'Numero', Decimales: 0 
-			});
-
-			Ctrl.newVariable = '';
-
-		}
-
 		if(proceso_id){
-			Ctrl.newVariable.proceso = $filter('filter')(Procesos, { id: proceso_id });
+			Ctrl.newInd.proceso = Procesos.find(p => p.id == proceso_id);
 		}
 
 
@@ -3715,7 +3743,7 @@ function Indicadores_IndicadorDiag_ValorMenuCtrl(mdPanelRef, Periodo, Variable, 
 	};
 
 	Ctrl.Periodo = Periodo;
-	Ctrl.PeriodoDesc = Rs.Meses[parseInt(Periodo.substr(-2)) - 1][1] +' '+ parseInt(Periodo/100);
+	Ctrl.PeriodoDesc = Rs.Meses[parseInt(Periodo.substr(-2)) - 1][2] +' '+ parseInt(Periodo/100);
 	Ctrl.Variable = Variable;
 
 
@@ -3724,9 +3752,12 @@ function Indicadores_IndicadorDiag_ValorMenuCtrl(mdPanelRef, Periodo, Variable, 
 	Ctrl.changed = false;
 	Ctrl.editable = false;
 
-	if(Rs.Usuario.isGod) Ctrl.editable = true;
+	//if(Rs.Usuario.isGod) Ctrl.editable = true;
+	//if(Variable.Tipo == 'Manual' && Periodo >= Rs.PeriodoActual) Ctrl.editable = true;
 
-	if(Variable.Tipo == 'Manual' && Periodo >= Rs.PeriodoActual) Ctrl.editable = true;
+	Rs.http('api/Variables/can-edit', { Variable, Periodo }).then(r => {
+		Ctrl.editable = r.editable;
+	});
 
 	Ctrl.updateValor = () => {
 
@@ -3743,17 +3774,121 @@ function Indicadores_IndicadorDiag_ValorMenuCtrl(mdPanelRef, Periodo, Variable, 
 	};
 
 }
-angular.module('FuncionesCtrl', [])
-.controller('FuncionesCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+angular.module('IngresarDatosCtrl', [])
+.controller('IngresarDatosCtrl', ['$scope', '$rootScope', '$injector', '$filter',
 	function($scope, $rootScope, $injector, $filter) {
 
-		console.info('FuncionesCtrl');
+		console.info('IngresarDatosCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
-		Ctrl.FuncionSel = null;
-		Ctrl.FuncionesNav = true;
 		Rs.mainTheme = 'Snow_White';
 		
+
+		Ctrl.ProcesoSel = false;
+		Ctrl.Anio  = angular.copy(Rs.AnioActual);
+		Ctrl.Mes   = angular.copy(Rs.MesActual);
+		Ctrl.filterVariablesText = '';
+		Ctrl.tipoVariableSel = 'Manual';
+		Ctrl.TiposVariables = {
+			'Manual': { Nombre: 'Manuales' },
+			'Valor Fijo': { Nombre: 'Valores Fijos' },
+			'Calculado de Entidad': { Nombre: 'Automáticas' },
+		};
+		Ctrl.Loading = true;
+
+		Ctrl.anioAdd = (num) => {Ctrl.Anio = Ctrl.Anio + num; Ctrl.getVariables(); };
+		var Variables = [];
+
+		Ctrl.getVariables = () => {
+			Ctrl.Loading = true;
+			Ctrl.hasEdited = false;
+			Rs.http('api/Variables/get-usuario', { Usuario: Rs.Usuario, Anio: Ctrl.Anio }).then((r) => {
+				Variables = r;
+
+				var PeriodoAct = (Rs.AnioActual*100) + Rs.MesActual;
+				var PeriodoAnt = parseInt(moment().add(-1, 'month').format('YYYYMM'));
+
+				Variables.forEach(V => {
+					//console.log(V.valores);
+
+					Rs.Meses.forEach(M => {
+						var Periodo = Ctrl.Anio + M[0];
+						if(!V.valores[Periodo]){
+							V.valores[Periodo] = { 'val': null, 'Valor': null, 'new_Valor': null, 'edited': false, 'readonly': false };
+						}else{
+							V.valores[Periodo]['new_Valor'] = V.valores[Periodo]['Valor'];
+							V.valores[Periodo]['edited'] = false;
+							V.valores[Periodo]['readonly'] = (Periodo < PeriodoAnt);
+						};
+
+						if(V.Tipo == 'Manual') V.valores[Periodo]['readonly'] = false;
+						
+						//if(Periodo >= PeriodoAct) V.valores[Periodo]['readonly'] = true;
+					});
+				});
+
+				Ctrl.filterVariables();
+			});
+		};
+
+		Ctrl.getVariables();
+
+		Ctrl.filteredVariables = [];
+		Ctrl.filterVariables = () => {
+			var Vars = angular.copy(Variables);
+			
+			if(Ctrl.tipoVariableSel){
+				Vars = $filter('filter')(Vars, { Tipo: Ctrl.tipoVariableSel }, true);
+			}
+
+			if(Ctrl.ProcesoSel){ 
+				Vars = $filter('filter')(Vars, { proceso_id: Ctrl.ProcesoSel }, true);
+			}
+
+			if(Ctrl.filterVariablesText.trim() !== ''){
+				Vars = $filter('filter')(Vars, Ctrl.filterVariablesText);
+			}
+
+			Ctrl.filteredVariables = Vars;
+			Ctrl.Loading = false;
+		}
+
+		Ctrl.hasEdited = false;
+		Ctrl.markChanged = (VP) => {
+			VP.edited = true;
+			Ctrl.hasEdited = true;
+		}
+
+		Ctrl.saveVariables = () => {
+			var VariablesValores = [];
+
+			Ctrl.filteredVariables.forEach(V => {
+
+				Rs.Meses.forEach(M => {
+					var Periodo = Ctrl.Anio + M[0];
+					var VP = V.valores[Periodo];
+					if(VP.edited){
+						VariablesValores.push({
+							variable_id: V.id,
+							Periodo: parseInt(Periodo),
+							Valor: VP.new_Valor,
+							usuario_id: Rs.Usuario.id
+						});
+					}
+				});
+
+			});
+
+			Rs.http('api/Variables/store-all', { VariablesValores: VariablesValores }).then(() => {
+				Ctrl.getVariables();
+			});
+		};
+
+
+		Ctrl.openVariableMenu = (ev, V, VP, M) => {
+			Rs.viewVariableMenu(ev, V, Ctrl.Anio+M[0], VP, Ctrl.getVariables);
+		}
+
 	}
 ]);
 angular.module('Integraciones_EnterpriseCtrl', [])
@@ -3936,118 +4071,6 @@ angular.module('Integraciones_SOMACtrl', [])
 		}
 
 		//Ctrl.downloadFile();
-	}
-]);
-angular.module('IngresarDatosCtrl', [])
-.controller('IngresarDatosCtrl', ['$scope', '$rootScope', '$injector', '$filter',
-	function($scope, $rootScope, $injector, $filter) {
-
-		console.info('IngresarDatosCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Rs.mainTheme = 'Snow_White';
-		
-
-		Ctrl.ProcesoSel = false;
-		Ctrl.Anio  = angular.copy(Rs.AnioActual);
-		Ctrl.Mes   = angular.copy(Rs.MesActual);
-		Ctrl.filterVariablesText = '';
-		Ctrl.tipoVariableSel = 'Manual';
-		Ctrl.TiposVariables = {
-			'Manual': { Nombre: 'Manuales' },
-			'Valor Fijo': { Nombre: 'Valores Fijos' },
-			'Calculado de Entidad': { Nombre: 'Automáticas' },
-		};
-		Ctrl.Loading = true;
-
-		Ctrl.anioAdd = (num) => {Ctrl.Anio = Ctrl.Anio + num; Ctrl.getVariables(); };
-		var Variables = [];
-
-		Ctrl.getVariables = () => {
-			Ctrl.Loading = true;
-			Ctrl.hasEdited = false;
-			Rs.http('api/Variables/get-usuario', { Usuario: Rs.Usuario, Anio: Ctrl.Anio }).then((r) => {
-				Variables = r;
-
-				var PeriodoAct = (Rs.AnioActual*100) + Rs.MesActual;
-				var PeriodoAnt = parseInt(moment().add(-1, 'month').format('YYYYMM'));
-
-				Variables.forEach(V => {
-					//console.log(V.valores);
-
-					Rs.Meses.forEach(M => {
-						var Periodo = Ctrl.Anio + M[0];
-						if(!V.valores[Periodo]){
-							V.valores[Periodo] = { 'val': null, 'Valor': null, 'new_Valor': null, 'edited': false, 'readonly': false };
-						}else{
-							V.valores[Periodo]['new_Valor'] = V.valores[Periodo]['Valor'];
-							V.valores[Periodo]['edited'] = false;
-							V.valores[Periodo]['readonly'] = (Periodo < PeriodoAnt);
-						};
-
-						if(V.Tipo == 'Manual') V.valores[Periodo]['readonly'] = false;
-						
-						//if(Periodo >= PeriodoAct) V.valores[Periodo]['readonly'] = true;
-					});
-				});
-
-				Ctrl.filterVariables();
-			});
-		};
-
-		Ctrl.getVariables();
-
-		Ctrl.filteredVariables = [];
-		Ctrl.filterVariables = () => {
-			var Vars = angular.copy(Variables);
-			
-			if(Ctrl.tipoVariableSel){
-				Vars = $filter('filter')(Vars, { Tipo: Ctrl.tipoVariableSel }, true);
-			}
-
-			if(Ctrl.ProcesoSel){ 
-				Vars = $filter('filter')(Vars, { proceso_id: Ctrl.ProcesoSel }, true);
-			}
-
-			if(Ctrl.filterVariablesText.trim() !== ''){
-				Vars = $filter('filter')(Vars, Ctrl.filterVariablesText);
-			}
-
-			Ctrl.filteredVariables = Vars;
-			Ctrl.Loading = false;
-		}
-
-		Ctrl.hasEdited = false;
-		Ctrl.markChanged = (VP) => {
-			VP.edited = true;
-			Ctrl.hasEdited = true;
-		}
-
-		Ctrl.saveVariables = () => {
-			var VariablesValores = [];
-
-			Ctrl.filteredVariables.forEach(V => {
-
-				Rs.Meses.forEach(M => {
-					var Periodo = Ctrl.Anio + M[0];
-					var VP = V.valores[Periodo];
-					if(VP.edited){
-						VariablesValores.push({
-							variable_id: V.id,
-							Periodo: parseInt(Periodo),
-							Valor: VP.new_Valor,
-							usuario_id: Rs.Usuario.id
-						});
-					}
-				});
-
-			});
-
-			Rs.http('api/Variables/store-all', { VariablesValores: VariablesValores }).then(() => {
-				Ctrl.getVariables();
-			});
-		};
-
 	}
 ]);
 angular.module('MiProcesoCtrl', [])
@@ -4770,9 +4793,10 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
         Ctrl.Loading = true;
         Ctrl.Procesos = null;
         Ctrl.FsOpenFolder = Rs.FsOpenFolder;
+        Ctrl.defaultFrecuencias = Object.keys(Rs.Frecuencias);
 
         //Sidenav
-        Ctrl.sidenavSel = null;
+        Ctrl.sidenavSel = null; //FIX
         Ctrl.SidenavIcons = [
 			['fa-filter', 	     					'Filtros'		,false],
 			['fa-sign-in-alt fa-rotate-90 fa-lg', 	'Descargar'		,false],
@@ -4784,7 +4808,8 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 		//Filtros
         Ctrl.filters = {
         	proceso_ruta: false,
-        	cumplimiento: false
+        	cumplimiento: false,
+        	frecuencia_analisis: ['-1']
         };
 
         Ctrl.filtrosCumplimiento = [
@@ -4929,6 +4954,10 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 			});
 		}
 
+		Ctrl.checkFrecuenciaAnalisis = () => {
+			if(Ctrl.filters.frecuencia_analisis.includes('-1')) Ctrl.filters.frecuencia_analisis = ['-1'];
+		}
+
 
 		//Descarga de Datos
 		function s2ab(s) {
@@ -5033,7 +5062,7 @@ angular.module('VariablesCtrl', [])
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 		Ctrl.VarSel = null;
-		Ctrl.VariablesNav = true;
+		if(!('VariablesNav' in Rs.Storage) || !Rs.Storage.VariableSel) Rs.Storage.VariablesNav = true;
 		Rs.mainTheme = 'Snow_White';
 		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Variables' });
 		Ctrl.filterVariables = '';
@@ -5041,14 +5070,6 @@ angular.module('VariablesCtrl', [])
 		Ctrl.Cancel = $mdDialog.cancel;
 
 		Ctrl.tiposDatoVar = ['Numero','Porcentaje','Moneda','Millones'];
-		Ctrl.Frecuencias = {
-			0: 'Diario',
-			1: 'Mensual',
-			2: 'Bimestral',
-			3: 'Trimestral',
-			6: 'Semestral',
-			12: 'Anual'
-		};
 
 		Ctrl.agregators = Rs.agregators;
 
@@ -5146,12 +5167,13 @@ angular.module('VariablesCtrl', [])
 				Rs.Storage.VariableSel = Ctrl.VarSel.id;
 
 				//Rs.viewVariableDiag(Ctrl.VarSel.id);
+				//Ctrl.viewDistinctValues(Ctrl.VarSel.Filtros[0]);
 			});
 		};
 
 		Ctrl.updateVariable = () => {
 			Ctrl.VariablesCRUD.update(Ctrl.VarSel).then(() => {
-				Rs.showToast('Variable Actualizada', 'Success');
+				Rs.showToast('Variable Actualizada', 'Success', 1000);
 				Ctrl.openVariable(Ctrl.VarSel);
 			});
 		};
@@ -5169,6 +5191,53 @@ angular.module('VariablesCtrl', [])
 			});
 			Ctrl.newFiltro = null;
 		};
+
+		Ctrl.prepComparador = (R) => {
+			if(Rs.inArray(R.Comparador, ['in','not_in'])){
+				R.Valor = [];
+			}else{
+				R.Valor = null;
+			}
+		}
+
+		Ctrl.pushFiltroOption = (R) => {
+			var new_valor = angular.copy(R.newValor);
+			if(!new_valor || new_valor.trim() == '') return;
+
+			R.Valor.push(new_valor);
+			R.newValor = null;
+		}
+
+		Ctrl.addFiltroOption = async (R) => {
+
+			if(R.campo.Tipo == 'Lista'){
+				var values = R.campo.Config.opciones.map(e => ({ Nombre: e.value }) );
+			}else{
+				var values = await Rs.http('api/Entidades/grid-get-distinct-values', { grid_id: Ctrl.VarSel.grid_id, campo_id: R.campo_id });
+			}
+				
+			//filter values
+			values = values.filter(e => {
+				return !R.Valor.includes(e.Nombre);
+			});
+
+			Rs.TableDialog(values, {
+				Title: 'Seleccionar Opciones',
+				Columns: [
+					{ Nombre: 'Nombre', Desc: 'Opción', numeric: false }
+				],
+				primaryId: 'Nombre', pluck: true
+			}).then(newValues => {
+				if(!newValues) return;
+				R.Valor = R.Valor.concat(newValues);
+				R.changed = true;
+			});
+		}
+
+		Ctrl.removeFiltroOption = (R, kV) => {
+			R.Valor.splice(kV, 1);
+			R.changed = true;
+		}
 
 		Ctrl.editValor = (Periodo) => {
 			var Valor = angular.isDefined(Ctrl.VarSel.valores[Periodo]) ? Ctrl.VarSel.valores[Periodo].Valor : null;
@@ -5206,10 +5275,9 @@ angular.module('VariablesCtrl', [])
 					if(Ctrl.VarSel.TipoDato == 'Porcentaje') newValor /= 100;
 					if(newValor == Valor) return;
 
-					Rs.http('/api/Variables/update-valor', { variable_id: Ctrl.VarSel.id, Periodo: Periodo, Valor: newValor }).then(() => {
+					return Rs.http('/api/Variables/update-valor', { variable_id: Ctrl.VarSel.id, Periodo: Periodo, Valor: newValor }).then(() => {
 						Ctrl.openVariable(Ctrl.VarSel);
 					});
-
 				}
 			});
 		}
@@ -5267,8 +5335,27 @@ angular.module('VariablesCtrl', [])
 
 		}
 
+		Ctrl.viewDistinctValues = (R) => {
+			Rs.http('api/Entidades/grid-get-distinct-values', { grid_id: Ctrl.VarSel.grid_id, campo_id: R.campo_id }).then(values => {
+				Rs.ListSelector(values, {
+					searchPlaceholder: 'Buscar '+R.column_title,
+					class: 'vh100'
+				}).then(value_sel => {
+					if(!value_sel) return;
+					if(Rs.inArray(R.Comparador, ['in','not_in'])){
+						R.Valor.push(value_sel.Nombre);
+					}else{
+						R.Valor = value_sel.Nombre;
+					}
+					
+				});
+			});
+		}
 
-		Ctrl.getVariables();
+		Rs.http('api/Main/get-configuracion', {}, Ctrl, 'Configuracion').then(() => {
+			Ctrl.getVariables();
+		});
+		
 	}
 ]);
 angular.module('VariablesGetDataDiagCtrl', [])
@@ -5478,7 +5565,7 @@ angular.module('Variables_VariableDiagCtrl', [])
 
         //Menu
         Ctrl.openMenuValores = (ev, Periodo) => {
-            var Val = Ctrl.Var.valores[Periodo].Valor;
+            var Val = Ctrl.Var.valores[Periodo] || {};
             Rs.viewVariableMenu(ev, Ctrl.Var, Periodo, Val, Ctrl.getVariables);
         };
 
@@ -6209,7 +6296,9 @@ angular.module('SARA', [
 	'Integraciones_IkonoCtrl',
 
 	'BotsCtrl',
-		'Bot_LogsCtrl'
+		'Bot_LogsCtrl',
+
+	'ConfiguracionCtrl'
 ]);
 
 angular.module('appConfig', [])
@@ -6373,7 +6462,8 @@ angular.module('appConfig', [])
 			'md-image'			: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24px" height="24px"><path d="M0 0h24v24H0z" fill="none"/><path d="M23 18V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2zM8.5 12.5l2.5 3.01L14.5 11l4.5 6H5l3.5-4.5z"/></svg>',
 			'md-dns'            : '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 13H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1zM7 19c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM20 3H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1zM7 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>',
 			'md-list-alt'       : '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 5v14H5V5h14m1.1-2H3.9c-.5 0-.9.4-.9.9v16.2c0 .4.4.9.9.9h16.2c.4 0 .9-.5.9-.9V3.9c0-.5-.5-.9-.9-.9zM11 7h6v2h-6V7zm0 4h6v2h-6v-2zm0 4h6v2h-6zM7 7h2v2H7zm0 4h2v2H7zm0 4h2v2H7z"/></svg>',
-			'md-feedback'		: '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9 11H7V9h2v2zm4 0h-2V9h2v2zm4 0h-2V9h2v2z"/></svg>'
+			'md-feedback'		: '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9 11H7V9h2v2zm4 0h-2V9h2v2zm4 0h-2V9h2v2z"/></svg>',
+			'md-percent'		: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M18.5,3.5L3.5,18.5L5.5,20.5L20.5,5.5M7,4A3,3 0 0,0 4,7A3,3 0 0,0 7,10A3,3 0 0,0 10,7A3,3 0 0,0 7,4M17,14A3,3 0 0,0 14,17A3,3 0 0,0 17,20A3,3 0 0,0 20,17A3,3 0 0,0 17,14Z" /></svg>'
 		};
 
 		iconp = $mdIconProvider.defaultFontSet( 'fa' );
@@ -6618,6 +6708,7 @@ angular.module('appFunctions', [])
 				remoteListName: 'Nombre',
 				remoteListLogo: false,
 				searchPlaceholder: 'Buscar',
+				class: ''
 			};
 			var Config = angular.extend(DefConfig, Config);
 

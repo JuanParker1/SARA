@@ -244,4 +244,17 @@ class MainController extends Controller
 
 	}
 
+
+
+	public function postGetConfiguracion()
+	{
+		return Helper::getConfiguracion();
+	}
+
+	public function postSaveConfiguracion()
+	{
+		extract(request()->all()); //$Conf
+		Helper::saveConfiguracion($Conf);
+	}
+
 }

@@ -12,6 +12,7 @@ use App\Models\VariableValor;
 
 use App\Functions\Helper AS H;
 use App\Functions\GridHelper;
+use Carbon\Carbon;
 
 class VariablesController extends Controller
 {
@@ -236,7 +237,39 @@ class VariablesController extends Controller
 
 
 
+    public function postCanEdit()
+    {
+        extract(request()->all()); //Variable, Periodo
+        $Usuario = H::getUsuario();
+        $editable = false;
 
+
+
+        if($Usuario->isGod){
+            $editable = true;
+        }else if($Variable['Tipo'] == 'Manual'){
+
+            $Conf    = H::getConfiguracion();
+            $DIAS_DESDE = $Variable['DiasDesde'] ?? $Conf['VARIABLES_DIAS_DESDE']['Valor'];
+            $DIAS_HASTA = $Variable['DiasHasta'] ?? $Conf['VARIABLES_DIAS_HASTA']['Valor'];
+
+            $DiaCierre = Carbon::parse($Periodo.'01')->addMonth();
+
+            $DiaDesde  = $DiaCierre->copy()->addDays($DIAS_DESDE);
+            $DiaHasta  = $DiaCierre->copy()->addDays($DIAS_HASTA);
+
+            $Today = Carbon::today();
+
+            if($Today->greaterThanOrEqualTo($DiaDesde) AND $Today->lessThan($DiaHasta)){
+                $editable = true;
+            }
+
+            //dd(compact('DIAS_HASTA', 'DiaDesde', 'DiaHasta', 'Today', 'editable'));
+
+        }
+
+        return [ 'editable' => $editable ];
+    }
 
 
 }

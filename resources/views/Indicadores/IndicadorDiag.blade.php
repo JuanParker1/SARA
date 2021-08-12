@@ -159,14 +159,4 @@
 
 	</div>
 
-	<style type="text/css">
-		
-		.cell-hoverable{ transition: all 0.3s; }
-
-		.cell-hoverable:hover{
-			background-color: #3c3c3c;
-		}
-
-	</style>
-
 </md-dialog>

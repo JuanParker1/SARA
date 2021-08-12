@@ -34,22 +34,6 @@ class IndicadoresController extends Controller
         $DaInd->fillit_columns($newInd);
         $DaInd->save();
 
-        foreach ($newInd['variables'] as $k => $Var ) {
-            
-            $DaVar = new Variable();
-            $DaVar->fillit_columns($Var);
-            $DaVar->proceso_id = $DaInd->proceso_id;
-            $DaVar->save();
-
-            $DaIndVar = new IndicadorVariable([
-                'indicador_id' => $DaInd->id,
-                'Letra'        => strtolower(\PHPExcel_Cell::stringFromColumnIndex(($k))),
-                'Tipo'         => 'Variable',     
-                'variable_id'  => $DaVar->id,
-            ]);
-            $DaIndVar->save();
-        }
-
         if($newInd['Meta']){
             $DaMeta = new IndicadorMeta([
                 'indicador_id' => $DaInd->id,
@@ -59,7 +43,7 @@ class IndicadoresController extends Controller
             $DaMeta->save();
         }
 
-        //return $DaInd;
+        return $DaInd;
     }
 
     public function postGet()

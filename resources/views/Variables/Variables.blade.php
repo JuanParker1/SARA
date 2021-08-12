@@ -1,8 +1,8 @@
 <div flex id="Variables" layout ng-controller="VariablesCtrl">
 		
 	<md-sidenav class="bg-white border-right w350" layout=column 
-		md-is-open="VariablesNav"
-		md-is-locked-open="$mdMedia('gt-xs') && VariablesNav">
+		md-is-open="Storage.VariablesNav"
+		md-is-locked-open="$mdMedia('gt-xs') && Storage.VariablesNav">
 
 		<div layout=column flex>
 
