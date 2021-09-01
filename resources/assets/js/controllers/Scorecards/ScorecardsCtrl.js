@@ -9,11 +9,11 @@ angular.module('ScorecardsCtrl', [])
 		Ctrl.ScorecardsNav = true;
 		Rs.mainTheme = 'Snow_White';
 		Ctrl.ScorecardsCRUD  = $injector.get('CRUD').config({ base_url: '/api/Scorecards' });
-		Ctrl.CardsCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/cards' });
 		Ctrl.NodosCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/nodos', query_call_arr: [['getElementos',null],['getRutas',null]] });
 		Ctrl.IndicadoresCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores' });
 		Ctrl.VariablesCRUD 	 = $injector.get('CRUD').config({ base_url: '/api/Variables' });
 		Ctrl.NodosSelected = [];
+		Ctrl.newNodoName = '';
 
 		Ctrl.getScorecards = () => {
 			Ctrl.ScorecardsCRUD.get().then(() => {
@@ -28,10 +28,20 @@ angular.module('ScorecardsCtrl', [])
 
 		Ctrl.getFs = () => {
 			Ctrl.filterScorecards = "";
-			Ctrl.NodosFS = Rs.FsGet(Ctrl.NodosCRUD.rows,'Ruta','Nodo',false,true,false);
+
+			let Nodos = angular.copy(Ctrl.NodosCRUD.rows).filter(N => N.tipo == 'Nodo');
+			let NodoPrincipal = Nodos.find(N => N.padre_id == null);
+
+			angular.forEach(Nodos, N => {
+				if(N.padre_id == null){ N.Ruta = NodoPrincipal.Nodo }
+				else{ N.Ruta = NodoPrincipal.Nodo +"\\"+ N.Ruta; }
+			});
+
+			Ctrl.NodosFS = Rs.FsGet(Nodos,'Ruta','Nodo',false,true,false);
 			angular.forEach(Ctrl.NodosFS, (F) => {
 				if(F.type == 'folder'){
-					F.file = Ctrl.NodosCRUD.rows.filter(N => { return ( N.tipo == 'Nodo' && N.Ruta == F.route ) })[0];
+					F.file = Nodos.find(N => { return (N.Ruta.trim() == F.route.trim()) });
+					//F.file = Ctrl.NodosCRUD.rows.filter(N => { return ( N.tipo == 'Nodo' && N.Ruta == F.route ) })[0];
 				};
 			});
 		};
@@ -56,6 +66,16 @@ angular.module('ScorecardsCtrl', [])
 			});
 		};
 
+		Ctrl.addNewNodo = () => {
+			if(Ctrl.newNodoName.trim() == '') return;
+			Ctrl.NodosCRUD.add({
+				scorecard_id: Ctrl.ScoSel.id, Nodo: Ctrl.newNodoName, padre_id: Ctrl.NodoSel.id, Indice: (Ctrl.NodoSel.subnodos.length + 1), tipo: 'Nodo', peso: 1 
+			}).then(() => {
+				Ctrl.getFs();
+				Ctrl.openNodo(Ctrl.NodoSel);
+			});
+		}
+
 		Ctrl.deleteScorecardNodo = () => {
 			if(Ctrl.NodoSel.indicadores.length > 0 || Ctrl.NodoSel.subnodos.length > 0 ) return Rs.showToast('Solo se pueden eliminar nodos vacíos', 'Error');
 			Ctrl.NodosCRUD.delete(Ctrl.NodoSel).then(() => {
@@ -69,6 +89,7 @@ angular.module('ScorecardsCtrl', [])
 			Ctrl.NodoSel.indicadores = $filter('orderBy')(Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo !== 'Nodo' && N.padre_id == Nodo.id) }), 'Indice');
 			Ctrl.NodoSel.subnodos    = Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo ==  'Nodo'      && N.padre_id == Nodo.id) });
 			Ctrl.NodosSelected = [];
+			Ctrl.newNodoName = '';
 			//Rs.viewScorecardDiag(Ctrl.ScoSel.id); //FIX
 
 		};
@@ -91,7 +112,7 @@ angular.module('ScorecardsCtrl', [])
 				orderBy: 'Ruta', select: 'Row.id'
 			}).then(Selected => {
 				if(!Selected || Selected.length == 0 ) return;
-				var Indice = Ctrl.NodoSel.indicadores.length;
+				var Indice = Ctrl.NodoSel.indicadores.length + 1;
 				Selected = Selected.map(indicador_id => {
 					return {
 						scorecard_id: Ctrl.ScoSel.id, 
@@ -169,6 +190,8 @@ angular.module('ScorecardsCtrl', [])
 				if(!Nodo) Nodo = Ctrl.NodosCRUD.rows[0];
 				Ctrl.openNodo(Nodo);
 				Ctrl.getFs();
+
+				//Ctrl.copyUrlDatos() //FIX
 			});
 		};
 
@@ -262,41 +285,6 @@ angular.module('ScorecardsCtrl', [])
 		}
 
 
-		//Cards
-		Ctrl.addCard = () => {
-			Rs.BasicDialog({
-				Title: 'Agregar Tarjeta', Flex: 50,
-				Fields: [
-					{ Nombre: 'Indicador', Value: null, Type: 'list', List: Ctrl.IndicadoresCRUD.rows, Item_Val: 'id', Item_Show: 'Indicador' },
-				],
-			}).then((r) => {
-				if(!r) return;
-				var f = Rs.prepFields(r.Fields);
-				var Indice = Ctrl.CardsCRUD.rows.length;
-				var seccion_id = (Indice == 0) ? null : Ctrl.CardsCRUD.rows[Indice-1].seccion_id;
-				Ctrl.CardsCRUD.add({
-					Indice: Indice,
-					scorecard_id: Ctrl.ScoSel.id,
-					seccion_id: seccion_id,
-					tipo: 'Indicador', elemento_id: f.Indicador
-				});
-			});
-		};
-
-		Ctrl.saveCards = () => {
-			var Updatees = $filter('filter')(Ctrl.CardsCRUD.rows, { changed: true });
-			if(Updatees.length == 0) return;
-			Ctrl.CardsCRUD.updateMultiple(Updatees);
-			angular.forEach(Ctrl.CardsCRUD.rows, C => {
-				C.changed = false;
-			});
-		};
-
-		Ctrl.delCard = (C) => {
-			Ctrl.CardsCRUD.delete(C);
-		};
-
-
 		Ctrl.getProcesos = () => {
 			return Rs.http('api/Procesos', {}, Ctrl, 'Procesos');
 		};
@@ -321,6 +309,33 @@ angular.module('ScorecardsCtrl', [])
 		};
 
 
+
+		//URL de Datos
+		Ctrl.copyUrlDatos = async () => {
+
+			if(Ctrl.ScoSel.config.data_code == ''){
+				Ctrl.ScoSel.config.data_code = Rs.makeUid(5);
+				await Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel);
+			}
+
+			let Url = Rs.Usuario.url + 'scorecard_data/' + Ctrl.ScoSel.config.data_code + '/' + Rs.AnioActual;
+
+			let Res = await Rs.Confirm({
+				Titulo: 'Url para acceder a los datos en formato JSON',
+				Detail: Url,
+				hasCancel: false,
+				Buttons: [
+					{ Text: 'Cambiar Código', Class: 'md-raised', Value: 'CHANGE_CODE' },
+					{ Text: 'Ok', Class: 'md-raised md-primary', Value: true }
+				],
+			});
+
+			if(Res == 'CHANGE_CODE'){
+				Ctrl.ScoSel.config.data_code = Rs.makeUid(5);
+				await Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel);
+				Ctrl.copyUrlDatos();
+			}
+		}
 
 	}
 ]);

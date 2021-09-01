@@ -107,9 +107,8 @@ class ScorecardsController extends Controller
         return $Procesos;
     }
 
-    public function postGet()
+    public function calcScorecard($id, $Anio, $filters = [])
     {
-        extract(request()->all()); //$id, $Anio, $filters
         set_time_limit(10*60);
         ini_set('memory_limit','2G');
 
@@ -142,11 +141,7 @@ class ScorecardsController extends Controller
             }
         }
 
-
         $ScoN->getValoresCache($Nodos, $Anio);
-
-
-        //dd($Nodos[10]);
 
         $Nodo = $Nodos->first(function($k, $E){ return is_null($E->padre_id); });
 
@@ -162,7 +157,8 @@ class ScorecardsController extends Controller
         $Nodo->recountSubnodos();
         $Nodo->purgeNodos();
         $Nodo->calculateNodos($Periodos);
-        $Nodo->reorder($filters);
+        
+        if($filters) $Nodo->reorder($filters);
 
         if(count($IndicadorValores) > 0){
             $indicadores_ids = $IndicadorValores->pluck('indicador_id');
@@ -172,13 +168,16 @@ class ScorecardsController extends Controller
         
         $Nodo->flatten($NodosFlat, 0, $Sco->config['open_to_level']);
 
-
         foreach ($NodosFlat as $i => &$N) { $N['i'] = $i; };
-
-        //$Sco->nodo = $Nodo;
         $Sco->nodos_flat = $NodosFlat;
 
         return $Sco;
+    }
+
+    public function postGet()
+    {
+        extract(request()->all()); //$id, $Anio, $filters
+        return $this->calcScorecard($id, $Anio, $filters);
     }
 
     public function getGet()
@@ -221,4 +220,61 @@ class ScorecardsController extends Controller
         $inds_ids = collect($Inds)->filter(function($N){ return $N['tipo'] == 'Indicador'; })->map(function($N){ return $N['elemento']['id']; });
         \App\Models\IndicadorValor::whereIn('indicador_id', $inds_ids)->delete();
     }
+
+
+    public function getRawData($code, $year)
+    {
+        $Scorecard = Scorecard::get()->first(function($kS,$S) use ($code){
+            return $S['config']['data_code'] == $code;
+        });
+
+        if(!$Scorecard) abort(512, 'scorecard no encontrado');
+
+        $Sco = $this->calcScorecard($Scorecard->id, $year);
+
+        $datos = [];
+
+        foreach ($Sco['nodos_flat'] as $N) {
+            
+            if($N['tipo'] == 'Nodo'){
+
+                foreach ($N['calc'] as $Periodo => $V) {
+                    $datos[] = [
+                        'Scorecard'     => $Scorecard->Titulo,
+                        'Tipo'          => 'Nodo', 'Nodo' => $N['Nodo'], 'Peso' => $N['peso'], 
+                        'Periodo'       => $Periodo,
+                        'Valor'         =>        null, 'Valor_Formateado' =>      null,
+                        'Meta'          =>        null, 'Meta_Formateado'  =>      null, 
+                        'Cumplimiento'  => $V['val'], 
+                        'Color'         => $V['color'],
+                        'Calculable'    => $V['calculable'], 'Nivel' => $N['depth'],
+                        'Proceso'       => null,
+                        'Proceso_Ruta'  => null,
+                    ];
+                }
+
+            }else{
+
+                foreach ($N['valores'] as $Periodo => $V) {
+                    $datos[] = [
+                        'Scorecard'     => $Scorecard->Titulo,
+                        'Tipo'          => $N['tipo'], 'Nodo' => $N['Nodo'], 'Peso' => $N['peso'], 
+                        'Periodo'       => $Periodo,
+                        'Valor'         => $V['Valor'],      'Valor_Formateado' => $V['val'],
+                        'Meta'          => $V['meta_Valor'], 'Meta_Formateado'  => $V['meta_val'],
+                        'Cumplimiento'  => $V['cump_porc'], 
+                        'Color'         => $V['color'],
+                        'Calculable'    => $V['calculable'], 'Nivel' => $N['depth'],
+                        'Proceso'       => $N['elemento']['proceso']['Proceso'],
+                        'Proceso_Ruta'  => $N['elemento']['proceso']['Ruta'],
+                    ];
+                }
+
+            }
+
+        }
+
+        return $datos;
+    }
+
 }

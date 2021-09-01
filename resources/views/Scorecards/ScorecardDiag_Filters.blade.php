@@ -73,6 +73,17 @@
 					<md-option value="-1">Todas</md-option>
 					<md-option ng-value="k" ng-repeat="(k, Op) in Frecuencias" ng-if="!inArray('-1', filters.frecuencia_analisis)">{{ Op }}</md-option>
 				</md-select>
+			</div>
+
+			<div layout class="h30 lh30 md-subheader padding-0-10" style="transform: translateY(6px);">
+				<div flex>Ver</div>
+			</div>
+			<div class="padding-0-10">
+				<md-select ng-model="filters.see" class="no-margin md-no-underline w100p text-14px block md-select-nowrap" 
+					aria-label=s>
+					<md-option value="Res">Resultado</md-option>
+					<md-option value="Cump">Cumplimiento</md-option>
+				</md-select>
 			</div>		
 
 			<div class="mh50"></div>	

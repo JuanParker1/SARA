@@ -43,6 +43,7 @@ class Scorecard extends MyModel
 		$Default = [
 			'open_to_level' => 1,
 			'show_proceso' => false,
+			'data_code' => ''
 		];
 		
 		if(gettype($Config) == 'string') $Config = json_decode($Config);

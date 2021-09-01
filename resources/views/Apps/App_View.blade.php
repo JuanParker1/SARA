@@ -4,12 +4,16 @@
 		class="app_toolbar inherit-color" ng-if="AppSel.Navegacion == 'Superior'" 
 		layout>
 		<md-icon md-font-icon="{{ AppSel.Icono }} fa-fw s30"></md-icon>
-		<div class="margin-right-20" layout=column layout-align=center>{{ AppSel.Titulo }}</div>
-		<div flex layout class="app_pages" >
+		<div class="margin-right" layout=column layout-align=center>{{ AppSel.Titulo }}</div>
+		<div flex layout class="app_pages overflow-x hasScroll" >
 			<div ng-repeat="P in AppSel.pages" md-ink-ripple class="app_page" 
 				ng-class="{ 'app_pagesel': P.id == PageSel.id }"
 				ng-click="gotoPage(P.id)" layout=column layout-align=center>{{ P.Titulo }}</div>
 		</div>
+
+		<!--<md-tabs class="md-short h30" flex>
+			<md-tab ng-repeat="P in AppSel.pages">{{ P.Titulo }}</md-tab>
+		</md-tabs>-->
 
 		@include('Core.UserMenu')
 		<!--<img hide src="https://eventosadversos.comfamiliar.com/img/logo.png" height="{{ AppSel.ToolbarSize }}">-->

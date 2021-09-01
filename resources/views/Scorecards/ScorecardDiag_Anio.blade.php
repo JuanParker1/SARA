@@ -1,6 +1,6 @@
 <div flex layout=column class="overflow hasScroll transition" ng-if="Modo == 'Año'" ng-class="{ 'opacity-0': Loading }">
 
-	<md-table-container class="border-bottom hasScroll">
+	<md-table-container class="border-bottom" style="overflow: initial;">
 		<table md-table class="md-table-short table-col-compress table-nowrap">
 			<colgroup>
 				<col span="2">
@@ -52,7 +52,8 @@
 
 						<div class="w100p" ng-if="N.tipo == 'Indicador'" ng-repeat="E in [ N.valores[Anio+M[0]] ] "
 							ng-style="{ color: E['color'] }">
-							{{ E['val'] }}
+							<span ng-show="filters.see == 'Res'">{{ E['val'] }}</span>
+							<span ng-show="filters.see == 'Cump'">{{ E['cump_porc'] | percentage:1 }}</span>
 						</div>
 
 						<div class="w100p" ng-if="N.tipo == 'Variable'" ng-repeat="E in [ N.valores[Anio+M[0]] ] ">

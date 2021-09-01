@@ -1,6 +1,6 @@
 <div flex id="Scorecards" layout ng-controller="ScorecardsCtrl">
 	
-	<md-sidenav class="bg-white border-right w320" layout=column 
+	<md-sidenav class="bg-white border-right w300 no-overflow" layout=column 
 		md-is-open="ScorecardsNav"
 		md-is-locked-open="$mdMedia('gt-xs') && ScorecardsNav">
 		
@@ -10,24 +10,20 @@
 			</md-select>
 			<md-button class="md-icon-button no-margin" aria-label="b" ng-click="addScorecard()">
 				<md-icon md-svg-icon="md-plus"></md-icon>
-				<md-tooltip md-direction=left>Agregar Scorecard</md-tooltip>
+				<md-tooltip md-direction=left>Agregar Tablero</md-tooltip>
 			</md-button>
 		</div>
 
-		<div layout=column flex class="overflow-y darkScroll padding-top-5">
+		<div layout=column flex class="overflow-y darkScroll padding-top-5 mw300">
 
 			<div ng-repeat="F in NodosFS" class="mh25 borders-bottom padding-0-5 relative text-13px"
-				md-ink-ripple layout ng-show="F.show "><!-- && F.type == 'folder' -->
+				md-ink-ripple layout ng-show="F.show && F.type == 'folder'">
 				<div ng-style="{ width: (F.depth * 12) }"></div>
 				<div ng-show="F.type == 'folder'" flex layout class="">
-					<md-icon md-font-icon="fa-chevron-right  fa-fw transition Pointer" ng-class="{'fa-rotate-90':F.open}" ng-click="FsOpenFolder(NodosFS, F)"></md-icon>
-					<div flex style="padding: 5px 0" class="Pointer" ng-click="openNodo(F.file)">{{ F.name }}</div>
-					<div style="padding: 4px" class="text-clear text-right" hide>{{ F.file.peso }}</div>
-				</div>
-				<div ng-show="F.type == 'file'" flex layout>
-					<div flex style="padding: 5px 0 5px 12px" layout=column>
-						<div>{{ F.file.Nodo }}</div>
-						<div class="text-clear">{{ F.file.elemento.proceso.Proceso }}</div>
+					<md-icon md-font-icon="fa-chevron-right  fa-fw transition Pointer" ng-class="{'fa-rotate-90':F.open, 'opacity-0':F.children == 0 }" ng-click="FsOpenFolder(NodosFS, F)"></md-icon>
+					<div flex style="padding: 5px 0" class="Pointer" ng-click="openNodo(F.file)"
+						ng-class="{ 'text-bold': (F.file.id == NodoSel.id) }">
+						{{ F.file.Nodo }}
 					</div>
 				</div>
 			</div>
@@ -45,10 +41,12 @@
 					style="margin-top: 2px !important">
 					<md-icon md-svg-icon="md-bars" class=""></md-icon>
 				</md-button>
-				<md-input-container class="no-margin-top no-margin-bottom" flex>
+				<md-input-container class="no-margin-bottom" flex>
+					<label>Tablero</label>
 					<input type="text" ng-model="ScoSel.Titulo" aria-label=s ng-change="ScoSel.changed = true">
 				</md-input-container>
-				<md-input-container class="no-margin-top no-margin-bottom w40">
+				<md-input-container class="no-margin-bottom w50">
+					<label>Abrir a</label>
 					<input type="number" ng-model="ScoSel.config.open_to_level" aria-label=s ng-change="ScoSel.changed = true">
 					<md-tooltip>Abrir al Nivel</md-tooltip>
 				</md-input-container>
@@ -56,21 +54,25 @@
 
 			<div layout=column ng-show="NodoSel !== null">
 
-				<div layout class="">
-					<div class="text-clear" style="padding: 8px 5px 0 6px;">Nodo</div>
-					<md-input-container class="no-margin-top no-margin-bottom" flex>
+				<div layout class="" ng-if="NodoSel.padre_id">
+					<div class="w30"></div>
+					<md-input-container class="no-margin-bottom" flex>
+						<label>Nodo</label>
 						<input type="text" ng-model="NodoSel.Nodo" aria-label=s ng-change="NodoSel.changed = true">
 					</md-input-container>
-					<md-input-container class="no-margin-top no-margin-bottom w50 text-right">
-						<md-tooltip>Peso</md-tooltip>
+					<md-input-container class="no-margin-bottom w50">
+						<label>Peso</label>
 						<input type="number" ng-model="NodoSel.peso" aria-label=s ng-change="NodoSel.changed = true">
 					</md-input-container>
 
 					<div class="w20"></div>
-					<md-select class="no-margin" ng-model="NodoSel.padre_id" ng-change="NodoSel.changed = true">
-						<md-tooltip md-direction=left>Padre</md-tooltip>
-						<md-option ng-repeat="Op in NodosCRUD.rows | filter:{tipo:'Nodo'}" ng-value="Op.id" ng-if="Op.id !== NodoSel.id">{{ Op.Nodo }}</md-option>
-					</md-select>
+
+					<md-input-container class="no-margin-bottom">
+						<label>Padre</label>
+						<md-select class="" ng-model="NodoSel.padre_id" ng-change="NodoSel.changed = true">
+							<md-option ng-repeat="Op in NodosCRUD.rows | filter:{tipo:'Nodo'}" ng-value="Op.id" ng-if="Op.id !== NodoSel.id">{{ Op.Nodo }}</md-option>
+						</md-select>
+					</md-input-container>
 
 				</div>
 
@@ -90,6 +92,7 @@
 					<md-icon md-svg-icon="md-more-v"></md-icon>
 				</md-button>
 				<md-menu-content>
+					<md-menu-item><md-button ng-click="copyUrlDatos()" class=""><md-icon md-font-icon="fa-copy margin-right fa-fw"></md-icon>Copiar URL de Datos</md-button></md-menu-item>
 					<md-menu-item ng-show="NodosSelected.length > 0"><md-button ng-click="eraseCacheNodosInd()" class=""><md-icon md-font-icon="fa-eraser margin-right fa-fw"></md-icon>Borrar la Caché de {{ NodosSelected.length }} Indicadores</md-button></md-menu-item>
 					<md-menu-item ng-show="NodosSelected.length > 0"><md-button ng-click="moveNodosInd()" class=""><md-icon md-font-icon="fa-sign-out-alt margin-right fa-fw"></md-icon>Mover {{ NodosSelected.length }} Indicadores</md-button></md-menu-item>
 					<md-menu-item ng-show="NodosSelected.length > 0"><md-button ng-click="deleteNodosInd()" class="md-warn"><md-icon md-font-icon="fa-trash margin-right fa-fw"></md-icon>Eliminar {{ NodosSelected.length }} Indicadores</md-button></md-menu-item>
@@ -99,6 +102,7 @@
 			</md-menu>
 			<md-button class="md-icon-button no-margin" aria-label="b" ng-click="viewScorecardDiag(ScoSel.id)">
 				<md-icon md-font-icon="fa-external-link-alt fa-fw fa-lg"></md-icon>
+				<md-tooltip md-direction="right">Abrir Tablero</md-tooltip>
 			</md-button>
 			<span flex></span>
 			<md-button class="md-primary md-raised mh30 h30 lh30" ng-click="updateScorecard()">

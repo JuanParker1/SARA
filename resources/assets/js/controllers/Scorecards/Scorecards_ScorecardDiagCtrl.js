@@ -33,7 +33,8 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
         Ctrl.filters = {
         	proceso_ruta: false,
         	cumplimiento: false,
-        	frecuencia_analisis: ['-1']
+        	frecuencia_analisis: ['-1'],
+        	see: 'Res'
         };
 
         Ctrl.filtrosCumplimiento = [

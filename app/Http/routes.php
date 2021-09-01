@@ -38,7 +38,7 @@ Route::controller('/api/ConsultasSQL',  'ConsultasSQLController');
 Route::controller('/api/Integraciones', 'IntegracionesController');
 Route::controller('/api/Bots', 			'BotsController');
 
-
+Route::get('/scorecard_data/{code}/{year}',	'ScorecardsController@getRawData');
 
 Route::get('/phpinfo', function(){ phpinfo(); });
 

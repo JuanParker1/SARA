@@ -623,6 +623,18 @@ div.md-short .md-button.md-icon-button {
   padding: 0px;
   width: 30px;
 }
+md-tabs.h30 {
+  min-height: 30px;
+}
+md-tabs.h30 md-tabs-canvas {
+  height: 30px !important;
+}
+md-tabs.h30 md-tabs-canvas md-pagination-wrapper {
+  height: 30px !important;
+}
+md-tabs.h30 md-tabs-canvas .md-tab {
+  padding: 8px 24px;
+}
 /**
  *  mdProgress
  */

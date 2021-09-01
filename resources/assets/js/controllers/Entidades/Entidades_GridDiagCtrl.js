@@ -173,6 +173,8 @@ angular.module('Entidades_GridDiagCtrl', [])
 		        SheetData.push(RowData);
 	        });
 
+	        console.log(SheetData);
+
 			var ws = XLSX.utils.aoa_to_sheet(SheetData);
 			var last_cell = excelColName(ColumnsNo - 1) + (Data.length + 1);
 			ws['!autofilter'] = { ref: ('A1:'+last_cell) };
