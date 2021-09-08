@@ -234,29 +234,57 @@ class ScorecardsController extends Controller
 
         $datos = [];
 
+        //Obtener niveles
+        $Niveles = 0;
+        foreach ($Sco['nodos_flat'] as $N) {   
+            if($N['tipo'] == 'Nodo'){
+                $RutaArr = explode("\\", $N['ruta']);
+                $Niveles = max($Niveles, count($RutaArr));
+            }
+        }
+
         foreach ($Sco['nodos_flat'] as $N) {
             
             if($N['tipo'] == 'Nodo'){
-
+                
+                $RutaArr = explode("\\", $N['ruta']);
+                $BaseArr = [
+                    'Ruta' => $N['ruta']
+                ];
+                for ($i=1; $i <= $Niveles; $i++) {
+                    $BaseArr['Nivel_'.$i] = array_key_exists(($i-1), $RutaArr) ? $RutaArr[($i-1)] : null;
+                }
                 foreach ($N['calc'] as $Periodo => $V) {
-                    $datos[] = [
+                    $Row = [
                         'Scorecard'     => $Scorecard->Titulo,
-                        'Tipo'          => 'Nodo', 'Nodo' => $N['Nodo'], 'Peso' => $N['peso'], 
+                        'Tipo'          => $N['tipo'], 'Nodo' => $N['Nodo'], 'Peso' => $N['peso'], 
                         'Periodo'       => $Periodo,
-                        'Valor'         =>        null, 'Valor_Formateado' =>      null,
-                        'Meta'          =>        null, 'Meta_Formateado'  =>      null, 
-                        'Cumplimiento'  => $V['val'], 
+                        'Valor'         => $V['Valor'],      'Valor_Formateado' => $V['val'],
+                        'Meta'          => null,             'Meta_Formateado'  => null,
+                        'Cumplimiento'  => null, 
                         'Color'         => $V['color'],
                         'Calculable'    => $V['calculable'], 'Nivel' => $N['depth'],
                         'Proceso'       => null,
                         'Proceso_Ruta'  => null,
                     ];
+
+                    $Row = array_merge($Row, $BaseArr);
+
+                    $datos[] = $Row;
                 }
 
             }else{
 
+                $RutaArr = explode("\\", $N['ruta']); array_pop($RutaArr);
+                $BaseArr = [
+                    'Ruta' => $N['ruta']
+                ];
+                for ($i=1; $i <= $Niveles; $i++) {
+                    $BaseArr['Nivel_'.$i] = array_key_exists(($i-1), $RutaArr) ? $RutaArr[($i-1)] : null;
+                }
+
                 foreach ($N['valores'] as $Periodo => $V) {
-                    $datos[] = [
+                    $Row = [
                         'Scorecard'     => $Scorecard->Titulo,
                         'Tipo'          => $N['tipo'], 'Nodo' => $N['Nodo'], 'Peso' => $N['peso'], 
                         'Periodo'       => $Periodo,
@@ -268,6 +296,10 @@ class ScorecardsController extends Controller
                         'Proceso'       => $N['elemento']['proceso']['Proceso'],
                         'Proceso_Ruta'  => $N['elemento']['proceso']['Ruta'],
                     ];
+
+                    $Row = array_merge($Row, $BaseArr);
+
+                    $datos[] = $Row;
                 }
 
             }
