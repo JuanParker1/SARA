@@ -48,16 +48,14 @@ class Ikono {
             return $Reg;
         });
 
+        return count($BaseRegs);
+
         $Bdd = \App\Models\BDD::where('id', 1)->first();
         $Conn = ConnHelper::getConn($Bdd);
-
-        $Conn->statement('TRUNCATE TABLE BDSALUD.TBSRRUAFNV');
 
         foreach (array_chunk($BaseRegs->toArray(), 1000) as $Regs) {
             $Conn->table('BDSALUD.TBSRCCLLAM')->insert($Regs);
         }
-
-        $Conn->table('BDSALUD.TBSRRUAFNV')->insert($BaseRegs->toArray());
 
         return [ 'regs' => count($BaseRegs) ];
     }
