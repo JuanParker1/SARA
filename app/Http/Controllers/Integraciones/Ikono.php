@@ -48,8 +48,6 @@ class Ikono {
             return $Reg;
         });
 
-        return count($BaseRegs);
-
         $Bdd = \App\Models\BDD::where('id', 1)->first();
         $Conn = ConnHelper::getConn($Bdd);
 
