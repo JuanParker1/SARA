@@ -257,7 +257,7 @@ class ScorecardsController extends Controller
                 foreach ($N['calc'] as $Periodo => $V) {
                     $Row = [
                         'Scorecard'     => $Scorecard->Titulo,
-                        'Tipo'          => $N['tipo'], 'Nodo' => $N['Nodo'], 'Peso' => $N['peso'], 
+                        'Tipo'          => 'Nodo', 'Nodo' => $N['Nodo'], 'Peso' => $N['peso'], 
                         'Periodo'       => $Periodo,
                         'Valor'         => $V['Valor'],      'Valor_Formateado' => $V['val'],
                         'Meta'          => null,             'Meta_Formateado'  => null,
@@ -266,6 +266,9 @@ class ScorecardsController extends Controller
                         'Calculable'    => $V['calculable'], 'Nivel' => $N['depth'],
                         'Proceso'       => null,
                         'Proceso_Ruta'  => null,
+                        'Frecuencia_Analisis' => 1,
+                        'Sentido'       => null,
+                        'TipoDato'      => null,
                     ];
 
                     $Row = array_merge($Row, $BaseArr);
@@ -295,6 +298,9 @@ class ScorecardsController extends Controller
                         'Calculable'    => $V['calculable'], 'Nivel' => $N['depth'],
                         'Proceso'       => $N['elemento']['proceso']['Proceso'],
                         'Proceso_Ruta'  => $N['elemento']['proceso']['Ruta'],
+                        'Frecuencia_Analisis' => $N['elemento']['FrecuenciaAnalisis'],
+                        'Sentido'       => $N['elemento']['Sentido'],
+                        'TipoDato'      => $N['elemento']['TipoDato'],
                     ];
 
                     $Row = array_merge($Row, $BaseArr);
