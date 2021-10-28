@@ -335,11 +335,8 @@ angular.module('IndicadoresCtrl', [])
 			});
 		}
 
-		Ctrl.formatPeriodo = (date) => {
-        	var m = moment(date);
-      		return m.isValid() ? m.format('YYYYMM') : '';
-        };
-
+		Ctrl.formatPeriodo = Rs.formatPeriodo;
+		
 		Ctrl.delMeta = (Meta) => {
 			Ctrl.MetasCRUD.delete(Meta);
 		};

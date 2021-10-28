@@ -2,7 +2,7 @@ angular.module('EntidadesCtrl', [])
 .controller('EntidadesCtrl', ['$scope', '$rootScope', '$injector', '$mdDialog', '$filter', '$timeout',
 	function($scope, $rootScope, $injector, $mdDialog, $filter, $timeout) {
 
-		console.info('EntidadesCtrl 1');
+		console.info('EntidadesCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 		Rs.mainTheme = 'Snow_White';
@@ -190,7 +190,8 @@ angular.module('EntidadesCtrl', [])
 
 		Ctrl.camposSel = [];
 		Ctrl.setTipoDefaults = (C) => {
-			C.Defecto = null;
+			C.Defecto = Ctrl.TiposCampo[C.Tipo]['DefaultValor'];
+			console.log(Ctrl.TiposCampo[C.Tipo]['DefaultValor']);
 			var Defaults = Ctrl.TiposCampo[C.Tipo]['Defaults'];
 			C = angular.extend(C,Defaults);
 			C.changed = true;

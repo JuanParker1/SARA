@@ -6,6 +6,28 @@ use Illuminate\Database\Eloquent\Model;
 
 class MyModel extends Model
 {
+    public function __construct(array $attributes = []) {
+        parent::__construct($attributes);
+        
+
+        //GEt the subdoamin
+        $conn_id = explode('.', request()->getHost())[0];
+
+        require('../conns.php');
+        if(array_key_exists($conn_id, $conns)){
+            $conn = $conns[$conn_id];
+            $base = \Config::get('database.connections.mysql');
+            
+            $base['database'] = $conn[0];
+            $base['username'] = $conn[1];
+            $base['password'] = $conn[2];
+
+            \Config::set("database.connections.dbm_$conn_id", $base);
+            $this->setConnection("dbm_$conn_id");
+        }
+    }
+
+
     /**
      * Ajusta un array y ejecuta fill
      */

@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Core\MyModel;
 
-class Log extends Model
+class Log extends MyModel
 {
     protected $table = 'sara_logs';
 	protected $guarded = ['id'];

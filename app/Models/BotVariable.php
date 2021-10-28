@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Core\MyModel;
 
-class BotVariable extends Model
+class BotVariable extends MyModel
 {
     protected $table = 'sara_bots_variables';
 	protected $guarded = ['id'];

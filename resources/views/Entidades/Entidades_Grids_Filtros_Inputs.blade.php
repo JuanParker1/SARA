@@ -29,7 +29,7 @@
 		</md-select>
 	</md-input-container>
 	<md-input-container class="no-margin" md-no-float>
-		<input type="number" ng-model="R.Valor" placeholder="Valor" class="text-right w105">
+		<input type="number" ng-model="R.Valor" placeholder="Valor" class="text-right w105" ng-change="markChanged(R)">
 	</md-input-container>
 </div>
 

@@ -2,7 +2,8 @@
 	
 	<md-sidenav class="bg-white border-right w300" layout=column 
 		md-is-open="Storage.IndicadoresNav"
-		md-is-locked-open="$mdMedia('gt-xs') && Storage.IndicadoresNav">
+		md-is-locked-open="$mdMedia('gt-xs') && Storage.IndicadoresNav"
+		ng-show="Procesos.length > 0">
 
 		<div layout=column flex>
 

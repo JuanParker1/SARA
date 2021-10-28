@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Core\MyModel;
 
-class BotLog extends Model
+class BotLog extends MyModel
 {
     protected $table = 'sara_bots_logs';
 	protected $guarded = ['id'];

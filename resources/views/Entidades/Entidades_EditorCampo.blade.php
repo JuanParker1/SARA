@@ -28,6 +28,15 @@
 	<input type="text" ng-model="C.val" name="c{{ C.id }}" ng-required="C.Requerido" ui-percentage-mask="0" ng-disabled="!C.Editable">
 </md-input-container>
 
+<div layout ng-if="inArray(C.campo.Tipo, ['Periodo'])" class="">
+	<md-input-container class="w70">
+		<label>{{ C.campo_title }}</label>
+		<md-datepicker ng-model="C.val" name="c{{ C.id }}" ng-required="C.Requerido" md-hide-icons="calendar" ng-disabled="!C.Editable" md-mode="month" class="periodoDatepicker" 
+			md-date-locale="{ formatDate: formatPeriodo(C), isDateComplete: periodoFilter }"
+			md-date-filter="periodoFilter(C)"></md-datepicker>
+	</md-input-container>
+</div >
+
 <div layout ng-if="inArray(C.campo.Tipo, ['Fecha'])" class="">
 	<md-input-container class="" flex>
 		<label>{{ C.campo_title }}</label>

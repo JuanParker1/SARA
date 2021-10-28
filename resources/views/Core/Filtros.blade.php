@@ -1,7 +1,7 @@
 <div layout class="margin-top">
 	<div flex class="text-bold text-clear text-13px lh20 h20">{{ ::F.filter_header }}</div>
 	<md-button class="md-icon-button no-margin no-padding s20 focus-on-hover" aria-label="b" 
-		ng-show="F.val !== F.default" ng-click="F.val = F.default">
+		ng-show="F.val !== F.default || F.Comparador !== F.default_comparador" ng-click="F.val = F.default; F.Comparador = F.default_comparador">
 		<md-icon md-font-icon="fa-undo s20"></md-icon>
 		<md-tooltip md-delay="400" md-direction="right">Resetear filtro</md-tooltip>
 	</md-button>
@@ -52,4 +52,20 @@
 		ng-disabled="F.Locked">
 		<md-option ng-value="Op.value" ng-repeat="Op in F.campo.Config.opciones" class="h30">{{ Op.desc || Op.value }}</md-option>
 	</md-select>
+</div>
+
+
+<div ng-if="inArray(F.campo.Tipo, ['Entero','Decimal'])" layout>
+	<md-select ng-model="F.Comparador" class="text-12px no-margin block md-select-nowrap" placeholder="Seleccionar"  
+		ng-disabled="F.Locked">
+		<md-option value="=">Es</md-option>
+		<md-option value=">">Mayor a</md-option>
+		<md-option value=">=">Mayor o Igual a</md-option>
+		<md-option value="<">Menor a</md-option>
+		<md-option value="<=">Menor o Igual a</md-option>
+	</md-select>
+	<div class="w5"></div>
+	<md-input-container flex class="no-margin no-padding text-12px" md-no-float style="transform: translateY(2px);">
+		<input ng-model="F.val" placeholder="Cantidad" autocomplete="false" name="a" ng-disabled="F.Locked" type="number"></input>
+	</md-input-container>
 </div>

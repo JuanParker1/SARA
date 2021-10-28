@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Core\MyModel;
 use App\Functions\Helper;
 use App\Functions\ConnHelper;
 use GuzzleHttp\Client;
 
-class BotPaso extends Model
+class BotPaso extends MyModel
 {
     protected $table = 'sara_bots_pasos';
 	protected $guarded = ['id'];

@@ -16,7 +16,7 @@ class EntidadGridFiltro extends MyModel
     	'Locked' => 'boolean'
     ];
     protected $with = [];
-    protected $appends = ['Valor', 'campo','default','val'];
+    protected $appends = ['Valor', 'campo','default','val', 'default_comparador'];
 
     public function columns()
 	{
@@ -85,12 +85,18 @@ class EntidadGridFiltro extends MyModel
         	if(is_string($Valor)) $Valor = is_null($Valor) ? null : json_decode($Valor, true);
         };
 
+
         $Valor = Helper::getSystemVariable($Valor);
 
         return $Valor;
 	}
 
 	public function getValAttribute(){ return $this->default; }
+
+	public function getDefaultComparadorAttribute()
+	{
+		return $this->Comparador;
+	}
 
 	//Eventos
 	public function prepSave($F)

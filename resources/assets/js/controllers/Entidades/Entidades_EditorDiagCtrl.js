@@ -8,6 +8,17 @@ angular.module('Entidades_EditorDiagCtrl', [])
 		Ctrl.Cancel = () => { $mdDialog.cancel(); };
 		Ctrl.inArray = Rs.inArray;
 		Ctrl.submitForm = Rs.submitForm;
+        Ctrl.formatPeriodo = (C) => {
+        	return (dateVal) => {
+        		let formatEquiv = { 'Ym': 'YYYYMM', 'Y-m': 'YYYY-MM' };
+        		return Rs.formatPeriodo(dateVal, formatEquiv[C.campo.Op4]); 
+        	}
+        }
+        Ctrl.periodoFilter = (C) => { return true; }
+        Ctrl.fixPeriodoValue = (C) => {
+        	C.val.setDate(15);
+        	//C.val = C.val.setDate(15);
+        }
 		Ctrl.loading = true;
 
 		var DefConfig = {
@@ -25,7 +36,7 @@ angular.module('Entidades_EditorDiagCtrl', [])
 
 		Ctrl.prepEditor = (Editor) => {
 			angular.forEach(Editor.campos, (C) => {
-				if(Rs.inArray(C.campo.Tipo, ['Fecha','Hora','FechaHora'])){
+				if(Rs.inArray(C.campo.Tipo, ['Periodo','Fecha','Hora','FechaHora'])){
 					C.val = Rs.parseDate(C.val);
 				};
 
@@ -69,6 +80,7 @@ angular.module('Entidades_EditorDiagCtrl', [])
 			//return console.log(ev);
 
 			//Validar Cambios
+			console.log(Ctrl.EditorForm);
 			if(Ctrl.EditorForm.$invalid) return Rs.showToast('Falta información, por favor verifique y reintente.', 'Error');
 ;
 

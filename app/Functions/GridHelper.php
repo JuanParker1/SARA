@@ -180,11 +180,9 @@ class GridHelper
         if($Comparador == 'in'){                                 return $q->whereIn($columna_name, $Valor);           };
         if($Comparador == 'not_in'){                             return $q->whereNotIn($columna_name, $Valor);        };
         if($Comparador == 'lista'){ 
-            
             if(!is_null($Valor)){
                 return $q->whereIn($columna_name, $Valor); 
             }
-            
         };
 
     }

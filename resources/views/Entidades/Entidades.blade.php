@@ -1,7 +1,9 @@
 <div flex id="Entidades" layout ng-controller="EntidadesCtrl">
 
 	<md-sidenav class="w300 no-margin bg-white border-right no-overflow" layout=column
-		md-is-locked-open="Storage.EntidadSidenav">
+		md-is-locked-open="Storage.EntidadSidenav"
+		ng-show="Bdds.length > 0">
+
 	<div flex class="w300" layout=column>
 		
 		<div layout class="border-bottom padding-left" layout-align="center center" style="height: 41px">

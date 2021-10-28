@@ -69,7 +69,7 @@
 		</md-input-container>
 	</div>
 
-	<div ng-if="inArray(C.Tipo, ['Fecha','Hora','FechaHora'])">
+	<div ng-if="inArray(C.Tipo, ['Periodo','Fecha','Hora','FechaHora'])">
 		<md-input-container md-no-float class="no-padding no-margin w100">
 			<md-select ng-model="C.Op4" aria-label="s" ng-change="markChanged(C)">
 			  <md-option ng-value="Op[0]" ng-repeat="Op in TiposCampo[C.Tipo]['Formatos']">{{ Op[1] }}</md-option>
@@ -146,9 +146,13 @@
 		</md-input-container>
 	</div>
 
-	<div ng-if="inArray(C.Tipo, ['Fecha'])">
+	<div ng-if="inArray(C.Tipo, ['Periodo','Fecha'])">
 		<md-input-container md-no-float class="no-padding no-margin">
-			<input type="text" ng-model="C.Defecto" class="h30" aria-label="L" placeholder="Valor por Defecto" autocomplete="new-password" ng-change="markChanged(C)">
+			<!--<input type="text" ng-model="C.Defecto" class="h30" aria-label="L" placeholder="Valor por Defecto" autocomplete="new-password" ng-change="markChanged(C)">-->
+			<md-select ng-model="C.Defecto" aria-label="L">
+				<md-option ng-value="''">Ninguno</md-option>
+				<md-option ng-repeat="rel in TiposCampo[C.Tipo].Relatives" ng-value="rel[0]">{{ rel[1] }}</md-option>
+			</md-select>
 		</md-input-container>
 	</div>
 

@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Core\MyModel;
 
 use Hash;
 use DB;
 use Crypt;
 
-class Usuario extends Model
+class Usuario extends MyModel
 {
     protected $table = 'sara_usuarios';
 	protected $guarded = ['id'];

@@ -308,6 +308,8 @@ class EntidadesController extends Controller
 
         if(empty($Obj)) return;
 
+        //return $Obj;
+
         if(is_null($llaveprim_val)){ //Nuevo elemento
             //dd(collect([$Obj]));
             EntidadHelper::insertRows($Editor['entidad'], collect([$Obj]));

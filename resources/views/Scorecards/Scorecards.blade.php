@@ -5,9 +5,10 @@
 		md-is-locked-open="$mdMedia('gt-xs') && ScorecardsNav">
 		
 		<div layout class="border-bottom padding-left h40" layout-align="center center">
-			<md-select ng-model="ScoSel" flex class="md-no-underline no-margin" aria-label="s" ng-change="openScorecard(ScoSel)">
+			<md-select ng-model="ScoSel" flex class="md-no-underline no-margin" aria-label="s" ng-change="openScorecard(ScoSel)" ng-show="ScorecardsCRUD.rows.length > 0">
 				<md-option ng-repeat="Opt in ScorecardsCRUD.rows | orderBy:'Titulo' " ng-value="Opt">{{ Opt.Titulo }}</md-option>
 			</md-select>
+			<span flex ng-show="ScorecardsCRUD.rows.length == 0"></span>
 			<md-button class="md-icon-button no-margin" aria-label="b" ng-click="addScorecard()">
 				<md-icon md-svg-icon="md-plus"></md-icon>
 				<md-tooltip md-direction=left>Agregar Tablero</md-tooltip>

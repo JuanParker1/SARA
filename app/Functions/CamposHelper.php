@@ -25,7 +25,7 @@ class CamposHelper
 			'Porcentaje'     => [ 'Icon' => 'md-percent', 			 'Divide' => false, 	   'Defaults' => [   '0',  '1',    1,               '',   ''], 'DefaultValor' => '0',          'DefaultComparador' => '>=' ],
 			'Dinero'         => [ 'Icon' => 'md-money', 			 'Divide' => true, 	       'Defaults' => [    '',   '',    1,               '',   ''], 'DefaultValor' => '0',          'DefaultComparador' => '>=' ],
 			'Booleano'       => [ 'Icon' => 'md-toggle-on', 		 'Divide' => true, 	       'Defaults' => [    '',   '',    0,             'Si', 'No'], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
-            'Periodo'        => [ 'Icon' => 'md-calendar',           'Divide' => false,        'Defaults' => [    '',   '',    0,               '',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
+            'Periodo'        => [ 'Icon' => 'md-calendar',           'Divide' => false,        'Defaults' => [    '',   '',    0,             'Ym',   ''], 'DefaultValor' =>  'today',     'DefaultComparador' => '>=' ],
 			'Fecha'          => [ 'Icon' => 'md-calendar-event', 	 'Divide' => false, 	   'Defaults' => [ 'rel',   '',    0,          'Y-m-d',   ''], 'DefaultValor' =>  'today',     'DefaultComparador' => '>=' ],
 			'Hora'           => [ 'Icon' => 'md-time', 			     'Divide' => false, 	   'Defaults' => [    '',   '',    0,          'H:i:s',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
 			'FechaHora'      => [ 'Icon' => 'md-timer', 			 'Divide' => true, 	       'Defaults' => [    '',   '',    0,    'Y-m-d H:i:s',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
@@ -33,7 +33,8 @@ class CamposHelper
 			'Imagen'   	     => [ 'Icon' => 'md-image', 			 'Divide' => false, 	   'Defaults' => [    '',   '',    0,               '',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
 		];
 
-		$TC['Fecha']['Formatos']      = [ ['Y-m-d','2019-12-31'], ['Ymd', '20191231'] ];
+		$TC['Periodo']['Formatos']      = [ ['Ym','201912'] ]; //['Y-m', '2019-12']
+        $TC['Fecha']['Formatos']      = [ ['Y-m-d','2019-12-31'], ['Ymd', '20191231'] ];
 		$TC['Hora']['Formatos']  	  = [ ['H:i:s',  '23:59:59'], ['His',   '235959'], ['H:i',  '23:59'], ['Hi',   '2359'] ];
 		$TC['FechaHora']['Formatos']  = [ ['Y-m-d H:i:s', '2019-12-31 23:59:59'], ['YmdHis', '20191231235959'], ['Y-m-d H:i', '2019-12-31 23:59'], ['YmdHi', '201912312359'], ['Y-m-d H:i:s.u', '2019-12-31 23:59:59.000000'] ];
 
@@ -63,6 +64,21 @@ class CamposHelper
             ['+2 months','En 2 meses'],                     
             ['+3 months','En 3 meses'],                     
             ['last day of december this year','Último día de este año'],
+        ];
+
+        $TC['Periodo']['Comparators'] = ['=' => 'Es','>=' => 'Desde','<=' => 'Hasta','nulo' => 'Es nulo','no_nulo' => 'No es nulo'];
+        $TC['Periodo']['Relatives']     = [
+            ['first day of january last year','Primer mes del año pasado'],     
+            ['first day of january this year','Primer mes de este año'],        
+            ['-3 month','Hace 3 meses'],
+            ['-2 month','El mes antepasado'],
+            ['-1 month','El mes pasado'],
+            ['today','Este mes'],
+            ['+1 month','El próximo mes'],
+            ['+2 months','En 2 meses'],                     
+            ['+3 months','En 3 meses'],                     
+            ['last day of december this year','Último mes de este año'],
+            ['last day of december next year','Último mes del prox. año'],
         ];
 
 
@@ -98,6 +114,7 @@ class CamposHelper
     public static function prepDato($Campo, $D)
     {
         if(is_null($D)) return $D;
+
         if($Campo['Tipo'] == 'Entero'){ return intval($D); }
 
         if($Campo['Tipo'] == 'Fecha'){
@@ -147,6 +164,11 @@ class CamposHelper
         if($Campo['Tipo'] == 'Decimal'){
             $D = round($D, $Campo['Op3']);
         };
+
+        if($Campo['Tipo'] == 'Periodo'){
+            $Date = new Carbon($D);
+            return $Date->format($Campo['Op4']);
+        }
 
         if($Campo['Tipo'] == 'FechaHora'){
             $Date = Carbon::parse($D);

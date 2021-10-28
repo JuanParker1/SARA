@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Core\MyModel;
 
-class Configuracion extends Model
+class Configuracion extends MyModel
 {
     protected $table = 'sara_configuracion';
     protected $guarded = ['id'];

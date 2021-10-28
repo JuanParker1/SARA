@@ -71,6 +71,19 @@ angular.module('MainCtrl', [])
 			12: 'Anual'
 		};
 
+		Rs.parsePeriodo = function(dateString, format = 'MMM YYYY') {
+			if(!dateString) return null;
+			var m = moment(dateString, format);
+			var date = m.isValid() ? m.toDate() : new Date(NaN);
+			console.log('parsePeriodo', date);
+			return date;
+		};
+        Rs.formatPeriodo = (date, format = 'MMM YYYY') => {
+        	if(!date) return null;
+        	var m = moment(date);
+      		return m.isValid() ? m.format(format) : '';
+        };
+
 		if (window.self != window.top) {
 			$(document.body).addClass("in-iframe");
 		}

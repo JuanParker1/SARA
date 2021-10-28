@@ -323,11 +323,11 @@ class Helper
 
     public static function getSystemVariable($Variable)
     {
-        if($Variable == '_USERNAME_')     return strstr(self::getUsuario()['Email'], '@', true);
-        if($Variable == '_TODAY_')        return Carbon::today()->format('Y-m-d');
-        if($Variable == '_TODAYINT_')     return Carbon::today()->format('Ymd');
-        if($Variable == '_YESTERDAY_')    return Carbon::yesterday()->format('Y-m-d');
-        if($Variable == '_YESTERDAYINT_') return Carbon::yesterday()->format('Ymd');
+        if($Variable === '_USERNAME_')     return strstr(self::getUsuario()['Email'], '@', true);
+        if($Variable === '_TODAY_')        return Carbon::today()->format('Y-m-d');
+        if($Variable === '_TODAYINT_')     return Carbon::today()->format('Ymd');
+        if($Variable === '_YESTERDAY_')    return Carbon::yesterday()->format('Y-m-d');
+        if($Variable === '_YESTERDAYINT_') return Carbon::yesterday()->format('Ymd');
         return $Variable;
     }
 

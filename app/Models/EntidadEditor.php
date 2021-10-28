@@ -6,6 +6,9 @@ use App\Models\Core\MyModel;
 use App\Functions\Helper;
 use App\Functions\ConnHelper;
 use App\Functions\EntidadHelper;
+use App\Functions\CamposHelper;
+
+use Carbon\Carbon;
 
 class EntidadEditor extends MyModel
 {
@@ -88,13 +91,27 @@ class EntidadEditor extends MyModel
 				if($F->val) $F->selectedItem = EntidadHelper::searchElms($F->campo->Op1, $F->val);
 			};
 
+			if($TipoCampo == 'Periodo'){
+				$F->val = CamposHelper::prepDato($F->campo, $F->val);
+				if($F->val){
+					$TC = CamposHelper::getTipos();
+					$relatives = array_map(function($rel){ return $rel[0]; }, $TC['Periodo']['Relatives']);
+		            if(in_array($F->val, $relatives)){
+		                $Date = Carbon::parse($F->val)->day(1);
+		            }else{
+		                $Date = Carbon::createFromFormat($F->campo['Op4'], $F->val)->day(1);
+		            }
+		         
+		            $F->val = $Date->toDateString();
+				}   
+			};
+
 			if($TipoCampo == 'Booleano'){
 				$F->val = ( $F->val == $F->campo['Op4'] ) ? $F->val : $F->campo['Op5'];
 			};
 
-			if($TipoCampo == 'Decimal'){
-				$F->val = floatval($F->val);
-			};
+			if($TipoCampo == 'Entero'){  $F->val = intval($F->val); };
+			if($TipoCampo == 'Decimal'){ $F->val = floatval($F->val); };
 
 			if($TipoCampo == 'ListaAvanzada'){
 				$F->campo->opciones = ConnHelper::getListaValores($F->campo['Config']['lista_id'], $F->campo['Config']['indice_cod']);
