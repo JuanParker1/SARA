@@ -251,6 +251,7 @@ angular.module('appFunctions', [])
 				Theme: 'default', Flex: 95,
 				Title: 'Seleccionar',
 				primaryId: 'id', pluck: true,
+				rowsFilter: '',
 				Columns: [
 					{ Nombre: 'id', Desc: 'Id.', numeric: true }
 				],

@@ -15,7 +15,7 @@
 
 		<div class="padding-5" layout=column>
 			
-			<p class="no-margin text-center text-18px">Muchas gracias por enviarnos sus comentarios,<br> estos nos ayudarán a mejorar el sistema.</p>
+			<p class="no-margin text-center text-18px">Muchas gracias por enviarnos sus comentarios,<br> estos nos ayudarán a mejorar nuestro sistema.</p>
 
 			<div class=" margin-top padding-0-10" layout>
 				<md-input-container class="" flex> 

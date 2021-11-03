@@ -9,22 +9,16 @@ class MyModel extends Model
     public function __construct(array $attributes = []) {
         parent::__construct($attributes);
         
-
-        //GEt the subdoamin
-        $conn_id = explode('.', request()->getHost())[0];
-
-        require('../conns.php');
-        if(array_key_exists($conn_id, $conns)){
-            $conn = $conns[$conn_id];
-            $base = \Config::get('database.connections.mysql');
+        $config = \App\Functions\Helper::getInstanceConfig();
+        $base = \Config::get('database.connections.mysql');
             
-            $base['database'] = $conn[0];
-            $base['username'] = $conn[1];
-            $base['password'] = $conn[2];
+        $base['host']     = $config['host'];
+        $base['database'] = $config['database'];
+        $base['username'] = $config['username'];
+        $base['password'] = $config['password'];
 
-            \Config::set("database.connections.dbm_$conn_id", $base);
-            $this->setConnection("dbm_$conn_id");
-        }
+        \Config::set("database.connections.dbm_{$config['conn_id']}", $base);
+        $this->setConnection("dbm_{$config['conn_id']}");
     }
 
 

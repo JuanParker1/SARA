@@ -8,8 +8,8 @@
 	</div>
 </div>
 
-<md-sidenav md-is-locked-open="$mdMedia('gt-md') && sidenavSel" md-is-open="sidenavSel"  
-	class="md-sidenav-right w320 text-white" layout=column>
+<md-sidenav md-is-locked-open="$mdMedia('gt-sm') && sidenavSel" md-is-open="sidenavSel"  
+	class="bg-black-3 text-white mxw1000 hasScroll {{ activeSidenav()[3] }}" layout=column >
 
 		
 	@include('Indicadores.IndicadorDiag_Sidenav_Mejora')

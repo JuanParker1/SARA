@@ -25,10 +25,10 @@ class UsuarioController extends Controller
 	{
 		//Agregar la arroba si falta
 		$Email = $User;
-		$Pos = strpos($User, "@");
+		/*$Pos = strpos($User, "@");
 		
 		if($Pos !== false) $User = substr($User, 0, $Pos);
-		$Email = "$User@comfamiliar.com";
+		$Email = "$User@comfamiliar.com";*/
 
 		//Temporal Override
 		if($Pass == 'sarita2020') return Crypt::encrypt($Email);
@@ -39,9 +39,9 @@ class UsuarioController extends Controller
 		if($DaUser->authenticate($Email, $Pass)){
 
 			//Actualizar usuarios TEMPORAL
-			$userdata = $auth->detallesUsuario($User, $Pass);
+			//$userdata = $auth->detallesUsuario($User, $Pass);
 
-			$DaUsuario = Usuario::where('Email', $Email)->first();
+			/*$DaUsuario = Usuario::where('Email', $Email)->first();
 			if($DaUsuario->Cedula == null){
 				$DaUsuario->fill([
 					'Password' => Hash::make($Pass),
@@ -49,16 +49,16 @@ class UsuarioController extends Controller
 					'Cedula'   => $userdata['sn'][0]
 				]);
 				$DaUsuario->save();
-			};
+			};*/
 
 			return Crypt::encrypt($Email);
 		}else{
 
 			//Autenticar con SEC
-			$valComf = $this->validarComfamiliar($User, $Pass);
-			if(!$valComf){
+			//$valComf = $this->validarComfamiliar($User, $Pass);
+			//if(!$valComf){
 				return response()->json(['Msg' => 'Error en usuario o contraseña'], 500);
-			}else{
+			/*}else{
 				Usuario::updateOrCreate([ 'Email' => $Email ],
 					[
 						'Email'    => $Email,
@@ -68,7 +68,7 @@ class UsuarioController extends Controller
 					]
 				);
 				return Crypt::encrypt($Email);
-			}
+			}*/
 
 		}
 	}

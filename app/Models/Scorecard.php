@@ -43,7 +43,8 @@ class Scorecard extends MyModel
 		$Default = [
 			'open_to_level' => 1,
 			'show_proceso' => false,
-			'data_code' => ''
+			'data_code' => '',
+			'calc_method' => 'peso'
 		];
 		
 		if(gettype($Config) == 'string') $Config = json_decode($Config);

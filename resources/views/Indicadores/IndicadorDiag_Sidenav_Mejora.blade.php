@@ -1,6 +1,6 @@
-<div layout=column ng-show="sidenavSel == 'Mejoramiento'">
+<div layout=column ng-show="sidenavSel == 'Análisis y Mejoramiento'">
 	<div class="padding-5-10" layout>
-		<h3 class="no-margin md-subhead" flex>Mejoramiento</h3>
+		<h3 class="no-margin md-subhead" flex>Análisis y Mejoramiento</h3>
 		<md-menu md-position-mode="target-right target">
 			<md-button ng-click="$mdMenu.open($event)" class="md-icon-button s25 no-margin no-padding" aria-label="s">
 				<md-icon md-svg-icon="md-plus"></md-icon>
@@ -22,7 +22,7 @@
 				<b flex>{{ C.autor.Nombres }}</b>
 				<div class="comment_pill" style="height: 18px">{{ C.Op1 }}</div>
 			</div>
-			<p class="no-margin">
+			<p class="no-margin text-16px">
 
 				{{ C.Comentario }}
 			</p>

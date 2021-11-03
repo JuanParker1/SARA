@@ -1,4 +1,4 @@
-<div flex id="Scorecards" layout ng-controller="ScorecardsCtrl">
+<md-content flex id="Scorecards" layout ng-controller="ScorecardsCtrl" class="bg-lightgrey-5">
 	
 	<md-sidenav class="bg-white border-right w300 no-overflow" layout=column 
 		md-is-open="ScorecardsNav"
@@ -45,11 +45,6 @@
 				<md-input-container class="no-margin-bottom" flex>
 					<label>Tablero</label>
 					<input type="text" ng-model="ScoSel.Titulo" aria-label=s ng-change="ScoSel.changed = true">
-				</md-input-container>
-				<md-input-container class="no-margin-bottom w50">
-					<label>Abrir a</label>
-					<input type="number" ng-model="ScoSel.config.open_to_level" aria-label=s ng-change="ScoSel.changed = true">
-					<md-tooltip>Abrir al Nivel</md-tooltip>
 				</md-input-container>
 			</div>
 
@@ -113,4 +108,26 @@
 
 	</div>
 
-</div>
+	<md-sidenav  ng-show="ScoSel !== null"
+		md-is-open="ScorecardOpsNav" 
+		md-is-locked-open="$mdMedia('gt-xs') && ScorecardOpsNav"
+		class="bg-lightgrey-5 border-left padding w250">
+
+		<div class="md-subhead text-clear margin-bottom-5">Opciones</div>
+
+		<md-input-container class="margin-bottom-5">
+			<label>Abrir al Nivel</label>
+			<input type="number" ng-model="ScoSel.config.open_to_level" aria-label=s ng-change="ScoSel.changed = true">
+		</md-input-container>
+
+		<md-input-container class="margin-bottom-5">
+			<label>Método Calculo</label>
+			<md-select ng-model="ScoSel.config.calc_method" ng-change="ScoSel.changed = true">
+				<md-option ng-value="'peso'">Por Peso</md-option>
+				<md-option ng-value="'indicadores'">Promedio de Indicadores</md-option>
+			</md-select>
+		</md-input-container>
+
+	</md-sidenav>
+
+</md-content>

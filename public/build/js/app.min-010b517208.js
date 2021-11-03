@@ -55,11 +55,30 @@ angular.module('MainCtrl', [])
 		Rs.agregators = [
 			{ id: 'count', 			Nombre: 'Contar' },
 			{ id: 'countdistinct',  Nombre: 'Contar Distintos' },
-			{ id: 'sum',  			Nombre: 'Suma' },
-			{ id: 'avg',  			Nombre: 'Promedio' },
-			{ id: 'min',  			Nombre: 'Mínimo' },
-			{ id: 'max',  			Nombre: 'Máximo' },
+			{ id: 'sum',  			Nombre: 'Sumar' },
+			{ id: 'avg',  			Nombre: 'Promediar' },
+			{ id: 'min',  			Nombre: 'Mínimo de' },
+			{ id: 'max',  			Nombre: 'Máximo de' },
 		];
+
+		Rs.comparators = {
+			'=': 'Es',
+			'!=': 'No Es',
+			'like': 'Contiene',
+			'like_': 'Empieza con',
+			'_like': 'Termina con',
+			'notlike': 'No Contiene',
+			'notlike_': 'No Empieza con',
+			'_notlike': 'No Termina con',
+			'in': 'Incluye',
+			'not_in': 'No Incluye',
+			'nulo': 'Es nulo',
+			'no_nulo': 'No es nulo',
+			'<': 'Menor que',
+			'<=': 'Menor o igual que',
+			'>': 'Mayor que',
+			'>=': 'Mayor o igual que',
+		};
 
 		Rs.Frecuencias = {
 			0: 'Diario',
@@ -711,29 +730,6 @@ angular.module('BDD_ListasDiagCtrl', [])
 	}
 
 ]);
-angular.module('ConfiguracionCtrl', [])
-.controller('ConfiguracionCtrl', ['$scope', '$rootScope', '$http', '$injector', '$mdDialog', 
-	function($scope, $rootScope, $http, $injector, $mdDialog) {
-
-		console.info('ConfiguracionCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Rs.mainTheme = 'Black';
-		
-		Rs.http('api/Main/get-configuracion', {}, Ctrl, 'Configuracion');
-
-		Ctrl.markChanged = (Key) => {
-			Ctrl.Configuracion[Key].changed = true;
-		}
-
-		Ctrl.saveConf = () => {
-			Rs.http('api/Main/save-configuracion', { Conf: Ctrl.Configuracion }).then(() => {
-				Rs.showToast('Configuración Guardada', 'Success');
-			});
-		}
-
-	}
-]);
 angular.module('BotsCtrl', [])
 .controller('BotsCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$mdDialog',
 	function($scope, $rootScope, $injector, $filter, $mdDialog) {
@@ -962,6 +958,29 @@ angular.module('Bot_LogsCtrl', [])
 		Ctrl.getLogs();
 	}
 
+]);
+angular.module('ConfiguracionCtrl', [])
+.controller('ConfiguracionCtrl', ['$scope', '$rootScope', '$http', '$injector', '$mdDialog', 
+	function($scope, $rootScope, $http, $injector, $mdDialog) {
+
+		console.info('ConfiguracionCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Rs.mainTheme = 'Black';
+		
+		Rs.http('api/Main/get-configuracion', {}, Ctrl, 'Configuracion');
+
+		Ctrl.markChanged = (Key) => {
+			Ctrl.Configuracion[Key].changed = true;
+		}
+
+		Ctrl.saveConf = () => {
+			Rs.http('api/Main/save-configuracion', { Conf: Ctrl.Configuracion }).then(() => {
+				Rs.showToast('Configuración Guardada', 'Success');
+			});
+		}
+
+	}
 ]);
 angular.module('ConsultasSQLCtrl', [])
 .controller('ConsultasSQLCtrl', ['$scope', '$rootScope', '$injector', '$filter',
@@ -3308,6 +3327,7 @@ angular.module('IndicadoresCtrl', [])
 					{ Nombre: 'Nodo',  		Desc: 'Nodo',       numeric: false,  orderBy: 'Ruta' },
 					{ Nombre: 'Titulo', 	Desc: 'Titulo',     numeric: false,  orderBy: 'Titulo' }
 				],
+				rowsFilter: Ctrl.IndSel.proceso.Proceso,
 				orderBy: 'Ruta', select: 'Row', multiple: false, pluck: false
 			}).then(Selected => {
 				if(!Selected || Selected.length == 0) return;
@@ -3477,6 +3497,32 @@ angular.module('IndicadoresCtrl', [])
 			
 		}
 
+		//Seleccionar meta variable
+		Ctrl.selectMetaVariable = () => {
+			var Variables = Ctrl.VariablesCRUD.rows.map(r => {
+				return {
+					id: r.id,
+					Variable: r.Variable,
+					Ruta: '1_' + r.Ruta,
+					Nodo: r.proceso.Proceso
+				};
+			});
+
+			return Rs.TableDialog(Variables, {
+				Title: 'Seleccionar Variable', Flex: 60, 
+				Columns: [
+					{ Nombre: 'Nodo',  		Desc: 'Nodo',       numeric: false,  orderBy: 'Ruta' },
+					{ Nombre: 'Variable', 	Desc: 'Variable',     numeric: false,  orderBy: 'Variable' }
+				],
+				rowsFilter: Ctrl.IndSel.proceso.Proceso,
+				orderBy: 'Ruta', select: 'Row', multiple: false, pluck: false
+			}).then(Selected => {
+				if(!Selected || Selected.length == 0) return;
+				Ctrl.IndSel.config.meta_elemento_id = Selected[0].id;
+			});
+		}
+
+
 		console.time('Resolver Promesas');
 		
 		Promise.all([
@@ -3547,9 +3593,9 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 		Ctrl.Cancel = () => { d3.selectAll('.nvtooltip').style('opacity', 0); $mdDialog.cancel(); }
 
         Ctrl.SidenavIcons = [
-            ['fa-comment',      'Mejoramiento',     false],
-            ['fa-list',         'Desagregar Datos', false],
-            ['fa-info-circle',  'Ficha Técnica',    false],
+            ['fa-comment',      'Análisis y Mejoramiento',     false, 'w420' ],
+            ['fa-list',         'Desagregar Datos', false, 'w260' ],
+            ['fa-info-circle',  'Ficha Técnica',    false, 'w420' ],
         ];
         Ctrl.openSidenavElm = (S) => {
             Ctrl.sidenavSel = (S[1] == Ctrl.sidenavSel) ? null : S[1];
@@ -3557,6 +3603,9 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
                 Ctrl.updateChart();
             }, 300);
         };
+        Ctrl.activeSidenav = () => {
+            return Ctrl.SidenavIcons.find(I => I[1] == Ctrl.sidenavSel);
+        }
 
 		Ctrl.Meses = Rs.Meses;
 		Ctrl.inArray = Rs.inArray;
@@ -3565,6 +3614,10 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 		Ctrl.anioAdd = (num) => { Ctrl.Anio += num; Ctrl.getIndicadores(); };
 		Ctrl.Sentidos = Rs.Sentidos;
         Ctrl.Usuario = Rs.Usuario;
+        Ctrl.viewVariableDiag = Rs.viewVariableDiag;
+        Ctrl.Frecuencias = Rs.Frecuencias;
+        Ctrl.agregators = Rs.agregators;
+        Ctrl.comparators = Rs.comparators;
 
         Ctrl.modoComparativo = false;
 
@@ -3717,7 +3770,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
                 Fields: [
                     { Nombre: 'Periodo',     flex: 50, Value: Periodos[0],  Required: true, Type: 'simplelist',  List: Periodos },
                     { Nombre: 'Tipo',        flex: 50, Value: 'Correctiva', Required: true, Type: 'simplelist',  List: Tipos },
-                    { Nombre: 'Link Isolución',        Value: '',           Required: true }
+                    { Nombre: 'Link',        Value: '',           Required: true }
                 ],
                 Confirm: { Text: 'Agregar' },
             }).then(r => {
@@ -4475,6 +4528,7 @@ angular.module('ScorecardsCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.ScoSel = null;
 		Ctrl.ScorecardsNav = true;
+		Ctrl.ScorecardOpsNav = true;
 		Rs.mainTheme = 'Snow_White';
 		Ctrl.ScorecardsCRUD  = $injector.get('CRUD').config({ base_url: '/api/Scorecards' });
 		Ctrl.NodosCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/nodos', query_call_arr: [['getElementos',null],['getRutas',null]] });
@@ -6776,6 +6830,7 @@ angular.module('appFunctions', [])
 				Theme: 'default', Flex: 95,
 				Title: 'Seleccionar',
 				primaryId: 'id', pluck: true,
+				rowsFilter: '',
 				Columns: [
 					{ Nombre: 'id', Desc: 'Id.', numeric: true }
 				],

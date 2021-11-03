@@ -9,9 +9,9 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 		Ctrl.Cancel = () => { d3.selectAll('.nvtooltip').style('opacity', 0); $mdDialog.cancel(); }
 
         Ctrl.SidenavIcons = [
-            ['fa-comment',      'Mejoramiento',     false],
-            ['fa-list',         'Desagregar Datos', false],
-            ['fa-info-circle',  'Ficha Técnica',    false],
+            ['fa-comment',      'Análisis y Mejoramiento',     false, 'w420' ],
+            ['fa-list',         'Desagregar Datos', false, 'w260' ],
+            ['fa-info-circle',  'Ficha Técnica',    false, 'w420' ],
         ];
         Ctrl.openSidenavElm = (S) => {
             Ctrl.sidenavSel = (S[1] == Ctrl.sidenavSel) ? null : S[1];
@@ -19,6 +19,9 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
                 Ctrl.updateChart();
             }, 300);
         };
+        Ctrl.activeSidenav = () => {
+            return Ctrl.SidenavIcons.find(I => I[1] == Ctrl.sidenavSel);
+        }
 
 		Ctrl.Meses = Rs.Meses;
 		Ctrl.inArray = Rs.inArray;
@@ -27,6 +30,10 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 		Ctrl.anioAdd = (num) => { Ctrl.Anio += num; Ctrl.getIndicadores(); };
 		Ctrl.Sentidos = Rs.Sentidos;
         Ctrl.Usuario = Rs.Usuario;
+        Ctrl.viewVariableDiag = Rs.viewVariableDiag;
+        Ctrl.Frecuencias = Rs.Frecuencias;
+        Ctrl.agregators = Rs.agregators;
+        Ctrl.comparators = Rs.comparators;
 
         Ctrl.modoComparativo = false;
 
@@ -179,7 +186,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
                 Fields: [
                     { Nombre: 'Periodo',     flex: 50, Value: Periodos[0],  Required: true, Type: 'simplelist',  List: Periodos },
                     { Nombre: 'Tipo',        flex: 50, Value: 'Correctiva', Required: true, Type: 'simplelist',  List: Tipos },
-                    { Nombre: 'Link Isolución',        Value: '',           Required: true }
+                    { Nombre: 'Link',        Value: '',           Required: true }
                 ],
                 Confirm: { Text: 'Agregar' },
             }).then(r => {

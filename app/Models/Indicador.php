@@ -18,6 +18,7 @@ class Indicador extends MyModel
 	protected $hidden = [];
 	protected $primaryKey = 'id';
     protected $casts = [
+    	'config' => 'array'
 	];
 	protected $with = ['proceso'];
     protected $appends = ['Ruta'];
@@ -38,6 +39,7 @@ class Indicador extends MyModel
 			[ 'Formula',				'Formula',				null, true, false, null, 100 ],
 			[ 'Sentido',				'Sentido',				null, true, false, null, 100 ],
 			[ 'FrecuenciaAnalisis',		'FrecuenciaAnalisis',	null, true, false, null, 100 ],
+			[ 'config',					'config',				null, true, false, null, 100 ],
 		];
 	}
 
@@ -91,7 +93,7 @@ class Indicador extends MyModel
 
 		//Variables
 		if(!$this->variables){
-			$this->variables = IndicadorVariable::indicador($this->id)->get();
+			$this->variables = IndicadorVariable::with([ 'variable.column' ])->indicador($this->id)->get();
 			$desagregables = [];
 			$desagregados = [];
 			
@@ -132,7 +134,12 @@ class Indicador extends MyModel
 			};
 		};
 
-		
+		//Prepare meta_variable
+		if($this->config['meta_tipo'] == 'variable' AND !is_null($this->config['meta_elemento_id'])){
+			$this->meta_variable = Variable::where('id', $this->config['meta_elemento_id'])->first();
+			$this->meta_variable->valores = collect($this->meta_variable->getVals($Anio));
+
+		};
 
 		foreach ($valores as $target_per => &$v) {
 
@@ -157,7 +164,7 @@ class Indicador extends MyModel
 			};
 			
 			//Obtener metas
-			if(!empty($this->metas)){
+			if(!empty($this->metas) AND $this->config['meta_tipo'] == 'fija'){
 				$Meta = $this->metas->filter(function($m) use ($target_per){ return $m['PeriodoDesde'] <= $target_per; })->first();
 
 				if($Meta){
@@ -170,6 +177,16 @@ class Indicador extends MyModel
 				}else{
 					$v['calculable'] = false;
 				}
+			};
+
+			//Obtener metas de variable
+			if($this->config['meta_tipo'] == 'variable' AND !is_null($this->config['meta_elemento_id'])){
+				//$target_per_desf = Helper::periodoAdd($target_per, $this->config['meta_desfase']);
+				//dd([$target_per, $target_per_desf]);
+				$target_per_desf = $target_per;
+				$val = $this->meta_variable->valores->get($target_per_desf);
+				$v['meta_Valor'] = $val['Valor'];
+				$v['meta_val']   = $val['val'];
 			};
 
 			//Evaluar Cumplimiento
@@ -194,6 +211,20 @@ class Indicador extends MyModel
 		return $this->proceso->Ruta;
 	}
 
+	public function getConfigAttribute($Config)
+	{
+		$Default = [
+			'meta_tipo' => 'fija',
+			'meta_elemento_id' => null,
+			'meta_desfase' => 0,
+		];
+		
+		if(gettype($Config) == 'string') $Config = json_decode($Config);
+		if(gettype($Config) == 'object') $Config = (array) $Config;
+		$Config = is_null($Config) ? $Default : array_merge($Default, $Config);
+
+		return $Config;
+	}
 
 	public function scopeBuscar($q, $searchText)
 	{

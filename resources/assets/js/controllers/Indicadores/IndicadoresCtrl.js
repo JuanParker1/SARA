@@ -204,6 +204,7 @@ angular.module('IndicadoresCtrl', [])
 					{ Nombre: 'Nodo',  		Desc: 'Nodo',       numeric: false,  orderBy: 'Ruta' },
 					{ Nombre: 'Titulo', 	Desc: 'Titulo',     numeric: false,  orderBy: 'Titulo' }
 				],
+				rowsFilter: Ctrl.IndSel.proceso.Proceso,
 				orderBy: 'Ruta', select: 'Row', multiple: false, pluck: false
 			}).then(Selected => {
 				if(!Selected || Selected.length == 0) return;
@@ -372,6 +373,32 @@ angular.module('IndicadoresCtrl', [])
 			});
 			
 		}
+
+		//Seleccionar meta variable
+		Ctrl.selectMetaVariable = () => {
+			var Variables = Ctrl.VariablesCRUD.rows.map(r => {
+				return {
+					id: r.id,
+					Variable: r.Variable,
+					Ruta: '1_' + r.Ruta,
+					Nodo: r.proceso.Proceso
+				};
+			});
+
+			return Rs.TableDialog(Variables, {
+				Title: 'Seleccionar Variable', Flex: 60, 
+				Columns: [
+					{ Nombre: 'Nodo',  		Desc: 'Nodo',       numeric: false,  orderBy: 'Ruta' },
+					{ Nombre: 'Variable', 	Desc: 'Variable',     numeric: false,  orderBy: 'Variable' }
+				],
+				rowsFilter: Ctrl.IndSel.proceso.Proceso,
+				orderBy: 'Ruta', select: 'Row', multiple: false, pluck: false
+			}).then(Selected => {
+				if(!Selected || Selected.length == 0) return;
+				Ctrl.IndSel.config.meta_elemento_id = Selected[0].id;
+			});
+		}
+
 
 		console.time('Resolver Promesas');
 		

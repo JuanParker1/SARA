@@ -70,7 +70,16 @@
 								</td>
 							</tr>
 							<tr md-row class="md-row-hover">
-								<td md-cell class="">Meta</td><td md-cell class="" ng-repeat="V in Ind.valores">{{ V.meta_val }}</td>
+								<td md-cell class="">
+									<div layout layout-align="center center">
+										<div flex class="padding-5-0">Meta</div>
+										<md-button class="md-icon-button no-margin no-padding s30" aria-label="b" ng-show="Ind.meta_variable" ng-click="viewVariableDiag(Ind.meta_variable.id)">
+											<md-icon md-font-icon="fa-external-link-alt fa-fw"></md-icon>
+											<md-tooltip md-direction="left">Ver Variable</md-tooltip>
+										</md-button>
+									</div>
+								</td>
+								<td md-cell class="" ng-repeat="V in Ind.valores">{{ V.meta_val }}</td>
 							</tr>
 							<tr md-row class="md-row-hover">
 								<td md-cell class="">Cumplimiento</td><td md-cell class="" ng-repeat="V in Ind.valores">
@@ -115,7 +124,7 @@
 							<tr md-row><td md-cell colspan=13></td></tr>
 
 							<tr md-row>
-								<td md-cell>Mejoramiento</td>
+								<td md-cell>Análisis y Mejoramiento</td>
 								<td md-cell ng-repeat="M in Meses" ng-click="openSidenavElm(['','Mejoramiento'])">
 									<md-icon md-font-icon="fa-comment fa-fw fa-lg" class="Pointer"
 										ng-if="(ComentariosCRUD.rows | filter:{ Grupo:'Comentario', Op1: Anio+M[0] }).length > 0">

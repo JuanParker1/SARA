@@ -323,15 +323,20 @@ class ScorecardNodo extends MyModel
 
 
 
-	public function calculateNodos($Periodos)
+	public function calculateNodos($Periodos, $calc_method = 'peso')
 	{
 		foreach ($this->nodos as $nodo) {
-			if($nodo->tipo == 'Nodo') $nodo->calculateNodos($Periodos);	
+			if($nodo->tipo == 'Nodo') $nodo->calculateNodos($Periodos, $calc_method);	
 		}
 
 		if($this->tipo == 'Nodo'){
 
-			$this->puntos_totales = $this->nodos->sum('peso');
+			if($calc_method == 'peso'){
+				$this->puntos_totales = $this->nodos->sum('peso');
+			}else if($calc_method == 'indicadores'){
+				$this->puntos_totales = $this->cant_indicadores;
+			}
+			
 			$calc = array_fill_keys($Periodos, [ 'puntos' => 0, 'incalculables' => 0 ]);
 
 			foreach ($this->nodos as $subnodo) {
@@ -344,7 +349,11 @@ class ScorecardNodo extends MyModel
 					foreach ($subnodo->valores as $per => $val) {
 
 						if($val['calculable']){
-							$calc[$per]['puntos'] += $subnodo->peso * $val['cump_porc'];
+							if($calc_method == 'peso'){
+								$calc[$per]['puntos'] += $subnodo->peso * $val['cump_porc'];
+							}else if($calc_method == 'indicadores'){
+								$calc[$per]['puntos'] += $val['cump_porc'];
+							}
 							$cum_porc_total += $val['cump_porc'];
 							$meses_calculables++;
 						}else{
@@ -361,7 +370,11 @@ class ScorecardNodo extends MyModel
 					foreach ($Periodos as $per){
 
 						if(!is_null($subnodo->valores[$per]['Valor'])){
-							$calc[$per]['puntos'] += $subnodo->peso;
+							
+							if($calc_method == 'peso'){
+								$calc[$per]['puntos'] += $subnodo->peso;
+							}
+
 						}else{
 							//$calc[$per]['incalculables']++;
 						}
@@ -374,7 +387,11 @@ class ScorecardNodo extends MyModel
 
 					foreach ($subnodo->calc as $per => $cal) {
 						if($cal['calculable']){
-							$calc[$per]['puntos'] += $subnodo->peso * $cal['Valor'];
+							if($calc_method == 'peso'){
+								$calc[$per]['puntos'] += $subnodo->peso * $cal['Valor'];
+							}else if($calc_method == 'indicadores'){
+								$calc[$per]['puntos'] += $cal['puntos'];
+							}
 						}else{
 							$calc[$per]['incalculables']++;
 						}

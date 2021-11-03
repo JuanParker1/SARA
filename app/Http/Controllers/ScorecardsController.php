@@ -156,7 +156,9 @@ class ScorecardsController extends Controller
         }
         $Nodo->recountSubnodos();
         $Nodo->purgeNodos();
-        $Nodo->calculateNodos($Periodos);
+
+        $calc_method = $Sco->config['calc_method'];
+        $Nodo->calculateNodos($Periodos, $calc_method);
         
         if($filters) $Nodo->reorder($filters);
 

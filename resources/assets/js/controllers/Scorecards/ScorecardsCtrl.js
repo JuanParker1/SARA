@@ -7,6 +7,7 @@ angular.module('ScorecardsCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.ScoSel = null;
 		Ctrl.ScorecardsNav = true;
+		Ctrl.ScorecardOpsNav = true;
 		Rs.mainTheme = 'Snow_White';
 		Ctrl.ScorecardsCRUD  = $injector.get('CRUD').config({ base_url: '/api/Scorecards' });
 		Ctrl.NodosCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/nodos', query_call_arr: [['getElementos',null],['getRutas',null]] });

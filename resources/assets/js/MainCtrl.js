@@ -55,11 +55,30 @@ angular.module('MainCtrl', [])
 		Rs.agregators = [
 			{ id: 'count', 			Nombre: 'Contar' },
 			{ id: 'countdistinct',  Nombre: 'Contar Distintos' },
-			{ id: 'sum',  			Nombre: 'Suma' },
-			{ id: 'avg',  			Nombre: 'Promedio' },
-			{ id: 'min',  			Nombre: 'Mínimo' },
-			{ id: 'max',  			Nombre: 'Máximo' },
+			{ id: 'sum',  			Nombre: 'Sumar' },
+			{ id: 'avg',  			Nombre: 'Promediar' },
+			{ id: 'min',  			Nombre: 'Mínimo de' },
+			{ id: 'max',  			Nombre: 'Máximo de' },
 		];
+
+		Rs.comparators = {
+			'=': 'Es',
+			'!=': 'No Es',
+			'like': 'Contiene',
+			'like_': 'Empieza con',
+			'_like': 'Termina con',
+			'notlike': 'No Contiene',
+			'notlike_': 'No Empieza con',
+			'_notlike': 'No Termina con',
+			'in': 'Incluye',
+			'not_in': 'No Incluye',
+			'nulo': 'Es nulo',
+			'no_nulo': 'No es nulo',
+			'<': 'Menor que',
+			'<=': 'Menor o igual que',
+			'>': 'Mayor que',
+			'>=': 'Mayor o igual que',
+		};
 
 		Rs.Frecuencias = {
 			0: 'Diario',

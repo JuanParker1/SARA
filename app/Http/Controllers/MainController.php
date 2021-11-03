@@ -89,21 +89,14 @@ class MainController extends Controller
 	}
 
 
-	public function getTest()
+	public function getPass($Value)
 	{
-		function a($value)
-		{
-			if($value < 3) return $value;
-			return a($value - 1) * a($value - 2);
-		}
-
-		//$User = \App\Models\Usuario::where('Email', 'corrego@comfamiliar.com')->first();
-		//$Pass = \Crypt::decrypt($User->Password);
-		return a(5);
+		return \Hash::make($Value);
 	}
 
-	public function getIP()
+	public function getIp()
 	{
+		return $_SERVER;
 		return request()->ip();
 	}
 
@@ -199,13 +192,13 @@ class MainController extends Controller
 		$Usuario = Helper::getUsuario();
 		
 		$Recientes = [];
-		$DaRecientes = \App\Models\Recientes::where('usuario_id', $Usuario->id)->limit(50)->get();
+		/*$DaRecientes = \App\Models\Recientes::where('usuario_id', $Usuario->id)->limit(50)->get();
 
 		foreach ($DaRecientes as $R) {
 			if(!array_key_exists($R->Url, $Recientes) AND count($Recientes) < 7) $Recientes[$R->Url] = $R;
 		}
 
-		$Recientes = array_values($Recientes);
+		$Recientes = array_values($Recientes);*/
 
 		return compact('Recientes');
 	}

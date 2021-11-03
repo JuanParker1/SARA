@@ -105,16 +105,16 @@ class Usuario extends MyModel
         return $Usuario;
     }
 
-
-
     //Attributos
     public function getAvatarAttribute()
     {
-        if (file_exists( public_path() . '/img/avatars/' . $this->id . '.jpg')) {
-            return "img/avatars/$this->id.jpg?".$this->updated_at->timestamp;
+        $config = \App\Functions\Helper::getInstanceConfig();
+        $avatar_path = "/fs/{$config['key']}/avatars/{$this->id}.jpg";
+        if (file_exists( public_path().$avatar_path )) {
+            return $avatar_path."?".$this->updated_at->timestamp;
         } else {
             return 'img/avatars/default.png';
-        }   
+        }
     }
 
 

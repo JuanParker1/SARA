@@ -2,18 +2,37 @@
 
 namespace App\Functions;
 use Carbon\Carbon;
-use App\Functions\FormulaParser;
 
 class Helper
 {
-	public static function getAppName()
+	
+    public static function getInstanceConfig()
     {
-        $AppName = config('app.name');
-        $BaseUrl = \URL::to('/');
-        if($BaseUrl == 'http://sara.local') $AppName = 'PI - Plataforma Información';
-        if($BaseUrl == 'https://pi.comfamiliar.com') $AppName = 'PI - Plataforma Información';
+        $conn_id = explode('.', request()->getHost())[0];
+        //\Cache::forget("instance_config_$conn_id");
+        return \Cache::remember("instance_config_$conn_id", 5, function() use ($conn_id) {
+            $conns = json_decode(file_get_contents(base_path('conns.json')), true);
+        
+            if(array_key_exists($conn_id, $conns)){
+                $conn = $conns[$conn_id];
+            }else{
+                $conn = $conns['_default'];
+            }
 
-        return $AppName;
+            $conn['conn_id'] = $conn_id;
+            return $conn;
+        });
+    }
+
+    public static function getAppName()
+    {
+        $config = self::getInstanceConfig();
+        return $config['appname'];
+        //$AppName = config('app.name');
+        //$BaseUrl = \URL::to('/');
+        //if($BaseUrl == 'http://sara.local') $AppName = 'PI - Plataforma Información';
+        //if($BaseUrl == 'https://pi.comfamiliar.com') $AppName = 'PI - Plataforma Información';
+        //return $AppName;
     }
 
     public static function getElm($Collection, $Value, $Key = 'id')
@@ -76,11 +95,16 @@ class Helper
 
     public static function periodoAdd($Periodo, $Add = 1)
     {
-        for ($i=1; $i <= $Add; $i++) { 
+        for ($i=1; $i <= abs($Add); $i++) { 
             $Anio = intval($Periodo/100);
             $Mes  = $Periodo - ($Anio*100);
 
-            $Periodo = ( $Mes < 12 ) ? ( ($Anio*100) + ($Mes+1) ) : ( ( ($Anio + 1)*100) + 1 );
+            if($Add > 0){
+                $Periodo = ( $Mes < 12 ) ? ( ($Anio*100) + ($Mes+1) ) : ( ( ($Anio + 1)*100) + 1 );
+            }else{
+                $Periodo = ( $Mes >  1 ) ? ( ($Anio*100) + ($Mes-1) ) : ( ( ($Anio - 1)*100) + 12 );
+            }
+            
         }
 
         return $Periodo;
@@ -116,7 +140,7 @@ class Helper
         //echo $formula."<br>";
 
         try {
-            $parser = new FormulaParser($formula, $decimales);
+            $parser = new \App\Functions\FormulaParser($formula, $decimales);
             $parser->setVariables($comps);
             $res = $parser->getResult();
 

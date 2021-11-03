@@ -5,7 +5,7 @@
 			<h2>{{Config.Title}}</h2>
 			<div class="md-toolbar-searchbar" flex layout>
 				<md-icon md-svg-icon="md-search" class="text-black" style="margin: 8px 5px 0 15px;"></md-icon>
-				<input flex type="search" placeholder="Buscar..." ng-model="filterRows" class="no-padding" 
+				<input flex type="search" placeholder="Buscar..." ng-model="Config.rowsFilter" class="no-padding" 
 					ng-model-options="{ debounce : 300 }">
 			</div>
 			<md-button class="md-icon-button" ng-click="Cancel()" >
@@ -24,7 +24,7 @@
 					</tr>
 				</thead>
 				<tbody md-body>
-					<tr md-row ng-repeat="Row in Elements | filter:filterRows | orderBy:Config.orderBy"
+					<tr md-row ng-repeat="Row in Elements | filter:Config.rowsFilter | orderBy:Config.orderBy"
 						md-select="Row" md-select-id="{{ Config.primaryId }}">
 						<td md-cell class="md-cell-compress" ng-repeat="C in Config.Columns">
 							{{ getProp(Row, C.Nombre) }}

@@ -22,35 +22,6 @@ SET time_zone = "+00:00";
 -- Base de datos: `dbsara_alternative`
 --
 
-DELIMITER $$
---
--- Funciones
---
-CREATE DEFINER=`root`@`localhost` FUNCTION `CAP_FIRST` (`input` VARCHAR(255)) RETURNS VARCHAR(255) CHARSET latin1 BEGIN
-	DECLARE len INT;
-	DECLARE i INT;
-
-	SET len   = CHAR_LENGTH(input);
-	SET input = LOWER(input);
-	SET i = 0;
-
-	WHILE (i < len) DO
-		IF (MID(input,i,1) = ' ' OR i = 0) THEN
-			IF (i < len) THEN
-				SET input = CONCAT(
-					LEFT(input,i),
-					UPPER(MID(input,i + 1,1)),
-					RIGHT(input,len - i - 1)
-				);
-			END IF;
-		END IF;
-		SET i = i + 1;
-	END WHILE;
-
-	RETURN input;
-END$$
-
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -2200,19 +2171,6 @@ CREATE TABLE `sara_procesos` (
 -- --------------------------------------------------------
 
 --
--- Estructura Stand-in para la vista `sara_recientes`
--- (Véase abajo para la vista actual)
---
-CREATE TABLE `sara_recientes` (
-`Titulo` text
-,`Url` varchar(27)
-,`Icono` varchar(50)
-,`usuario_id` int(10)
-);
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `sara_scorecards`
 --
 
@@ -2300,7 +2258,6 @@ INSERT INTO `sara_secciones` (`id`, `Seccion`, `Orden`, `Icono`, `Estado`) VALUE
 ('BDD', 'Conexiones', 5, 'fa-database', 'A'),
 ('Bots', 'Bots', 9999, 'fa-robot', 'A'),
 ('Configuracion', 'Configuración', 99999, 'fa-cogs', 'A'),
-('Consultas', 'Consultas SQL', 9999, 'fa-bolt', 'A'),
 ('Entidades', 'Entidades', 10, 'fa-chess', 'A'),
 ('Funciones', 'Funciones', 50, 'fa-tools', 'I'),
 ('Indicadores', 'Indicadores', 16, 'fa-chart-line', 'A'),
@@ -2336,7 +2293,8 @@ CREATE TABLE `sara_usuarios` (
 --
 
 INSERT INTO `sara_usuarios` (`id`, `Email`, `Password`, `Cedula`, `Nombres`, `CDC_id`, `isGod`, `created_at`, `updated_at`) VALUES
-(183, 'corrego@comfamiliar.com', '$2y$10$uduzNMl6VznR9O.xDjKkeuYTO.3zQiYlqQEjO6bIx6as5o5kqscPG', '1093217141', 'Vicious Grant', 3010, 1, '2017-12-26 16:37:15', '2021-10-25 03:06:10');
+(1, 'corrego@comfamiliar.com', '$2y$10$uduzNMl6VznR9O.xDjKkeuYTO.3zQiYlqQEjO6bIx6as5o5kqscPG', '1093217141', 'Christian Orrego', 3010, 1, '2017-12-26 16:37:15', '2021-10-25 03:06:10'),
+(2, 'consultor@sr-k.net', '$2y$10$qfNskZ9ZUuJsGNn3O6dzLumpDpIdtZmIbb4H.E6NxqoNelq3ldOey', '', 'Andres Henao', 0, 1, '2017-12-26 16:37:15', '2021-10-25 03:06:10');
 
 -- --------------------------------------------------------
 
@@ -2414,13 +2372,6 @@ CREATE TABLE `sara_variables_valores` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
-
---
--- Estructura para la vista `sara_recientes`
---
-DROP TABLE IF EXISTS `sara_recientes`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `sara_recientes`  AS  select concat(`a`.`Titulo`,concat(' - ',`p`.`Titulo`)) AS `Titulo`,concat('/#/a/',concat(`a`.`Slug`,convert(concat('/',`p`.`id`) using latin1))) AS `Url`,`a`.`Icono` AS `Icono`,`l`.`usuario_id` AS `usuario_id` from ((`sara_logs` `l` join `sara_apps_pages` `p` on(`l`.`Op1` = `p`.`id`)) join `sara_apps` `a` on(`p`.`app_id` = `a`.`id`)) where 1 = 1 and `l`.`Evento` = 'AppPage' order by `l`.`created_at` desc ;
 
 --
 -- Índices para tablas volcadas

@@ -63,6 +63,11 @@ class Variable extends MyModel
 		return $this->belongsTo('\App\Models\EntidadGrid', 'grid_id');
 	}
 
+	public function column()
+	{
+		return $this->belongsTo('\App\Models\EntidadCampo', 'Col');
+	}
+
 	public function valores($Anio = false)
 	{
 		$q = $this->hasMany('\App\Models\VariableValor', 'variable_id')->orderBy('Periodo');
