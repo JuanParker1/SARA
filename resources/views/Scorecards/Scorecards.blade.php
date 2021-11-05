@@ -111,22 +111,9 @@
 	<md-sidenav  ng-show="ScoSel !== null"
 		md-is-open="ScorecardOpsNav" 
 		md-is-locked-open="$mdMedia('gt-xs') && ScorecardOpsNav"
-		class="bg-lightgrey-5 border-left padding w250">
+		class="bg-lightgrey-5 border-left padding w250 overflow-y">
 
-		<div class="md-subhead text-clear margin-bottom-5">Opciones</div>
-
-		<md-input-container class="margin-bottom-5">
-			<label>Abrir al Nivel</label>
-			<input type="number" ng-model="ScoSel.config.open_to_level" aria-label=s ng-change="ScoSel.changed = true">
-		</md-input-container>
-
-		<md-input-container class="margin-bottom-5">
-			<label>Método Calculo</label>
-			<md-select ng-model="ScoSel.config.calc_method" ng-change="ScoSel.changed = true">
-				<md-option ng-value="'peso'">Por Peso</md-option>
-				<md-option ng-value="'indicadores'">Promedio de Indicadores</md-option>
-			</md-select>
-		</md-input-container>
+		@include('Scorecards.Scorecard_Opciones')
 
 	</md-sidenav>
 

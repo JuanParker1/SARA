@@ -187,6 +187,13 @@ class ScorecardsController extends Controller
         return $this->postGet();
     }
 
+    public function postGetHead()
+    {
+        extract(request()->all()); //$id
+        $Sco = Scorecard::where('id', $id)->first();
+        return $Sco;
+    }
+
     public function postReindexar()
     {
         extract(request()->all()); //$Nodo

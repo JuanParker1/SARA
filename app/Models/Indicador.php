@@ -181,10 +181,14 @@ class Indicador extends MyModel
 
 			//Obtener metas de variable
 			if($this->config['meta_tipo'] == 'variable' AND !is_null($this->config['meta_elemento_id'])){
-				//$target_per_desf = Helper::periodoAdd($target_per, $this->config['meta_desfase']);
-				//dd([$target_per, $target_per_desf]);
-				$target_per_desf = $target_per;
+				$meta_desfase = ($this->config['meta_desfase'] ?: 0);
+				$target_per_desf = Helper::periodoAdd($target_per, $meta_desfase);
+				
+
 				$val = $this->meta_variable->valores->get($target_per_desf);
+				if(is_null($val)){
+					$val = ['Valor' => null, 'val' => null];
+				}
 				$v['meta_Valor'] = $val['Valor'];
 				$v['meta_val']   = $val['val'];
 			};

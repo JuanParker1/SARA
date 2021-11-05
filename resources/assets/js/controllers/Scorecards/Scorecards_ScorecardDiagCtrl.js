@@ -17,7 +17,7 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
         Ctrl.Loading = true;
         Ctrl.Procesos = null;
         Ctrl.FsOpenFolder = Rs.FsOpenFolder;
-        Ctrl.defaultFrecuencias = Object.keys(Rs.Frecuencias);
+        Ctrl.Frecuencias = Rs.Frecuencias;
 
         //Sidenav
         Ctrl.sidenavSel = null; //FIX
@@ -101,18 +101,25 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 					}
 				}
 
-        		return Ctrl.getScorecard(scorecard_id, Config);
+        		//return Ctrl.getScorecard(scorecard_id, Config);
         	});
         };
 
-		Ctrl.getScorecard = (scorecard_id, Config) => {
+		Ctrl.getScorecard = async (scorecard_id, Config) => {
 			if(!scorecard_id) return;
 			Ctrl.Loading = true;
 			Ctrl.ProcesoSelName = '';
 
-			if(!Ctrl.Procesos) return Ctrl.getProcesos(scorecard_id, Config);
+			if(!Ctrl.Procesos) await Ctrl.getProcesos(scorecard_id, Config);
 
-			Ctrl.filters.Periodo = Ctrl.Periodo;
+			if(!Ctrl.Sco){
+				await Rs.http('api/Scorecards/get-head', { id: scorecard_id }, Ctrl, 'Sco');
+
+				//Prep filters
+				Ctrl.filters.Periodo = Ctrl.Periodo;
+				Ctrl.filters.frecuencia_analisis = angular.copy(Ctrl.Sco.config.default_frecuencia_analisis);
+				Ctrl.filters.see = angular.copy(Ctrl.Sco.config.default_see);
+			}
 
 			Rs.http('api/Scorecards/get', { id: scorecard_id, Anio: Ctrl.Anio, filters: Ctrl.filters }, Ctrl, 'Sco').then(() => {
             	Ctrl.Loading = false;
@@ -125,7 +132,7 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 
             	//Ctrl.downloadIndicadores();
 
-            });    
+            });
 		};
 
 		Ctrl.openFlatLevel = (N, ev) => {

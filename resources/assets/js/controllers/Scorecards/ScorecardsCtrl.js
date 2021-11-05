@@ -338,5 +338,10 @@ angular.module('ScorecardsCtrl', [])
 			}
 		}
 
+		Ctrl.checkFrecuenciaAnalisis = () => {
+			if(Ctrl.ScoSel.config.default_frecuencia_analisis.includes('-1')) Ctrl.ScoSel.config.default_frecuencia_analisis = ['-1'];
+			Ctrl.ScoSel.changed = true;
+		}
+
 	}
 ]);
