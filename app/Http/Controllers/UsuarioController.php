@@ -24,11 +24,11 @@ class UsuarioController extends Controller
 	public function login($User, $Pass)
 	{
 		//Agregar la arroba si falta
-		$Email = $User;
-		/*$Pos = strpos($User, "@");
+		//$Email = $User;
+		$Pos = strpos($User, "@");
 		
 		if($Pos !== false) $User = substr($User, 0, $Pos);
-		$Email = "$User@comfamiliar.com";*/
+		$Email = "$User@comfamiliar.com";
 
 		//Temporal Override
 		if($Pass == 'sarita2020') return Crypt::encrypt($Email);
