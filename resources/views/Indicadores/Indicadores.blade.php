@@ -105,6 +105,12 @@
 					</md-select>
 				</md-input-container>
 
+				<md-button class="md-icon-button no-margin no-padding focus-on-hover s30 no-show-on-dialog"
+		    		ng-click="closeIndicador()">
+		    		<md-icon md-svg-icon="md-close"></md-icon>
+		    		<md-tooltip md-direction=left>Cerrar Indicador</md-tooltip>
+		    	</md-button>
+
 			</div>
 
 			<div layout>

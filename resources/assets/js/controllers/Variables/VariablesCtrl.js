@@ -115,6 +115,11 @@ angular.module('VariablesCtrl', [])
 			});
 		};
 
+		Ctrl.closeVariable = () => {
+			Ctrl.VarSel = null;
+			Rs.Storage.VariableSel = false;
+		};
+
 		Ctrl.updateVariable = () => {
 			Ctrl.VariablesCRUD.update(Ctrl.VarSel).then(() => {
 				Rs.showToast('Variable Actualizada', 'Success', 1000);

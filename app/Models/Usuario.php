@@ -79,10 +79,18 @@ class Usuario extends MyModel
 
         $this->Procesos = $MyProcesos;
 
-        $Apps  = \App\Models\Apps::all();
+        $Apps  = \App\Models\Apps::with([ 'user_apps' ])->get();
 
         $Apps = $Apps->filter(function($A) use ($MyProcesosIds){
             return count(array_intersect($A['Procesos'], $MyProcesosIds)) > 0;
+        })->map(function($A){
+            $user_app = $A->user_apps->get(0);
+            if($user_app){ 
+                $A->favorito = $user_app->favorito;
+            }else{
+                $A->favorito = false;
+            };
+            return $A;
         })->values();
 
         if($withPages){

@@ -32,8 +32,9 @@
 	<md-input-container class="w70">
 		<label>{{ C.campo_title }}</label>
 		<md-datepicker ng-model="C.val" name="c{{ C.id }}" ng-required="C.Requerido" md-hide-icons="calendar" ng-disabled="!C.Editable" md-mode="month" class="periodoDatepicker" 
-			md-date-locale="{ formatDate: formatPeriodo(C), isDateComplete: periodoFilter }"
-			md-date-filter="periodoFilter(C)"></md-datepicker>
+			md-date-locale="{ formatDate: formatPeriodo(C), isDateComplete: periodoFilter }" 
+			ng-change="fixPeriodoValue(C, 'val')"
+			></md-datepicker>
 	</md-input-container>
 </div >
 

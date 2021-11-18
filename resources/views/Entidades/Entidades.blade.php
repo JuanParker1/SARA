@@ -90,15 +90,11 @@
 	    	</div>
 
 	    	<div layout flex></div>
-			
-			<md-button class="md-icon-button s40 text-clear" ng-show="!Storage.EntidadSelId" ng-click="fijarEntidad()">
-	    		<md-icon md-font-icon="fa-thumbtack fa-rotate-90"></md-icon>
-	    		<md-tooltip md-direction=left>Fijar</md-tooltip>
-	    	</md-button>
 
-	    	<md-button class="md-icon-button s40" ng-show="Storage.EntidadSelId" ng-click="Storage.EntidadSelId = false">
-	    		<md-icon md-font-icon="fa-thumbtack"></md-icon>
-	    		<md-tooltip md-direction=left>No Fijar</md-tooltip>
+	    	<md-button class="no-margin md-icon-button s40 focus-on-hover"
+	    		ng-click="closeEntidad()">
+	    		<md-icon md-svg-icon="md-close"></md-icon>
+	    		<md-tooltip md-direction=left>Cerrar Entidad</md-tooltip>
 	    	</md-button>
 
 		</div>

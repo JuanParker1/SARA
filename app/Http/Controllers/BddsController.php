@@ -34,6 +34,8 @@ class BddsController extends Controller
     	$BDD = (object) request()->BDD;
     	$Conn = ConnHelper::getConn($BDD);
 
+        if(get_class($Conn) == 'Illuminate\Http\JsonResponse') return $Conn;
+
     	try {
 			$Conn->getPdo();
 		} catch (\Exception $e) {

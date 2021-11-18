@@ -36,6 +36,12 @@ class Apps extends MyModel
         return $this->hasMany('\App\Models\AppPages', 'app_id')->orderBy('Indice', 'ASC');
     }
 
+    public function user_apps()
+    {
+        $Usuario = \App\Functions\Helper::getUsuario();
+        return $this->hasMany('\App\Models\UserApps', 'app_id')->where('usuario_id', $Usuario->id);
+    }
+
     public function getTextcolorAttribute()
     {
     	$hexcolor = $this->Color;

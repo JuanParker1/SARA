@@ -6,35 +6,85 @@
 
 			<div layout layout-align="center center" class="margin-bottom">
 				<h2 flex class="no-margin-top no-margin-bottom md-headline text-300">{{ Saludo }}, {{ Usuario.Nombres | getword:1 }}</h2>
-				<md-button class="no-margin border-rounded bg-theme mh30 h30 lh30 md-whiteframe-3dp" ng-click="Storage.InicioSidenav = !Storage.InicioSidenav" >
-					<md-icon md-font-icon="fa-history margin-right-5" style="transform: translateY(-2px);"></md-icon>Recientes
+				<md-button class="no-margin border-rounded bg-theme mh30 h30 lh30 md-whiteframe-3dp text-15px" ng-click="Storage.InicioSidenav = !Storage.InicioSidenav" >
+					<md-icon md-font-icon="fa-history margin-right-5" style="transform: translateY(0px);"></md-icon>
+					<span hide-xs>Recientes</span>
 				</md-button>
 			</div>
 
 			@include('Inicio_Search')
 
 			<div layout=column class="transition" ng-show="!searchMode">
-				<div class="md-subheader padding-bottom-5" ng-show="Usuario.Apps.length > 0">Aplicaciones y Reportes</div>
-				<div layout layout-wrap class="margin-bottom-20" ng-show="Usuario.Apps.length > 0">
 
-					<a class="rect-card w180 padding-5" layout layout-align="center center"
-						ng-repeat="A in Usuario.Apps | filter:filterApps | orderBy:'Titulo' " 
-						href="{{ Usuario.Url }}#/a/{{ A.Slug }}" target="_blank"
-						ng-style="{ backgroundColor: A.Color, color: A.textcolor }">
-						<md-icon class="fa-fw text-25px text-inherit margin" md-font-icon="{{ A.Icono }}" ></md-icon>
-						<div class="rect-card-text padding-right" flex>{{ A.Titulo }}</div>
-					</a>
-						
+				<div layout=column ng-show="Usuario.Apps.length > 0">
+					
+					<div class="md-subheader padding-5-0">Aplicaciones y Reportes</div>
+
+					<div class="md-subheader padding-5-0" layout layout-align="center center"
+						ng-show="cantFavorites > 0">
+						<div>⭐ Favoritas</div>
+						<span flex></span>
+					</div>
+
+					<div layout layout-wrap class="">
+
+						<div class="rect-card w180 padding-5" layout layout-align="center center"
+							ng-repeat="A in Usuario.Apps | filter:{ favorito:true }:true | orderBy:'Titulo' " 
+							ng-click="openUrl('#/a/'+A.Slug)" 
+							ng-style="{ backgroundColor: A.Color, color: A.textcolor }">
+							<md-icon class="fa-fw text-25px text-inherit margin" md-font-icon="{{ A.Icono }}" ></md-icon>
+							<div class="rect-card-text padding-right" flex>{{ A.Titulo }}</div>
+							<md-button class="md-icon-button no-margin no-padding s30 abs focus-on-hover" style="top: 0; right: 0" 
+								ng-click="makeFavorite(A, false)">
+								<md-icon md-font-icon="fa-fw fa-star s20 text-inherit"></md-icon>
+								<md-tooltip>Remover de Favoritas</md-tooltip>
+							</md-button>
+						</div>
+							
+					</div>
+
+					<div class="md-subheader padding-5-0 Pointer" layout layout-align="center center"
+						ng-click="showOtherApps = !showOtherApps"
+						ng-show="cantFavorites > 0">
+						<md-button class="md-icon-button no-margin no-padding s20">
+							<md-icon md-font-icon="fa-fw fa-chevron-right s20 transition"
+								ng-class="{ 'fa-rotate-90': showOtherApps }"></md-icon>
+						</md-button>
+						<div flex style="padding-left: 2px;">Otras</div>
+					</div>
+
+					<div layout layout-wrap ng-show="showOtherApps">
+
+						<div class="rect-card w180 padding-5 show-child-on-hover" layout layout-align="center center"
+							ng-repeat="A in Usuario.Apps | filter:{ favorito:false }:true | orderBy:'Titulo' " 
+							ng-click="openUrl('#/a/'+A.Slug)" 
+							ng-style="{ backgroundColor: A.Color, color: A.textcolor }">
+							<md-icon class="fa-fw text-25px text-inherit margin" md-font-icon="{{ A.Icono }}" ></md-icon>
+							<div class="rect-card-text padding-right" flex>{{ A.Titulo }}</div>
+							<md-button class="md-icon-button no-margin no-padding s30 abs child" style="top: 0; right: 0" 
+								ng-click="makeFavorite(A, true)">
+								<md-icon md-font-icon="fa-fw far fa-star s30 text-inherit"></md-icon>
+								<md-tooltip>Agregar a Favoritas</md-tooltip>
+							</md-button>
+						</div>
+							
+					</div>
+
+					<div class="h20"></div>
+
 				</div>
+
+				
 
 
 				<div class="md-subheader padding-bottom-5">Accesos Directos</div>
 				<div layout layout-wrap class="margin-bottom-20">
 
-					<a class="square-card bg-theme w140 h90" layout=column ng-repeat="S in Usuario.Secciones"
+					<a class="square-card bg-theme w135 h90" layout=column ng-repeat="S in Usuario.Secciones"
 						href="{{ Usuario.Url }}#/Home/{{S.id}}" target="_self">
 						<div class="h55" layout layout-align="center center">
-							<md-icon class="fa-fw fa-2x text-inherit text-clear" md-font-icon="{{ S.Icono }}" ></md-icon>
+							<md-icon class="fa-fw text-30px text-inherit text-clear" md-font-icon="{{ S.Icono }}" 
+								style="transform: translateY(5px)"></md-icon>
 						</div>
 						<div class="square-card-text">{{ S.Seccion }}</div>
 					</a>
@@ -53,15 +103,20 @@
 
 			<div flex layout=column class="w290 overflow-y hasScroll relative">
 				<label class="text-clear margin-bottom-5 text-14px">Recientes</label>
-				<div ng-repeat="R in Recientes" md-truncates class="margin-bottom text-14px" 
+				<div ng-repeat="R in Recientes" md-truncates class="margin-bottom text-14px focus-on-hover " 
 					layout >
-					<a flex href="{{ R.Url }}" target="_blank"
-						layout layout-align="center center" class="no-underline text-white" >
-						<md-icon md-font-icon="{{ R.Icono }} fa-fw margin-right-5"></md-icon>
-						<div flex>{{ R.Titulo }}</div>
-					</a>
-					<md-icon hide md-svg-icon="md-close" class="child Pointer" ng-click="removeRec()"></md-icon>
-					
+					<div flex ng-click="openUrl('#/a/'+R.app.Slug+'/'+R.page.id, '_blank', true)" 
+						layout layout-align="center center" class="Pointer" >
+						<md-icon md-font-icon="{{ R.app.Icono }} fa-fw margin-right-5 s30 border-rounded text-16px"></md-icon>
+						<div layout=column flex>
+							<div class="">{{ R.app.Titulo }}</div>
+							<div class="text-clear text-13px">{{ R.page.Titulo }}</div>
+						</div>	
+					</div>
+					<md-button class="md-icon-button no-margin no-padding s30 focus-on-hover" 
+						ng-click="makeFavorite(R.app, !R.app.favorito)">
+						<md-icon md-font-icon="fa-fw fa-star s20" ng-class="{ 'far': !R.app.favorito }"></md-icon>
+					</md-button>
 				</div>
 
 				<div class="h30"></div>

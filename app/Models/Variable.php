@@ -247,7 +247,7 @@ class Variable extends MyModel
 	    				$Vals = $FixVals;
 	    				$Frecs++;
 
-	    				//if($Frecs >= ($this->Frecuencia-1)){ $FixVals = null; $Frecs = 0; } ASK
+	    				if($Frecs >= ($this->Frecuencia-1)){ $FixVals = null; $Frecs = 0; }
 	    			}
 
     			}

@@ -160,7 +160,7 @@ class ScorecardsController extends Controller
         $calc_method = $Sco->config['calc_method'];
         $Nodo->calculateNodos($Periodos, $calc_method);
         
-        if($filters) $Nodo->reorder($filters);
+        if($filters AND $filters['order_by'] !== 'default') $Nodo->reorder($filters);
 
         if(count($IndicadorValores) > 0){
             $indicadores_ids = $IndicadorValores->pluck('indicador_id');
@@ -172,6 +172,7 @@ class ScorecardsController extends Controller
 
         foreach ($NodosFlat as $i => &$N) { $N['i'] = $i; };
         $Sco->nodos_flat = $NodosFlat;
+        $Sco->nodos_flat_show = [];
 
         return $Sco;
     }

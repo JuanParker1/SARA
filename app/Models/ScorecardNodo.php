@@ -418,14 +418,29 @@ class ScorecardNodo extends MyModel
 			$subnodo->reorder($filters);
 		}
 
-		$this->nodos = $this->nodos->sortBy(function($N) use ($filters){
-			if($N->tipo == 'Nodo') return 1000;
-			if($N->tipo == 'Variable') return 1;
-			if($N->tipo == 'Indicador' AND $N->valores){
-				$cump_porc = $N->valores[$filters['Periodo']]['cump_porc'];
-				return is_null($cump_porc) ? -1 : $cump_porc;
-			}
-		});
+		if($filters['order_by'] == 'cump'){
+			$this->nodos = $this->nodos->sortBy(function($N) use ($filters){
+				if($N->tipo == 'Nodo') return 1000;
+				if($N->tipo == 'Variable') return 1;
+				if($N->tipo == 'Indicador' AND $N->valores){
+					$cump_porc = $N->valores[$filters['Periodo']]['cump_porc'];
+					return is_null($cump_porc) ? -1 : $cump_porc;
+				}
+			});
+		};
+
+		if($filters['order_by'] == '-cump'){
+			$this->nodos = $this->nodos->sortByDesc(function($N) use ($filters){
+				if($N->tipo == 'Nodo') return 1000;
+				if($N->tipo == 'Variable') return 1;
+				if($N->tipo == 'Indicador' AND $N->valores){
+					$cump_porc = $N->valores[$filters['Periodo']]['cump_porc'];
+					return is_null($cump_porc) ? -1 : $cump_porc;
+				}
+			});
+		};
+
+		
 
 		//$this->nodos = $this->nodos->sortBy('cump_porc_prom');
 	}

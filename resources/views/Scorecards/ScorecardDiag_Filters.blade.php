@@ -84,6 +84,18 @@
 					<md-option value="Res">Resultado</md-option>
 					<md-option value="Cump">Cumplimiento</md-option>
 				</md-select>
+			</div>
+
+			<div layout class="h30 lh30 md-subheader padding-0-10" style="transform: translateY(6px);">
+				<div flex>Ordenar Por</div>
+			</div>
+			<div class="padding-0-10">
+				<md-select ng-model="filters.order_by" class="no-margin md-no-underline w100p text-14px block md-select-nowrap" 
+					aria-label=s>
+					<md-option ng-value="'default'">Por Defecto</md-option>
+					<md-option ng-value="'cump'">Cumplimiento ▲</md-option>
+					<md-option ng-value="'-cump'">Cumplimiento ▼</md-option>
+				</md-select>
 			</div>		
 
 			<div class="mh50"></div>	

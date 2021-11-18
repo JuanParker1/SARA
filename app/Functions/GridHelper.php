@@ -38,11 +38,11 @@ class GridHelper
     public static function getQ($Entidad, $addRestric = true, $fetchMode = \PDO::FETCH_NUM)
     {
     	$Bdd  = BDD::where('id', $Entidad['bdd_id'])->first();
-    	$SchemaTabla = self::getTableName($Entidad['Tabla'], $Bdd->Op3);
+    	//$SchemaTabla = self::getTableName($Entidad['Tabla'], $Bdd->Op3);
     	$Conn = ConnHelper::getConn($Bdd);
         $Conn->setFetchMode($fetchMode);
 
-        $q = $Conn->table(DB::raw($SchemaTabla[2]." AS t0"));
+        $q = $Conn->table(DB::raw("{$Entidad['Tabla']} AS t0"));
         if($addRestric) self::addRestric($q, $Entidad->restricciones, "t0");
         return $q;
     }
@@ -76,6 +76,7 @@ class GridHelper
     {
     	self::addGuideCol($Grid);
     	$header_index = 0;
+
         foreach ($Grid->columnas as $C) {
             
             try{
@@ -143,7 +144,7 @@ class GridHelper
             $CampoDestino = $Campos[$EntidadDestino->campo_llaveprim];
             
             $union = [
-            	"{$EntidadDestino->getTableName()[2]} AS t{$tb['consec']}",
+            	"{$EntidadDestino->Tabla} AS t{$tb['consec']}",
             	$CampoOrigen->getColName("t{$Grid->tablas['tablas'][$tb['origen_id']]['consec']}"), '=', 
             	$CampoDestino->getColName("t{$tb['consec']}")
             ];

@@ -1,4 +1,4 @@
-<div flex layout=column class="overflow hasScroll transition" ng-if="Modo == 'Año'" ng-class="{ 'opacity-0': Loading }">
+<div flex layout=column class="overflow hasScroll transition" ng-show="Modo == 'Año'" ng-class="{ 'opacity-0': Loading }">
 
 	<md-table-container class="border-bottom" style="overflow: initial;">
 		<table md-table class="md-table-short table-col-compress table-nowrap">
@@ -18,7 +18,7 @@
 				</tr>
 			</thead>
 			<tbody md-body class="text-14px Pointer" >
-				<tr md-row ng-repeat="N in Sco.nodos_flat" class="md-row-hover Pointer ng-hide" ng-click="decideAction(N)" 
+				<tr md-row ng-repeat="N in Sco.nodos_flat_show" class="md-row-hover Pointer ng-hide" ng-click="decideAction(N)" 
 					ng-show="N.show">
 					<td md-cell style="padding: 0 !important">
 						<div class="w100p Pointer" layout ng-click="openFlatLevel(N, $event)">

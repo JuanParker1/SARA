@@ -14,6 +14,7 @@
 				<th md-column><md-icon md-font-icon="fa-asterisk"><md-tooltip>Requerido</md-tooltip></md-icon></th>
 				<th md-column><md-icon md-font-icon="fa-eye"><md-tooltip>Visible</md-tooltip></md-icon></th>
 				<th md-column><md-icon md-font-icon="fa-fingerprint"><md-tooltip>Único</md-tooltip></md-icon></th>
+				<th md-column><md-icon md-font-icon="fa-list"><md-tooltip>Desagregable</md-tooltip></md-icon></th>
 				<th md-column>Tipo</th>
 				<th md-column>Opciones</th>
 				<th md-column>Valor por Defecto</th>

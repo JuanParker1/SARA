@@ -11,6 +11,7 @@ use File;
 use App\Functions\CRUD;
 use App\Functions\Helper;
 
+use Carbon\Carbon;
 
 class MainController extends Controller
 {
@@ -190,8 +191,35 @@ class MainController extends Controller
 	public function postGetFavorites()
 	{
 		$Usuario = Helper::getUsuario();
-		
+		$Usuario->getApps(true);
+
+		$Pages = [];
+		foreach ($Usuario->Apps as $A) {
+			foreach ($A->pages as $P) {
+				$Pages[$P->id] = $A;
+			}
+		}
+
 		$Recientes = [];
+		$pages_done = [];
+		$FromDay = Carbon::now()->subDays(10);
+		$Logs = \App\Models\Log::where('Evento', 'AppPage')->where('usuario_id', $Usuario->id)->where('created_at', '>=', $FromDay)->orderBy('created_at', 'DESC')->get();
+
+		foreach ($Logs as $L) {
+			if(in_array($L->Op1, $pages_done)) continue;
+			if(!array_key_exists($L->Op1, $Pages)) continue;
+
+			$app  = $Pages[$L->Op1];
+			$page = $app->pages->where('id', $L->Op1)->first();
+
+			$Recientes[] = [
+				'app' => $app,
+				'page' => $page
+			];
+
+			$pages_done[] = $L->Op1;
+		}
+
 		/*$DaRecientes = \App\Models\Recientes::where('usuario_id', $Usuario->id)->limit(50)->get();
 
 		foreach ($DaRecientes as $R) {

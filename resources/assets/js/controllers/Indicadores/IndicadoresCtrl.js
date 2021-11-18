@@ -130,6 +130,11 @@ angular.module('IndicadoresCtrl', [])
 			//Rs.viewIndicadorDiag(Ctrl.IndSel.id); //FIX
 		};
 
+		Ctrl.closeIndicador = () => {
+			Ctrl.IndSel = null;
+			Rs.Storage.IndicadorSel = false;
+		};
+
 		Ctrl.updateIndicador = () => {
 			Ctrl.IndicadoresCRUD.update(Ctrl.IndSel).then(() => {
 				Rs.showToast('Indicador Actualizado', 'Success');

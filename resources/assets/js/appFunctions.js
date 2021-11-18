@@ -487,20 +487,20 @@ angular.module('appFunctions', [])
 			});
 		};
 
-		Rs.viewVariableDiag = (variable_id) => {
+		Rs.viewVariableDiag = (variable_id, config = {}) => {
 			$mdDialog.show({
 				controller: 'Variables_VariableDiagCtrl',
 				templateUrl: '/Frag/Variables.VariableDiag',
-				locals: { variable_id : variable_id },
+				locals: { variable_id, config },
 				clickOutsideToClose: false, fullscreen: true, multiple: true,
 			});
 		};
 
-		Rs.viewIndicadorDiag = (indicador_id) => {
+		Rs.viewIndicadorDiag = (indicador_id, config = {}) => {
 			$mdDialog.show({
 				controller: 'Indicadores_IndicadorDiagCtrl',
 				templateUrl: '/Frag/Indicadores.IndicadorDiag',
-				locals: { indicador_id : indicador_id },
+				locals: { indicador_id, config },
 				clickOutsideToClose: false, fullscreen: true, multiple: true,
 			});
 		};

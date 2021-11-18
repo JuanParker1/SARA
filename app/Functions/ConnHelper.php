@@ -38,13 +38,25 @@ class ConnHelper
 				'prefix'    => '',
 				'strict'    => false,
 			]);
+		}else if($BDD->Tipo == 'PostgreSQL'){
+			Config::set($conection_name, [
+				'driver'   => 'pgsql',
+				'username' => $BDD->Usuario,
+				'password' => $BDD->Contraseña,
+				'host'     => $BDD->Op2,
+				'database' => $BDD->Op3,
+				'charset'   => 'utf8',
+				'prefix'    => '',
+				'schema'   => $BDD->Op4,
+			]);
 		};
 
 		$conn_id = 'db_'.$BDD->id;
+		
 		try{
 			$Conn = DB::connection($conn_id);
 		} catch (\Exception $e) {
-			return response()->json([ 'Msg' => "Error al crear la conexión al servidor", 'e' => $e->getMessage() ], 512);
+			return response()->json([ 'Msg' => "Error al crear la conexión al servidor, {$e->getMessage()}", 'e' => $e->getMessage() ], 512);
 		}
 
 		/*if(substr($BDD->Tipo,5,3) == 'DB2'){

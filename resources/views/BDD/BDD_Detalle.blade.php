@@ -17,7 +17,7 @@
 		<md-input-container ng-repeat="Op in ['Op1','Op2','Op3','Op4','Op5']" ng-show="TiposBDD[BDDSel.Tipo][Op]"
 			class="margin-bottom-5">
 			<label>{{ TiposBDD[BDDSel.Tipo][Op] }}</label>
-			<input type="text" ng-model="BDDSel[Op]" ng-required="TiposBDD[BDDSel.Tipo][Op]">
+			<input type="text" ng-model="BDDSel[Op]" ngs-required="TiposBDD[BDDSel.Tipo][Op]">
 		</md-input-container>
 
 		<md-input-container class="margin-bottom-5">

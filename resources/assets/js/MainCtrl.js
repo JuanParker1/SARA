@@ -87,14 +87,14 @@ angular.module('MainCtrl', [])
 			3: 'Trimestral',
 			4: 'Cuatrimestral',
 			6: 'Semestral',
-			12: 'Anual'
+			12: 'Anual',
+			999: 'Ocasional'
 		};
 
 		Rs.parsePeriodo = function(dateString, format = 'MMM YYYY') {
 			if(!dateString) return null;
 			var m = moment(dateString, format);
 			var date = m.isValid() ? m.toDate() : new Date(NaN);
-			console.log('parsePeriodo', date);
 			return date;
 		};
         Rs.formatPeriodo = (date, format = 'MMM YYYY') => {
@@ -102,6 +102,15 @@ angular.module('MainCtrl', [])
         	var m = moment(date);
       		return m.isValid() ? m.format(format) : '';
         };
+        Rs.fixPeriodoValue = (Obj, Value) => {
+        	if(!Obj[Value]) return;
+        	let BaseYear = Obj[Value].getFullYear().toString();
+        	if(BaseYear.length == 6){
+        		Obj[Value].setFullYear(BaseYear.substr(0,4));
+        		let Month = parseInt(BaseYear.substr(4,2)) - 1;
+        		Obj[Value].setMonth(Month);
+        	};
+        }
 
 		if (window.self != window.top) {
 			$(document.body).addClass("in-iframe");

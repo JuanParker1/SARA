@@ -39,6 +39,13 @@
 					<md-option ng-value="'No'">No</md-option>
 				</md-select>
 			</md-input-container>
+
+			<md-button class="md-icon-button no-margin no-padding focus-on-hover s30 no-show-on-dialog"
+	    		ng-click="closeVariable()">
+	    		<md-icon md-svg-icon="md-close"></md-icon>
+	    		<md-tooltip md-direction=left>Cerrar Variable</md-tooltip>
+	    	</md-button>
+
 			<md-button class="md-icon-button no-margin show-only-on-dialog" aria-label="Button" ng-click="Cancel()">
 				<md-icon md-svg-icon="md-close"></md-icon>
 			</md-button>

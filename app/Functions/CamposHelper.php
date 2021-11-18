@@ -7,6 +7,7 @@ use App\Functions\Helper;
 use App\Functions\ConnHelper;
 use App\Functions\DB2Helper;
 use App\Functions\MySQLHelper;
+use App\Functions\PostgreSQLHelper;
 
 use App\Functions\GridHelper;
 
@@ -100,14 +101,23 @@ class CamposHelper
         $SchemaTabla = GridHelper::getTableName($Entidad['Tabla'], $Bdd->Op3);
         $tiposCampo = self::getTipos();
 
-        if(in_array($Bdd->Tipo, ['ODBC_DB2']))            $DBHelper = app('\App\Functions\DB2Helper');
-        if(in_array($Bdd->Tipo, ['ODBC_MySQL', 'MySQL'])) $DBHelper = app('\App\Functions\MySQLHelper');
-
-        try {
+        if(in_array($Bdd->Tipo, ['ODBC_DB2'])){
+            $DBHelper = new DB2Helper();
             $newCampos = $DBHelper->getColumns($Conn, $SchemaTabla[0], $SchemaTabla[1]);
             return $DBHelper->standarizeColumns($newCampos, $Bdd, $Entidad, $Campos, $tiposCampo);
-        } catch(\Illuminate\Database\QueryException $ex){
-            return response()->json([ 'Msg' => $ex->getMessage(), 'e' => $ex ], 512);
+        };
+
+        if(in_array($Bdd->Tipo, ['ODBC_MySQL', 'MySQL'])){
+            $DBHelper = new MySQLHelper();
+            $newCampos = $DBHelper->getColumns($Conn, $SchemaTabla[0], $SchemaTabla[1]);
+            return $DBHelper->standarizeColumns($newCampos, $Bdd, $Entidad, $Campos, $tiposCampo);
+        };
+
+        if(in_array($Bdd->Tipo, ['PostgreSQL'])){
+            $DBHelper = new PostgreSQLHelper();
+            $tableRoute = $DBHelper->getTableRoute($Bdd, $Entidad['Tabla']);
+            $newCampos = $DBHelper->getColumns($Conn, $tableRoute['Database'], $tableRoute['Schema'], $tableRoute['Table']);
+            return $DBHelper->standarizeColumns($newCampos, $Bdd, $Entidad, $Campos, $tiposCampo);
         };
 	}
 

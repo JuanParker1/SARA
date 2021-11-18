@@ -51,6 +51,7 @@ angular.module('EntidadesCtrl', [])
 		};
 
 		Ctrl.getEntidades = () => {
+			Ctrl.EntidadesCRUD.rows = [];
 
 			Ctrl.EntidadesCRUD.setScope('bdd', Ctrl.BddSel.id);
 			Ctrl.EntidadesCRUD.get().then(() => {
@@ -106,14 +107,16 @@ angular.module('EntidadesCtrl', [])
 			Ctrl.ProcesoSelId = E.proceso_id;
 
 			//Rs.Refresh();
-
-			Ctrl.getCampos().then(Ctrl.getRestricciones);
-		}
-
-		Ctrl.fijarEntidad = () => {
 			Rs.Storage.EntidadSelId = Ctrl.EntidadSel.id;
 			Rs.Storage.BddSelId = Ctrl.EntidadSel.bdd_id;
-		}
+
+			Ctrl.getCampos().then(Ctrl.getRestricciones);
+		};
+
+		Ctrl.closeEntidad = () => {
+			Ctrl.EntidadSel = null;
+			Rs.Storage.EntidadSelId = false;
+		};
 
 		Ctrl.addEntidad = () => {
 

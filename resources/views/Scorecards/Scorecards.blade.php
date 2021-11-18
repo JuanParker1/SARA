@@ -111,7 +111,7 @@
 	<md-sidenav  ng-show="ScoSel !== null"
 		md-is-open="ScorecardOpsNav" 
 		md-is-locked-open="$mdMedia('gt-xs') && ScorecardOpsNav"
-		class="bg-lightgrey-5 border-left padding w250 overflow-y">
+		class="bg-lightgrey-5 border-left padding w250 overflow-y hasScroll md-sidenav-right" layout=column>
 
 		@include('Scorecards.Scorecard_Opciones')
 

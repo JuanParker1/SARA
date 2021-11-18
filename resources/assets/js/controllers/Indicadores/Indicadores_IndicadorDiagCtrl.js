@@ -1,12 +1,14 @@
 angular.module('Indicadores_IndicadorDiagCtrl', [])
-.controller('Indicadores_IndicadorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'indicador_id', '$timeout', '$injector', '$mdPanel',
-	function($scope, $rootScope, $mdDialog, $filter, indicador_id, $timeout, $injector, $mdPanel) {
+.controller('Indicadores_IndicadorDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', '$injector', '$mdPanel', 'indicador_id', 'config', 
+	function($scope, $rootScope, $mdDialog, $filter, $timeout, $injector, $mdPanel, indicador_id, config) {
 
 		console.info('Indicadores_IndicadorDiagCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 
-		Ctrl.Cancel = () => { d3.selectAll('.nvtooltip').style('opacity', 0); $mdDialog.cancel(); }
+		Ctrl.Cancel = () => { 
+            d3.selectAll('.nvtooltip').style('opacity', 0); $mdDialog.cancel();
+        }
 
         Ctrl.SidenavIcons = [
             ['fa-comment',      'Análisis y Mejoramiento',     false, 'w420' ],
@@ -25,7 +27,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 
 		Ctrl.Meses = Rs.Meses;
 		Ctrl.inArray = Rs.inArray;
-		Ctrl.Anio  = angular.copy(Rs.AnioActual);
+		Ctrl.Anio  = ('Anio' in config) ? angular.copy(config.Anio) : angular.copy(Rs.AnioActual);
         Ctrl.Mes   = angular.copy(Rs.MesActual);
 		Ctrl.anioAdd = (num) => { Ctrl.Anio += num; Ctrl.getIndicadores(); };
 		Ctrl.Sentidos = Rs.Sentidos;
@@ -49,7 +51,9 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 					Ctrl.graphData[3].values[i-1] = { x: i, y: m.anioAnt,     val: m.anioAnt_val, series: 3, key: 'AnioAnt', color: m.anioAnt_color  };
 				});
 
-                Ctrl.updateChart();
+                $timeout(() => {
+                    Ctrl.updateChart();
+                }, 500);
 
                 Ctrl.Desagregacion = null;
                 Ctrl.getComentarios();
@@ -132,8 +136,8 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
         Ctrl.getIndicadores();
 
         Ctrl.viewCompDiag = (comp) => {
-            if(comp.Tipo == 'Variable')  return Rs.viewVariableDiag(comp.variable_id);
-            if(comp.Tipo == 'Indicador') return Rs.viewIndicadorDiag(comp.variable_id);
+            if(comp.Tipo == 'Variable')  return Rs.viewVariableDiag(comp.variable_id,  { Anio: Ctrl.Anio });
+            if(comp.Tipo == 'Indicador') return Rs.viewIndicadorDiag(comp.variable_id, { Anio: Ctrl.Anio });
         };
 
         //Comments
@@ -235,6 +239,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
             Rs.viewVariableMenu(ev, Comp.variable, Ctrl.Anio+M[0], Val, Ctrl.getIndicadores);
         }
 
+        
 
 
 	}

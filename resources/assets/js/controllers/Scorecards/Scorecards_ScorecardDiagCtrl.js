@@ -18,6 +18,7 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
         Ctrl.Procesos = null;
         Ctrl.FsOpenFolder = Rs.FsOpenFolder;
         Ctrl.Frecuencias = Rs.Frecuencias;
+        Ctrl.BlockModo = true;
 
         //Sidenav
         Ctrl.sidenavSel = null; //FIX
@@ -46,24 +47,27 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 
 		//Ctrl.Anio  = angular.copy(Rs.AnioActual);
 		//Ctrl.Mes   = angular.copy(Rs.MesActual);
-		if(!$localStorage['ScorecardModo']) $localStorage['ScorecardModo'] = 'Año';
-		Ctrl.Modo  = $localStorage['ScorecardModo'];
+		//if(!$localStorage['ScorecardModo']) $localStorage['ScorecardModo'] = 'Año';
+		//Ctrl.Modo  = $localStorage['ScorecardModo'];
 		Ctrl.Modos = {
-			'Mes': ['Vista Mensual', 'md-calendar-event'],
-			'Año': ['Vista Anual', 'md-calendar'],
+			'Mes': ['Vista Mensual', 'md-calendar-event', 'Mes'],
+			'Año': ['Vista Anual', 'md-calendar', 'Anio'],
 		};
 		Ctrl.changeModo = () => {
+			if(Ctrl.BlockModo) return;
 			Ctrl.Modo = (Ctrl.Modo == "Mes") ? 'Año' : 'Mes';
-			$localStorage['ScorecardModo'] = Ctrl.Modo;
+			//$localStorage['ScorecardModo'] = Ctrl.Modo;
 		};
 
 		//Periodo
         Ctrl.PeriodoDate = moment(((Rs.AnioActual*100)+Rs.MesActual), 'YYYYMM').toDate();
+        //Ctrl.PeriodoDate = moment('2020-01-01').toDate();
         Ctrl.MaxDate = moment().add(1, 'year').endOf("year").toDate();
         Ctrl.parsePeriodo = Rs.parsePeriodo;
         Ctrl.formatPeriodo = Rs.formatPeriodo;
         Ctrl.getPeriodoParts = () => {
         	var m = moment(Ctrl.PeriodoDate);
+        	console.log(m);
         	Ctrl.Periodo = m.format('YYYYMM');
         	Ctrl.Mes     = m.format('MM');
         	Ctrl.Anio    = Ctrl.PeriodoDate.getFullYear();
@@ -115,11 +119,17 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 			if(!Ctrl.Sco){
 				await Rs.http('api/Scorecards/get-head', { id: scorecard_id }, Ctrl, 'Sco');
 
+				//Prep Vista 
+				Ctrl.Modo = Ctrl.Sco.config.default_view.substring(0, 3);
+				Ctrl.BlockModo = Ctrl.Sco.config.default_view.includes('Solo');
+
 				//Prep filters
-				Ctrl.filters.Periodo = Ctrl.Periodo;
 				Ctrl.filters.frecuencia_analisis = angular.copy(Ctrl.Sco.config.default_frecuencia_analisis);
 				Ctrl.filters.see = angular.copy(Ctrl.Sco.config.default_see);
+				Ctrl.filters.order_by = angular.copy(Ctrl.Sco.config.default_orderby);
 			}
+
+			Ctrl.filters.Periodo = Ctrl.Periodo;
 
 			Rs.http('api/Scorecards/get', { id: scorecard_id, Anio: Ctrl.Anio, filters: Ctrl.filters }, Ctrl, 'Sco').then(() => {
             	Ctrl.Loading = false;
@@ -130,6 +140,7 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
             		Ctrl.ProcesoSelName = Ctrl.filters.proceso_ruta.split('\\').pop();
             	}
 
+            	Ctrl.Sco.nodos_flat_show = Ctrl.Sco.nodos_flat.filter(N => N.show);
             	//Ctrl.downloadIndicadores();
 
             });
@@ -153,13 +164,15 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 					}
 				}
 			});
+
+			Ctrl.Sco.nodos_flat_show = Ctrl.Sco.nodos_flat.filter(N => N.show);
 		}
 
 		Ctrl.decideAction = (N) => {
 			if(N.tipo == 'Indicador'){
-				Rs.viewIndicadorDiag(N.elemento.id);
+				Rs.viewIndicadorDiag(N.elemento.id, { Anio: Ctrl.Anio });
 			}else if(N.tipo == 'Variable'){
-				Rs.viewVariableDiag(N.elemento.id);
+				Rs.viewVariableDiag(N.elemento.id, { Anio: Ctrl.Anio });
 			}
 		};
 

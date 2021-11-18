@@ -1,7 +1,7 @@
 <div class="md-subhead text-clear margin-bottom-5">Opciones</div>
 
 <md-input-container class="margin-bottom-5">
-	<label>Abrir al Nivel</label>
+	<label>Abrir hasta el Nivel</label>
 	<input type="number" ng-model="ScoSel.config.open_to_level" aria-label=s ng-change="ScoSel.changed = true">
 </md-input-container>
 
@@ -13,6 +13,15 @@
 	</md-select>
 </md-input-container>
 
+<md-input-container class="margin-bottom-5">
+	<label class="mxw300 w300">Vista (Predeterminada)</label>
+	<md-select ng-model="ScoSel.config.default_view" class="" ng-change="ScoSel.changed = true" aria-label=s>
+		<md-option ng-value="'Año'">Anual</md-option>
+		<md-option ng-value="'Mes'">Mensual</md-option>
+		<md-option ng-value="'Año_Solo'">Solo Anual</md-option>
+		<md-option ng-value="'Mes_Solo'">Solo Mensual</md-option>
+	</md-select>
+</md-input-container>
 
 <md-input-container class="margin-bottom-5">
 	<label class="mxw300 w300">Frecuencia de Análisis (Predeterminada)</label>
@@ -30,3 +39,14 @@
 		<md-option ng-value="'Cump'">Cumplimiento</md-option>
 	</md-select>
 </md-input-container>
+
+<md-input-container class="margin-bottom-5">
+	<label class="mxw300 w300">Ordenar Por (Predeterminada)</label>
+	<md-select ng-model="ScoSel.config.default_orderby" class="" ng-change="ScoSel.changed = true" aria-label=s>
+		<md-option ng-value="'default'">Por Defecto</md-option>
+		<md-option ng-value="'cump'">Cumplimiento ▲</md-option>
+		<md-option ng-value="'-cump'">Cumplimiento ▼</md-option>
+	</md-select>
+</md-input-container>
+
+<div class="h50"></div>

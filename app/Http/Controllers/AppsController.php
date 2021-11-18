@@ -45,7 +45,10 @@ class AppsController extends Controller
     public function postFavorito()
     {
     	extract(request()->all()); //$favorito
-		\App\Models\UserApps::where(compact('usuario_id','app_id'))->update(['favorito' => $favorito]);
+		\App\Models\UserApps::updateOrCreate(
+            compact('usuario_id','app_id'),
+            [ 'favorito' => $favorito ]
+        );
     }
 
     public function postAppGet()

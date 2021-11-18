@@ -27,7 +27,8 @@
 
 				<md-datepicker ng-model="Field.Value" ng-if="Field.Type == 'date'" ng-required="Field.Required" class="w100p"></md-datepicker>
 				
-				<md-datepicker ng-model="Field.Value" ng-if="Field.Type == 'period'" ng-required="Field.Required" class="w100p" md-mode="month" md-date-locale="periodDateLocale"></md-datepicker>
+				<md-datepicker ng-model="Field.Value" ng-if="Field.Type == 'period'" ng-required="Field.Required" class="w100p" md-mode="month" md-date-locale="periodDateLocale"
+					ng-change="fixPeriodoValue(Field)"></md-datepicker>
 
 				<md-select ng-model="Field.Value" ng-if="Field.Type == 'simplelist'" ng-required="Field.Required" class="w100p">
 					<md-option ng-repeat="Op in Field.List" ng-value="Op" >{{ Op }}</md-option>

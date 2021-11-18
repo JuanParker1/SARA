@@ -11,14 +11,11 @@ angular.module('Entidades_EditorDiagCtrl', [])
         Ctrl.formatPeriodo = (C) => {
         	return (dateVal) => {
         		let formatEquiv = { 'Ym': 'YYYYMM', 'Y-m': 'YYYY-MM' };
-        		return Rs.formatPeriodo(dateVal, formatEquiv[C.campo.Op4]); 
+        		return Rs.formatPeriodo(dateVal, formatEquiv[C.campo.Op4]);
         	}
         }
         Ctrl.periodoFilter = (C) => { return true; }
-        Ctrl.fixPeriodoValue = (C) => {
-        	C.val.setDate(15);
-        	//C.val = C.val.setDate(15);
-        }
+        Ctrl.fixPeriodoValue = Rs.fixPeriodoValue;
 		Ctrl.loading = true;
 
 		var DefConfig = {
@@ -82,7 +79,7 @@ angular.module('Entidades_EditorDiagCtrl', [])
 			//Validar Cambios
 			console.log(Ctrl.EditorForm);
 			if(Ctrl.EditorForm.$invalid) return Rs.showToast('Falta información, por favor verifique y reintente.', 'Error');
-;
+
 
 			Ctrl.loading = true;
 			Rs.http('api/Entidades/editor-save', { Editor: Ctrl.Editor, Config: Ctrl.Config }).then(() => {

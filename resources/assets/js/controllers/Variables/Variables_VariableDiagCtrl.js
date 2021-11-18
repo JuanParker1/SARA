@@ -1,6 +1,6 @@
 angular.module('Variables_VariableDiagCtrl', [])
-.controller('Variables_VariableDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'variable_id', '$timeout',
-	function($scope, $rootScope, $mdDialog, $filter, variable_id, $timeout) {
+.controller('Variables_VariableDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', 'variable_id', 'config', 
+	function($scope, $rootScope, $mdDialog, $filter, $timeout, variable_id, config) {
 
 		console.info('Variables_VariableDiagCtrl');
 		var Ctrl = $scope;
@@ -11,7 +11,7 @@ angular.module('Variables_VariableDiagCtrl', [])
 		Ctrl.Meses = Rs.Meses;
 		Ctrl.inArray = Rs.inArray;
         Ctrl.viewVariableDiag = Rs.viewVariableDiag;
-		Ctrl.Anio  = angular.copy(Rs.AnioActual);
+		Ctrl.Anio  = ('Anio' in config) ? angular.copy(config.Anio) : angular.copy(Rs.AnioActual);
 		Ctrl.anioAdd = (num) => { Ctrl.Anio += num; Ctrl.getVariables(); };
         
         Ctrl.viewRelatedVariables = false;

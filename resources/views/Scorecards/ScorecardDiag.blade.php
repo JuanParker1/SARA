@@ -24,9 +24,12 @@
 
 			<div flex layout layout-align="end">
 				<span flex></span>
-				<div layout class="Pointer padding-5-10 bg-black-3 border-rounded margin-right-5" ng-click="changeModo()">
-					<md-icon md-svg-icon="{{ Modos[Modo][1] }}" class="s15 margin-right-5"></md-icon>
-					{{ Modos[Modo][0] }}
+				<div layout layout-align="center center"
+					class="border-rounded margin-right-5 padding-5-0 w150" 
+					ng-click="changeModo()" 
+					ng-class="{ 'Pointer bg-black-3': !BlockModo }">
+					<div><md-icon md-svg-icon="{{ Modos[Modo][1] }}" class="s20 margin-right-5"></md-icon></div>
+					<div>{{ Modos[Modo][0] }}</div>
 				</div>
 				<md-button class="md-icon-button s30 no-padding only-dialog" aria-label="Button" ng-click="Cancel()">
 					<md-icon md-svg-icon="md-close" class=""></md-icon>
@@ -46,7 +49,7 @@
 
 		</div>
 
-		<div flex layout ng-show="!Loading">
+		<div flex layout ng-show="Modo && !Loading">
 			@include('Scorecards.ScorecardDiag_Mes')
 			@include('Scorecards.ScorecardDiag_Anio')
 		</div>

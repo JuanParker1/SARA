@@ -10,7 +10,7 @@ angular.module('BDDCtrl', [])
 		Ctrl.BDDSidenav = true;
 		Ctrl.BDDFavSidenav = false;
 
-		Ctrl.SectionSel = 'Listas';
+		Ctrl.SectionSel = 'ConsultaSQL';
 		Ctrl.SeccionesBDD = [
 			[ 'ConsultaSQL', 'fa-bolt',	'Consulta SQL'  ],
 			[ 'Listas', 	 'fa-list', 'Listas'		 ]
@@ -38,10 +38,11 @@ angular.module('BDDCtrl', [])
 		};
 
 		Ctrl.TiposBDD = {
-			ODBC_DB2:     { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			ODBC_MySQL:   { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			MySQL:  	  { Op1: false, Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, Op5: false },
-			SQLite: 	  { Op1: false, Op2: 'Ruta al Archivo', Op3: 'Base de Datos', Op4: false, Op5: false },
+			ODBC_DB2:     { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, 	  Op5: false },
+			ODBC_MySQL:   { Op1: 'DSN', Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, 	  Op5: false },
+			MySQL:  	  { Op1: false, Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: false, 	  Op5: false },
+			PostgreSQL:   { Op1: false, Op2: 'Servidor', 		Op3: 'Base de Datos', Op4: 'Esquema', Op5: false },
+			SQLite: 	  { Op1: false, Op2: 'Ruta al Archivo', Op3: 'Base de Datos', Op4: false,	  Op5: false },
 		};
 
 		Ctrl.addBDD = () => {

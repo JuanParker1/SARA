@@ -5,18 +5,11 @@ angular.module('InicioCtrl', [])
 		console.info('InicioCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
-
+		Ctrl.showOtherApps = false;
 
 		//Rs.mainTheme = 'Snow_White';
 		Rs.mainTheme = 'Black';
 		if(!('InicioSidenav' in Rs.Storage)) Rs.Storage.InicioSidenav = $mdMedia('min-width: 750px');
-
-
-
-		Ctrl.makeFavorite = (A,make) => {
-			A.favorito = make;
-			Rs.http('api/App/favorito', { usuario_id: Rs.Usuario.id, app_id: A.id, favorito: make });
-		};
 
 		var HoraDelDia = parseInt(moment().format('H'));
 			 if(HoraDelDia < 7){ Rs.Saludo = 'Hola'; Rs.mainTheme = 'Black'; }
@@ -65,13 +58,41 @@ angular.module('InicioCtrl', [])
 
 		Ctrl.showSearchRes = (R) => {
 			if(R.Tipo == 'Reporte')   {
-				console.log("#/a/" + R.Slug, R);
-				$window.open(("#/a/" + R.Slug), '_blank');
+				Ctrl.openUrl("#/a/" + R.Slug);
 				//href="{{ Usuario.Url }}#/a/{{ A.Slug }}" target="_blank"
 			};
 			if(R.Tipo == 'Indicador') return Rs.viewIndicadorDiag(R.id);
 			if(R.Tipo == 'Variable')  return Rs.viewVariableDiag(R.id);
 		};
+
+		Ctrl.openUrl = (Url, target = '_blank', reload_favorites = false) => {
+			//window.open(Url,'popup','width=1220,height=700');
+			$window.open(Url, target);
+			if(reload_favorites){
+				$window.setTimeout(() => {
+					Ctrl.getFavorites();
+				}, 1000);
+			}
+		};
+
+		Ctrl.makeFavorite = async (App,make) => {
+			let A = Rs.Usuario.Apps.find(da_app => da_app.id == App.id);
+			App.favorito = make;
+			A.favorito = make;
+			await Rs.http('api/App/favorito', { usuario_id: Rs.Usuario.id, app_id: A.id, favorito: make });
+			Ctrl.countFavorites(false);
+		};
+
+		Ctrl.countFavorites = (firstLoad) => {
+			Ctrl.cantFavorites = Rs.Usuario.Apps.filter(A => A.favorito).length;
+			if(firstLoad){
+				Ctrl.showOtherApps = Ctrl.cantFavorites == 0;
+			}else{
+				if(Ctrl.cantFavorites == 0) Ctrl.showOtherApps = true;
+			}
+		};
+
+		Ctrl.countFavorites(true);
 
 		Ctrl.getFavorites = () => {
 			Rs.http('api/Main/get-favorites', {}).then(r => {

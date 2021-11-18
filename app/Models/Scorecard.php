@@ -45,8 +45,10 @@ class Scorecard extends MyModel
 			'show_proceso' => false,
 			'data_code' => '',
 			'calc_method' => 'peso',
+			'default_view' => 'Año',
 			'default_frecuencia_analisis' => ['-1'],
-			'default_see' => 'Res'
+			'default_see' => 'Res',
+			'default_orderby' => 'default'
 		];
 		
 		if(gettype($Config) == 'string') $Config = json_decode($Config);

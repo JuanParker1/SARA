@@ -16,11 +16,13 @@
 	<div flex layout>
 		
 		<div id="HomeNavigation" class="w50 bg-theme transition border-right overflow-y hasScroll" layout=column>
-			<div layout layout-align="center center" class="Seccion" ng-class="{ 'itemsel' : State.route.length < 3 }" md-ink-ripple ng-click="navTo('Home')" 
+			<a layout layout-align="center center" 
+				class="Seccion no-underline" ng-class="{ 'itemsel' : State.route.length < 3 }" md-ink-ripple 
+				href="{{ Usuario.Url }}#/Home" target="_self"
 				style="margin-bottom: 1px;">
 				<md-icon class="fa-fw fa-lg" md-font-icon="fa-home"></md-icon>
 				<md-tooltip md-direction="right">Inicio</md-tooltip>
-			</div>
+			</a>
 			<a ng-repeat="S in Usuario.Secciones" layout layout-align="center center" 
 				class="Seccion no-underline" ng-class="{ 'itemsel' : (S.id == State.route[2] ) }" md-ink-ripple 
 				href="{{ Usuario.Url }}#/Home/{{S.id}}" target="_self">

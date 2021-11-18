@@ -62,10 +62,10 @@ class EntidadHelper
     public static function getTableConn($Entidad)
     {
         $Bdd  = BDD::where('id', $Entidad['bdd_id'])->first();
-        $SchemaTabla = GridHelper::getTableName($Entidad['Tabla'], $Bdd->Op3);
+        //$SchemaTabla = GridHelper::getTableName($Entidad['Tabla'], $Bdd->Op3);
         $Conn = ConnHelper::getConn($Bdd);
         //dd($Conn->getPdo());
-        return $Conn->table($SchemaTabla[2]);
+        return $Conn->table($Entidad['Tabla']);
     }
 
     public static function insertRows($Entidad, $rows, $batchSize = 0)
