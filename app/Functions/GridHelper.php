@@ -38,11 +38,11 @@ class GridHelper
     public static function getQ($Entidad, $addRestric = true, $fetchMode = \PDO::FETCH_NUM)
     {
     	$Bdd  = BDD::where('id', $Entidad['bdd_id'])->first();
-    	//$SchemaTabla = self::getTableName($Entidad['Tabla'], $Bdd->Op3);
+        $TablaRoute = CamposHelper::getTableRoute($Bdd, $Entidad['Tabla']);
     	$Conn = ConnHelper::getConn($Bdd);
         $Conn->setFetchMode($fetchMode);
 
-        $q = $Conn->table(DB::raw("{$Entidad['Tabla']} AS t0"));
+        $q = $Conn->table(DB::raw("{$TablaRoute['FullRoute']} AS t0"));
         if($addRestric) self::addRestric($q, $Entidad->restricciones, "t0");
         return $q;
     }
@@ -130,7 +130,7 @@ class GridHelper
 
     public static function addJoins($Grid, $q)
     {
-    	$Entidades = Entidad::whereIn('id', 			 $Grid->tablas['entidades_ids'])->get()->keyBy('id');
+    	$Entidades = Entidad::with('bdd')->whereIn('id', 			 $Grid->tablas['entidades_ids'])->get()->keyBy('id');
     	$Campos    = EntidadCampo::whereIn('entidad_id', $Grid->tablas['entidades_ids'])->get()->keyBy('id');
 
         $uniones = [];
@@ -139,12 +139,12 @@ class GridHelper
 
             $EntidadOrigen  = $Entidades[$tb['entidad_origen' ]];
             $EntidadDestino = $Entidades[$tb['entidad_destino']];
-
-            $CampoOrigen  = $Campos[$tb['llave_id']];
-            $CampoDestino = $Campos[$EntidadDestino->campo_llaveprim];
+            $TablaDestinoRoute = CamposHelper::getTableRoute($EntidadDestino->bdd, $EntidadDestino->Tabla);
+            $CampoOrigen    = $Campos[$tb['llave_id']];
+            $CampoDestino   = $Campos[$EntidadDestino->campo_llaveprim];
             
             $union = [
-            	"{$EntidadDestino->Tabla} AS t{$tb['consec']}",
+            	"{$TablaDestinoRoute['FullRoute']} AS t{$tb['consec']}",
             	$CampoOrigen->getColName("t{$Grid->tablas['tablas'][$tb['origen_id']]['consec']}"), '=', 
             	$CampoDestino->getColName("t{$tb['consec']}")
             ];

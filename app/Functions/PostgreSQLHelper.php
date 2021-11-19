@@ -21,12 +21,12 @@ class PostgreSQLHelper
         return $tableRoute;
     }
 
-    public function getColumns($Conn, $Database, $Schema, $Table)
+    public function getColumns($Conn, $tableRoute)
     {
         return $Conn->table('information_schema.columns')
-            ->where('table_catalog', $Database)
-            ->where('table_schema',  $Schema)
-            ->where('table_name', $Table)
+            ->where('table_catalog', $tableRoute['Database'])
+            ->where('table_schema',  $tableRoute['Schema'])
+            ->where('table_name',    $tableRoute['Table'])
             ->orderBy('ordinal_position')->limit(1000)->get();
     }
 

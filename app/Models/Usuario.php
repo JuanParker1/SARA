@@ -19,6 +19,16 @@ class Usuario extends MyModel
         'isGod' => 'boolean',
     ];
 
+    public function columns()
+    {
+        //Name, Desc, Type, Required, Unique, Default, Width, Options
+        return [
+            [ 'Email',                     null,                   null, true, false, null, 100 ],
+            [ 'Documento',                 null,                   null, true, false, null, 100 ],
+            [ 'Nombres',                   null,                   null, true, false, null, 100 ],
+        ];
+    }
+
 	public function authenticate($Email, $Password)
     {
         $User = Usuario::where('Email', $Email)->first();

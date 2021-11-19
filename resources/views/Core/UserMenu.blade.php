@@ -17,7 +17,7 @@
 
 		
 		<md-menu-content class="w180 no-margin no-padding-bottom bg-theme">
-			<div class="s120 bg-lightgrey border-rounded margin-0-auto" md-whiteframe=1 
+			<div class="s90 bg-lightgrey border-rounded margin-0-auto" md-whiteframe=1 
 				style="background-image: url({{ Usuario.avatar }}); background-size: cover; background-position: top center;">
 			</div>
 

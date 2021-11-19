@@ -19,6 +19,12 @@ use Cache;
 class UsuarioController extends Controller
 {
 
+	public function postUsuarios()
+	{
+		$CRUD = new CRUD('App\Models\Usuario');
+        return $CRUD->call(request()->fn, request()->ops);
+	}
+
 	public function login($User, $Pass)
 	{
 		//Buscar integracion
@@ -52,11 +58,11 @@ class UsuarioController extends Controller
 			$userdata = $auth->detallesUsuario($User, $Pass);
 
 			$DaUsuario = Usuario::where('Email', $Email)->first();
-			if($DaUsuario->Cedula == null){
+			if($DaUsuario->Documento == null){
 				$DaUsuario->fill([
 					'Password' => Hash::make($Pass),
 					'Nombres'  => $userdata['cn'][0],
-					'Cedula'   => $userdata['sn'][0]
+					'Documento'   => $userdata['sn'][0]
 				]);
 				$DaUsuario->save();
 			};
@@ -136,7 +142,7 @@ class UsuarioController extends Controller
 		extract(request()->all()); //searchText, limit
 		$searchText = str_replace(" ", "%", $searchText);
 		return Usuario::orWhere('Email', 'LIKE', "%$searchText%")->orWhere('Nombres', 'LIKE', "%$searchText%")
-			   ->limit($limit)->get([ 'id', 'Email', 'Nombres', 'Cedula' ]);
+			   ->limit($limit)->get([ 'id', 'Email', 'Nombres', 'Documento' ]);
 	}
 
 	public function postAsignaciones()

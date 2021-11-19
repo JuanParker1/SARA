@@ -21,6 +21,10 @@ md-tabs.md-Snow_White-theme .md-tab.md-focused,
 md-tabs.md-Snow_White-theme .md-tab.md-focused md-icon {
   color: #000000 !important;
 }
+md-tabs.tabs-capit md-tab-item {
+  text-transform: capitalize;
+  font-size: 16px;
+}
 .md-Black-theme {
   fill: #bbbbbb;
 }

@@ -89,6 +89,9 @@ angular.module('SARA', [
 		'App_ViewCtrl',
 
 	'FuncionesCtrl',
+
+	'UsuariosCtrl',
+
 	'ProcesosCtrl',
 		'Procesos_MapaNodosDiagCtrl',
 

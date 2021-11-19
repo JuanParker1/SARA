@@ -34,7 +34,7 @@ class Comfamiliar {
 						'Email'    => $Email,
 						'Password' => Hash::make($Pass),
 						'Nombres'  => $userdata['cn'][0],
-						'Cedula'   => $userdata['sn'][0]
+						'Documento'   => $userdata['sn'][0]
 					]
 				);
 				return Crypt::encrypt($Email);

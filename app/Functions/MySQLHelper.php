@@ -4,9 +4,27 @@ namespace App\Functions;
 
 class MySQLHelper
 {
-	public function getColumns($Conn, $Schema, $Table)
+	public function getTableRoute($Bdd, $Table)
     {
-        return $Conn->table('information_schema.COLUMNS')->where('TABLE_SCHEMA', $Schema)->where('TABLE_NAME', $Table)->limit(1000)->get();
+        $tableRoute = [
+            'Database' => $Bdd['Op3']
+        ];
+
+        $TableArr = explode('.', $Table);
+        $tableRoute['Table'] = array_pop($TableArr);
+        if(!empty($TableArr)) $tableRoute['Database'] = array_pop($TableArr);
+
+        $tableRoute['FullRoute'] = "{$tableRoute['Database']}.{$tableRoute['Table']}";
+
+        return $tableRoute;
+    }
+
+    public function getColumns($Conn, $Schema, $Table)
+    {
+        return $Conn->table('information_schema.COLUMNS')
+            ->where('TABLE_SCHEMA', $tableRoute['Database'])
+            ->where('TABLE_NAME',   $tableRoute['Table'])
+            ->limit(1000)->get();
     }
 
     public function standarizeColumns($newCampos, $Bdd, $Entidad, $Campos, $tiposCampo)

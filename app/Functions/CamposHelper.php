@@ -94,6 +94,19 @@ class CamposHelper
 		return $TC;
 	}
 
+    public static function getHelper($Bdd)
+    {
+        if(in_array($Bdd->Tipo, ['ODBC_DB2'])) return new DB2Helper();
+        if(in_array($Bdd->Tipo, ['ODBC_MySQL', 'MySQL'])) return new MySQLHelper();
+        if(in_array($Bdd->Tipo, ['PostgreSQL'])) return new PostgreSQLHelper();
+    }
+
+    public static function getTableRoute($Bdd, $Tabla)
+    {
+        $DBHelper = self::getHelper($Bdd);
+        return $DBHelper->getTableRoute($Bdd, $Tabla);
+    }
+
 	public static function autoget($Bdd, $Entidad, $Campos)
 	{
 
@@ -101,24 +114,10 @@ class CamposHelper
         $SchemaTabla = GridHelper::getTableName($Entidad['Tabla'], $Bdd->Op3);
         $tiposCampo = self::getTipos();
 
-        if(in_array($Bdd->Tipo, ['ODBC_DB2'])){
-            $DBHelper = new DB2Helper();
-            $newCampos = $DBHelper->getColumns($Conn, $SchemaTabla[0], $SchemaTabla[1]);
-            return $DBHelper->standarizeColumns($newCampos, $Bdd, $Entidad, $Campos, $tiposCampo);
-        };
-
-        if(in_array($Bdd->Tipo, ['ODBC_MySQL', 'MySQL'])){
-            $DBHelper = new MySQLHelper();
-            $newCampos = $DBHelper->getColumns($Conn, $SchemaTabla[0], $SchemaTabla[1]);
-            return $DBHelper->standarizeColumns($newCampos, $Bdd, $Entidad, $Campos, $tiposCampo);
-        };
-
-        if(in_array($Bdd->Tipo, ['PostgreSQL'])){
-            $DBHelper = new PostgreSQLHelper();
-            $tableRoute = $DBHelper->getTableRoute($Bdd, $Entidad['Tabla']);
-            $newCampos = $DBHelper->getColumns($Conn, $tableRoute['Database'], $tableRoute['Schema'], $tableRoute['Table']);
-            return $DBHelper->standarizeColumns($newCampos, $Bdd, $Entidad, $Campos, $tiposCampo);
-        };
+        $DBHelper = self::getHelper($Bdd);
+        $tableRoute = $DBHelper->getTableRoute($Bdd, $Entidad['Tabla']);
+        $newCampos = $DBHelper->getColumns($Conn, $tableRoute);
+        return $DBHelper->standarizeColumns($newCampos, $Bdd, $Entidad, $Campos, $tiposCampo);
 	}
 
     public static function prepDato($Campo, $D)

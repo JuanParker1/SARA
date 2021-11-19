@@ -4,9 +4,27 @@ namespace App\Functions;
 
 class DB2Helper
 {
-	public function getColumns($Conn, $Schema, $Table)
+	public function getTableRoute($Bdd, $Table)
+    {
+        $tableRoute = [
+            'Database' => $Bdd['Op3']
+        ];
+
+        $TableArr = explode('.', $Table);
+        $tableRoute['Table'] = array_pop($TableArr);
+        if(!empty($TableArr)) $tableRoute['Database'] = array_pop($TableArr);
+
+        $tableRoute['FullRoute'] = "{$tableRoute['Database']}.{$tableRoute['Table']}";
+
+        return $tableRoute;
+    }
+
+    public function getColumns($Conn, $tableRoute)
 	{
-		$Columns = $Conn->table('QSYS2.SYSCOLUMNS')->where('TABLE_SCHEMA', $Schema)->where('TABLE_NAME', $Table)->limit(1000)->get();
+		$Columns = $Conn->table('QSYS2.SYSCOLUMNS')
+            ->where('TABLE_SCHEMA', $tableRoute['Database'])
+            ->where('TABLE_NAME',   $tableRoute['Table'])
+            ->limit(1000)->get();
         return collect($Columns)->transform(function($row){
             return array_map('utf8_encode', $row);
         });
