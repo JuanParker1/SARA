@@ -30,7 +30,6 @@ class Comfamiliar {
 				return response()->json(['Msg' => 'Error en usuario o contraseña'], 500);
 			}else{
 				$userdata = $this->detallesUsuario($User, $Pass);
-				dd($userdata);
 				Usuario::updateOrCreate([ 'Email' => $Email ],
 					[
 						'Email'    => $Email,
@@ -39,7 +38,7 @@ class Comfamiliar {
 						'Documento'   => $userdata['sn'][0]
 					]
 				);
-				$User->record_login();
+				$DaUser->record_login();
 				return Crypt::encrypt($Email);
 			}
         }
@@ -83,7 +82,7 @@ class Comfamiliar {
 	{ 
 		$server = (config('app.env') == 'production');
 
-		if(!$server) return false;
+		//if(!$server) return false;
 		//dd([$usuario, $clave]);
 
 		$ldaprdn = 'uid=' . $usuario . ',ou=people,dc=comfamiliar,dc=com'; 
@@ -109,7 +108,7 @@ class Comfamiliar {
 
 	public function testLogin()
 	{
-		dd($this->detallesUsuario('afrancoc', 'Anfe5410$'));
+		dd($this->validarSEC('afrancoc', 'Anfe5410$'));
 	}
 
 

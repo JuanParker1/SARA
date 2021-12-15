@@ -91,9 +91,10 @@
 						
 				</div>
 
-
+				<!--
 				<div class="md-subheader padding-bottom-5">Mi Proceso</div>
-				@include('MiProceso.MiProceso')
+				include('MiProceso.MiProceso')
+				-->
 
 			</div>
 
