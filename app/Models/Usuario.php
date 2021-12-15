@@ -3,13 +3,16 @@
 namespace App\Models;
 
 use App\Models\Core\MyModel;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Carbon\Carbon;
 use Hash;
 use DB;
 use Crypt;
 
 class Usuario extends MyModel
 {
+    use SoftDeletes;
+
     protected $table = 'sara_usuarios';
 	protected $guarded = ['id'];
 	protected $hidden = ['Password'];
@@ -25,9 +28,33 @@ class Usuario extends MyModel
         return [
             [ 'Email',                     null,                   null, true, false, null, 100 ],
             [ 'Documento',                 null,                   null, true, false, null, 100 ],
+            [ 'Celular',                   null,                   null, true, false, null, 100 ],
             [ 'Nombres',                   null,                   null, true, false, null, 100 ],
+            [ 'Op1',                       null,                   null, true, false, null, 100 ],
+            [ 'Op2',                       null,                   null, true, false, null, 100 ],
+            [ 'Op3',                       null,                   null, true, false, null, 100 ],
+            [ 'Op4',                       null,                   null, true, false, null, 100 ],
+            [ 'Op5',                       null,                   null, true, false, null, 100 ],
+            [ 'updated_at',                null,                   null, true, false, null, 100 ],
+            [ 'deleted_at',                null,                   null, true, false, null, 100 ],
+            [ 'last_login',                null,                   null, true, false, null, 100 ],
         ];
     }
+
+    //scopes
+    public function scopeEstado($q, $estado)
+    {
+        if($estado == 'I') return $q->onlyTrashed();
+        return $q;
+    }
+
+
+    //relations
+    public function asignacion()
+    {
+        return $this->hasMany('\App\Models\UsuarioAsignacion', 'usuario_id');
+    }
+
 
 	public function authenticate($Email, $Password)
     {
@@ -37,6 +64,12 @@ class Usuario extends MyModel
         }
 
         return $User;
+    }
+
+    public function record_login()
+    {
+        $this->last_login = Carbon::now();
+        $this->save();
     }
 
 
@@ -114,6 +147,37 @@ class Usuario extends MyModel
     }
 
 
+    public function filterAsignacionArr(&$Usuarios, $asignacion)
+    {
+        if($asignacion[0] == 'Unnasigned'){
+            $Usuarios = $Usuarios->filter(function($U){
+                return count($U->asignacion) == 0;
+            })->values();
+        }
+
+        if($asignacion[0] == 'Asigned'){
+            $Usuarios = $Usuarios->filter(function($U){
+                return count($U->asignacion) > 0;
+            })->values();
+        }
+
+        if($asignacion[0] == 'Perfil'){
+            $Usuarios = $Usuarios->filter(function($U) use ($asignacion){
+                return $U->asignacion->filter(function($A) use ($asignacion){
+                    return $A->perfil_id == $asignacion[1];
+                })->count() > 0;
+            })->values();
+        }
+
+        if($asignacion[0] == 'Proceso'){
+            $Usuarios = $Usuarios->filter(function($U) use ($asignacion){
+                return $U->asignacion->filter(function($A) use ($asignacion){
+                    return $A->nodo_id == $asignacion[1];
+                })->count() > 0;
+            })->values();
+        }
+    }
+
 
     public function fromToken($token)
     {
@@ -129,7 +193,8 @@ class Usuario extends MyModel
         $config = \App\Functions\Helper::getInstanceConfig();
         $avatar_path = "/fs/{$config['key']}/avatars/{$this->id}.jpg";
         if (file_exists( public_path().$avatar_path )) {
-            return $avatar_path."?".$this->updated_at->timestamp;
+            $timestamp = is_null($this->updated_at) ? '' : $this->updated_at->timestamp;
+            return $avatar_path."?".$timestamp;
         } else {
             return 'img/avatars/default.png';
         }

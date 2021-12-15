@@ -146,7 +146,7 @@ class Helper
 
             //dd($res);
 
-            if($res && $res[0] == 'done' && !is_nan($res[1]) ){
+            if($res && $res[0] == 'done' && !is_nan($res[1]) && !is_infinite($res[1]) ){
                 //print_r(is_nan($res[1]));
                 return $res[1];
             }else{
@@ -384,6 +384,7 @@ class Helper
         $ConfDef = [
             'VARIABLES_DIAS_DESDE' => [ 'Tipo' => 'Numero', 'Valor' => 10 ],
             'VARIABLES_DIAS_HASTA' => [ 'Tipo' => 'Numero', 'Valor' => 30 ],
+            'USUARIOS_OPS'         => [ 'Tipo' => 'Array',  'Valor' => '[]' ],
         ];
         
         $Conf = \App\Models\Configuracion::get();
@@ -392,6 +393,7 @@ class Helper
             $ConfDefElm = &$ConfDef[$C->Configuracion];
             $Valor = $C->Valor;
             if($ConfDefElm['Tipo'] == 'Numero') $Valor = intval($Valor);
+            if($ConfDefElm['Tipo'] == 'Array')  $Valor = json_decode($Valor, true);
 
             $ConfDefElm['Valor'] = $Valor;
         }

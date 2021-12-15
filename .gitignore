@@ -1,4 +1,5 @@
 /node_modules
 /vendor
+/public/fs
 .env
 conns.json

@@ -48,11 +48,14 @@ Route::get('/testconn', function(){
 
 	//$p = \DB::select('select * from `sara_scorecards_nodos` where `scorecard_id` = ? limit 1000', [10]);
 
-	$p = \App\Models\ScorecardNodo::scorecard(10)->get();
+	//$p = \App\Models\ScorecardNodo::scorecard(10)->get();
 	//$url = 'Comfamiliar Risaralda\Subdirección Administrativa\Administración de Documentos';
 	//return implode('\\', array_slice(explode('\\', $url), 0, -1));
 
-	return $p;
+	//return $p;
+
+	$dbconn = \pg_connect("host=20.120.90.45 dbname=bdoym user=usrbdoym password=Energia2021\$\$");
+	dd($dbconn);
 
 });
 

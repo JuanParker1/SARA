@@ -5,7 +5,7 @@ angular.module('MiProcesoCtrl', [])
 		console.info('MiProcesoCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
-		Rs.mainTheme = 'Snow_White';
+		//Rs.mainTheme = 'Snow_White';
 
 
 		Ctrl.ProcesoSel = false;

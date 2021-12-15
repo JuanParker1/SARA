@@ -25,7 +25,8 @@ angular.module('ImageEditor_DialogCtrl', [])
 			UploadUrl: '/api/Main/upload-image',
 			UploadPath: null,
 			ImageMode: null,
-			RemoveImage: false
+			RemoveImage: false,
+			OldImage: false
 		};
 
 		Ctrl.RotationCanvas = document.createElement("canvas");
@@ -42,17 +43,17 @@ angular.module('ImageEditor_DialogCtrl', [])
 		Ctrl.CancelText = Ctrl.Config.RemoveOpt ? Ctrl.Config.RemoveOpt : 'Cancelar';
 		
 		Ctrl.CancelBtn = function(){
-			if(!Ctrl.Config.RemoveOpt){
-				Ctrl.Cancel();
-			}else{
-				$http.post('/api/Upload/remove', { Path: Ctrl.Config.Daten.Path }).then(function(){
-					$mdDialog.hide({Removed: true});
-				});
-			}
+			Ctrl.Cancel();
+		}
+
+		Ctrl.RemoveImg = () => {
+			$http.post('/api/Main/remove-image', { savepath: Ctrl.Config.Daten.savepath }).then(function(){
+				$mdDialog.hide({Removed: true});
+			});
 		}
 
 		Ctrl.Cancel = function(){
-			$mdDialog.hide();
+			$mdDialog.cancel();
 		}
 
 		Ctrl.Rotar = function(dir){

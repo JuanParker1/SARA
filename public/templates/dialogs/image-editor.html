@@ -1,4 +1,4 @@
-<md-dialog md-theme="{{Config.Theme}}" aria-label="Cambiar Imagen" id="ImageEditor" layout="column" class="" ng-class="Config.Class">
+<md-dialog md-theme="{{Config.Theme}}" aria-label="Cambiar Imagen" id="ImageEditor" layout="column" ng-class="Config.Class">
 	<md-toolbar class="md-short md-Transparent">
 		<div class="md-toolbar-tools ">
 			<h2>{{Config.Title}}</h2>
@@ -13,7 +13,11 @@
 
 		<div class="UploadArea" 
 			ng-show="cropper.sourceImage==null"
-			layout layout-align="center start">
+			layout=column layout-align="center center">
+
+			<img ng-show="Config.OldImage" ng-src="{{ Config.OldImage.url }}" ng-class="Config.OldImage.class" 
+				width="{{ Config.OldImage.width }}" height="{{ Config.OldImage.height }}">
+
 			<md-button class="md-raised md-accent">
 				<md-icon md-font-icon="fa-image"></md-icon>
 				<label for="fileInput">Seleccionar</label>  
@@ -48,7 +52,7 @@
 
 	<md-dialog-actions layout>
 		<md-button hide class="md-dialog-button-left" ng-click="CancelBtn()">{{ CancelText }}</md-button>
-		<md-button class="md-warn md-dialog-button-left" ng-click="RemoveImg()" ng-show="Config.RemoveImage">Remover Imágen</md-button>
+		<md-button class="md-warn md-dialog-button-left" ng-click="RemoveImg()" ng-show="Config.RemoveOpt">{{ Config.RemoveOpt }}</md-button>
 		<span flex></span>
 
 		<div class="EditTools" ng-show="cropper.sourceImage!=null">

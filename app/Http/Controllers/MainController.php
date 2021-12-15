@@ -251,6 +251,14 @@ class MainController extends Controller
 		return $savepath;
 	}
 
+	public function postRemoveImage()
+	{
+		extract(request()->all()); //savepath
+		if(file_exists($savepath)){
+			unlink($savepath);
+		};
+	}
+
 
 	public function postFeedback()
 	{

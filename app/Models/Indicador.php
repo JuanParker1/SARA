@@ -205,7 +205,7 @@ class Indicador extends MyModel
 			$IndVal->fill($v);
 			$IndVal->save();*/
 		}
-
+		
 		return $valores;
 	}
 

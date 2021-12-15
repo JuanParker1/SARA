@@ -36,6 +36,11 @@ class UsuarioAsignacion extends MyModel
 		return $this->belongsTo('\App\Models\Perfil', 'perfil_id');
 	}
 
+	public function proceso()
+    {
+        return $this->belongsTo('\App\Models\Proceso', 'nodo_id');
+    }
+
 	//Scope
 	public function scopeNodo($q, $id)
 	{

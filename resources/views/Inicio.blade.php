@@ -89,9 +89,15 @@
 						<div class="square-card-text">{{ S.Seccion }}</div>
 					</a>
 						
-				</div>			
+				</div>
+
+
+				<div class="md-subheader padding-bottom-5">Mi Proceso</div>
+				@include('MiProceso.MiProceso')
+
 			</div>
 
+			
 			
 
 

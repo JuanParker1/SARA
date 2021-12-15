@@ -378,4 +378,32 @@ class IntegracionesController extends Controller
     }
 
 
+    public function getComfamiliarSyncUsuarios()
+    {
+        set_time_limit(0);
+
+        $Usuarios = \App\Models\Usuario::get();
+        $images = 0;
+        foreach ($Usuarios as $U) {
+            if(!$U->Documento) continue;
+
+            $url = "http://sec.comfamiliar.com/images/fotosEmpleados/{$U->Documento}.jpg";
+            $savepath = "fs/frt54s/avatars/{$U->id}.jpg";
+
+            if(!file_exists($savepath)){
+                try {
+                    $img = \Image::make($url);
+                    $img->resize(120, null,    function ($constraint){ $constraint->aspectRatio(); });
+                    $img->crop(120, 120, 0, 0);
+                    $img->save($savepath);
+                    $images++;
+                }catch (\Exception $e){
+
+                }
+            }
+        }
+
+        return $images;
+    }
+
 }

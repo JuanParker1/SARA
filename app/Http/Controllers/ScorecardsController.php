@@ -174,6 +174,8 @@ class ScorecardsController extends Controller
         $Sco->nodos_flat = $NodosFlat;
         $Sco->nodos_flat_show = [];
 
+        //dd($NodosFlat);
+
         return $Sco;
     }
 

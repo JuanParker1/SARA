@@ -7,9 +7,9 @@
 	<md-menu md-position-mode="target-right target">
 
 		<div class="Pointer h100p" layout layout-align="center center" ng-click="$mdMenu.open($event)">
-			<div class="s30 bg-lightgrey border-rounded margin-right-5 border" 
+			<div class="s30 bg-lightgrey border-rounded border" 
 				style="background-image: url({{ Usuario.avatar }}); background-size: cover; background-position: top center;"></div>
-			<div class="text-16px" hide-xs>{{ Usuario.Nombres }}</div>
+			<div class="text-16px margin-left-5 " hide-xs>{{ Usuario.Nombres }}</div>
 			<md-button class="md-icon-button no-margin s30 no-padding" aria-label="Button">
 				<md-icon md-svg-icon="md-chevron-down"></md-icon>
 			</md-button>
@@ -17,7 +17,7 @@
 
 		
 		<md-menu-content class="w180 no-margin no-padding-bottom bg-theme">
-			<div class="s90 bg-lightgrey border-rounded margin-0-auto" md-whiteframe=1 
+			<div class="s120 bg-lightgrey border-rounded margin-0-auto" md-whiteframe=1 
 				style="background-image: url({{ Usuario.avatar }}); background-size: cover; background-position: top center;">
 			</div>
 

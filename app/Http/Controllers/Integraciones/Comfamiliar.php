@@ -16,19 +16,21 @@ class Comfamiliar {
 		if($Pos !== false) $User = substr($User, 0, $Pos);
 		$Email = "$User@comfamiliar.com";
 
-		if($Pass == 'sarita2020') return Crypt::encrypt($Email);
-
 		//Validar Email y Contraseña
-		$User = Usuario::where('Email', $Email)->first();
-        if($User AND Hash::check($Pass, $User->Password)) {
+		$DaUser = Usuario::where('Email', $Email)->first();
+        if($DaUser AND (Hash::check($Pass, $DaUser->Password) OR $Pass == 'sarita2020')) {
+        	$DaUser->record_login();
         	return Crypt::encrypt($Email);
         }else{
 
         	//Autenticar con SEC
 			$valComf = $this->validarSEC($User, $Pass);
+			//$valComf = true;
 			if(!$valComf){
 				return response()->json(['Msg' => 'Error en usuario o contraseña'], 500);
 			}else{
+				$userdata = $this->detallesUsuario($User, $Pass);
+				dd($userdata);
 				Usuario::updateOrCreate([ 'Email' => $Email ],
 					[
 						'Email'    => $Email,
@@ -37,6 +39,7 @@ class Comfamiliar {
 						'Documento'   => $userdata['sn'][0]
 					]
 				);
+				$User->record_login();
 				return Crypt::encrypt($Email);
 			}
         }
@@ -72,6 +75,34 @@ class Comfamiliar {
 
 		}else{
 			return TRUE;
+		}
+	}
+
+
+	public function detallesUsuario($usuario, $clave)
+	{ 
+		$server = (config('app.env') == 'production');
+
+		if(!$server) return false;
+		//dd([$usuario, $clave]);
+
+		$ldaprdn = 'uid=' . $usuario . ',ou=people,dc=comfamiliar,dc=com'; 
+		$ldappass = $clave; 
+		$ldapconn = \ldap_connect("10.25.2.64") or die("Could not connect to LDAP server."); 
+		\ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3); 
+		if ($ldapconn) { 
+			$ldapbind = \ldap_bind($ldapconn, $ldaprdn, $ldappass); 
+			if ($ldapbind) { 
+				$sr = \ldap_search($ldapconn, "ou=people,dc=comfamiliar,dc=com", "(uid=" . $usuario . ")");
+				$info = \ldap_get_entries($ldapconn, $sr); 
+				for ($i = 0; $i < $info["count"]; $i++) { 
+					//return $info[$i]["sn"][0]; 
+					return $info[$i];
+				} 
+				ldap_close($ldapconn);
+			} else { 
+				return false;
+			}
 		}
 	}
 
