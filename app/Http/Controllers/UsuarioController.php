@@ -206,4 +206,16 @@ class UsuarioController extends Controller
 		}
 	}
 
+	public function getTestLogin()
+	{
+		//Buscar integracion
+		$Config = Helper::getInstanceConfig();
+		if($Config['integration']){
+			$Class = app("App\Http\Controllers\Integraciones\\{$Config['integration']}");
+			if(method_exists($Class, 'testLogin')){
+				return $Class->testLogin();
+			}
+		}
+	}
+
 }

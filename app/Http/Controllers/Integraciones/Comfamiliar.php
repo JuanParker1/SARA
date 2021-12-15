@@ -106,4 +106,11 @@ class Comfamiliar {
 		}
 	}
 
+
+	public function testLogin()
+	{
+		dd($this->detallesUsuario('afrancoc', 'Anfe5410$'));
+	}
+
+
 }
