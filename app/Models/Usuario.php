@@ -89,7 +89,8 @@ class Usuario extends MyModel
                             JOIN sara_secciones se ON ( se.id = ps.seccion_id ) 
                         WHERE 1 = 1 
                             AND ua.usuario_id = {$this->id}
-                            AND se.Estado = 'A'  
+                            AND se.Estado = 'A' 
+                            AND ps.Level > 0  
                         GROUP BY se.id, se.Seccion, se.Orden, se.Icono 
                         ORDER BY se.Orden";
         }
