@@ -170,8 +170,10 @@ class UsuarioController extends Controller
 	{
 		extract(request()->all()); //searchText, limit
 		$searchText = str_replace(" ", "%", $searchText);
-		return Usuario::orWhere('Email', 'LIKE', "%$searchText%")->orWhere('Nombres', 'LIKE', "%$searchText%")
-			   ->limit($limit)->get([ 'id', 'Email', 'Nombres', 'Documento' ]);
+		return Usuario::where(function($query) use ($searchText){
+			$query->where('Email', 'LIKE', "%$searchText%")
+		          ->orWhere('Nombres', 'LIKE', "%$searchText%");
+		})->limit($limit)->get([ 'id', 'Email', 'Nombres', 'Documento' ]);
 	}
 
 	public function postChangePassword()
