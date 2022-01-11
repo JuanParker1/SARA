@@ -10,13 +10,21 @@ use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use App\Functions\ConnHelper;
 use App\Functions\Helper;
+use App\Functions\CRUD;
 use App\Http\Controllers\Integraciones\SOMA;
 use App\Http\Controllers\Integraciones\RUAF;
 use App\Http\Controllers\Integraciones\Enterprise;
 use App\Http\Controllers\Integraciones\Ikono;
+use App\Http\Controllers\Integraciones\Solgein;
 
 class IntegracionesController extends Controller
 {
+    public function postCrud()
+    {
+        $CRUD = new CRUD('App\Models\Integracion');
+        return $CRUD->call(request()->fn, request()->ops);
+    }
+
     public function postSoma()
     {
         return SOMA::download();
@@ -45,197 +53,12 @@ class IntegracionesController extends Controller
 
     public function postSolgein()
     {
-        set_time_limit(5*60);
-        ini_set('display_errors', 1);
-        ini_set('display_startup_errors', 1);
-        error_reporting(E_ALL);
+        return Solgein::upload_valores();
+    }
 
-        $folder   = 'temp';
-        $filename = 'Import_SOLGEIN.xls';
-        request()->file('file')->move($folder, $filename);
-        
-        $BaseRegs = Helper::readTableFile($folder.'/'.$filename, [
-            'col_ini' => 1, 'col_fin' => 7, 'row_ini' => 7, 'row_fin' => null,
-            'headers' => ['Variable','Nivel','Nombre del nivel','Mes','Valor Real', 'errR', 'Meta']
-        ]);
-
-        $Procesos = \App\Models\Proceso::whereNotNull('Op1')->where('Op1', '<>', '')->get()->keyBy('Op1')->toArray();
-        $ProcesosIds     = array_column($Procesos, 'id');
-        $ProcesosNiveles = array_keys($Procesos);
-        $Indicadores = \App\Models\Indicador::whereIn('proceso_id', $ProcesosIds)->get([ 'id', 'Indicador', 'TipoDato', 'proceso_id' ])
-        ->keyBy(function($I){
-                return $I->proceso_id .'___'. strtolower(trim($I->Indicador));
-            })->toArray();
-        $IndicadoresIds = array_column($Indicadores, 'id');
-
-        $Variables   = \App\Models\Variable::where('Tipo', 'Manual')
-            ->whereIn('proceso_id', $ProcesosIds)
-            ->get(['id', 'Variable', 'proceso_id', 'TipoDato', 'Filtros'])
-            ->keyBy(function($V){
-                return $V->proceso_id .'___'. strtolower(trim($V->Variable));
-            })->toArray();
-        $VariablesIds = array_column($Variables, 'id');
-
-        $Regs = [];
-        $Periodos = [];
-
-        foreach ($BaseRegs as $reg) {
-            if( is_null($reg['Valor Real']) OR !in_array($reg['Nivel'], $ProcesosNiveles) ) continue;
-
-            $reg['indicador_id'] = null;
-            $reg['variable_id'] = null;
-
-            $Proceso = $Procesos[$reg['Nivel']];
-            $reg['proceso_id'] = $Proceso['id'];
-
-            $uid = $Proceso['id'] .'___'. strtolower(trim($reg['Variable']));
-
-            if(array_key_exists($uid, $Variables)){
-                $Variable = $Variables[$uid];
-
-                $reg['variable_id'] = $Variable['id'];
-                $reg['variable_tipo'] = $Variable['TipoDato'];
-
-                if($Variable['TipoDato'] == 'Porcentaje'){
-                    $reg['Valor Real'] = round(($reg['Valor Real']/100), 4);
-                }
-            }
-
-            if(array_key_exists($uid, $Indicadores)){
-                $Indicador = $Indicadores[$uid];
-                $reg['indicador_id'] = $Indicador['id'];
-                $reg['indicador_tipo'] = $Indicador['TipoDato'];
-
-                if($Indicador['TipoDato'] == 'Porcentaje'){
-                    $reg['Meta'] = round(($reg['Meta']/100), 4);
-                }
-            }
-
-            if( is_null($reg['variable_id']) AND is_null($reg['indicador_id']) ) continue;
-
-            $Regs[] = $reg;
-            $Periodos[$reg['Mes']] = 0;
-        }
-
-        $PeriodoMin = min(array_keys($Periodos));
-        $PeriodoMax = max(array_keys($Periodos));
-
-        unset($BaseRegs);
-
-        $E = [
-            'variables' => 0,
-            'variables_cargadas' => 0,
-            'metas_cargadas' => 0,
-            'periodo_min' => $PeriodoMin,
-            'periodo_max' => $PeriodoMax,
-            //'regs' => $Regs
-        ];
-
-        if(count($Regs) == 0) return $E;
-
-        $VariableValores = \App\Models\VariableValor::whereIn('variable_id', $VariablesIds)->whereBetween('Periodo', [$PeriodoMin, $PeriodoMax])
-            ->get()->keyBy(function($VV){
-                return $VV['variable_id'] .'_'. $VV['Periodo'];
-            })->toArray();
-
-        $IndicadoresMetas = \App\Models\IndicadorMeta::whereIn('indicador_id', $IndicadoresIds)->where('PeriodoDesde', '<=', $PeriodoMax)->orderBy('PeriodoDesde')->get()->groupBy('indicador_id')->toArray();
-
-        //return $IndicadoresMetas;
-
-        $E['variables_valores'] = count($VariableValores);
-
-        //Cargar
-        $VariablesValoresNew = [];
-        $MetasNew = [];
-        $MetasUpdate = [];
-        $Ahora = Carbon::now();
-        foreach ($Regs as $reg) {
-            if($reg['variable_id']){
-
-                $E['variables']++;
-                $vv_uid = $reg['variable_id'] .'_'. $reg['Mes'];
-
-                if(!array_key_exists($vv_uid, $VariableValores)){
-                    
-                    $VariablesValoresNew[] = [
-                        'variable_id' => $reg['variable_id'],
-                        'Periodo'     => $reg['Mes'],
-                        'Valor'       => $reg['Valor Real'],
-                        'created_at'  => $Ahora,
-                        'updated_at'  => $Ahora
-                    ];
-                    $E['variables_cargadas']++;
-                }
-            }
-
-            //Cargue de metas
-            if($reg['indicador_id'] AND !is_null($reg['Meta'])){
-
-                $reg['Meta'] = round($reg['Meta'], 4);
-
-                if(!array_key_exists($reg['indicador_id'], $IndicadoresMetas)){
-                    $MetasNew[($reg['indicador_id'].'_200001')] = [
-                        'indicador_id' => $reg['indicador_id'],
-                        'PeriodoDesde' => 200001,
-                        'Meta' => $reg['Meta']
-                    ];
-                    $E['metas_cargadas']++;
-                }else{
-
-                    /*if(count($IndicadoresMetas[$reg['indicador_id']]) > 1){
-                        dd($IndicadoresMetas[$reg['indicador_id']]);
-                    }*/
-                    $DaMeta = null;
-                    foreach ($IndicadoresMetas[$reg['indicador_id']] as $Meta) {
-                        if($Meta['PeriodoDesde'] > $reg['Mes']) break;
-                        $DaMeta = $Meta;
-                    }
-
-                    if($DaMeta['Meta'] != $reg['Meta']){
-                        if($DaMeta['PeriodoDesde'] == $reg['Mes']){
-                            $MetasUpdate[$reg['indicador_id'].'_'.$reg['Mes']] = [
-                                'id' => $DaMeta['id'],
-                                'Periodo' => $reg['Mes'],
-                                'MetaAnt' => $DaMeta['Meta'],
-                                'Meta' => $reg['Meta']
-                            ];
-                        }else if($DaMeta['PeriodoDesde'] < $reg['Mes']){
-                            $NewMeta = [
-                                'indicador_id' => $reg['indicador_id'],
-                                'PeriodoDesde' => $reg['Mes'],
-                                'Meta' => $reg['Meta']
-                            ];
-                            $MetasNew[($reg['indicador_id'].'_'.$reg['Mes'])] = $NewMeta;
-                            $IndicadoresMetas[$reg['indicador_id']][] = $NewMeta;
-                            $E['metas_cargadas']++;
-
-                        }
-                    }
-                    //dd();
-
-                }
-
-            }
-        }
-
-        if($E['variables_cargadas'] > 0){
-            \App\Models\VariableValor::insert($VariablesValoresNew);
-            Helper::touchIndicadores();
-        }
-
-        if($E['metas_cargadas'] > 0){
-            \App\Models\IndicadorMeta::insert(array_values($MetasNew));
-            $E['metas'] = $MetasNew;
-            Helper::touchIndicadores();
-        }
-
-        if(!empty($MetasUpdate)){
-            foreach ($MetasUpdate as $MU) {
-                \App\Models\IndicadorMeta::where('id', $MU['id'])->update([ 'Meta' => $MU['Meta'] ]);
-            }
-        }
-
-        return $E;
+    public function postSolgeinComments()
+    {
+        return Solgein::upload_comments();
     }
 
     public function getSolgeinComentarios()

@@ -42,6 +42,25 @@ class Comentario extends MyModel
 		return $this->created_at->diffForHumans();
 	}
 
+	public function scopeTipoentidad($q, $Tipoentidad)
+	{
+		return $q->where('Entidad', $Tipoentidad);
+	}
+
+	public function scopeGrupo($q, $Grupo)
+	{
+		return $q->where('Grupo', $Grupo);
+	}
+
+	public function scopePeriododesde($q, $Periodo)
+	{
+		return $q->where('Op1', '>=', $Periodo);
+	}
+
+	public function scopePeriodohasta($q, $Periodo)
+	{
+		return $q->where('Op1', '<=', $Periodo);
+	}
 
 	public function scopeEntidad($q, $Entidad)
 	{

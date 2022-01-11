@@ -143,6 +143,7 @@
 					<md-menu-item><md-button ng-click="openIndicador(IndSel)"><md-icon md-font-icon="fa-sync-alt margin-right fa-fw"></md-icon>Recargar Indicador</md-button></md-menu-item>
 					<md-menu-item><md-button ng-click="copyIndicador()"><md-icon md-font-icon="fa-copy margin-right fa-fw"></md-icon>Copiar Indicador</md-button></md-menu-item>
 					<md-menu-item><md-button ng-click="deleteIndicador()" class="md-warn"><md-icon md-font-icon="fa-trash margin-right fa-fw"></md-icon>Borrar Indicador</md-button></md-menu-item>
+					<md-menu-item><md-button ng-click="manageComments()" class=""><md-icon md-font-icon="fa-comment margin-right fa-fw"></md-icon>Comentarios</md-button></md-menu-item>
 				</md-menu-content>
 			</md-menu>
 			<md-button class="md-icon-button no-margin" aria-label="b" ng-click="viewIndicadorDiag(IndSel.id)">

@@ -357,13 +357,14 @@ class Helper
 
     public static function prepValComp($string)
     {
-        $string = str_replace([' '], '', $string);
-        $string = strtolower($string);
+        //return $string;
+        $string = str_replace(' ', '', $string);
+        $Fr = ['.','á', 'à', 'ä', 'â', 'ª', 'é', 'è', 'ë', 'ê', 'í', 'ì', 'ï', 'î', 'ó', 'ò', 'ö', 'ô', 'ú', 'ù', 'ü', 'û', 'Ñ', 'ñ', 'Ç', 'ç', 'ã?'];
+        $To = ['', 'a', 'a', 'a', 'a', 'a', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'n', 'n', 'C', 'c', 'n' ];
 
-        $string = str_replace(
-        array('.','á', 'à', 'ä', 'â', 'ª', 'é', 'è', 'ë', 'ê', 'í', 'ì', 'ï', 'î', 'ó', 'ò', 'ö', 'ô', 'ú', 'ù', 'ü', 'û', 'Ñ', 'ñ', 'Ç', 'ç'),
-        array('','a', 'a', 'a', 'a', 'a', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'n', 'n', 'C', 'c'),
-        $string );
+        $string = str_replace($Fr, $To, $string);
+        $string = strtolower($string);
+        $string = str_replace($Fr, $To, $string);
 
         return $string;
     }

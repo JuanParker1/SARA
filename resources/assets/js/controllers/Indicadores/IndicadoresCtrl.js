@@ -19,8 +19,9 @@ angular.module('IndicadoresCtrl', [])
 		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Variables', order_by: ['Variable'] });
 		Ctrl.IndicadoresCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores', offline: ['Indicadores', 'updated_at', (60*24*7)] });
 		Ctrl.IndicadoresVarsCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores/variables' });
-		Ctrl.MetasCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores/metas' });
-		Ctrl.NodosCRUD = $injector.get('CRUD').config({ base_url: '/api/Scorecards/nodos', add_append: 'refresh', order_by: ['padre_id'], query_call_arr: [ ['getFullRuta', null] ] });
+		Ctrl.MetasCRUD = $injector.get('CRUD').config({    base_url: '/api/Indicadores/metas' });
+		Ctrl.NodosCRUD = $injector.get('CRUD').config({    base_url: '/api/Scorecards/nodos', add_append: 'refresh', order_by: ['padre_id'], query_call_arr: [ ['getFullRuta', null] ] });
+		Ctrl.UsuariosCRUD = $injector.get('CRUD').config({ base_url: '/api/Usuario/usuarios', order_by: ['Nombres'] });
 		Ctrl.IndicadoresLoaded = false;
 
 		Ctrl.getIndicadores = () => {
@@ -126,7 +127,7 @@ angular.module('IndicadoresCtrl', [])
 			});
 
 			
-
+			//Ctrl.manageComments(); //FIX
 			//Rs.viewIndicadorDiag(Ctrl.IndSel.id); //FIX
 		};
 
@@ -403,6 +404,19 @@ angular.module('IndicadoresCtrl', [])
 				Ctrl.IndSel.config.meta_elemento_id = Selected[0].id;
 			});
 		}
+
+
+		//Manejador de Comentarios
+		Ctrl.manageComments = () => {
+			console.log('comentarios');
+			$mdDialog.show({
+				controller: 'Indicadores_CommentsManagerCtrl',
+				templateUrl: 'Frag/Indicadores.Indicadores_CommentsManager',
+				locals: { Indicadores: Ctrl.IndicadoresCRUD.rows, Indicador: Ctrl.IndSel, UsuariosCRUD: Ctrl.UsuariosCRUD },
+				clickOutsideToClose: false, fullscreen: true, multiple: true
+			});
+		}
+
 
 
 		console.time('Resolver Promesas');

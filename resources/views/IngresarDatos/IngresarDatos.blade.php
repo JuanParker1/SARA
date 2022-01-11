@@ -50,11 +50,17 @@
 				</thead>
 				<tbody md-body class="text-14px" >
 					<tr md-row ng-repeat="V in filteredVariables | orderBy:'Variable' " class="">
-						<td md-cell class="border-right">
-							{{ V.Variable }}
-							<md-button class="md-icon-button no-margin no-padding s25" ng-click="viewVariableDiag(V.id)">
-								<md-icon md-font-icon="fa-external-link-alt"></md-icon>
-							</md-button>
+						<td md-cell class="border-right" style="padding-right: 0 !important;">
+							<div layout class="w100p">
+								<div flex layout=column>
+									<div>{{ V.Variable }}</div>
+									<div class="text-clear">{{ V.proceso.Proceso }}</div>
+								</div>
+								<md-button class="md-icon-button no-margin no-padding s25" ng-click="viewVariableDiag(V.id)">
+									<md-icon md-font-icon="fa-external-link-alt"></md-icon>
+								</md-button>
+							</div>
+							
 						</td>
 
 						<td md-cell ng-repeat="M in Meses" style="padding: 0 5px 0 0 !important" class="md-cell-compress Pointer border-right grey-on-hover">
