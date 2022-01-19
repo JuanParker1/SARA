@@ -290,6 +290,30 @@ class ScorecardNodo extends MyModel
 		}
 	}
 
+
+	public function filterAnalisis($filters)
+	{
+		$this->nodos = $this->nodos->filter(function($nodo) use ($filters){
+			if($nodo->tipo == 'Nodo')     return true;
+			if($nodo->tipo == 'Variable') return true;
+
+			if($nodo->tipo == 'Indicador'){
+
+				$valor = $nodo->valores[$filters['Periodo']];
+
+				if($filters['analisis'] == 'con') return ($valor['comentarios_total'] >  0);
+				if($filters['analisis'] == 'sin') return ($valor['comentarios_total'] == 0);
+			}
+
+			return true;
+		});
+
+		foreach ($this->nodos as $nodo) {
+			if($nodo->tipo == 'Nodo') $nodo->filterAnalisis($filters);
+		}
+	}
+
+
 	public function recountSubnodos()
 	{
 		foreach ($this->nodos as $subnodo) {

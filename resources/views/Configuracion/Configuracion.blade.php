@@ -21,6 +21,19 @@
 						ng-change="markChanged('VARIABLES_DIAS_HASTA')">
 				</md-input-container>
 			</div>
+
+			<div layout>
+				<md-input-container flex>
+					<label>Frecuencias Habilitadas&nbsp;<md-icon md-font-icon="fa-info-circle"></md-icon>
+						<md-tooltip>Solo las variables con las siguientes frecuencias pueden ser ingresadas al sistema.</md-tooltip>
+					</label>
+
+					<md-select ng-model="Configuracion.VARIABLES_FRECUENCIAS_HAB.Valor" 
+						class="" multiple aria-label=s ng-change="markChanged('VARIABLES_FRECUENCIAS_HAB')">
+						<md-option ng-value="k" ng-repeat="(k, Op) in Frecuencias">{{ Op }}</md-option>
+					</md-select>
+				</md-input-container>
+			</div>
 			
 		</div>
 

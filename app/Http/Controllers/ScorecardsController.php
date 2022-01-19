@@ -112,6 +112,10 @@ class ScorecardsController extends Controller
         set_time_limit(10*60);
         ini_set('memory_limit','2G');
 
+        ini_set('display_errors', 1);
+        ini_set('display_startup_errors', 1);
+        error_reporting(E_ALL);
+        
         $Periodos = Helper::getPeriodos(($Anio*100)+01,($Anio*100)+12);
         $Sco = Scorecard::where('id', $id)->first();
         $ScoN = new ScorecardNodo();
@@ -151,9 +155,15 @@ class ScorecardsController extends Controller
         
         $Nodo->getChildren(true, $Nodos);
         $Nodo->calculate($Periodos, $IndicadorValores);
+        
         if($filters AND $filters['cumplimiento']){
             $Nodo->filterCumplimientos($filters);
         }
+
+        if($filters AND $filters['analisis']){
+            $Nodo->filterAnalisis($filters);
+        }
+
         $Nodo->recountSubnodos();
         $Nodo->purgeNodos();
 
@@ -326,5 +336,36 @@ class ScorecardsController extends Controller
 
         return $datos;
     }
+
+
+
+    public function postGetElements()
+    {
+        extract(request()->all()); //id, Tipo
+
+        $Sco = Scorecard::where('id', $id)->first();
+        $ScoN = new ScorecardNodo();
+
+        $Nodos = ScorecardNodo::scorecard($Sco->id)->get();
+        
+        $ScoN->getElementos($Nodos);
+        $ScoN->getRutas($Nodos);
+
+        $Nodo = $Nodos->first(function($k, $E){ return is_null($E->padre_id); });
+
+        $NodosFlat = [];
+        $Nodo->getChildren(true, $Nodos);
+
+        $Nodo->flatten($NodosFlat, 0, $Sco->config['open_to_level']);
+
+        if($Tipo){
+            $NodosFlat = collect($NodosFlat)->filter(function($N) use ($Tipo){
+                return $N['tipo'] == $Tipo;
+            })->values();
+        }
+
+        return $NodosFlat;
+    }
+
 
 }

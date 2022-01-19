@@ -165,16 +165,30 @@ class Helper
         if(is_null($Valor) OR is_null($Meta)) return null;
 
         if($Sentido == 'ASC'){
-            
+
             $cump = ($Valor >= $Meta) ? 1 : 0;
-            if($Meta == 0) $porc = ( $Valor >= $Meta ) ? 1 : 0;
-            if($Meta <> 0) $porc = $Valor / $Meta;
-        
+            
+            if($Valor >= $Meta){ $porc = 1; }
+            else{
+                if($Meta > 0)  $porc = $Valor / $Meta;
+                if($Meta == 0) $porc = 0;
+                if($Meta < 0)  $porc = 1 - ( ( $Valor - $Meta ) / $Meta );
+            }
+
         }else if($Sentido == 'DES'){
             
             $cump = ($Valor <= $Meta) ? 1 : 0;
-            if($Meta == 0) $porc = ( $Valor > $Meta ) ? 0 : 1;
-            if($Meta <> 0) $porc = 1 - ( ( $Valor - $Meta ) / $Meta );
+
+            if($Valor <= $Meta){ $porc = 1; }
+            else{
+                if($Meta > 0)  $porc = 1 - ( ( $Valor - $Meta ) / $Meta );
+                if($Meta == 0) $porc = 0;
+                if($Meta < 0)  $porc = $Valor / $Meta;
+            }
+
+            //$cump = ($Valor <= $Meta) ? 1 : 0;
+            //if($Meta == 0) $porc = ( $Valor > $Meta ) ? 0 : 1;
+            //if($Meta <> 0) $porc = 1 - ( ( $Valor - $Meta ) / $Meta );
         
         }else if($Sentido == 'RAN' AND !is_null($Meta2)){
 
@@ -383,9 +397,10 @@ class Helper
     public static function getConfiguracion()
     {
         $ConfDef = [
-            'VARIABLES_DIAS_DESDE' => [ 'Tipo' => 'Numero', 'Valor' => 10 ],
-            'VARIABLES_DIAS_HASTA' => [ 'Tipo' => 'Numero', 'Valor' => 30 ],
-            'USUARIOS_OPS'         => [ 'Tipo' => 'Array',  'Valor' => '[]' ],
+            'VARIABLES_DIAS_DESDE'      => [ 'Tipo' => 'Numero', 'Valor' => 10  ],
+            'VARIABLES_DIAS_HASTA'      => [ 'Tipo' => 'Numero', 'Valor' => 30  ],
+            'VARIABLES_FRECUENCIAS_HAB' => [ 'Tipo' => 'Array',  'Valor' => [1] ],
+            'USUARIOS_OPS'              => [ 'Tipo' => 'Array',  'Valor' => []  ],
         ];
         
         $Conf = \App\Models\Configuracion::get();
@@ -410,6 +425,9 @@ class Helper
             $Conf = \App\Models\Configuracion::firstOrCreate([
                 'Configuracion' => $ConfKey
             ]);
+
+            if(is_array($C['Valor'])) $C['Valor'] = json_encode($C['Valor']);
+
             $Conf->Valor = $C['Valor'];
             $Conf->save();
         }

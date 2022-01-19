@@ -35,6 +35,7 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
         	proceso_ruta: false,
         	cumplimiento: false,
         	frecuencia_analisis: ['-1'],
+        	analisis: '',
         	see: 'Res'
         };
 

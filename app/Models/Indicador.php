@@ -115,6 +115,8 @@ class Indicador extends MyModel
 
 		$this->metas     = IndicadorMeta::indicador($this->id)->year($Anio,$mesFin)->get();
 		
+		//Pepare comments
+		$Comments = \App\Models\Comentario::entidad(['Indicador', $this->id])->periododesde($PeriodoMin)->periodohasta($PeriodoMax)->get();
 
 
 		foreach ($this->variables as $c) {
@@ -138,8 +140,8 @@ class Indicador extends MyModel
 		if($this->config['meta_tipo'] == 'variable' AND !is_null($this->config['meta_elemento_id'])){
 			$this->meta_variable = Variable::where('id', $this->config['meta_elemento_id'])->first();
 			$this->meta_variable->valores = collect($this->meta_variable->getVals($Anio));
-
 		};
+
 
 		foreach ($valores as $target_per => &$v) {
 
@@ -198,6 +200,13 @@ class Indicador extends MyModel
 			$v['cump_porc'] = Helper::calcCump($v['Valor'], $v['meta_Valor'], $this->Sentido, 'porc', $v['meta2_Valor']);
 			$v['color']     = Helper::getIndicatorColor($v['cump_porc']);
 			
+			//Agregar comentarios
+			$ComentariosPer = $Comments->filter(function($c) use ($target_per){ return $c['Op1'] == $target_per; });
+			$v['comentarios_comentarios'] = $ComentariosPer->filter(function($c){ return $c['Grupo'] == 'Comentario'; })->count();
+			$v['comentarios_acciones']    = $ComentariosPer->filter(function($c){ return $c['Grupo'] == 'Accion'; })->count();
+			$v['comentarios_total']       = $ComentariosPer->count();
+
+
 			/*$IndVal = IndicadorValor::firstOrNew([
 				'indicador_id' => $v['indicador_id'],
 				'Periodo'      => $v['Periodo']

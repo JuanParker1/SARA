@@ -11,7 +11,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
         }
 
         Ctrl.SidenavIcons = [
-            ['fa-comment',      'Análisis y Mejoramiento',     false, 'w420' ],
+            ['fa-comment',      'Análisis y Mejoramiento',     false, 'w380' ],
             ['fa-list',         'Desagregar Datos', false, 'w260' ],
             ['fa-info-circle',  'Ficha Técnica',    false, 'w420' ],
         ];
@@ -144,7 +144,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
         Ctrl.ComentariosCRUD = $injector.get('CRUD').config({ 
             base_url: '/api/Main/comentarios', 
             query_with: [ 'autor' ], add_append: 'refresh', 
-            order_by: ['-created_at']
+            order_by: ['-Op1','created_at']
         });
         var ComentariosLoaded = false;
         Ctrl.getComentarios = () => {
@@ -206,6 +206,20 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 
         Ctrl.seeExternal = (Link) => {
             window.open(Link,'popup','width=1220,height=700');
+        }
+
+        Ctrl.verMejoramientoDiag = (Periodo, ev) => {
+
+            let Comentarios = Ctrl.ComentariosCRUD.rows.filter(c => c.Op1 == Periodo);
+            if(Comentarios.length == 0) return;
+
+            $mdDialog.show({
+                controller: 'Indicadores_MejoramientoDiagCtrl',
+                templateUrl: 'Frag/Indicadores.IndicadorDiag_MejoramientoDiag',
+                locals: { Periodo, Comentarios, seeExternal: Ctrl.seeExternal },
+                clickOutsideToClose: true, fullscreen: false, multiple: true,
+                targetEvent: ev
+            });
         }
 
         //Ctrl.toogleSidenav(); //FIX

@@ -76,6 +76,18 @@
 			</div>
 
 			<div layout class="h30 lh30 md-subheader padding-0-10" style="transform: translateY(6px);">
+				<div flex>Estado de Análisis</div>
+			</div>
+			<div class="padding-0-10">
+				<md-select ng-model="filters.analisis" class="no-margin md-no-underline w100p text-14px block md-select-nowrap" 
+					aria-label=s>
+					<md-option ng-value="''">Cualquiera</md-option>
+					<md-option ng-value="'con'">Con Análisis</md-option>
+					<md-option ng-value="'sin'">Sin Análisis</md-option>
+				</md-select>
+			</div>	
+
+			<div layout class="h30 lh30 md-subheader padding-0-10" style="transform: translateY(6px);">
 				<div flex>Ver</div>
 			</div>
 			<div class="padding-0-10">
@@ -101,7 +113,6 @@
 			<div class="mh50"></div>	
 
 		</div>
-		<md-button class="no-margin-bottom" ng-click="clearCache()"  ng-show="Usuario.id == 183">Borrar Cache</md-button>
 		<md-button class="md-raised bg-ocean" ng-click="getScorecard(Sco.id, {})">
 			<md-icon md-font-icon="fa-filter text-white margin-right"></md-icon>Filtrar
 		</md-button>

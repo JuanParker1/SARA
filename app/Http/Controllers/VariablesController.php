@@ -243,25 +243,30 @@ class VariablesController extends Controller
         $Usuario = H::getUsuario();
         $editable = false;
 
-
-
         if($Usuario->isGod){
             $editable = true;
         }else if($Variable['Tipo'] == 'Manual'){
 
             $Conf    = H::getConfiguracion();
-            $DIAS_DESDE = $Variable['DiasDesde'] ?? $Conf['VARIABLES_DIAS_DESDE']['Valor'];
-            $DIAS_HASTA = $Variable['DiasHasta'] ?? $Conf['VARIABLES_DIAS_HASTA']['Valor'];
 
-            $DiaCierre = Carbon::parse($Periodo.'01')->addMonth();
+            $FRECUENCIAS_HAB = $Conf['VARIABLES_FRECUENCIAS_HAB']['Valor'];
 
-            $DiaDesde  = $DiaCierre->copy()->addDays($DIAS_DESDE);
-            $DiaHasta  = $DiaCierre->copy()->addDays($DIAS_HASTA);
+            if(!in_array($Variable['Frecuencia'], $FRECUENCIAS_HAB)){
+                $editable = false;
+            }else{
+                $DIAS_DESDE = $Variable['DiasDesde'] ?? $Conf['VARIABLES_DIAS_DESDE']['Valor'];
+                $DIAS_HASTA = $Variable['DiasHasta'] ?? $Conf['VARIABLES_DIAS_HASTA']['Valor'];
 
-            $Today = Carbon::today();
+                $DiaCierre = Carbon::parse($Periodo.'01')->addMonth();
 
-            if($Today->greaterThanOrEqualTo($DiaDesde) AND $Today->lessThan($DiaHasta)){
-                $editable = true;
+                $DiaDesde  = $DiaCierre->copy()->addDays($DIAS_DESDE);
+                $DiaHasta  = $DiaCierre->copy()->addDays($DIAS_HASTA);
+
+                $Today = Carbon::today();
+
+                if($Today->greaterThanOrEqualTo($DiaDesde) AND $Today->lessThan($DiaHasta)){
+                    $editable = true;
+                }
             }
 
             //dd(compact('DIAS_HASTA', 'DiaDesde', 'DiaHasta', 'Today', 'editable'));

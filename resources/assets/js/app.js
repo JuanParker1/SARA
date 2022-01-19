@@ -80,11 +80,13 @@ angular.module('SARA', [
 		'Indicadores_AddDiagCtrl',
 		'Indicadores_IndicadorDiagCtrl',
 		'Indicadores_CommentsManagerCtrl',
+		'Indicadores_MejoramientoDiagCtrl',
 		//'Indicadores_IndicadorDiag_ValorMenuCtrl',
 
 	'ScorecardsCtrl',
 		'Scorecards_NodoSelectorCtrl',
 		'Scorecards_ScorecardDiagCtrl',
+		'Scorecards_RecalcCacheDiagCtrl',
 
 	'AppsCtrl',
 		'App_ViewCtrl',

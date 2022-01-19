@@ -193,6 +193,7 @@ angular.module('ScorecardsCtrl', [])
 				Ctrl.getFs();
 
 				//Ctrl.copyUrlDatos() //FIX
+				//Ctrl.recalcCache(); //FIX
 			});
 		};
 
@@ -341,6 +342,17 @@ angular.module('ScorecardsCtrl', [])
 		Ctrl.checkFrecuenciaAnalisis = () => {
 			if(Ctrl.ScoSel.config.default_frecuencia_analisis.includes('-1')) Ctrl.ScoSel.config.default_frecuencia_analisis = ['-1'];
 			Ctrl.ScoSel.changed = true;
+		}
+
+		Ctrl.recalcCache = () => {
+			return $mdDialog.show({
+				controller: 'Scorecards_RecalcCacheDiagCtrl',
+				templateUrl: 'Frag/Scorecards.Scorecards_RecalcCacheDiag',
+				locals: { ScoSel: Ctrl.ScoSel },
+				clickOutsideToClose: false,
+				fullscreen: false,
+				multiple: true,
+			})
 		}
 
 	}

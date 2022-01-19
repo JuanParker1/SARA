@@ -50,10 +50,11 @@
 							<span ng-if="E['calculable']">{{ E['val'] }}</span>
 						</div>
 
-						<div class="w100p" ng-if="N.tipo == 'Indicador'" ng-repeat="E in [ N.valores[Anio+M[0]] ] "
+						<div class="w100p relative" ng-if="N.tipo == 'Indicador'" ng-repeat="E in [ N.valores[Anio+M[0]] ] "
 							ng-style="{ color: E['color'] }">
-							<span ng-show="filters.see == 'Res'">{{ E['val'] }}</span>
-							<span ng-show="filters.see == 'Cump'">{{ E['cump_porc'] | percentage:1 }}</span>
+							<md-icon ng-if="E.comentarios_total > 0" md-font-icon="fa-circle fa-fw text-7pt s10 text-clear"></md-icon>
+							<span ng-if="filters.see == 'Res'">{{ E['val'] }}</span>
+							<span ng-if="filters.see == 'Cump'">{{ E['cump_porc'] | percentage:1 }}</span>				
 						</div>
 
 						<div class="w100p" ng-if="N.tipo == 'Variable'" ng-repeat="E in [ N.valores[Anio+M[0]] ] ">

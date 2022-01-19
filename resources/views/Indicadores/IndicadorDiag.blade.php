@@ -125,7 +125,7 @@
 
 							<tr md-row>
 								<td md-cell>Análisis y Mejoramiento</td>
-								<td md-cell ng-repeat="M in Meses" ng-click="openSidenavElm(['','Mejoramiento'])" class="cell-hoverable">
+								<td md-cell ng-repeat="M in Meses" ng-click="verMejoramientoDiag(Anio+M[0], $event)" class="cell-hoverable">
 									<md-icon md-font-icon="fa-comment fa-fw fa-lg" class="Pointer"
 										ng-if="(ComentariosCRUD.rows | filter:{ Grupo:'Comentario', Op1: Anio+M[0] }).length > 0">
 										<md-tooltip>{{ (ComentariosCRUD.rows | filter:{ Grupo:'Comentario', Op1: Anio+M[0] }).length }} Comentarios</md-tooltip>		

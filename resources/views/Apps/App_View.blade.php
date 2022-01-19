@@ -27,8 +27,16 @@
 				<md-icon md-font-icon="{{ AppSel.Icono }} fa-lg fa-fw s30 margin-bottom-5"></md-icon>
 				<div class="text-center">{{ AppSel.Titulo }}</div>
 				<div class="h10"></div>
+
+				<div layout class="h30 margin-top-5 margin-bottom" ng-show="AppSel.pages.length >= 3">
+					<div class="md-toolbar-searchbar" flex layout>
+						<md-icon md-font-icon="fa-search" class="fa-fw" style="margin: 3px 4px 0 5px;"></md-icon>
+						<input flex type="search" placeholder="Buscar..." ng-model="filterPages" class="no-padding text-inherit">
+					</div>
+				</div>
+
 				<div flex layout=column class="app_pages" >
-					<div ng-repeat="P in AppSel.pages" md-ink-ripple class="app_page" ng-show="AppSel.pages.length > 1"
+					<div ng-repeat="P in AppSel.pages | filter:filterPages" md-ink-ripple class="app_page" ng-show="AppSel.pages.length > 1"
 						ng-class="{ 'app_pagesel': P.id == PageSel.id }"
 						ng-click="gotoPage(P.id)">{{ P.Titulo }}</div>
 				</div>
