@@ -406,6 +406,7 @@ class Helper
         $Conf = \App\Models\Configuracion::get();
 
         foreach ($Conf as $C) {
+            if(!in_array($C->Configuracion, array_keys($ConfDef))) continue;
             $ConfDefElm = &$ConfDef[$C->Configuracion];
             $Valor = $C->Valor;
             if($ConfDefElm['Tipo'] == 'Numero') $Valor = intval($Valor);
