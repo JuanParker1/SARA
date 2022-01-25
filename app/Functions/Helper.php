@@ -185,10 +185,6 @@ class Helper
                 if($Meta == 0) $porc = 0;
                 if($Meta < 0)  $porc = $Valor / $Meta;
             }
-
-            //$cump = ($Valor <= $Meta) ? 1 : 0;
-            //if($Meta == 0) $porc = ( $Valor > $Meta ) ? 0 : 1;
-            //if($Meta <> 0) $porc = 1 - ( ( $Valor - $Meta ) / $Meta );
         
         }else if($Sentido == 'RAN' AND !is_null($Meta2)){
 

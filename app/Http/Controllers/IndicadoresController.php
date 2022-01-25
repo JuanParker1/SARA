@@ -55,15 +55,12 @@ class IndicadoresController extends Controller
         if($modoComparativo) $AnioAnt = $Indicador->calcVals($Anio-1);
         $AnioAct = $Indicador->calcVals($Anio);
 
-        $IndicadorValor = IndicadorValor::indicador($Indicador->id)->Anio($Anio)->first();
-        if(!$IndicadorValor){
-            IndicadorValor::create([ 'indicador_id' => $Indicador->id, 'Anio' => $Anio, 'valores' => $AnioAct ]);
-        }else{
-            if($IndicadorValor->updated_at->timestamp < $Indicador->updated_at->timestamp){ //Desactualizado
-                $IndicadorValor->valores = $AnioAct;
-                $IndicadorValor->save();
-            }
-        }
+        IndicadorValor::updateOrCreate([
+            'indicador_id' => $Indicador->id,
+            'Anio' => $Anio
+        ], [
+            'valores' => $AnioAct
+        ]);
         
         if($modoComparativo){
             $def = array_fill_keys(['varMoM','varMoM_val','varYoY','varYoY_val'],null);

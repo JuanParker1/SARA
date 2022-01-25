@@ -22,14 +22,15 @@
 				</div>
 				<div class="card_content" layout layout-align="center center">
 					<div class="card_value" style="color: {{ N.valores[Periodo].color }}">
+						<md-icon ng-if="N.valores[Periodo].comentarios_total > 0" md-font-icon="fa-circle fa-fw text-7pt s10 text-clear"></md-icon>
 						<span ng-show="filters.see == 'Res'">{{ N.valores[Periodo].val }}</span>
 						<span ng-show="filters.see == 'Cump'">{{ N.valores[Periodo].cump_porc | percentage:1 }}</span>
 					</div>
 				</div>
 				<span flex></span>
-				<div class="card_subtext" layout>
-					<div flex></div>
-					<div>
+				<div class="" layout>
+					<div flex class="card_process">{{ N.elemento.proceso.Proceso }}</div>
+					<div class="card_subtext">
 						{{ N.valores[Periodo].meta_val }}
 						<md-icon class="s15" md-font-icon="{{ Sentidos[N.elemento.Sentido].icon}} fa-fw" style="transform: translateY(-2px);"></md-icon>
 						<md-tooltip md-direction=left>Meta: {{ N.valores[Periodo].meta_val }} {{ Sentidos[N.elemento.Sentido].desc }}</md-tooltip>
@@ -73,10 +74,12 @@
 	}
 
 	.card:hover{ background-color: #292929 !important; transform: scale(1) !important; }
-	.card_title{ font-size: 0.9em; opacity: 0.3;  }
+	.card_title{   font-size: 0.9em; opacity: 0.3;  }
+	.card_process{ font-size: 0.9em; opacity: 0.3;  }
 	.card_value{ font-size: 2.3em; text-shadow: 2px 2px 4px #0000008f; font-weight: 400; }
 	.card_subtext{ text-align: right; opacity: 0.3; transition: all 0.3s; }
 	.card:hover .card_subtext{ opacity: 0.8;  }
+
 
 	.card_content{
 	    position: absolute;
