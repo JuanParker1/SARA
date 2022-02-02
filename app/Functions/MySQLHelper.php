@@ -19,7 +19,7 @@ class MySQLHelper
         return $tableRoute;
     }
 
-    public function getColumns($Conn, $Schema, $Table)
+    public function getColumns($Conn, $tableRoute)
     {
         return $Conn->table('information_schema.COLUMNS')
             ->where('TABLE_SCHEMA', $tableRoute['Database'])

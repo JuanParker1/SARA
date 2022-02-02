@@ -99,7 +99,9 @@ angular.module('UsuariosCtrl', [])
 			}).then(F => {
 				if(!F) return;
 				let Fields = Rs.prepFields(F.Fields);
-				Ctrl.UsuariosCRUD.add(Fields);
+				Ctrl.UsuariosCRUD.add(Fields).then(() => {
+					Ctrl.getUsuarios();
+				});
 			});
 		};
 
@@ -123,7 +125,9 @@ angular.module('UsuariosCtrl', [])
 				}else{
 					let Fields = Rs.prepFields(F.Fields);
 					let editedU = angular.extend(U, Fields);
-					Ctrl.UsuariosCRUD.update(editedU);
+					Ctrl.UsuariosCRUD.update(editedU).then(() => {
+						Ctrl.getUsuarios();
+					});
 				}
 			});
 		};

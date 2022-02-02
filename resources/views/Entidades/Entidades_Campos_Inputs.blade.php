@@ -2,6 +2,7 @@
 	<md-input-container md-no-float class="no-padding w150">
 		<input type="text" placeholder="Columna" ng-model="C.Columna" ng-required="C.id" class="h30" ng-change="markChanged(C)"
 		@if($withSave) enter-stroke="addCampo(C)" id="newCampo" @endif >
+		<md-tooltip md-direction=left>{{ C.Columna }}</md-tooltip>
 	</md-input-container>
 </td>
 <td md-cell class="md-cell-compress ">

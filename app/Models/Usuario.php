@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Core\MyModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Functions\Helper;
 use Carbon\Carbon;
 use Hash;
 use DB;
@@ -76,7 +77,9 @@ class Usuario extends MyModel
 
     public function getSecciones()
     {
-    	if($this->isGod){
+    	$Conn = Helper::getInstanceConn();
+
+        if($this->isGod){
             $query = "SELECT se.*, 5 AS Level
                         FROM sara_secciones se 
                         WHERE 1 = 1 
@@ -95,7 +98,7 @@ class Usuario extends MyModel
                         ORDER BY se.Orden";
         }
 
-        $Secciones = DB::select($query);
+        $Secciones = $Conn->select($query);
         $this->Secciones = $Secciones;
     }
 

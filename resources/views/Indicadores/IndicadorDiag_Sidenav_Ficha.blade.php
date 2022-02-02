@@ -77,7 +77,7 @@
 
 						<div layout>
 							<div class="text-bold margin-right" ng-repeat="A in agregators | filter:{ id:Comp.variable.Agrupador }:true">{{ A.Nombre }}:</div>
-							<div>{{ Comp.variable.column.campo_title }}</div>
+							<div>{{ Comp.variable.column.campo.campo_title }}</div>
 						</div>
 
 						<div class="text-bold" ng-show="Comp.variable.Filtros.length > 0">Condiciones:</div>

@@ -9,16 +9,8 @@ class MyModel extends Model
     public function __construct(array $attributes = []) {
         parent::__construct($attributes);
         
-        $config = \App\Functions\Helper::getInstanceConfig();
-        $base = \Config::get('database.connections.mysql');
-            
-        $base['host']     = $config['host'];
-        $base['database'] = $config['database'];
-        $base['username'] = $config['username'];
-        $base['password'] = $config['password'];
-
-        \Config::set("database.connections.dbm_{$config['conn_id']}", $base);
-        $this->setConnection("dbm_{$config['conn_id']}");
+        $config_name = \App\Functions\Helper::getInstanceConn(false);
+        $this->setConnection($config_name);
     }
 
 

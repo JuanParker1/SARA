@@ -65,7 +65,7 @@ class Variable extends MyModel
 
 	public function column()
 	{
-		return $this->belongsTo('\App\Models\EntidadCampo', 'Col');
+		return $this->belongsTo('\App\Models\EntidadGridColumna', 'Col');
 	}
 
 	public function valores($Anio = false)

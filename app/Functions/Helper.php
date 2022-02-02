@@ -24,6 +24,26 @@ class Helper
         });
     }
 
+    public static function getInstanceConn($ReturnConn = true)
+    {
+        $config = self::getInstanceConfig();
+        $base = \Config::get('database.connections.mysql');
+            
+        $base['host']     = $config['host'];
+        $base['database'] = $config['database'];
+        $base['username'] = $config['username'];
+        $base['password'] = $config['password'];
+        $config_name = "dbm_{$config['conn_id']}";
+
+        \Config::set("database.connections.".$config_name, $base);
+
+        if($ReturnConn){
+            return \DB::connection($config_name);
+        }else{
+            return $config_name;
+        }
+    }
+
     public static function getAppName()
     {
         $config = self::getInstanceConfig();
