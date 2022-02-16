@@ -7,7 +7,7 @@ angular.module('Entidades_Campos_ImagenConfigCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.Cancel = () => { $mdDialog.cancel(); };
 		Ctrl.inArray  = Rs.inArray;
-		Ctrl.C = C;
+		Ctrl.C = angular.copy(C);
 
 		Ctrl.ImageModes = [ 'Recortar', 'Ajustar Ancho', 'Ajustar Alto', 'Contener' ];
 

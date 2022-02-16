@@ -7,6 +7,7 @@ angular.module('Entidades_EditorDiagCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.Cancel = () => { $mdDialog.cancel(); };
 		Ctrl.inArray = Rs.inArray;
+		Ctrl.calcAlertColor = Rs.calcAlertColor;
 		Ctrl.submitForm = Rs.submitForm;
         Ctrl.formatPeriodo = (C) => {
         	return (dateVal) => {

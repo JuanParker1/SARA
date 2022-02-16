@@ -110,7 +110,18 @@ angular.module('MainCtrl', [])
         		let Month = parseInt(BaseYear.substr(4,2)) - 1;
         		Obj[Value].setMonth(Month);
         	};
-        }
+        };
+
+        Rs.calcAlertColor = (alerts, val) => {
+			let color  = '';
+			if(val === null || !alerts || alerts.length == 0) return color;
+			let alert = alerts.find(A => {
+				return val <= A.upto;
+			});
+			if(!alert) return color;
+
+			return alert.color;
+		};
 
 		if (window.self != window.top) {
 			$(document.body).addClass("in-iframe");

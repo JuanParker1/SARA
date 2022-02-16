@@ -315,7 +315,25 @@ angular.module('EntidadesCtrl', [])
 				locals: { C: C }
 			}).then((newC) => {
 				if(!newC) return;
-				C = newC; C.changed = true;
+				C.Config = newC.Config;
+				C.changed = true;
+			});
+		};
+
+		Ctrl.configNumerico = (C) => {
+			$mdDialog.show({
+				controller: 'Entidades_Campos_NumericoConfigCtrl',
+				templateUrl: 'Frag/Entidades.Entidades_Campos_NumericoConfig',
+				clickOutsideToClose: false,
+				fullscreen: false,
+				multiple: true,
+				locals: { C: C }
+			}).then((newC) => {
+				if(!newC) return;
+				C.Op1 = newC.Op1; C.Op2 = newC.Op2; 
+				C.Config = newC.Config; 
+				C.changed = true;
+				console.log(C);
 			});
 		};
 

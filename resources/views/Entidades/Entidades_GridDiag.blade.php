@@ -66,6 +66,7 @@
 							</td>
 							<td md-cell ng-repeat="C in Grid.columnas | filter:{Visible:true}"
 								ng-class="{ 'md-cell-compress': ($first || inArray(C.campo.Tipo, ['Lista', 'Imagen'])) }" >
+
 								<div ng-if="C.campo.Tipo == 'Lista'" class="w100p">
 									<div ng-repeat="Op in [getOpcionLista(R[C.header_index], C.campo.Config)]">
 										<div class="lista-pill" ng-style="{ backgroundColor: Op.color, color: calcTextColor(Op.color) }">
@@ -81,7 +82,12 @@
 								<div ng-if="C.campo.Tipo == 'TextoLargo'" class="w100p">{{ ::R[C.header_index] | limitTo:50 }}
 									<md-icon md-svg-icon="md-more-h" ng-show="R[C.header_index].length > 50" class="s20 Pointer" ng-click="previewCampo(C, R[C.header_index])"></md-icon>
 								</div>
-								<div ng-if="!inArray(C.campo.Tipo, ['Lista', 'Imagen','TextoLargo'])" class="w100p">{{ ::R[C.header_index] }}</div>
+								<div ng-if="inArray(C.campo.Tipo, ['Entero', 'Decimal', 'Dinero']) && C.campo.Config.use_alerts && R[C.header_index] !== null" class="w100p">
+									<div class="s15 border-rounded border v-inline-middle" 
+										ng-style="{ backgroundColor: calcAlertColor(C.campo.Config.alerts, R[C.header_index]) }" style="margin-right: 3px;"></div>
+									<div class="v-inline-middle mw25">{{ ::R[C.header_index] }}</div>
+								</div>
+								<div ng-if="!inArray(C.campo.Tipo, ['Lista', 'Imagen','TextoLargo', 'Entero', 'Decimal', 'Dinero'])" class="w100p">{{ ::R[C.header_index] }}</div>
 							</td>
 						</tr>
 					</tbody>
@@ -92,5 +98,12 @@
 
 		</div>
 	</div>
+
+	<style type="text/css">
+		.v-inline-middle{
+			display: inline-block;
+			vertical-align: middle;
+		}
+	</style>
 
 </md-dialog>

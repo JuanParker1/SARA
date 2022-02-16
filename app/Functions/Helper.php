@@ -9,8 +9,9 @@ class Helper
     public static function getInstanceConfig()
     {
         $conn_id = explode('.', request()->getHost())[0];
+
         //\Cache::forget("instance_config_$conn_id");
-        return \Cache::remember("instance_config_$conn_id", 5, function() use ($conn_id) {
+        //return \Cache::remember("instance_config_$conn_id", 5, function() use ($conn_id) {
             $conns = json_decode(file_get_contents(base_path('conns.json')), true);
         
             if(array_key_exists($conn_id, $conns)){
@@ -21,7 +22,7 @@ class Helper
 
             $conn['conn_id'] = $conn_id;
             return $conn;
-        });
+        //});
     }
 
     public static function getInstanceConn($ReturnConn = true)

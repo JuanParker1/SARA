@@ -11,7 +11,7 @@
 </p>
 
 <md-button class="md-raised margin-5-0 md-warn bg-warmblue" 
-	ng-if="C.Grupo == 'Accion'" ng-click="seeExternal(C.Op4)">
+	ng-if="C.Grupo == 'Accion' && C.Op4" ng-click="seeExternal(C.Op4)">
 	<md-icon md-font-icon="fa-external-link-alt fa-fw margin-right"></md-icon>Ver Acción
 </md-button>
 

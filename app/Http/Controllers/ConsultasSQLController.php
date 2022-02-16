@@ -16,17 +16,33 @@ class ConsultasSQLController extends Controller
 
     public function postPgpNt()
     {
+    	set_time_limit(600);
+
     	$Dia = request('Dia');
     	$Dia = str_replace('-', "", $Dia);
-    	
-    	$BDD = \App\Models\BDD::where('id', 1)->first();
-    	$BD = ConnHelper::getConn($BDD);
 
-    	//Detalles
-    	$BD->statement("DELETE FROM ZZVISTASAL.VMPGPEVDET WHERE FECHAEV = $Dia");
+    	$Arr = [
+    		'fecha'               => $Dia,
+    		'detalle_eventos_pre' => 0,
+    		'detalle_eventos_pos' => 0,
+    		'eventos_pre'         => 0,
+    		'eventos_pos'         => 0,
+    		'mensaje'             => ''
+    	];
 
-    	$InsertQuery = " 
-    		INSERT INTO ZZVISTASAL.VMPGPEVDET 
+		$BDD = \App\Models\BDD::where('id', 1)->first();
+		$BD = ConnHelper::getConn($BDD);
+
+		//Detalles
+		$CantPre = $BD->select("SELECT COUNT(*) AS CANT FROM ZZVISTASAL.VMPGPEVDET WHERE FECHAEV = $Dia");
+		$EvenPre = $BD->select("SELECT COUNT(*) AS CANT FROM ZZVISTASAL.VMPGPEV    WHERE FECHAEV = $Dia");
+		$Arr['detalle_eventos_pre'] = intval($CantPre[0]['CANT']);
+		$Arr['eventos_pre'] = intval($EvenPre[0]['CANT']);
+
+		$BD->statement("DELETE FROM ZZVISTASAL.VMPGPEVDET WHERE FECHAEV = $Dia");
+
+		$InsertQuery = " 
+			INSERT INTO ZZVISTASAL.VMPGPEVDET 
 			SELECT ('CLI'||ing.INGCODING) AS IDEV
 			    ,INT(ing.INGFECSALI/100) AS PERIODOEV ,ing.INGFECSALI AS FECHAEV ,ing.INGFECINGR AS FECHAING ,ing.INGFECSALI AS FECHASAL
 			    ,be.BECODBENE  ,BDSALUD.FNDOCBENE( be.BECODBENE ) AS PACIENTE ,BDSALUD.FNNOMBBENE( be.BECODBENE ) AS NOMBRE ,be.TDTIPDOC ,be.BENUMDOCBE
@@ -51,7 +67,8 @@ class ConsultasSQLController extends Controller
 			    --AND ing.INGFECSALI = $Dia 'Fecha se cambia por fecha de ejecapi'
 			    AND ej.Fecha = $Dia
 			    AND ing.INGEXCLU IS NULL 
-			    AND (ac.CTCCLASF1 NOT IN ('NPO') OR ac.CTCCLASF1 IS NULL)
+			    AND (ac.CTCCLASF1 NOT IN ('NPO') OR ac.CTCCLASF1 IS NULL) 
+			    AND ac.ACCODAGR NOT IN ('906340') -- Solicitado Alexis 16 Feb 2022
 			    --AND ing.INGCODING IN (1640172,1639815) 
 			UNION ALL  -- Citas
 			SELECT ('CIT'||cit.CICODCITA||'_'||ac.ACCODAGR) AS IDEV,
@@ -131,14 +148,16 @@ class ConsultasSQLController extends Controller
 			WHERE 1 = 1 
 			            AND ej.INGCODING IS NULL AND ej.CICODCITA IS NULL AND URGENCIAS IS NOT NULL  AND ASCODAREA='E'
 			            AND ej.fecha = $Dia 
-    	";
+		";
 
-    	$BD->statement($InsertQuery);
+		$BD->statement($InsertQuery);
 
-    	//Eventos
-    	$BD->statement("DELETE FROM ZZVISTASAL.VMPGPEV WHERE FECHAEV = $Dia");
+		
 
-    	$InsertQuery2 = "INSERT INTO ZZVISTASAL.VMPGPEV  
+		//Eventos
+		$BD->statement("DELETE FROM ZZVISTASAL.VMPGPEV WHERE FECHAEV = $Dia");
+
+		$InsertQuery2 = "INSERT INTO ZZVISTASAL.VMPGPEV  
 		    	SELECT det.IDEV
 					,det.PERIODOEV ,det.FECHAEV ,det.FECHAING ,det.FECHASAL 
 					,det.BECODBENE ,det.PACIENTE ,det.NOMBRE ,det.TDTIPDOC ,det.BENUMDOCBE
@@ -163,6 +182,17 @@ class ConsultasSQLController extends Controller
 					AND det.FECHAEV = $Dia ";
 
 		$BD->statement($InsertQuery2);
-    	
+
+		$CantPos = $BD->select("SELECT COUNT(*) AS CANT FROM ZZVISTASAL.VMPGPEVDET WHERE FECHAEV = $Dia");
+		$EvenPos = $BD->select("SELECT COUNT(*) AS CANT FROM ZZVISTASAL.VMPGPEV    WHERE FECHAEV = $Dia");
+		$Arr['detalle_eventos_pos'] = intval($CantPos[0]['CANT']);
+		$Arr['eventos_pos'] = intval($EvenPos[0]['CANT']);
+
+		$detalle_eventos_diff = $Arr['detalle_eventos_pos'] - $Arr['detalle_eventos_pre'];
+		$eventos_diff = $Arr['detalle_eventos_pos'] - $Arr['detalle_eventos_pre'];
+
+		$Arr['mensaje'] = "{$Arr['fecha']}: detalle de eventos cargados: {$Arr['detalle_eventos_pos']} ({$detalle_eventos_diff}), eventos cargados: {$Arr['eventos_pos']} ($eventos_diff).";
+
+    	return $Arr;
     }
 }

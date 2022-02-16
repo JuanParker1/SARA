@@ -6,7 +6,7 @@ angular.module('ConsultasSQLCtrl', [])
 		var Ctrl = $scope;
 		var Rs = $rootScope;
 
-		Ctrl.FechaIni = moment().add(-6, 'days').format('YYYY-MM-DD');
+		Ctrl.FechaIni = moment().add(-4, 'days').format('YYYY-MM-DD');
 		Ctrl.FechaFin = moment().format('YYYY-MM-DD');
 
 		Ctrl.FechaAct = angular.copy(Ctrl.FechaIni);
@@ -38,7 +38,7 @@ angular.module('ConsultasSQLCtrl', [])
 		Ctrl.Step = () => {
 			var startTime = performance.now();
 
-			Rs.http(Ctrl.ConsultaSel.url, { Dia: Ctrl.FechaAct }).then(() => {
+			Rs.http(Ctrl.ConsultaSel.url, { Dia: Ctrl.FechaAct }).then(r => {
 				
 				if(Ctrl.Status == 'Playing'){
 
@@ -46,20 +46,31 @@ angular.module('ConsultasSQLCtrl', [])
 					var timeDiff = (endTime - startTime) / 1000; 
 					var seconds = Math.round(timeDiff);
 					
-					Ctrl.Report.unshift({ Dia: Ctrl.FechaAct, Tiempo: seconds });
+					Ctrl.Report.unshift({ Dia: Ctrl.FechaAct, Tiempo: seconds, mensaje: r.mensaje });
 
 					if(Ctrl.FechaAct == Ctrl.FechaFin) return Ctrl.Pause();
 
 					var NewDay = moment(Ctrl.FechaAct).add(1, 'day').format('YYYY-MM-DD');
 					Ctrl.FechaAct =  NewDay;
-					
-
 
 					Ctrl.Step();
 				}
 
+			}).catch(r => {
+				Ctrl.Status = 'Paused';
+
+				var endTime = performance.now();
+				var timeDiff = (endTime - startTime) / 1000; 
+				var seconds = Math.round(timeDiff);
+					
+				Ctrl.Report.unshift({ Dia: Ctrl.FechaAct, Tiempo: seconds, mensaje: r.Msg });
+
 			});
 		}
+
+		Ctrl.adjustToday = (Fecha) => {
+			Ctrl.FechaAct = moment(Fecha).format('YYYY-MM-DD');
+		};
 		
 	}
 ]);

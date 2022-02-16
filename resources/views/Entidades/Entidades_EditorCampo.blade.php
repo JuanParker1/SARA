@@ -8,20 +8,30 @@
 	<textarea ng-model="C.val" rows="2" name="c{{ C.id }}" ng-required="C.Requerido" ng-disabled="!C.Editable"></textarea>
 </md-input-container>
 
-<md-input-container class="" ng-if="inArray(C.campo.Tipo, ['Entero'])">
-	<label>{{ C.campo_title }}</label>
-	<input type="number" ng-model="C.val" name="c{{ C.id }}" ng-required="C.Requerido" ng-disabled="!C.Editable">
-</md-input-container>
+<div ng-if="inArray(C.campo.Tipo, ['Entero', 'Decimal', 'Dinero'])" layout>
+	
+	<div class="s15 border-rounded margin-right-5 border transition" style="margin-top: 8px;"
+		ng-style="{ backgroundColor: calcAlertColor(C.campo.Config.alerts, C.val) }"
+		ng-if="C.campo.Config.use_alerts"></div>
 
-<md-input-container class="" ng-if="inArray(C.campo.Tipo, ['Decimal'])">
-	<label>{{ C.campo_title }}</label>
-	<input type="number" ng-model="C.val" name="c{{ C.id }}" ng-required="C.Requerido" ng-disabled="!C.Editable" step="any">
-</md-input-container>
+	<md-input-container flex class="" ng-if="C.campo.Tipo == 'Entero'">
+		<label>{{ C.campo_title }}</label>
+		<input type="number" ng-model="C.val" name="c{{ C.id }}" ng-required="C.Requerido" ng-disabled="!C.Editable">
+	</md-input-container>
 
-<md-input-container class="" ng-if="inArray(C.campo.Tipo, ['Dinero'])">
-	<label>{{ C.campo_title }}</label>
-	<input type="text" ng-model="C.val" name="c{{ C.id }}" ng-required="C.Requerido" ui-money-mask="0" ng-disabled="!C.Editable">
-</md-input-container>
+	<md-input-container flex class="" ng-if="C.campo.Tipo == 'Decimal'">
+		<label>{{ C.campo_title }}</label>
+		<input type="number" ng-model="C.val" name="c{{ C.id }}" ng-required="C.Requerido" ng-disabled="!C.Editable" step="any">
+	</md-input-container>
+
+	<md-input-container flex class="" ng-if="C.campo.Tipo == 'Dinero'">
+		<label>{{ C.campo_title }}</label>
+		<input type="text" ng-model="C.val" name="c{{ C.id }}" ng-required="C.Requerido" ui-money-mask="0" ng-disabled="!C.Editable">
+	</md-input-container>
+
+</div>
+
+
 
 <md-input-container class="" ng-if="inArray(C.campo.Tipo, ['Porcentaje'])">
 	<label>{{ C.campo_title }}</label>

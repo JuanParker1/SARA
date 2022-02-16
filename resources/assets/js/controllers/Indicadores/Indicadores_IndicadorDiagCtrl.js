@@ -199,7 +199,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 
                 Ctrl.ComentariosCRUD.add({
                     Entidad: 'Indicador', Entidad_id: indicador_id, Grupo: 'Accion',
-                    usuario_id: Rs.Usuario.id, Comentario: 'Se registró una: Acción '+f.Tipo, Op1: f.Periodo, Op2: f.Tipo, Op4: f['Link Isolución']
+                    usuario_id: Rs.Usuario.id, Comentario: 'Se registró una: Acción '+f.Tipo, Op1: f.Periodo, Op2: f.Tipo, Op4: f['Link']
                 });
             });
         };

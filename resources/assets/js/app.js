@@ -58,6 +58,7 @@ angular.module('SARA', [
 	'EntidadesCtrl',
 		'Entidades_Campos_ListaConfigCtrl',
 		'Entidades_Campos_ImagenConfigCtrl',
+		'Entidades_Campos_NumericoConfigCtrl',
 		'Entidades_AddColumnsCtrl',
 		'Entidades_VerCamposCtrl',
 		'Entidades_GridsCtrl',

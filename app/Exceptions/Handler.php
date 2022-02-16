@@ -46,7 +46,7 @@ class Handler extends ExceptionHandler
             $e = new NotFoundHttpException($e->getMessage(), $e);
         }
 
-        if($request->isJson() and !config('app.debug')){
+        if($request->isJson()){
 
             //$e->getStatusCode()
 

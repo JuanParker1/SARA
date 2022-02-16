@@ -34,6 +34,10 @@
 	</div>
 
 	<div ng-if="inArray(C.Tipo, ['Entero','Decimal','Dinero'])">
+		<md-button class="md-icon-button no-margin s30" aria-label="b" ng-click="configNumerico(C)">
+			<md-icon md-svg-icon="md-settings" class="s20"></md-icon>
+			<md-tooltip md-direction=right>Configurar</md-tooltip>
+		</md-button>
 		<md-input-container md-no-float class="no-padding no-margin w50">
 			<input type="text" ng-model="C.Op1" class="h30" aria-label="L" placeholder="Min" ng-change="markChanged(C)">
 			<md-tooltip md-direction=right>Mínimo</md-tooltip>
