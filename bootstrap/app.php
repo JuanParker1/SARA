@@ -52,4 +52,9 @@ $app->singleton(
 |
 */
 
+$app->configureMonologUsing(function ($monolog) {
+    //Fix temporal
+    $monolog->pushHandler(new Monolog\Handler\NullHandler);
+});
+
 return $app;
