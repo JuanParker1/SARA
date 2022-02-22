@@ -82,9 +82,10 @@
 								<div ng-if="C.campo.Tipo == 'TextoLargo'" class="w100p">{{ ::R[C.header_index] | limitTo:50 }}
 									<md-icon md-svg-icon="md-more-h" ng-show="R[C.header_index].length > 50" class="s20 Pointer" ng-click="previewCampo(C, R[C.header_index])"></md-icon>
 								</div>
-								<div ng-if="inArray(C.campo.Tipo, ['Entero', 'Decimal', 'Dinero']) && C.campo.Config.use_alerts && R[C.header_index] !== null" class="w100p">
+								<div ng-if="inArray(C.campo.Tipo, ['Entero', 'Decimal', 'Dinero'])" class="w100p">
 									<div class="s15 border-rounded border v-inline-middle" 
-										ng-style="{ backgroundColor: calcAlertColor(C.campo.Config.alerts, R[C.header_index]) }" style="margin-right: 3px;"></div>
+										ng-style="{ backgroundColor: calcAlertColor(C.campo.Config.alerts, R[C.header_index]) }" style="margin-right: 3px;"
+										ng-if="C.campo.Config.use_alerts && R[C.header_index] !== null"></div>
 									<div class="v-inline-middle mw25">{{ ::R[C.header_index] }}</div>
 								</div>
 								<div ng-if="!inArray(C.campo.Tipo, ['Lista', 'Imagen','TextoLargo', 'Entero', 'Decimal', 'Dinero'])" class="w100p">{{ ::R[C.header_index] }}</div>
