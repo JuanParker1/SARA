@@ -123,6 +123,19 @@ angular.module('MainCtrl', [])
 			return alert.color;
 		};
 
+		Rs.viewNumericGauge = (C, val) => {
+			if(!val || val == '') return;
+			$mdDialog.show({
+				templateUrl: 'Frag/Entidades.Entidades_GridDiag_GaugeDiag',
+				controller: 'Entidades_GridDiag_GaugeDiagCtrl',
+				locals: { C: C, val: val },
+				clickOutsideToClose: true, fullscreen: false, multiple: true,
+				onComplete: (scope, element) => {
+					scope.start();
+				}
+			});
+		};
+
 		if (window.self != window.top) {
 			$(document.body).addClass("in-iframe");
 		}

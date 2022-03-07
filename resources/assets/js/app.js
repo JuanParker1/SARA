@@ -64,11 +64,14 @@ angular.module('SARA', [
 		'Entidades_GridsCtrl',
 		'Entidades_GridDiagCtrl',
 			'Entidades_GridDiag_PreviewDiagCtrl',
+			'Entidades_GridDiag_GaugeDiagCtrl',
 		'Entidades_Grids_TestCtrl',
 
 		'Entidades_EditoresCtrl',
 		'Entidades_EditorDiagCtrl',
 		'Entidades_EditorConfigDiagCtrl',
+
+		'Entidades_EntidadSearchDiagCtrl',
 
 		'Entidades_CargadoresCtrl',
 		'Entidades_CargadorDiagCtrl',

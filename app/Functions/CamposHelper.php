@@ -21,17 +21,18 @@ class CamposHelper
             'TextoLargo'     => [ 'Icon' => 'md-insert-comment',     'Divide' => true,         'Defaults' => [  1000,   '',    0,               '',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
             'Lista'          => [ 'Icon' => 'md-list-view',          'Divide' => false,        'Defaults' => [    '',   '',    0,             '[]',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => 'lista' ],
 			'ListaAvanzada'  => [ 'Icon' => 'md-list-alt', 	         'Divide' => true, 	       'Defaults' => [    '',   '',    0,             '[]',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
-			'Entero'         => [ 'Icon' => 'my-entero', 			 'Divide' => false, 	   'Defaults' => [    '',   '',    0,               '',   ''], 'DefaultValor' => '0',          'DefaultComparador' => '>=' ],
-            'Decimal'        => [ 'Icon' => 'my-decimal',            'Divide' => false,        'Defaults' => [    '',   '',    1,               '',   ''], 'DefaultValor' => '0',          'DefaultComparador' => '>=' ],
-			'Porcentaje'     => [ 'Icon' => 'md-percent', 			 'Divide' => false, 	   'Defaults' => [   '0',  '1',    1,               '',   ''], 'DefaultValor' => '0',          'DefaultComparador' => '>=' ],
-			'Dinero'         => [ 'Icon' => 'md-money', 			 'Divide' => true, 	       'Defaults' => [    '',   '',    1,               '',   ''], 'DefaultValor' => '0',          'DefaultComparador' => '>=' ],
+			'Entero'         => [ 'Icon' => 'my-entero', 			 'Divide' => false, 	   'Defaults' => [    '',   '',    0,               '',   ''], 'DefaultValor' =>  null,        'DefaultComparador' => '>=' ],
+            'Decimal'        => [ 'Icon' => 'my-decimal',            'Divide' => false,        'Defaults' => [    '',   '',    1,               '',   ''], 'DefaultValor' =>  null,        'DefaultComparador' => '>=' ],
+			'Porcentaje'     => [ 'Icon' => 'md-percent', 			 'Divide' => false, 	   'Defaults' => [   '0',  '1',    1,               '',   ''], 'DefaultValor' =>  null,        'DefaultComparador' => '>=' ],
+			'Dinero'         => [ 'Icon' => 'md-money', 			 'Divide' => true, 	       'Defaults' => [    '',   '',    1,               '',   ''], 'DefaultValor' =>  null,        'DefaultComparador' => '>=' ],
 			'Booleano'       => [ 'Icon' => 'md-toggle-on', 		 'Divide' => true, 	       'Defaults' => [    '',   '',    0,             'Si', 'No'], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
             'Periodo'        => [ 'Icon' => 'md-calendar',           'Divide' => false,        'Defaults' => [    '',   '',    0,             'Ym',   ''], 'DefaultValor' =>  'today',     'DefaultComparador' => '>=' ],
 			'Fecha'          => [ 'Icon' => 'md-calendar-event', 	 'Divide' => false, 	   'Defaults' => [ 'rel',   '',    0,          'Y-m-d',   ''], 'DefaultValor' =>  'today',     'DefaultComparador' => '>=' ],
 			'Hora'           => [ 'Icon' => 'md-time', 			     'Divide' => false, 	   'Defaults' => [    '',   '',    0,          'H:i:s',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
 			'FechaHora'      => [ 'Icon' => 'md-timer', 			 'Divide' => true, 	       'Defaults' => [    '',   '',    0,    'Y-m-d H:i:s',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
             'Color'          => [ 'Icon' => 'md-color',              'Divide' => false,        'Defaults' => [    '',   '',    0,               '',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
-			'Imagen'   	     => [ 'Icon' => 'md-image', 			 'Divide' => false, 	   'Defaults' => [    '',   '',    0,               '',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
+            'Imagen'         => [ 'Icon' => 'md-image',              'Divide' => false,        'Defaults' => [    '',   '',    0,               '',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
+			'Link'   	     => [ 'Icon' => 'md-link', 			     'Divide' => false, 	   'Defaults' => [    '',   '',    0,               '',   ''], 'DefaultValor' =>  '',          'DefaultComparador' => ''   ],
 		];
 
 		$TC['Periodo']['Formatos']      = [ ['Ym','201912'] ]; //['Y-m', '2019-12']

@@ -172,6 +172,7 @@ angular.module('EntidadesCtrl', [])
 			}).then(r => {
 				if(!r) return;
 				Campo.Op1 = r[0];
+				Campo.changed = true;
 			});
 		}
 

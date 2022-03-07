@@ -33,6 +33,18 @@ class EntidadesController extends Controller
         return $CRUD->call(request()->fn, request()->ops);
     }
 
+    public function postSearchTable()
+    {
+        extract(request()->all()); //entidad_id
+        return EntidadHelper::searchTable($entidad_id);
+    }
+
+    public function postSearchTableRows()
+    {
+        extract(request()->all()); //SearchTable
+        return EntidadHelper::searchTableRows($SearchTable);
+    }
+
     public function postSearch()
     {
         extract(request()->all());
@@ -67,6 +79,12 @@ class EntidadesController extends Controller
             if(!$C['changed']) continue;
             $DaCampo = EntidadCampo::where('id', $C['id'])->first();
             $DaCampo->fillit($C);
+
+            $ValidateNulls = ['Defecto', 'Op1', 'Op2', 'Op3', 'Op4', 'Op5'];
+            foreach ($ValidateNulls as $V) {
+                if($DaCampo[$V] == '') $DaCampo[$V] = null;
+            }
+
             $DaCampo->save();
         }
     }

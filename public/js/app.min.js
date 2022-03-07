@@ -123,6 +123,19 @@ angular.module('MainCtrl', [])
 			return alert.color;
 		};
 
+		Rs.viewNumericGauge = (C, val) => {
+			if(!val || val == '') return;
+			$mdDialog.show({
+				templateUrl: 'Frag/Entidades.Entidades_GridDiag_GaugeDiag',
+				controller: 'Entidades_GridDiag_GaugeDiagCtrl',
+				locals: { C: C, val: val },
+				clickOutsideToClose: true, fullscreen: false, multiple: true,
+				onComplete: (scope, element) => {
+					scope.start();
+				}
+			});
+		};
+
 		if (window.self != window.top) {
 			$(document.body).addClass("in-iframe");
 		}
@@ -1862,6 +1875,7 @@ angular.module('EntidadesCtrl', [])
 			}).then(r => {
 				if(!r) return;
 				Campo.Op1 = r[0];
+				Campo.changed = true;
 			});
 		}
 
@@ -2458,6 +2472,7 @@ angular.module('Entidades_EditorDiagCtrl', [])
 		Ctrl.Cancel = () => { $mdDialog.cancel(); };
 		Ctrl.inArray = Rs.inArray;
 		Ctrl.calcAlertColor = Rs.calcAlertColor;
+		Ctrl.viewNumericGauge = Rs.viewNumericGauge;
 		Ctrl.submitForm = Rs.submitForm;
         Ctrl.formatPeriodo = (C) => {
         	return (dateVal) => {
@@ -2513,6 +2528,19 @@ angular.module('Entidades_EditorDiagCtrl', [])
 			if(C.val !== null) return false;
 			var search_elms = C.campo.entidadext.config.search_elms;
 			return Rs.http('api/Entidades/search', { entidad_id: C.campo.Op1, searchText: C.searchText, search_elms: search_elms });
+		};
+
+		Ctrl.searchEntidadDiag = (C) => {
+			$mdDialog.show({
+				templateUrl: 'Frag/Entidades.Entidades_EntidadSearchDiag',
+				controller: 'Entidades_EntidadSearchDiagCtrl',
+				locals: { C },
+				multiple: true,
+				escToClose: false
+			}).then(item => {
+				C.selectedItem = item;
+				C.val = item.C0;
+			});
 		};
 
 		Ctrl.selectedItem = (item, C) => {
@@ -2678,6 +2706,37 @@ angular.module('Entidades_EditoresCtrl', [])
 
 	}
 ]);
+angular.module('Entidades_EntidadSearchDiagCtrl', [])
+.controller('Entidades_EntidadSearchDiagCtrl', ['$scope', '$rootScope', '$http', '$injector', '$mdDialog', 'C',
+	function($scope, $rootScope, $http, $injector, $mdDialog, C) {
+
+		console.info('Entidades_EntidadSearchDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+	
+		Ctrl.Cancel = $mdDialog.cancel;
+		Ctrl.C      = C;
+		Ctrl.searching = false;
+
+		console.log(C);
+
+		Rs.http('api/Entidades/search-table', { entidad_id: C.campo.Op1 }, Ctrl, 'SearchTable')
+			.then(() => { Ctrl.searchRows() });
+
+
+		Ctrl.searchRows = () => {
+			Ctrl.searching = true;
+			Rs.http('api/Entidades/search-table-rows', { SearchTable: Ctrl.SearchTable }, Ctrl, 'Rows').then(() => {
+				Ctrl.searching = false;
+			});
+		}
+
+		Ctrl.selectItem = (Item) => {
+			$mdDialog.hide(Item);
+		}
+
+	}
+]);
 angular.module('Entidades_GridDiagCtrl', [])
 .controller('Entidades_GridDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 
 	function($scope, $rootScope, $mdDialog, $filter) {
@@ -2687,6 +2746,7 @@ angular.module('Entidades_GridDiagCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.inArray = Rs.inArray;
 		Ctrl.calcAlertColor = Rs.calcAlertColor;
+		Ctrl.viewNumericGauge = Rs.viewNumericGauge;
 		Ctrl.loadingGrid = false;
 		Ctrl.sidenavSel = null;
 		Ctrl.filterRows = '';
@@ -2876,11 +2936,117 @@ angular.module('Entidades_GridDiagCtrl', [])
 				clickOutsideToClose: true, fullscreen: false, multiple: true,
 			});
 		};
-
-		
 		
 		//Ctrl.openSidenavElm(['fa-sign-in-alt fa-rotate-90', 'Descargar',false]) //FIX
 		
+	}
+]);
+angular.module('Entidades_GridDiag_GaugeDiagCtrl', [])
+.controller('Entidades_GridDiag_GaugeDiagCtrl', ['$scope', '$rootScope', '$http', '$injector', '$mdDialog', 'C', 'val',
+	function($scope, $rootScope, $http, $injector, $mdDialog, C, val) {
+
+		console.info('Entidades_GridDiag_GaugeDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.Cancel = $mdDialog.cancel;
+
+		Ctrl.val = val;
+		Ctrl.C   = C;
+	
+		var opts = {
+			angle: 0,
+			lineWidth: 0.40,
+			pointer: {
+				length: 0.5,
+				strokeWidth: 0.07,
+				color: '#000000'
+			},
+			limitMin: false,
+			limitMax: false,
+			highDpiSupport: true,
+			staticZones: [],
+			staticLabels: {
+				font: "11px sans-serif",  // Specifies font
+				color: "#000000",  // Optional: Label text color
+				labels: []
+			},
+			colorStart: '#6FADCF',   // Colors
+			colorStop: '#8FC0DA',    // just experiment with them
+			strokeColor: '#E00000',  // to see which ones work best for you
+			renderTicks: {
+				divisions: 0,
+				divWidth: 0.3,
+				divLength: 0.27,
+				divColor: '#333333',
+			}
+		};
+
+		Ctrl.start = () => {
+
+			let min = C.Op1;
+			let max = C.Op2;
+
+			if(C.Config.alerts.length == 0){
+				min = 0;
+			};
+
+
+			
+			if(min == null || max == null){
+				//Determine avg if necesary
+				let sum = 0;
+				let min_val = 0;
+				let max_val = 0;
+				C.Config.alerts.forEach((a,i) => {
+					let first = (i == 0);
+					let last  = (i == (C.Config.alerts.length - 1));
+					if(!first){
+						let prev_val = first ? min : C.Config.alerts[(i - 1)].upto;
+						sum += (a.upto - prev_val);
+					}else{
+						min_val = a.upto;
+					}
+
+					if(last){
+						max_val = a.upto;
+					}
+				});
+				let avg = Math.round(sum / (C.Config.alerts.length - 1));
+
+				if(min == null) min = min_val - avg;
+				if(max == null) max = max_val;
+			};
+
+			if(val < min) min = val;
+			if(val > max) max = val;
+
+			//Generate Zones
+			C.Config.alerts.forEach((a,i) => {
+				let first = (i == 0);
+				let last  = (i == (C.Config.alerts.length - 1));
+				let prev_val = first ? min : C.Config.alerts[(i - 1)].upto;
+				opts.staticZones.push({ strokeStyle: a.color, min: prev_val, max: a.upto, first: first, last: last });
+				opts.staticLabels.labels.push(prev_val);
+			});
+
+			let last_zone = opts.staticZones.find(z => z.last);
+			if(last_zone && last_zone.max < max){
+				opts.staticZones.push({ strokeStyle: '#eee', min: last_zone.max, max: max });
+				opts.staticLabels.labels.push(last_zone.max);
+			};
+
+			opts.staticLabels.labels.push(max);
+
+			var target = document.getElementById('GaugeCanvas');
+			var gauge = new Gauge(target).setOptions(opts);
+			gauge.minValue = min;
+			gauge.maxValue = max;
+			gauge.animationSpeed = 4;
+			gauge.set(val);
+		};
+		
+
 	}
 ]);
 angular.module('Entidades_GridDiag_PreviewDiagCtrl', [])
@@ -4588,55 +4754,6 @@ angular.module('Integraciones_SOMACtrl', [])
 		//Ctrl.downloadFile();
 	}
 ]);
-angular.module('MisIndicadoresCtrl', [])
-.controller('MisIndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter',
-	function($scope, $rootScope, $injector, $filter) {
-
-		console.info('MisIndicadoresCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Rs.mainTheme = 'Black';
-
-		Ctrl.ProcesoSel = false;
-		Ctrl.Anio  = angular.copy(Rs.AnioActual);
-		Ctrl.Mes   = angular.copy(Rs.MesActual);
-		Ctrl.filterIndicadoresText = '';
-		Ctrl.Loading = true;
-
-		var Indicadores = [];
-		Ctrl.anioAdd = (num) => {Ctrl.Anio = Ctrl.Anio + num; Ctrl.getIndicadores(); };
-
-		Ctrl.getIndicadores = () => {
-			Ctrl.Loading = true;
-			Ctrl.hasEdited = false;
-			Rs.http('api/Indicadores/get-usuario', { Usuario: Rs.Usuario, Anio: Ctrl.Anio }).then((r) => {
-				Indicadores = r;
-				Ctrl.filterIndicadores();
-			});
-		};
-
-		Ctrl.getIndicadores();
-
-		Ctrl.filteredIndicadores = [];
-		Ctrl.filterIndicadores = () => {
-			var Vars = angular.copy(Indicadores);
-			
-			if(Ctrl.ProcesoSel){ 
-				Vars = $filter('filter')(Vars, { proceso_id: Ctrl.ProcesoSel }, true);
-			}
-
-			if(Ctrl.filterIndicadoresText.trim() !== ''){
-				Vars = $filter('filter')(Vars, Ctrl.filterIndicadoresText);
-			}
-
-			Ctrl.filteredIndicadores = Vars;
-			Ctrl.Loading = false;
-		}
-
-
-		
-	}
-]);
 angular.module('MiProcesoCtrl', [])
 .controller('MiProcesoCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$mdDialog',
 	function($scope, $rootScope, $injector, $filter, $mdDialog) {
@@ -4763,6 +4880,55 @@ angular.module('MiProcesoCtrl', [])
 		
 
 
+	}
+]);
+angular.module('MisIndicadoresCtrl', [])
+.controller('MisIndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('MisIndicadoresCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Rs.mainTheme = 'Black';
+
+		Ctrl.ProcesoSel = false;
+		Ctrl.Anio  = angular.copy(Rs.AnioActual);
+		Ctrl.Mes   = angular.copy(Rs.MesActual);
+		Ctrl.filterIndicadoresText = '';
+		Ctrl.Loading = true;
+
+		var Indicadores = [];
+		Ctrl.anioAdd = (num) => {Ctrl.Anio = Ctrl.Anio + num; Ctrl.getIndicadores(); };
+
+		Ctrl.getIndicadores = () => {
+			Ctrl.Loading = true;
+			Ctrl.hasEdited = false;
+			Rs.http('api/Indicadores/get-usuario', { Usuario: Rs.Usuario, Anio: Ctrl.Anio }).then((r) => {
+				Indicadores = r;
+				Ctrl.filterIndicadores();
+			});
+		};
+
+		Ctrl.getIndicadores();
+
+		Ctrl.filteredIndicadores = [];
+		Ctrl.filterIndicadores = () => {
+			var Vars = angular.copy(Indicadores);
+			
+			if(Ctrl.ProcesoSel){ 
+				Vars = $filter('filter')(Vars, { proceso_id: Ctrl.ProcesoSel }, true);
+			}
+
+			if(Ctrl.filterIndicadoresText.trim() !== ''){
+				Vars = $filter('filter')(Vars, Ctrl.filterIndicadoresText);
+			}
+
+			Ctrl.filteredIndicadores = Vars;
+			Ctrl.Loading = false;
+		}
+
+
+		
 	}
 ]);
 angular.module('ProcesosCtrl', [])
@@ -7130,11 +7296,14 @@ angular.module('SARA', [
 		'Entidades_GridsCtrl',
 		'Entidades_GridDiagCtrl',
 			'Entidades_GridDiag_PreviewDiagCtrl',
+			'Entidades_GridDiag_GaugeDiagCtrl',
 		'Entidades_Grids_TestCtrl',
 
 		'Entidades_EditoresCtrl',
 		'Entidades_EditorDiagCtrl',
 		'Entidades_EditorConfigDiagCtrl',
+
+		'Entidades_EntidadSearchDiagCtrl',
 
 		'Entidades_CargadoresCtrl',
 		'Entidades_CargadorDiagCtrl',
@@ -7346,7 +7515,8 @@ angular.module('appConfig', [])
 			'md-dns'            : '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 13H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1zM7 19c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM20 3H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1zM7 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>',
 			'md-list-alt'       : '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 5v14H5V5h14m1.1-2H3.9c-.5 0-.9.4-.9.9v16.2c0 .4.4.9.9.9h16.2c.4 0 .9-.5.9-.9V3.9c0-.5-.5-.9-.9-.9zM11 7h6v2h-6V7zm0 4h6v2h-6v-2zm0 4h6v2h-6zM7 7h2v2H7zm0 4h2v2H7zm0 4h2v2H7z"/></svg>',
 			'md-feedback'		: '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9 11H7V9h2v2zm4 0h-2V9h2v2zm4 0h-2V9h2v2z"/></svg>',
-			'md-percent'		: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M18.5,3.5L3.5,18.5L5.5,20.5L20.5,5.5M7,4A3,3 0 0,0 4,7A3,3 0 0,0 7,10A3,3 0 0,0 10,7A3,3 0 0,0 7,4M17,14A3,3 0 0,0 14,17A3,3 0 0,0 17,20A3,3 0 0,0 20,17A3,3 0 0,0 17,14Z" /></svg>'
+			'md-percent'		: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M18.5,3.5L3.5,18.5L5.5,20.5L20.5,5.5M7,4A3,3 0 0,0 4,7A3,3 0 0,0 7,10A3,3 0 0,0 10,7A3,3 0 0,0 7,4M17,14A3,3 0 0,0 14,17A3,3 0 0,0 17,20A3,3 0 0,0 20,17A3,3 0 0,0 17,14Z" /></svg>',
+			'md-link'			: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5zm-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-2zm-3-4h8v2H8z"/></svg>'
 		};
 
 		iconp = $mdIconProvider.defaultFontSet( 'fa' );

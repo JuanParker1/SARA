@@ -130,7 +130,7 @@
 </td>
 <td md-cell class="">
 
-	<div ng-if="inArray(C.Tipo, ['Texto','TextoLargo','Entidad', 'ListaAvanzada'])">
+	<div ng-if="inArray(C.Tipo, ['Texto','TextoLargo','Entidad', 'ListaAvanzada','Link'])">
 		<md-input-container md-no-float class="no-padding no-margin">
 			<input type="text" ng-model="C.Defecto" class="h30" aria-label="L" placeholder="Valor por Defecto" autocomplete="new-password" ng-change="markChanged(C)">
 		</md-input-container>

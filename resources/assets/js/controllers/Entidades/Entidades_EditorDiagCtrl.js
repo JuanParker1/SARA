@@ -8,6 +8,7 @@ angular.module('Entidades_EditorDiagCtrl', [])
 		Ctrl.Cancel = () => { $mdDialog.cancel(); };
 		Ctrl.inArray = Rs.inArray;
 		Ctrl.calcAlertColor = Rs.calcAlertColor;
+		Ctrl.viewNumericGauge = Rs.viewNumericGauge;
 		Ctrl.submitForm = Rs.submitForm;
         Ctrl.formatPeriodo = (C) => {
         	return (dateVal) => {
@@ -63,6 +64,19 @@ angular.module('Entidades_EditorDiagCtrl', [])
 			if(C.val !== null) return false;
 			var search_elms = C.campo.entidadext.config.search_elms;
 			return Rs.http('api/Entidades/search', { entidad_id: C.campo.Op1, searchText: C.searchText, search_elms: search_elms });
+		};
+
+		Ctrl.searchEntidadDiag = (C) => {
+			$mdDialog.show({
+				templateUrl: 'Frag/Entidades.Entidades_EntidadSearchDiag',
+				controller: 'Entidades_EntidadSearchDiagCtrl',
+				locals: { C },
+				multiple: true,
+				escToClose: false
+			}).then(item => {
+				C.selectedItem = item;
+				C.val = item.C0;
+			});
 		};
 
 		Ctrl.selectedItem = (item, C) => {

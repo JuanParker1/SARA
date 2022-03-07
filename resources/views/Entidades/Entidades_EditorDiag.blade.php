@@ -100,7 +100,7 @@
 		.entidad_pill{
 			background-color: #eaeaea;
 			border-radius: 5px;
-			padding: 5px;
+			padding: 8px;
 			border: 1px solid #e1e1e1;
 			margin-top: 1px;
 		}
@@ -110,7 +110,7 @@
 		}
 
 		.entidad_chip .entidad_title{
-			font-size: 0.85em;
+			font-size: 0.9em;
 		}
 
 		.entidad_chip .entidad_id {

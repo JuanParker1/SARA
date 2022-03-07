@@ -7,6 +7,7 @@ angular.module('Entidades_GridDiagCtrl', [])
 		var Rs = $rootScope;
 		Ctrl.inArray = Rs.inArray;
 		Ctrl.calcAlertColor = Rs.calcAlertColor;
+		Ctrl.viewNumericGauge = Rs.viewNumericGauge;
 		Ctrl.loadingGrid = false;
 		Ctrl.sidenavSel = null;
 		Ctrl.filterRows = '';
@@ -196,8 +197,6 @@ angular.module('Entidades_GridDiagCtrl', [])
 				clickOutsideToClose: true, fullscreen: false, multiple: true,
 			});
 		};
-
-		
 		
 		//Ctrl.openSidenavElm(['fa-sign-in-alt fa-rotate-90', 'Descargar',false]) //FIX
 		

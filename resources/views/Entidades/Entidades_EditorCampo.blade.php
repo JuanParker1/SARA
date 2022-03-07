@@ -10,9 +10,10 @@
 
 <div ng-if="inArray(C.campo.Tipo, ['Entero', 'Decimal', 'Dinero'])" layout>
 	
-	<div class="s15 border-rounded margin-right-5 border transition" style="margin-top: 8px;"
+	<div class="s20 border-rounded margin-right-5 border transition Pointer" style="margin-top: 5px;"
 		ng-style="{ backgroundColor: calcAlertColor(C.campo.Config.alerts, C.val) }"
-		ng-if="C.campo.Config.use_alerts"></div>
+		ng-if="C.campo.Config.use_alerts"
+		ng-click="viewNumericGauge(C.campo, C.val)"></div>
 
 	<md-input-container flex class="" ng-if="C.campo.Tipo == 'Entero'">
 		<label>{{ C.campo_title }}</label>
@@ -86,7 +87,7 @@
 
 
 
-<div layout class="" ng-if="C.campo.Tipo == 'Entidad'">
+<div layout layout-align="center center" class="show-child-on-hover" ng-if="C.campo.Tipo == 'Entidad'">
 	
 	<md-autocomplete flex class=""
 		md-floating-label="{{ C.campo_title }}"
@@ -119,12 +120,7 @@
 		<md-not-found>"{{C.searchText}}" no encontrado.</md-not-found>
 	</md-autocomplete>
 
-	<md-button class="md-icon-button s30 no-margin no-padding " hide ng-show="C.val == null" ng-click="clearCampo(C)">
-		<md-icon md-font-icon="fa-search"></md-icon>
-		<md-tooltip md-direction="left">Buscar</md-tooltip>
-	</md-button>
-
-	<div flex layout ng-show="C.val !== null" class="show-child-on-hover relative">
+	<div flex layout ng-show="C.val !== null" class="relative">
 		<div flex layout=column class="">
 			<label class="custom-label">{{ C.campo_title }}</label>
 			<div class="entidad_pill" layout=column>
@@ -135,12 +131,19 @@
 				</div>
 			</div>
 		</div>
-		<md-button class="md-icon-button s30 no-margin no-padding child abs bg-lightgrey-5" style="right: 0"
-			ng-show="C.Editable" ng-click="clearCampo(C)">
-			<md-icon md-font-icon="fas fa-eraser"></md-icon>
-			<md-tooltip md-direction="left">Borrar</md-tooltip>
-		</md-button>
 	</div>
+
+	<md-button class="md-icon-button s30 no-margin no-padding focus-on-hover child"
+		ng-if="C.val !== null && C.Editable" ng-click="clearCampo(C)">
+		<md-icon md-font-icon="fas fa-eraser"></md-icon>
+		<md-tooltip md-direction="left">Borrar</md-tooltip>
+	</md-button>
+
+	<md-button class="md-icon-button s30 no-margin no-padding focus-on-hover" 
+		ng-if="C.Editable" ng-click="searchEntidadDiag(C)">
+		<md-icon md-font-icon="fa-search"></md-icon>
+		<md-tooltip md-direction="left">Buscar</md-tooltip>
+	</md-button>
 
 </div>
 
@@ -176,5 +179,11 @@
 
 		<md-datepicker ng-model="C.val_aux" name="cc{{ C.id }}" ng-required="C.Requerido" md-hide-icons="calendar" ng-disabled="!C.Editable" class="w90" style="margin: 5px 0 0 8px" ng-show="C.val == '_SELECT_DATE_'"></md-datepicker>
 	</div>
+</div>
 
+<div layout ng-if="C.campo.Tipo == 'Link'">
+	<md-input-container flex class="" >
+		<label>{{ C.campo_title }}</label>
+		<input type="text" ng-model="C.val" name="c{{ C.id }}" ng-required="C.Requerido" ng-disabled="!C.Editable">
+	</md-input-container>
 </div>
