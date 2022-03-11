@@ -41,14 +41,11 @@
 		</thead>
 		<tbody md-body class="" >
 			<tr md-row ng-repeat="I in IndicadoresFiltrados = (ProcesoSel.indicadores | filter:filterIndicadores)" class="md-row-hover"  >
-				<td md-cell class="">
-					<div class="" layout layout-align="center center">
-						<div class="margin-right-5 text-16px Pointer" ng-click="viewIndicadorDiag(I.id)" md-truncate>{{ I.Indicador }}</div>
-						<md-button class="md-icon-button no-margin no-padding s30 focus-on-hover" ng-click="viewIndicadorDiag(I.id)">
-							<md-icon md-font-icon="fa-external-link-alt"></md-icon>
-						</md-button>
-						<span flex></span>
-					</div>
+				<td md-cell class="" ng-click="viewIndicadorDiag(I.id)" style="font-size: 15px;">
+					{{ I.Indicador }}</div>
+					<md-button class="md-icon-button no-margin no-padding s30 focus-on-hover">
+						<md-icon md-font-icon="fa-external-link-alt"></md-icon>
+					</md-button>
 				</td>
 				<td md-cell ng-click="viewIndicadorDiag(I.id)">
 					<div layout layout-align="center center" class="w100p">

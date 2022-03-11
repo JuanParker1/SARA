@@ -2,29 +2,25 @@
 
 	@include('Indicadores.IndicadorDiag_Sidenav')
 
-	<div layout=column flex>
+	<div layout=column flex class="overflow-y hasScroll">
 		
 		<div layout layout-align="center center" class="padding-left">
-			<div layout=column>
-				<div class="text-16px" layout layout="center center">
-					<div>{{ Ind.Indicador }}</div>
-					<md-icon class="margin-0-10 Pointer" md-font-icon="{{Sentidos[Ind.Sentido].icon}} fa-fw">
+			
+			<div layout=column flex>
+				<div class="text-16px padding-top-5">{{ Ind.Indicador }}
+					<md-icon class="Pointer" md-font-icon="{{Sentidos[Ind.Sentido].icon}} fa-fw">
 						<md-tooltip md-direction=right>{{ Sentidos[Ind.Sentido].desc }}</md-tooltip>
-					</md-icon>
-					<div class="text-clear" flex>{{ Ind.proceso.Proceso }}</div>
+					</md-icon></div>
+				<div layout layout-align="center center">
+					
+					<div class="text-clear">{{ Ind.proceso.Proceso }}</div>
+					<span flex></span>
 				</div>
-				<div class="text-13px text-clear">{{ Ind.Definicion }}</div>
 			</div>
 			
-			<span flex></span>
-			<div class="Pointer padding-right" layout layout-align="center center" hide>
-				<div class="s25 bg-lightgrey border-rounded margin-right-5 border" 
-					style="background-image: url({{ 'http://sec.comfamiliar.com/images/fotosEmpleados/' + Usuario.Cedula + '.jpg' }}); background-size: cover; background-position: top center;"></div>
-				<div class="text-16px" hide-xs>{{ Usuario.Nombres }}</div>
-			</div>
 			
-			<md-button class="md-icon-button no-margin focus-on-hover" aria-label="Button" ng-click="Cancel()" 
-				>
+
+			<md-button class="md-icon-button no-margin focus-on-hover" aria-label="Button" ng-click="Cancel()" >
 				<md-tooltip md-direction=left>Salir</md-tooltip>
 				<md-icon md-svg-icon="md-close"></md-icon>
 			</md-button>
@@ -32,7 +28,7 @@
 
 		<div flex layout>
 
-			<div flex layout=column class="overflow-y hasScroll padding-top-20">
+			<div flex layout=column class=" padding-top-20">
 				
 				<md-table-container class="border-bottom hasScroll">
 					<table md-table class="md-table-short table-col-compress">

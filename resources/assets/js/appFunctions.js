@@ -478,11 +478,11 @@ angular.module('appFunctions', [])
             return d3.format(',.'+Decimales)(d);
 		};
 
-		Rs.getVariableData = (Variables, Tipo) => {
+		Rs.getVariableData = (Variables, Tipo, Frecuencia) => {
 			$mdDialog.show({
 				controller: 'VariablesGetDataDiagCtrl',
 				templateUrl: '/Frag/Variables.VariablesGetDataDiag',
-				locals: { Variables : Variables, Tipo: Tipo },
+				locals: { Variables, Tipo, Frecuencia },
 				clickOutsideToClose: false, fullscreen: true, multiple: true,
 			});
 		};

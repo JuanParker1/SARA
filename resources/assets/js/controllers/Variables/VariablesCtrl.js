@@ -34,6 +34,7 @@ angular.module('VariablesCtrl', [])
 						var variable_sel_id = Rs.getIndex(Ctrl.VariablesCRUD.rows, Rs.Storage.VariableSel);
 						Ctrl.openVariable(Ctrl.VariablesCRUD.rows[variable_sel_id]);
 					};
+
 				});
 
 			});
@@ -68,7 +69,7 @@ angular.module('VariablesCtrl', [])
 			var Vars = Ctrl.VariablesCRUD.rows.filter((v) => {
 				return v.Ruta.startsWith(F.route);
 			}).map(v => v.id);
-			Rs.getVariableData(Vars, null);
+			Rs.getVariableData(Vars, null, null);
 		};
 
 		Ctrl.searchVariable = () => {
@@ -211,19 +212,24 @@ angular.module('VariablesCtrl', [])
 		Ctrl.editValor2 = (event, Periodo) => {
 			event.stopPropagation(); // in case autoselect is enabled
 
-			var Valor = angular.isDefined(Ctrl.VarSel.valores[Periodo]) ? Ctrl.VarSel.valores[Periodo].Valor : null;
-			if(Ctrl.VarSel.TipoDato == 'Porcentaje') Valor *= 100;
+			var Valor = Ctrl.VarSel.valores[Periodo].Valor;
+			if(Valor !== null && Ctrl.VarSel.TipoDato == 'Porcentaje') Valor *= 100;
 			
 			return $mdEditDialog.small({
 				modelValue:  Valor,
 				targetEvent: event,
 				placeholder: Periodo, title: Periodo,
 				save: function (input) {
-					var newValor = parseFloat(input.$modelValue);
-					if(Number.isNaN(newValor)) newValor = null;
-					if(Ctrl.VarSel.TipoDato == 'Porcentaje') newValor /= 100;
-					if(newValor == Valor) return;
-
+					if(input.$viewValue === ""){
+						newValor = null;
+					}else{
+						var newValor = parseFloat(input.$viewValue);
+						if(Number.isNaN(newValor)) newValor = null;
+						if(Ctrl.VarSel.TipoDato == 'Porcentaje') newValor /= 100;
+					};
+					
+					if(newValor === Valor) return;
+					
 					return Rs.http('/api/Variables/update-valor', { variable_id: Ctrl.VarSel.id, Periodo: Periodo, Valor: newValor }).then(() => {
 						Ctrl.openVariable(Ctrl.VarSel);
 					});
@@ -238,7 +244,7 @@ angular.module('VariablesCtrl', [])
 				Fields: [
 					{ Nombre: 'Nombre',  	    Value: Ctrl.VarSel.Variable + ' (copia)', Required: true, flex: 60 },
 					{ Nombre: 'Proceso',        Value: Ctrl.VarSel.proceso_id,  Required: true, flex: 40, Type: 'list', List: Ctrl.Procesos, Item_Val: 'id', Item_Show: 'Proceso' },
-					{ Nombre: 'Descripcion',  	Value: Ctrl.VarSel.Descripcion, Required: true },
+					{ Nombre: 'Descripcion',  	Value: Ctrl.VarSel.Descripcion, Required: false },
 					//{ Nombre: 'Ruta',       Value: Ctrl.VarSel.Ruta, flex: 70, Type: 'fsroute', List: Ctrl.VariablesFS },
 					//{ Nombre: 'Crear Carpeta', Value: '', flex: 30, Type: 'string' },
 				]
@@ -303,6 +309,20 @@ angular.module('VariablesCtrl', [])
 
 		Rs.http('api/Main/get-configuracion', {}, Ctrl, 'Configuracion').then(() => {
 			Ctrl.getVariables();
+
+			let Anios = [];
+			let AnioActual = parseInt(moment().format('Y'));
+			let AnioInicio = Ctrl.Configuracion['VARIABLES_ANIO_DESDE'].Valor;
+
+			if(AnioInicio >= AnioActual){
+				Anios.push(AnioActual);
+			}else{
+				while(AnioInicio <= AnioActual){
+					Anios.push(AnioInicio);
+					AnioInicio++;
+				}
+			}
+			Ctrl.Anios = Anios;
 		});
 		
 	}

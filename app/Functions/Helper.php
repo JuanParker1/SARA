@@ -414,6 +414,7 @@ class Helper
     public static function getConfiguracion()
     {
         $ConfDef = [
+            'VARIABLES_ANIO_DESDE'      => [ 'Tipo' => 'Numero', 'Valor' => 2018 ],
             'VARIABLES_DIAS_DESDE'      => [ 'Tipo' => 'Numero', 'Valor' => 10  ],
             'VARIABLES_DIAS_HASTA'      => [ 'Tipo' => 'Numero', 'Valor' => 30  ],
             'VARIABLES_FRECUENCIAS_HAB' => [ 'Tipo' => 'Array',  'Valor' => [1] ],

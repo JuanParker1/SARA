@@ -58,6 +58,13 @@ class Variable extends MyModel
 		return $q;
 	}
 
+	public function scopeFrecuencia($q, $Frecuencia)
+	{
+		if($Frecuencia) return $q->where('Frecuencia', $Frecuencia);
+		return $q;
+	}
+
+	//Relations
 	public function grid()
 	{
 		return $this->belongsTo('\App\Models\EntidadGrid', 'grid_id');

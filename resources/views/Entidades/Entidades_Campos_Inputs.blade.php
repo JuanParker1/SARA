@@ -83,10 +83,6 @@
 	</div>
 
 	<div ng-if="inArray(C.Tipo, ['Entidad'])" layout>
-		<!--<md-select ng-model="C.Op1" aria-label="s" ng-change="markChanged(C)" class="text-bold">
-		  <md-option ng-value="Op.id" ng-repeat="Op in EntidadesCRUD.rows | filter:{ 'bdd_id':BddSel.id }:true"
-		  	ng-if="Op.id !== EntidadSel.id">{{ Op.Nombre }}</md-option>
-		</md-select>-->
 		<md-button class="md-icon-button no-margin s30" aria-label="b" ng-click="seleccionarEntidad(C)">
 			<md-icon md-svg-icon="md-settings" class="s20"></md-icon>
 			<md-tooltip md-direction=right>Configurar Entidad</md-tooltip>

@@ -82,9 +82,13 @@ class VariablesController extends Controller
 
     public function postGetVariables()
     {
-        $Variables = Variable::whereIn('id', request('ids'))->tipo(request('Tipo'))->get();
+        extract(request()->all()); //Tipo, Frecuencia, Anio
+        $Variables = Variable::whereIn('id', request('ids'))
+                             ->tipo($Tipo)
+                             ->frecuencia($Frecuencia)
+                             ->get();
         foreach ($Variables as $V) {
-            $V->valores = $V->getVals();
+            $V->valores = $V->getVals($Anio, false);
         }
         return $Variables;
     }
@@ -93,6 +97,7 @@ class VariablesController extends Controller
     {
         extract(request()->all()); //Var, Periodos
         $Valores = [];
+        $start_time = microtime(true);
 
         if(in_array($Var['Tipo'], ['Valor Fijo', 'Calculado de Entidad'])){
             foreach ($Periodos as $P) {
@@ -129,14 +134,19 @@ class VariablesController extends Controller
             GridHelper::getGroupedData($Grid, $q, [$ColPeriodoName], [ [ $ColCalculoName, $Var['Agrupador'] ] ]);
 
             $Data = GridHelper::getData($Grid, $q, false, false, false);
-
-            //return $Grid->sql;
-
             foreach ($Data as $d) {
-                $VarVal = new VariableValor([ 'Valor' => $d[1] ]);
-                $VarVal->formatVal($Var['TipoDato'], $Var['Decimales']);
-                $Valores[$d[0]] = [ 'val' => $VarVal->val, 'Valor' => $VarVal->Valor, 'sql' => $Grid->sql ];
+                if(is_null($d[1])) continue;
+                $Valores[$d[0]]['Valor'] = $d[1];
             };
+        }
+
+        $time = round(microtime(true) - $start_time,2);
+
+        foreach ($Valores as $k => $V) {
+            $VarVal = new VariableValor([ 'Valor' => $V['Valor'] ]);
+            $VarVal->formatVal($Var['TipoDato'], $Var['Decimales']);
+            $Valores[$k]['val'] = $VarVal->val;
+            $Valores[$k]['Tiempo'] = $time;
         }
 
         return $Valores;
@@ -144,22 +154,68 @@ class VariablesController extends Controller
 
     public function postStoreValores()
     {
-        extract(request()->all()); //Variables, Periodos, overwriteValues
+        extract(request()->all()); //Variables, Periodos, overwriteValues, Anio
+
+        $Usuario = H::getUsuario();
+        $usuario_id = $Usuario['id'];
 
         $ids = [];
         foreach ($Variables as $V) {
+            if(!array_key_exists('newValores', $V)) continue;
+            if(!is_array($V['newValores'])) continue;
             foreach ($V['newValores'] as $Periodo => $nv) {
+                if(!in_array($Periodo, $Periodos)) continue;
                 if(!$overwriteValues AND isset($V['valores'][$Periodo]['val'])){
                     if($V['valores'][$Periodo]['Valor'] == $nv['Valor']) continue;
                 };
-                VariableValor::updateOrCreate([ 'variable_id' => $V['id'], 'Periodo' => $Periodo ],[ 'Valor' => $nv['Valor'] ]);
+                VariableValor::updateOrCreate([ 
+                    'variable_id' => $V['id'], 
+                    'Periodo'     => $Periodo 
+                ],[ 
+                    'Valor'       => $nv['Valor'],
+                    'Tiempo'      => $nv['Tiempo'],
+                    'usuario_id'  => $usuario_id
+                ]);
             };
             $ids[] = $V['id'];
         };
 
         $Variables = Variable::whereIn('id', $ids)->get();
         foreach ($Variables as $V) {
-            $V->valores = $V->getVals();
+            $V->valores = $V->getVals($Anio, false);
+        }
+
+        H::touchIndicadores(); 
+
+        return $Variables;
+    }
+
+    public function postClearValores()
+    {
+        extract(request()->all()); //Variables, Periodos, Anio
+
+        $Usuario = H::getUsuario();
+        $usuario_id = $Usuario['id'];
+
+        $ids = [];
+        foreach ($Variables as $V) {
+            foreach ($V['valores'] as $Periodo => $nv) {
+                if(!in_array($Periodo, $Periodos)) continue;
+                VariableValor::updateOrCreate([ 
+                    'variable_id' => $V['id'], 
+                    'Periodo'     => $Periodo 
+                ],[ 
+                    'Valor'       => null,
+                    'Tiempo'      => null,
+                    'usuario_id'  => $usuario_id
+                ]);
+            };
+            $ids[] = $V['id'];
+        };
+
+        $Variables = Variable::whereIn('id', $ids)->get();
+        foreach ($Variables as $V) {
+            $V->valores = $V->getVals($Anio, false);
         }
 
         H::touchIndicadores(); 

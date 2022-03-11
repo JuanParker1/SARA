@@ -14,13 +14,15 @@
 				<tr md-row class="" ng-repeat="R in RestricCRUD.rows" ng-class="{ 'bg-yellow': R.changed }">
 					<td md-cell class="md-cell-compress">
 						<div class="w100p"><md-icon md-svg-icon="{{ TiposCampo[R.campo.Tipo].Icon }}" class="s20 margin-right-5"></md-icon>
-						{{ R.campo.Alias !== null ? R.campo.Alias : R.campo.Columna }}</div>
+						{{ R.campo.Alias || R.campo.Columna }}</div>
 					</td>
 					<td md-cell>
 						@include('Entidades.Entidades_Restricciones_Inputs')
 					</td>
 					<td md-cell class="md-cell-compress">
-						<md-button class="md-icon-button s20 no-margin" aria-label="b" ng-click="removeRestriccion(R)">
+						<md-button class="md-icon-button s20 no-margin focus-on-hover" 
+							aria-label="b" ng-click="removeRestriccion(R)">
+							<md-tooltip md-direction="left" >Remover Restricción</md-tooltip>
 							<md-icon md-svg-icon="md-close" class="s20"></md-icon>
 						</md-button>
 					</td>
@@ -32,7 +34,7 @@
 							<md-select ng-model="newRestriccion" ng-change="addRestriccion(newRestriccion); newRestriccion = null" aria-label=s >
 								<md-option ng-value="C.id" ng-repeat="C in CamposCRUD.rows">
 									<md-icon md-svg-icon="{{ TiposCampo[C.Tipo].Icon }}" class="s20 margin-right-5"></md-icon>
-									{{ C.Alias !== null ? C.Alias : C.Columna }}
+									{{ C.Alias || C.Columna }}
 								</md-option>
 							</md-select>
 						</md-input-container>

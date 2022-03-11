@@ -349,9 +349,18 @@ input[type=color]::-webkit-color-swatch-wrapper {
   padding: 0;
 }
 md-datepicker.compact .md-datepicker-input {
-  width: 95px;
+  width: 70px;
   min-width: 0;
   padding: 0;
+}
+md-datepicker.compact .md-datepicker-button {
+  margin: 0 !important;
+}
+md-datepicker.compact .md-datepicker-input-container {
+  margin-left: 0px !important;
+}
+md-datepicker.md-no-underline .md-datepicker-input-container {
+  border-bottom: none !important;
 }
 .periodoDatepicker .md-button.md-icon-button {
   margin: 0 0px 0 6px !important;

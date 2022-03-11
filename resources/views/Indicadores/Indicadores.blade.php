@@ -64,7 +64,7 @@
 	</md-sidenav>
 
 	<div flex class="" layout=column ng-show="IndSel !== null">
-		<div flex layout=column class="overflow-y darkScroll padding-5">
+		<div flex layout=column class="overflow darkScroll padding-5">
 			<div layout class="">
 				<md-button class="md-icon-button no-margin no-padding s30" aria-label="b" ng-click="Storage.IndicadoresNav = !Storage.IndicadoresNav" 
 					style="margin-top: 2px !important">
@@ -121,7 +121,7 @@
 
 			
 
-			<div flex layout layout-align="start start" class="overflow">
+			<div flex layout layout-align="start start" class="">
 				<div layout=column class="mw350  margin-right">
 					@include('Indicadores.Indicadores_Formula')
 					@include('Indicadores.Indicadores_VariablesProceso')

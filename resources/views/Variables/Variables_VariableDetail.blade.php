@@ -133,7 +133,7 @@
 						<th ng-repeat="M in Meses" md-numeric class="text-right padding-right">{{ M[1] }}</th>
 					</thead>
 					<tbody md-body>
-						<tr md-row class="" ng-repeat="A in [AnioActual-2, AnioActual-1, AnioActual, AnioActual + 1]">
+						<tr md-row class="" ng-repeat="A in Anios">
 							<td md-cell class="w30 text-bold">{{ A }}</td>
 							<td md-cell class="text-right mw50 Pointer md-cell-hover" ng-repeat="M in Meses"
 								ng-click="editValor2($event, A+M[0])">{{ VarSel.valores[A+M[0]].val }}</td>
@@ -175,7 +175,7 @@
 			<md-menu-item><md-button ng-click="copyVar()"><md-icon md-font-icon="fa-copy margin-right fa-fw"></md-icon>Copiar Variable</md-button></md-menu-item>
 		</md-menu-content>
 	</md-menu>
-	<md-button class="border bg-white mh30 h30 lh30 no-margin-left" ng-click="getVariableData([VarSel.id], VarSel.Tipo)"
+	<md-button class="border bg-white mh30 h30 lh30 no-margin-left" ng-click="getVariableData([VarSel.id], VarSel.Tipo, VarSel.Frecuencia)"
 		ng-show="VarSel.Tipo !== 'Manual'">
 		<md-icon md-font-icon="fa-cloud-download-alt" class="margin-right s20 fa-lg" style="transform: translateY(1px) translateX(-3px);"></md-icon>Obtener Datos
 	</md-button>

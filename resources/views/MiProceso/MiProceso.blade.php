@@ -1,4 +1,4 @@
-<div flex id="MiProceso" layout=column layout-align="center center" ng-controller="MiProcesoCtrl" >
+<div flex id="MiProceso" layout=column layout-align="center center" ng-controller="MiProcesoCtrl">
 		
 	<md-content class="w100p mxw700 margin-top bg-white border-radius-top overflow-y darkScroll" flex 
 			layout=column md-whiteframe=2>

@@ -22,7 +22,7 @@
 				<tr md-row>
 					<th md-column ng-repeat="(kC,C) in SearchTable.campos" ng-if="kC > 0">
 						<md-input-container md-no-float class="no-margin no-padding mw100">
-							<input type="text" class="no-padding" ng-model="C.searchText" placeholder="Buscar..." enter-stroke="searchRows()" ng-blur="searchRows()" ng-readonly="searching">
+							<input type="text" class="no-padding" ng-model="C.searchText" placeholder="Buscar..." enter-stroke="searchRows()" ng-readonly="searching">
 						</md-input-container>
 					</th>
 				</tr>
