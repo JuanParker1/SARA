@@ -71,13 +71,15 @@
 			</div>
 		</div>
 
-		<div class="bg-white border margin-but-top border-radius" layout=column ng-show="CamposCRUD.rows.length > 0">
-			<md-subheader class="no-padding margin md-no-sticky">Tarjeta de Búsqueda
+		<div class="bg-white border margin-but-top border-radius" layout=column>
+			<md-subheader class="no-padding margin md-no-sticky Pointer" ng-click="showTarjetaBusqueda = !showTarjetaBusqueda">
+				<md-icon md-font-icon="fa-chevron-right fa-fw s20" ng-class="{'fa-rotate-90': showTarjetaBusqueda}"></md-icon>
+				<span style="transform: translateY(1px);display: inline-block;">Tarjeta de Búsqueda</span>
 				<md-icon md-svg-icon="md-info-outline" class="s15">
 					<md-tooltip md-direction=right>Usada cuando esta entidad se use dentro de otra entidad</md-tooltip>
 				</md-icon>
 			</md-subheader>
-			<div layout=column layout-gt-xs=row class="padding-but-top">
+			<div layout=column layout-gt-xs=row class="padding-but-top" ng-show="showTarjetaBusqueda">
 				
 				<div layout layout-gt-xs=column class="margin-right">
 					<md-input-container class="no-margin-bottom w80">
@@ -124,7 +126,17 @@
 
 	</div>
 
-	<div layout=column layout-gt-xs=row class="border-top seam-top bg-white">
+	<div layout=column layout-gt-xs=row layout-align="center center" class="border-top seam-top bg-white">
+
+		<md-menu>
+			<md-button ng-click="$mdMenu.open($event)" class="md-icon-button no-margin s40" aria-label="m">
+				<md-icon md-svg-icon="md-more-v"></md-icon>
+			</md-button>
+			<md-menu-content>
+				<md-menu-item><md-button ng-click="seeCreateStatement()"><md-icon md-font-icon="fa-terminal margin-right fa-fw"></md-icon>Ver Instrucción SQL</md-button></md-menu-item>
+			</md-menu-content>
+		</md-menu>
+
 		<md-button class="md-warn md-raised" aria-label="b" ng-click="removeCampos()"
 			ng-show="camposSel.length > 0">
 			<md-icon md-font-icon="fa-trash"></md-icon>

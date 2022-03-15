@@ -65,7 +65,7 @@
 
 <div layout ng-if="inArray(C.campo.Tipo, ['FechaHora'])">
 	<md-input-container class="w95">
-		<label>{{ C.campo_title }}</label>
+		<label style="min-width: 280% !important;">{{ C.campo_title }}</label>
 		<md-datepicker class="w95" ng-model="C.val" name="c{{ C.id }}_1" ng-required="C.Requerido" md-hide-icons="calendar" ng-change="changedField(C)" ng-disabled="!C.Editable"></md-datepicker>
 	</md-input-container>
 	<md-input-container class="">

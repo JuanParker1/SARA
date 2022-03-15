@@ -43,7 +43,7 @@ angular.module('MiProcesoCtrl', [])
 		Ctrl.SubSecciones = [
 			['General'		,'General' ],
 			['Equipo'		,'Equipo' ],
-			['Indicadores'	,'Indicadores' ],
+			['Indicadores'	,'Indicadores y Tableros' ],
 			//Logros:  ['Logros'],
 		];
 

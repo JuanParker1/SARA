@@ -51,6 +51,11 @@ class EntidadesController extends Controller
         return EntidadHelper::searchElms($entidad_id, $searchText, $search_elms, true);
     }
 
+    public function postGetCreateStatement()
+    {
+        extract(request()->all()); //entidad_id
+        return CamposHelper::getCreateStatement($entidad_id);
+    }
 
     //Campos
     public function postCampos()

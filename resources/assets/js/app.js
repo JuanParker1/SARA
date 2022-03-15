@@ -46,6 +46,7 @@ angular.module('SARA', [
 	'ExternalLinkCtrl',
 	'TableDialogCtrl',
 	'RetroalimentarDiagCtrl',
+	'CodeDialogCtrl',
 
 	'MainCtrl',
 	'LoginCtrl',

@@ -267,7 +267,41 @@ angular.module('appFunctions', [])
 				fullscreen: Config.fullscreen,
 				multiple: true,
 			});
-		}
+		};
+
+		Rs.CodeDialog = (Code, params) => {
+			var DefConfig = {
+				Theme: 'Black',
+				Flex: 95,
+				Title: 'Editor de Código',
+				Language: 'js',
+				Loading: false,
+				Pills: [
+					//{ texto: '', descripcion: '' }
+				],
+				Confirm: { Active: false, Text: 'Guardar' },
+				controller: 'CodeDialogCtrl',
+				templateUrl: '/templates/dialogs/code-dialog.html',
+				fullscreen: true,
+				clickOutsideToClose: false,
+				multiple: true,
+				onComplete: (scope, element) => {
+
+				}
+			};
+
+			var Config = angular.extend(DefConfig, params);
+
+			$mdDialog.show({
+				controller: Config.controller,
+				templateUrl: Config.templateUrl,
+				locals: { Code, Config },
+				clickOutsideToClose: Config.clickOutsideToClose,
+				fullscreen: Config.fullscreen,
+				multiple: Config.multiple,
+				onComplete: Config.onComplete
+			});
+		};
 		
 		Rs.Confirm = function(params){
 			var DefConfig = {

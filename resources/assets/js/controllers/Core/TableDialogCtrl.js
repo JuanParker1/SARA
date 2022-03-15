@@ -28,6 +28,8 @@ angular.module('TableDialogCtrl', [])
 			$mdDialog.hide(Sel);
 		}
 
+		console.log(Ctrl.Config);
+
 
 	}
 ]);

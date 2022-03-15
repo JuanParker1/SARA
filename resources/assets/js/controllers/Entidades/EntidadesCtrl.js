@@ -30,7 +30,8 @@ angular.module('EntidadesCtrl', [])
 			['Cargadores', 	'fa-sign-in-alt fa-rotate-270' ],
 		];
 
-		Ctrl.navToSubsection = (subsection) => {
+		Ctrl.navToSubsection = (subsection = 'General') => {
+			//console.log(subsection);
 			Rs.Storage.EntidadSubseccion = subsection;
 			Rs.navTo('Home.Section.Subsection', { section: 'Entidades', subsection: subsection }); 
 		};
@@ -63,7 +64,7 @@ angular.module('EntidadesCtrl', [])
 					Ctrl.openEntidad(Ctrl.EntidadesCRUD.rows[entidad_sel_id]);
 				};
 
-				Ctrl.navToSubsection('General'); //Rs.Storage.EntidadSubseccion
+				//Ctrl.navToSubsection('General'); //Rs.Storage.EntidadSubseccion
 			});
 		};
 
@@ -111,6 +112,13 @@ angular.module('EntidadesCtrl', [])
 			Rs.Storage.BddSelId = Ctrl.EntidadSel.bdd_id;
 
 			Ctrl.getCampos().then(Ctrl.getRestricciones);
+
+			//Determinar si usa la tarjeta de búsqueda
+			Ctrl.showTarjetaBusqueda = [1,2,3,4,5].find(i => {
+				return Ctrl.EntidadSel.config['campo_desc'+i] != null;
+			}) !== undefined;
+
+			Ctrl.$broadcast("Entidad_Loaded");
 		};
 
 		Ctrl.closeEntidad = () => {
@@ -158,6 +166,29 @@ angular.module('EntidadesCtrl', [])
 
 				
 			});
+		};
+
+
+		Ctrl.seeCreateStatement = () => {
+
+			Rs.CodeDialog('', {
+				Title: `SQL de la ${Ctrl.EntidadSel.Tipo}: "${Ctrl.EntidadSel.Nombre}"`,
+				Language: 'sql',
+				Loading: true,
+				onComplete: (scope, element) => {
+					Rs.http('/api/Entidades/get-create-statement', { entidad_id: Ctrl.EntidadSel.id }).then(r => {
+						scope.setCode(r.definition);
+						scope.updateConfig({
+							Loading: false,
+							Pills: [
+								{ texto: r.definer, descripcion: 'Creado por' },
+								{ texto: 'SQL',     descripcion: 'Lenguaje' }
+							]
+						});
+					});
+				}
+			});
+			
 		};
 
 
@@ -393,7 +424,15 @@ angular.module('EntidadesCtrl', [])
 
 
 		//Start Up
-		Rs.navTo('Home.Section', { section: 'Entidades' });
+		//Rs.navTo('Home.Section', { section: 'Entidades' });
+		if(Rs.State.route.length < 4){
+			Ctrl.navToSubsection(Rs.Storage.EntidadSubseccion);
+		}else{
+			//console.log()
+			Ctrl.navToSubsection(Rs.State.route[3]);
+		};
 		Ctrl.getBdds();
+
+		
 	}
 ]);

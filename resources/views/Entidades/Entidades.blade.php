@@ -54,7 +54,7 @@
 				ng-repeat="P in Procesos | filter:{ id: ProcesoSelId }:true "
 				ng-show="ProcesoSelId && (filterEntidades == '')">{{ P.Proceso }}</md-subheader>
 
-			<div ng-repeat="E in getEntidadesFiltered() | orderBy:'Nombre'" class="padding-top padding-left Pointer" ng-click="openEntidad(E)"
+			<div ng-repeat="E in getEntidadesFiltered() | orderBy:'Nombre'" class="padding-top padding-left Pointer" ng-click="openEntidad(E); navToSubsection('General');"
 				ng-class="{ 'text-bold': ( E.id == EntidadSel.id ) }">
 				<div class="text-14px">{{ E.Nombre }}</div>
 			</div>

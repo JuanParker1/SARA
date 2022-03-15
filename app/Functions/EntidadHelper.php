@@ -3,6 +3,7 @@
 namespace App\Functions;
 
 use App\Functions\ConnHelper;
+use App\Functions\CamposHelper;
 use App\Functions\GridHelper;
 use App\Models\BDD;
 use App\Models\Entidad;
@@ -149,7 +150,5 @@ class EntidadHelper
             $r = $Row->update($Obj->toArray());
         };
     }
-
-
 
 }

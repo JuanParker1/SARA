@@ -266,4 +266,15 @@ class CamposHelper
         if($Var == 'Usuario Logueado'){ return 'SISCORREGO'; }
     }
 
+    public static function getCreateStatement($entidad_id)
+    {
+        $Entidad = \App\Models\Entidad::find($entidad_id);
+        $Bdd     = \App\Models\BDD::find($Entidad['bdd_id']);
+
+        $DBHelper = self::getHelper($Bdd);
+        $Conn    = ConnHelper::getConn($Bdd);
+        $tableRoute = $DBHelper->getTableRoute($Bdd, $Entidad['Tabla']);
+        return $DBHelper->getCreateStatement($Conn, $tableRoute, $Entidad);
+    }
+
 }

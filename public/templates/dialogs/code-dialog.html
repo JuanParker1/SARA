@@ -1,0 +1,31 @@
+<md-dialog md-theme="{{Config.Theme}}" flex={{Config.Flex}} aria-label=m layout=column class="">
+
+	<div class=" padding-left h30" layout layout-align="center center" style="background: #232323;">
+
+		<div class="" flex>{{ Config.Title }}</div>
+
+		<div ng-repeat="P in Config.Pills" class="Pointer text-13px bg-darkgrey border-rounded margin-right-5" style="padding: 2px 10px;">
+			{{ P.texto }}
+			<md-tooltip>{{ P.descripcion }}</md-tooltip>
+		</div>
+
+		<md-button class="md-icon-button only-dialog no-margin no-padding s30" aria-label="Button" ng-click="Cancel()" >
+			<md-icon md-svg-icon="md-close" class=""></md-icon>
+		</md-button>
+
+	</div>
+
+	<div flex layout=column class="overflow-y hasScroll">
+		
+		<div ui-ace="aceOptions" class="" ng-model="Code" ng-show="!Config.Loading"></div>
+
+		<div flex ng-if="Config.Loading" layout layout-align="center center" class="mh200">
+			<md-progress-circular md-diameter="64" class="md-primary"></md-progress-circular>
+		</div>
+
+	</div>
+
+
+
+
+</md-dialog>

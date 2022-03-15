@@ -22,7 +22,6 @@
 
 	</div>
 
-
 	<div layout=column class="border-right" flex ng-show="EditorSel">
 		
 		<div flex layout=column class="padding overflow-y darkScroll border-radius">
@@ -41,7 +40,22 @@
 				</md-input-container>
 			</div>
 
-			<md-chips class="compact margin-bottom" ng-model="EditorSel.Secciones" placeholder="Secciones" md-enable-chip-edit></md-chips>
+			<md-chips class="compact margin-bottom" 
+				md-transform-chip="addSeccion($chip)" md-removable="false"
+				ng-model="EditorSel.Secciones" placeholder="Secciones">
+				<md-chip-template>
+					<md-button ng-click="markSeccionOpen($chip, $event)" class="md-icon-button no-margin focus-on-hover s20 transition" style="transform: translateY(-3px);">
+						<md-icon md-font-icon="fa-chevron-right" ng-class="{ 'fa-rotate-90': $chip.open }"></md-icon>
+					</md-button>
+					{{$chip.nombre}}
+					<md-button ng-click="editSeccion($chip, $event)" class="md-icon-button no-margin focus-on-hover s20" style="transform: translateY(-3px);">
+						<md-icon md-font-icon="fa-edit"></md-icon>
+					</md-button>
+					<md-button md-chip-remove class="md-icon-button no-margin focus-on-hover s20" style="transform: translateY(-1px);">
+						<md-icon md-svg-icon="md-close" class="s20"></md-icon>
+					</md-button>
+				</md-chip-template>
+			</md-chips>
 			
 			<div class="bg-white border no-margin border-radius" layout=column>
 				<div layout>
@@ -49,17 +63,9 @@
 						<md-icon md-font-icon="fa-chevron-right fa-fw s30" ng-class="{'fa-rotate-90': showEditorCampos}"></md-icon>
 						<div flex class="md-subheader h30 lh30">Campos</div>
 					</div>
-					<md-button class="md-icon-button no-margin" aria-label="b" ng-click="autogetEditorCampos()">
-						<md-tooltip md-direction="left">Importar Campos</md-tooltip>
-						<md-icon md-font-icon="fa-bolt"></md-icon>
-					</md-button>
-					<md-button class="md-icon-button no-margin" aria-label="b" ng-click="addEditorCampos()" hide>
-						<md-tooltip md-direction="left">Agregar Campos</md-tooltip>
-						<md-icon md-font-icon="fa-plus"></md-icon>
-					</md-button>
 				</div>
 				<md-table-container ng-show="showEditorCampos">
-					<table md-table class="md-table-short table-col-compress" md-row-select multiple ng-model="EditoresCamposSel">
+					<table md-table class="md-table-short table-col-compress border-bottom" md-row-select multiple ng-model="EditoresCamposSel">
 						<thead md-head ng-show="EditoresCamposCRUD.rows.length > 0">
 							<tr md-row>
 								<th md-column></th>
@@ -82,7 +88,7 @@
 								<td md-cell class="md-cell-compress" ng-show="EditorSel.Secciones.length > 0">
 									<md-select class="w100p" ng-model="C.seccion_id" aria-label=s ng-change="C.changed = true">
 									  <md-option ng-value="null">Ninguna</md-option>
-									  <md-option ng-value="k" ng-repeat="(k,S) in EditorSel.Secciones">{{ S }}</md-option>
+									  <md-option ng-value="k" ng-repeat="(k,S) in EditorSel.Secciones">{{ S.nombre }}</md-option>
 									</md-select>
 								</td>
 								<td md-cell class="md-cell-compress">
@@ -92,7 +98,7 @@
 									</div>
 								</td>
 								<td md-cell class="md-cell-compress">
-									<md-input-container class="no-margin no-padding w90">
+									<md-input-container class="no-margin no-padding w100">
 										<input type="text" ng-model="C.Etiqueta" ng-change="C.changed = true" aria-label=t>
 									</md-input-container>
 								</td>
@@ -104,12 +110,37 @@
 								
 								<td md-cell class="md-cell-compress"><md-checkbox ng-model="C.Visible" aria-label="c" class="md-primary" ng-change="C.changed = true; C.Editable = C.Visible" style="transform: translateX(4px);"></md-checkbox></td>
 								<td md-cell class="md-cell-compress"><md-checkbox ng-model="C.Editable" aria-label="c" class="md-primary" ng-change="C.changed = true" ng-disabled="!C.Visible" style="transform: translateX(4px);"></md-checkbox></td>
-								<td md-cell class=""></td>
+								<td md-cell class="">
+									{{ C.seccion_id }}
+								</td>
 							</tr>
 						</tbody>
 					</table>
-				</md-table-container>
+					<div layout class="padding">
 
+						<md-button class="border no-margin margin-right" ng-click="setSeccion()" 
+							ng-show="EditoresCamposSel.length > 1 && EditorSel.Secciones.length > 0">
+							<md-icon md-font-icon="fa-indent"></md-icon>
+							Sección
+						</md-button>
+
+						<md-button class="border no-margin margin-right" ng-click="alinearCampos()" 
+							ng-show="EditoresCamposSel.length > 1">
+							<md-icon md-font-icon="fa-arrows-alt-h"></md-icon>
+							Alinear
+						</md-button>
+
+						<md-button class="md-warn md-raised no-margin margin-right" aria-label="b" ng-click="removeEditorCampos()" ng-show="EditoresCamposSel.length > 0">
+							<md-icon md-font-icon="fa-trash"></md-icon>
+							Remover {{ EditoresCamposSel.length }}
+						</md-button>
+
+						<md-button class="border no-margin margin-right" ng-click="autogetEditorCampos()" ng-show="EditoresCamposSel.length == 0">
+							<md-icon md-font-icon="fa-bolt fa-fw"></md-icon>Agregar Campos
+						</md-button>
+					</div>
+				</md-table-container>
+				
 			</div>
 
 			<div class="h30"></div>
@@ -117,10 +148,7 @@
 
 
 		<div layout class="border-top seam-top">
-			<md-button class="md-warn md-raised" aria-label="b" ng-click="removeEditorCampos()" ng-show="EditoresCamposSel.length > 0">
-				<md-icon md-font-icon="fa-trash"></md-icon>
-				Remover {{ EditoresCamposSel.length }}
-			</md-button>
+			
 			<span flex></span>
 			<md-button class="md-primary md-raised" ng-click="updateEditor()">
 				<md-icon md-svg-icon="md-save" class="margin-right"></md-icon>Guardar
@@ -130,44 +158,20 @@
 
 	</div>
 
-	<div layout=column class="padding" ng-show="EditorSel">
-		
-		<md-card class="no-margin w300" ngs-style="{ width: EditorSel.Ancho }">
-			<div class="padding text-bold text-clear" layout md-truncate>{{ EditorSel.Titulo }}</div>
-			<div layout=column class="">
-				
-				<div layout class="padding-0-10" layout-wrap>
-					<div ng-repeat="C in EditoresCamposCRUD.rows | filter:{seccion_id:null, Visible:true}" flex=100 flex-gt-xs="{{C.Ancho}}" layout class=""
-						ng-class="{'opacity-70': !C.Editable}">
+	<div layout ng-show="EditorSel">
 
-						<md-input-container class="margin-bottom" flex>
-							<label>{{ C.Etiqueta || CamposCRUD.one(C.campo_id).campo_title }}</label><input type="text" value="&nbsp;" class="bg-lightgrey-5 border">
-						</md-input-container>
+		<div layout=column class="w40 bg-white">
+			
+			<md-button class="no-margin md-icon-button s40 focus-on-hover transition" ng-repeat="I in editoresSubnavs" 
+				ng-click="setEditoresSubnav(I[0])" ng-class="{ 'opacity-90': I[0] === editoresSubnav }">
+				<md-icon md-font-icon="{{ I[1] }} fa-fw text-18px"></md-icon>
+				<md-tooltip md-direction=left>{{ I[2] }}</md-tooltip>
+			</md-button>
 
-					</div>
-				</div>
+		</div>
 
-				<div ng-repeat="(kS,S) in EditorSel.Secciones" layout=column>
-					
-					<div layout class="md-subheader padding-5">{{ S }}</div>
-					<div layout class="padding-0-10" layout-wrap>
-						<div ng-repeat="C in EditoresCamposCRUD.rows | filter:{seccion_id:kS, Visible:true}" ng-style="{ width: C.Ancho + '%' }" layout class=""
-							ng-class="{'opacity-70': !C.Editable}">
-							<md-input-container class="margin-bottom" flex>
-								<label>{{ C.Etiqueta || CamposCRUD.one(C.campo_id).campo_title }}</label><input type="text" value="&nbsp;" class="bg-lightgrey-5 border">
-							</md-input-container>
-
-						</div>
-					</div>
-				</div>
-
-			</div>
-			<div class="padding" layout>
-				<span flex></span>
-				<md-button class="no-margin md-button md-raised md-primary" aria-label="b" disabled=true>Guardar</md-button>
-			</div>
-		</md-card>
-
+		@include('Entidades.Entidades_Editores_Previsualizacion')
+		@include('Entidades.Entidades_Editores_Validaciones')
 
 	</div>
 

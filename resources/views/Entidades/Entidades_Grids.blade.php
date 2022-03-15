@@ -1,6 +1,6 @@
 <div flex layout ng-controller="Entidades_GridsCtrl">
 	
-	<div layout=column class="border-right w200 bg-white overflow-y hasScroll">
+	<div layout=column class="border-right w200 bg-white overflow-y hasScroll" ng-show="GridsSidenav">
 
 		<div layout class="border-bottom" layout-align="center center" style="height: 41px">
 			<div class="md-toolbar-searchbar" flex layout>
@@ -43,8 +43,6 @@
 			</div>
 			<div class="h30"></div>
 		</div>
-
-		
 	</div>
 
 	<div layout=column class="border-right" flex ng-show="GridSel">
@@ -52,6 +50,11 @@
 		<div flex layout=column class="padding overflow-y darkScroll border-radius">
 
 			<div layout class="margin-bottom">
+				<md-button class="md-icon-button s30 no-margin" aria-label="b" 
+					ng-click="GridsSidenav = !GridsSidenav" 
+					style="transform: translate(-3px, -2px);">
+					<md-icon md-svg-icon="md-bars"></md-icon>
+				</md-button>
 				<md-input-container class="no-margin" flex md-no-float>
 					<input type="text" ng-model="GridSel.Titulo" placeholder="Titulo">
 				</md-input-container>

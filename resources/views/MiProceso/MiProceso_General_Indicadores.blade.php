@@ -1,4 +1,4 @@
-<div class="text-clear  margin-5-0">Nuestros Indicadores</div>
+<div class="text-clear  margin-5-0">Nuestros Indicadores y Tableros</div>
 
 <div layout layout-wrap>
 	<div class="border-rounded padding-5-10 border bg-lightgrey-5 Pointer TableroButton" ng-repeat="T in ProcesoSel.tableros"

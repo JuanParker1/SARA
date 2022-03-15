@@ -19,6 +19,7 @@ angular.module('Entidades_EditorDiagCtrl', [])
         Ctrl.periodoFilter = (C) => { return true; }
         Ctrl.fixPeriodoValue = Rs.fixPeriodoValue;
 		Ctrl.loading = true;
+		Ctrl.errorMsg = '';
 
 		var DefConfig = {
 			color: '#e2e2e2', textcolor: 'black'
@@ -89,12 +90,15 @@ angular.module('Entidades_EditorDiagCtrl', [])
 		};
 
 		Ctrl.enviarDatos = (ev) => {
-			//return console.log(ev);
+			angular.forEach(Ctrl.Editor.Secciones, S => {
+				S.open = true;
+			});
+
+			Ctrl.errorMsg = '';
 
 			//Validar Cambios
 			console.log(Ctrl.EditorForm);
 			if(Ctrl.EditorForm.$invalid) return Rs.showToast('Falta información, por favor verifique y reintente.', 'Error');
-
 
 			Ctrl.loading = true;
 			Rs.http('api/Entidades/editor-save', { Editor: Ctrl.Editor, Config: Ctrl.Config }).then(() => {
@@ -102,6 +106,7 @@ angular.module('Entidades_EditorDiagCtrl', [])
 				$mdDialog.hide(true);
 			}, (d) => {
 				Ctrl.loading = false;
+				Ctrl.errorMsg = d.Msg;
 				console.log(d);
 				Rs.showToast('Ha ocurrido un error, por favor guarde la información e intente nuevamente.', 'Error');
 			});
@@ -135,5 +140,7 @@ angular.module('Entidades_EditorDiagCtrl', [])
 	            C.val.url = r.data;
 	        });
 		};
+
+
 	}
 ]);

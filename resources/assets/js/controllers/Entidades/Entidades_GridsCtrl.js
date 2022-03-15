@@ -9,22 +9,31 @@ angular.module('Entidades_GridsCtrl', [])
 			main_buttons: [],
 			row_buttons: []
 		};
+		$scope.GridsSidenav = false;
 
 		//Grids
 		Ctrl.getGrids = () => {
 			if(!Ctrl.EntidadSel) return;
 			Ctrl.GridsCRUD.setScope('entidad', Ctrl.EntidadSel.id);
 			Ctrl.GridsCRUD.get().then(() => {
-				if(Ctrl.GridsCRUD.rows.length == 0) return;
-				Ctrl.openGrid(Ctrl.GridsCRUD.rows[0]);
+				if(Ctrl.GridsCRUD.rows.length > 0){
+					Ctrl.openGrid(Ctrl.GridsCRUD.rows[0]);
+				}else{
+					$scope.GridsSidenav = true;
+				};
 			});
 		};
 
 		Ctrl.addGrid = () => {
-			console.log(Ctrl.GridsCRUD);
+
+			let Titulo = angular.copy(Ctrl.EntidadSel.Nombre);
+			if(Ctrl.GridsCRUD.rows.length > 0){
+				Titulo += ` (${(Ctrl.GridsCRUD.rows.length+1)})`;
+			};
 
 			Ctrl.GridsCRUD.dialog({
 				entidad_id: Ctrl.EntidadSel.id,
+				Titulo: Titulo
 			}, {
 				title: 'Crear Grid',
 				only: ['Titulo']
@@ -252,6 +261,10 @@ angular.module('Entidades_GridsCtrl', [])
 		};
 
 		Ctrl.getGrids();
+
+		$scope.$on("Entidad_Loaded", (evt,data) => {
+			Ctrl.getGrids();
+		});
 
 	}
 ]);
