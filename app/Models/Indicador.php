@@ -246,5 +246,18 @@ class Indicador extends MyModel
 		]);
 	}
 
+	public function getVariables()
+	{
+		$variables_ids = [];
+
+		foreach ($this->componentes as $c) {
+			if($c->Tipo == 'Variable') $variables_ids[] = $c->variable_id;
+			if($c->Tipo == 'Indicador'){
+				$variables_ids = array_merge($variables_ids, (new self)::find($c->variable_id)->getVariables());
+			}
+		};
+
+		return $variables_ids;
+	}
 
 }

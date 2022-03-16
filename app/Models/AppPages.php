@@ -32,4 +32,9 @@ class AppPages extends MyModel
     {
         return $query->where('app_id', $id);
     }
+
+    public function daapp()
+    {
+        return $this->belongsTo('\App\Models\Apps', 'app_id');
+    }
 }

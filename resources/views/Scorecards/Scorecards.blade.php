@@ -93,8 +93,10 @@
 					<md-menu-item ng-show="NodosSelected.length > 0"><md-button ng-click="moveNodosInd()" class=""><md-icon md-font-icon="fa-sign-out-alt margin-right fa-fw"></md-icon>Mover {{ NodosSelected.length }} Indicadores</md-button></md-menu-item>
 					<md-menu-item ng-show="NodosSelected.length > 0"><md-button ng-click="deleteNodosInd()" class="md-warn"><md-icon md-font-icon="fa-trash margin-right fa-fw"></md-icon>Eliminar {{ NodosSelected.length }} Indicadores</md-button></md-menu-item>
 					<md-menu-item><md-button ng-click="reindexarNodo(NodoSel)"><md-icon md-font-icon="fa-redo margin-right fa-fw"></md-icon>Reindexar Indicadores / Valores</md-button></md-menu-item>
+					<md-menu-item><md-button ng-click="actualizarVariables()"><md-icon md-font-icon="fa-cloud-download-alt margin-right fa-fw"></md-icon>Obtener Datos de Variables</md-button></md-menu-item>
 					<md-menu-item><md-button ng-click="recalcCache()"><md-icon md-font-icon="fa-puzzle-piece margin-right fa-fw"></md-icon>Recalcular la Cache</md-button></md-menu-item>
 					<md-menu-item><md-button ng-click="deleteScorecardNodo()" class="md-warn"><md-icon md-font-icon="fa-trash margin-right fa-fw"></md-icon>Eliminar Nodo Actual</md-button></md-menu-item>
+					<md-menu-item><md-button ng-click="deleteScorecard()" class="md-warn"><md-icon md-font-icon="fa-trash margin-right fa-fw"></md-icon>Eliminar este Tablero</md-button></md-menu-item>
 				</md-menu-content>
 			</md-menu>
 			<md-button class="md-icon-button no-margin" aria-label="b" ng-click="viewScorecardDiag(ScoSel.id)">

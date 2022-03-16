@@ -4,6 +4,11 @@
 		style="background-image: url({{ C.autor.avatar }}); background-size: cover; background-position: top center;"></div>
 	<b flex class="">{{ C.autor.Nombres }}</b>
 	<div class="comment_pill lh20 h20">{{ C.Op1 }}</div>
+	<md-button class="focus-on-hover md-icon-button no-margin s30 no-padding"
+		ng-click="editComment(C)" ng-if="C.editable">
+		<md-icon md-svg-icon="md-edit" class="s20"></md-icon>
+		<md-tooltip>Editar</md-tooltip>
+	</md-button>
 </div>
 
 <p class="no-margin text-16px">

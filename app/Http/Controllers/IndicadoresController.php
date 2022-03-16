@@ -14,6 +14,7 @@ use App\Models\IndicadorValor;
 use App\Models\Variable;
 use App\Models\VariableValor;
 use App\Models\Scorecard;
+use App\Models\ScorecardNodo;
 use App\Models\Proceso;
 use App\Functions\Helper;
 
@@ -49,7 +50,8 @@ class IndicadoresController extends Controller
     public function postGet()
     {
         $Anio = request('Anio');
-        $modoComparativo = request('modoComparativo');
+        $modoComparativo   = request('modoComparativo');
+        $obtenerScorecards = request('obtenerScorecards');
         $Indicador = Indicador::where('id', request('id'))->first();
         
         if($modoComparativo) $AnioAnt = $Indicador->calcVals($Anio-1);
@@ -92,7 +94,17 @@ class IndicadoresController extends Controller
                 };
 
             };
+
         }
+
+        //Obtener los tableros en que participa el indicador
+        if($obtenerScorecards){
+            $scorecards_ids = ScorecardNodo::where('tipo', 'Indicador')->where('elemento_id', $Indicador->id)->get()->pluck('scorecard_id');
+            $scorecards = Scorecard::whereIn('id', $scorecards_ids)->get();
+
+            $Indicador->scorecards = $scorecards;
+        };
+        
 
         $Indicador->valores = $AnioAct;
         return $Indicador;
@@ -183,7 +195,7 @@ class IndicadoresController extends Controller
         $Indicador = Indicador::where('id', $id)->first();
 
         //Borrar Nodos Tableros
-        \App\Models\ScorecardNodo::where('tipo', 'Indicador')->where('elemento_id', $id)->delete();
+        ScorecardNodo::where('tipo', 'Indicador')->where('elemento_id', $id)->delete();
 
         //Borrar 
         $Indicador->metas()->delete();
@@ -366,13 +378,13 @@ class IndicadoresController extends Controller
 
             if($DaInd){
 
-                $NodoAct =  \App\Models\ScorecardNodo::where('scorecard_id', 9)->where('tipo', 'Indicador')->where('elemento_id', $DaInd['id'])->first();
+                $NodoAct =  ScorecardNodo::where('scorecard_id', 9)->where('tipo', 'Indicador')->where('elemento_id', $DaInd['id'])->first();
 
                 if(!$NodoAct){
 
                     //dd($DaInd);
 
-                    $newNodo = new \App\Models\ScorecardNodo([
+                    $newNodo = new ScorecardNodo([
                         'scorecard_id' => 9,
                         'Nodo'         => $reg['indicador'],
                         'padre_id'     => intval($reg['proceso_id']),

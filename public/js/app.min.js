@@ -549,235 +549,6 @@ angular.module('App_ViewCtrl', [])
 
 	}
 ]);
-angular.module('BotsCtrl', [])
-.controller('BotsCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$mdDialog',
-	function($scope, $rootScope, $injector, $filter, $mdDialog) {
-
-		console.info('BotsCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Rs.mainTheme = 'Black';
-		Ctrl.BotsNav = true;
-		Ctrl.BotRunning = false;
-
-		Ctrl.EstadosBots = ['Espera', 'Corriendo', 'Inactivo', 'Error'];
-		Ctrl.EstadosBotsDet = {
-			'Espera':    { Color: '#03ab3b' },
-			'Corriendo': { Color: '#d3ff76' },
-			'Inactivo':  { Color: '#545454' },
-			'Error':     { Color: '#ff0000' },
-		};
-
-		Ctrl.BotsCRUD  = $injector.get('CRUD').config({ base_url: '/api/Bots' });
-		Ctrl.PasosCRUD = $injector.get('CRUD').config({ base_url: '/api/Bots/pasos' });
-		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Bots/variables' });
-
-		Ctrl.getBots = () => {
-			Ctrl.BotsCRUD.get().then(() => {
-
-				var bot_sel_id = Rs.Storage.BotSelId ? Rs.getIndex(Ctrl.BotsCRUD.rows, Rs.Storage.BotSelId) : 0;
-				Ctrl.openBot(Ctrl.BotsCRUD.rows[bot_sel_id]);
-			});
-		}
-		
-		Ctrl.addBot = () => {
-			Ctrl.BotsCRUD.dialog({ Estado: 'Inactivo' }, {
-				title: 'Crear Nuevo Bot',
-				only: ['Nombre']
-			}).then(nB => {
-				Ctrl.BotsCRUD.add(nB);
-			});
-		};
-
-		Ctrl.openBot = (B) => { 
-			Ctrl.BotSel = B;
-			Rs.Storage.BotSelId = Ctrl.BotSel.id;
-			Ctrl.BotSel.config.Horas = Ctrl.BotSel.config.Horas.map(H => {
-				var D = moment(H, ['HH:mm']).toDate();
-				return D;
-			});
-			//
-			Ctrl.PasosCRUD.setScope('bot', Ctrl.BotSel.id).get();
-			Ctrl.VariablesCRUD.setScope('bot', Ctrl.BotSel.id).get();
-
-			//Ctrl.seeLogs();
-		}
-
-		Ctrl.saveBot = async () => {
-			var Bot = angular.copy(Ctrl.BotSel);
-			Bot.config.Horas = Bot.config.Horas.map(H => {
-				var D = moment(H).format('HH:mm');
-				console.log(H, D);
-				return D;
-			});
-			await Ctrl.BotsCRUD.update(Bot);
-
-			var Variables = Ctrl.VariablesCRUD.rows.filter(V => V.changed);
-			if(Variables.length > 0) await Ctrl.VariablesCRUD.updateMultiple(Variables);
-
-			await Ctrl.PasosCRUD.updateMultiple(Ctrl.PasosCRUD.rows);
-
-			Rs.showToast('Bot Actualizado', 'Success');
-		}
- 	
-		Ctrl.DiasSemana = [
-			[ 'Lun', 'Lun'],
-			[ 'Mar', 'Mar'],
-			[ 'Mie', 'Mié'],
-			[ 'Jue', 'Jue'],
-			[ 'Vie', 'Vie'],
-			[ 'Sab', 'Sáb'],
-			[ 'Dom', 'Dom'],
-		];
-
-		Ctrl.addHour = () => {
-			var Horas = Ctrl.BotSel.config.Horas;
-			var Time = (Horas.length > 0) ? moment(Horas[(Horas.length - 1)]) : moment('05:00', ['H:m']);
-			Time.add(1, 'hours');
-			Horas.push(Time.toDate());
-		}
-
-		Ctrl.setHour = (H, kH) => {
-			Ctrl.BotSel.config.Horas[kH] = H;
-		}
-
-		Ctrl.removeHour = (kH) => {
-			Ctrl.BotSel.config.Horas.splice(kH, 1);
-		}
-
-		//Pasos
-		Ctrl.addPaso = () => {
-			var Indice = Ctrl.PasosCRUD.rows.length;
-			Ctrl.PasosCRUD.dialog({
-				Tipo: 'Url', Indice: Indice, bot_id: Ctrl.BotSel.id, config: '[]'
-			}, {
-				title: 'Agregar Paso', class: 'wu600',
-				only: ['Tipo', 'Nombre'],
-				confirmText: 'Agregar'
-			}).then(nP => {
-				if(!nP) return;
-				Ctrl.PasosCRUD.add(nP);
-			});
-		}
-
-		Ctrl.delPaso = (P) => {
-			Rs.confirmDelete({
-				Title: '¿Eliminar el paso: "'+P.Nombre+'"?',
-			}).then((d) => {
-				if(!d) return;
-				Ctrl.PasosCRUD.delete(P);
-			});
-		}
-
-		//Variables
-		Ctrl.addVariable = () => {
-			Ctrl.VariablesCRUD.add({
-				bot_id: Ctrl.BotSel.id
-			});
-		}
-
-		Ctrl.delVariable = (V) => {
-			Ctrl.VariablesCRUD.delete(V);
-		}
-
-
-		//Run
-		Ctrl.runBot = () => {
-			Ctrl.BotRunning = true;
-			Rs.http('/api/Bots/run/' + Ctrl.BotSel.id, {}, false, false, 'GET').finally(() => {
-				Ctrl.BotRunning = false;
-				Ctrl.getBots();
-			});
-		}
-
-
-		Ctrl.seeLogs = () => {
-			$mdDialog.show({
-				controller: 'Bot_LogsCtrl',
-				templateUrl: '/Frag/Bots.Bot_Logs',
-				locals: { Bot : Ctrl.BotSel },
-				clickOutsideToClose: false, fullscreen: true, multiple: true,
-			});
-		}
-
-
-		//ACE
-		Ctrl.aceOptionsJs = {
-			theme:'twilight',
-			mode: 'json',
-			onLoad: (_editor) => {
-				var _session = _editor.getSession();
-				_editor.setFontSize(15);
-				_session.setTabSize(3);
-				_editor.setOptions({
-				    minLines: 1,
-				    maxLines: 5000
-				});
-				//_editor.setUseSoftTabs(true);
-			},
-		};
-
-		Ctrl.aceOptionsSql = {
-			theme:'twilight',
-			mode: 'sql',
-			onLoad: (_editor) => {
-				var _session = _editor.getSession();
-				_editor.setFontSize(13);
-				_session.setTabSize(3);
-				_editor.setOptions({
-				    minLines: 2,
-				    maxLines: 5000
-				});
-				//_editor.setUseSoftTabs(true);
-			},
-		};
-
-
-
-
-		Promise.all([
-			Rs.http('api/Bdds/all', {}, Ctrl, 'Bdds')
-		]).then(() => {
-			Ctrl.getBots();
-		});
-		
-
-
-
-
-	}
-]);
-angular.module('Bot_LogsCtrl', [])
-.controller(   'Bot_LogsCtrl', ['$scope', '$rootScope', '$mdDialog', 'Bot',
-	function ($scope, $rootScope, $mdDialog, Bot) {
-
-		console.info('Bot_LogsCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		Ctrl.Bot = Bot;
-
-		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
-
-		Ctrl.filters = {
-			bot_id: Bot.id,
-			Inicio: moment().add(-2, 'days').toDate(),
-			Fin:    moment().toDate()
-		};
-
-		Ctrl.getLogs = () => {
-			var filters = angular.copy(Ctrl.filters);
-			filters.Inicio = moment(filters.Inicio).format('YYYY-MM-DD');
-			filters.Fin    = moment(filters.Fin).format('YYYY-MM-DD');
-
-			Rs.http('/api/Bots/logs', filters, Ctrl, 'BotLogs');
-
-		}	
-
-		Ctrl.getLogs();
-	}
-
-]);
 angular.module('BDDCtrl', [])
 .controller('BDDCtrl', ['$scope', '$rootScope', '$injector', '$mdDialog', 
 	function($scope, $rootScope, $injector, $mdDialog) {
@@ -1011,6 +782,235 @@ angular.module('BDD_ListasDiagCtrl', [])
 		};
 
 		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
+	}
+
+]);
+angular.module('BotsCtrl', [])
+.controller('BotsCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$mdDialog',
+	function($scope, $rootScope, $injector, $filter, $mdDialog) {
+
+		console.info('BotsCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Rs.mainTheme = 'Black';
+		Ctrl.BotsNav = true;
+		Ctrl.BotRunning = false;
+
+		Ctrl.EstadosBots = ['Espera', 'Corriendo', 'Inactivo', 'Error'];
+		Ctrl.EstadosBotsDet = {
+			'Espera':    { Color: '#03ab3b' },
+			'Corriendo': { Color: '#d3ff76' },
+			'Inactivo':  { Color: '#545454' },
+			'Error':     { Color: '#ff0000' },
+		};
+
+		Ctrl.BotsCRUD  = $injector.get('CRUD').config({ base_url: '/api/Bots' });
+		Ctrl.PasosCRUD = $injector.get('CRUD').config({ base_url: '/api/Bots/pasos' });
+		Ctrl.VariablesCRUD = $injector.get('CRUD').config({ base_url: '/api/Bots/variables' });
+
+		Ctrl.getBots = () => {
+			Ctrl.BotsCRUD.get().then(() => {
+
+				var bot_sel_id = Rs.Storage.BotSelId ? Rs.getIndex(Ctrl.BotsCRUD.rows, Rs.Storage.BotSelId) : 0;
+				Ctrl.openBot(Ctrl.BotsCRUD.rows[bot_sel_id]);
+			});
+		}
+		
+		Ctrl.addBot = () => {
+			Ctrl.BotsCRUD.dialog({ Estado: 'Inactivo' }, {
+				title: 'Crear Nuevo Bot',
+				only: ['Nombre']
+			}).then(nB => {
+				Ctrl.BotsCRUD.add(nB);
+			});
+		};
+
+		Ctrl.openBot = (B) => { 
+			Ctrl.BotSel = B;
+			Rs.Storage.BotSelId = Ctrl.BotSel.id;
+			Ctrl.BotSel.config.Horas = Ctrl.BotSel.config.Horas.map(H => {
+				var D = moment(H, ['HH:mm']).toDate();
+				return D;
+			});
+			//
+			Ctrl.PasosCRUD.setScope('bot', Ctrl.BotSel.id).get();
+			Ctrl.VariablesCRUD.setScope('bot', Ctrl.BotSel.id).get();
+
+			//Ctrl.seeLogs();
+		}
+
+		Ctrl.saveBot = async () => {
+			var Bot = angular.copy(Ctrl.BotSel);
+			Bot.config.Horas = Bot.config.Horas.map(H => {
+				var D = moment(H).format('HH:mm');
+				console.log(H, D);
+				return D;
+			});
+			await Ctrl.BotsCRUD.update(Bot);
+
+			var Variables = Ctrl.VariablesCRUD.rows.filter(V => V.changed);
+			if(Variables.length > 0) await Ctrl.VariablesCRUD.updateMultiple(Variables);
+
+			await Ctrl.PasosCRUD.updateMultiple(Ctrl.PasosCRUD.rows);
+
+			Rs.showToast('Bot Actualizado', 'Success');
+		}
+ 	
+		Ctrl.DiasSemana = [
+			[ 'Lun', 'Lun'],
+			[ 'Mar', 'Mar'],
+			[ 'Mie', 'Mié'],
+			[ 'Jue', 'Jue'],
+			[ 'Vie', 'Vie'],
+			[ 'Sab', 'Sáb'],
+			[ 'Dom', 'Dom'],
+		];
+
+		Ctrl.addHour = () => {
+			var Horas = Ctrl.BotSel.config.Horas;
+			var Time = (Horas.length > 0) ? moment(Horas[(Horas.length - 1)]) : moment('05:00', ['H:m']);
+			Time.add(1, 'hours');
+			Horas.push(Time.toDate());
+		}
+
+		Ctrl.setHour = (H, kH) => {
+			Ctrl.BotSel.config.Horas[kH] = H;
+		}
+
+		Ctrl.removeHour = (kH) => {
+			Ctrl.BotSel.config.Horas.splice(kH, 1);
+		}
+
+		//Pasos
+		Ctrl.addPaso = () => {
+			var Indice = Ctrl.PasosCRUD.rows.length;
+			Ctrl.PasosCRUD.dialog({
+				Tipo: 'Url', Indice: Indice, bot_id: Ctrl.BotSel.id, config: '[]'
+			}, {
+				title: 'Agregar Paso', class: 'wu600',
+				only: ['Tipo', 'Nombre'],
+				confirmText: 'Agregar'
+			}).then(nP => {
+				if(!nP) return;
+				Ctrl.PasosCRUD.add(nP);
+			});
+		}
+
+		Ctrl.delPaso = (P) => {
+			Rs.confirmDelete({
+				Title: '¿Eliminar el paso: "'+P.Nombre+'"?',
+			}).then((d) => {
+				if(!d) return;
+				Ctrl.PasosCRUD.delete(P);
+			});
+		}
+
+		//Variables
+		Ctrl.addVariable = () => {
+			Ctrl.VariablesCRUD.add({
+				bot_id: Ctrl.BotSel.id
+			});
+		}
+
+		Ctrl.delVariable = (V) => {
+			Ctrl.VariablesCRUD.delete(V);
+		}
+
+
+		//Run
+		Ctrl.runBot = () => {
+			Ctrl.BotRunning = true;
+			Rs.http('/api/Bots/run/' + Ctrl.BotSel.id, {}, false, false, 'GET').finally(() => {
+				Ctrl.BotRunning = false;
+				Ctrl.getBots();
+			});
+		}
+
+
+		Ctrl.seeLogs = () => {
+			$mdDialog.show({
+				controller: 'Bot_LogsCtrl',
+				templateUrl: '/Frag/Bots.Bot_Logs',
+				locals: { Bot : Ctrl.BotSel },
+				clickOutsideToClose: false, fullscreen: true, multiple: true,
+			});
+		}
+
+
+		//ACE
+		Ctrl.aceOptionsJs = {
+			theme:'twilight',
+			mode: 'json',
+			onLoad: (_editor) => {
+				var _session = _editor.getSession();
+				_editor.setFontSize(15);
+				_session.setTabSize(3);
+				_editor.setOptions({
+				    minLines: 1,
+				    maxLines: 5000
+				});
+				//_editor.setUseSoftTabs(true);
+			},
+		};
+
+		Ctrl.aceOptionsSql = {
+			theme:'twilight',
+			mode: 'sql',
+			onLoad: (_editor) => {
+				var _session = _editor.getSession();
+				_editor.setFontSize(13);
+				_session.setTabSize(3);
+				_editor.setOptions({
+				    minLines: 2,
+				    maxLines: 5000
+				});
+				//_editor.setUseSoftTabs(true);
+			},
+		};
+
+
+
+
+		Promise.all([
+			Rs.http('api/Bdds/all', {}, Ctrl, 'Bdds')
+		]).then(() => {
+			Ctrl.getBots();
+		});
+		
+
+
+
+
+	}
+]);
+angular.module('Bot_LogsCtrl', [])
+.controller(   'Bot_LogsCtrl', ['$scope', '$rootScope', '$mdDialog', 'Bot',
+	function ($scope, $rootScope, $mdDialog, Bot) {
+
+		console.info('Bot_LogsCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.Bot = Bot;
+
+		Ctrl.Cancel = function(){ $mdDialog.cancel(); }
+
+		Ctrl.filters = {
+			bot_id: Bot.id,
+			Inicio: moment().add(-2, 'days').toDate(),
+			Fin:    moment().toDate()
+		};
+
+		Ctrl.getLogs = () => {
+			var filters = angular.copy(Ctrl.filters);
+			filters.Inicio = moment(filters.Inicio).format('YYYY-MM-DD');
+			filters.Fin    = moment(filters.Fin).format('YYYY-MM-DD');
+
+			Rs.http('/api/Bots/logs', filters, Ctrl, 'BotLogs');
+
+		}	
+
+		Ctrl.getLogs();
 	}
 
 ]);
@@ -3619,6 +3619,19 @@ angular.module('Entidades_VerCamposCtrl', [])
 		};
 	}
 ]);
+angular.module('FuncionesCtrl', [])
+.controller('FuncionesCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('FuncionesCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.FuncionSel = null;
+		Ctrl.FuncionesNav = true;
+		Rs.mainTheme = 'Snow_White';
+		
+	}
+]);
 angular.module('IndicadoresCtrl', [])
 .controller('IndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$mdDialog', '$http',
 	function($scope, $rootScope, $injector, $filter, $mdDialog, $http) {
@@ -4283,7 +4296,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 
 		Ctrl.getIndicadores = () => {
 
-			Rs.http('api/Indicadores/get', { id: indicador_id, Anio: Ctrl.Anio, modoComparativo: Ctrl.modoComparativo }, Ctrl, 'Ind').then(() => {
+			Rs.http('api/Indicadores/get', { id: indicador_id, Anio: Ctrl.Anio, modoComparativo: Ctrl.modoComparativo, obtenerScorecards: true }, Ctrl, 'Ind').then(() => {
 
 				angular.forEach(Ctrl.Ind.valores, (m,k) => {
 					var i = parseInt(m.mes);
@@ -4446,6 +4459,58 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
             });
         };
 
+        Ctrl.editComment = (C) => {
+            let Tipos = ['Preventiva', 'Correctiva', 'De Mejora'];
+
+            if(C.Grupo == 'Comentario') return Rs.BasicDialog({
+                Theme: 'Black', Title: 'Editar Comentario',
+                Fields: [
+                    { Nombre: 'Comentario',  Value: C.Comentario, Required: true, Type: 'textarea',    opts: { rows: 4 } }
+                ],
+                Confirm: { Text: 'Cambiar' },
+                HasDelete: true
+            }).then(r => {
+                if(!r) return;
+                if(r.HasDeleteConf) return Ctrl.deleteComment(C);
+                let NewComentario = r.Fields[0].Value;
+                C.Comentario = NewComentario;
+                Ctrl.ComentariosCRUD.update(C).then(() => {
+                    Ctrl.getComentarios();
+                });
+            });
+
+            if(C.Grupo == 'Accion') return Rs.BasicDialog({
+                Theme: 'Black', Title: 'Editar Comentario',
+                Fields: [
+                    { Nombre: 'Tipo',        Value: C.Op2,   Required: true, Type: 'simplelist',  List: Tipos },
+                    { Nombre: 'Link',        Value: C.Op4,           Required: true }
+                ],
+                Confirm: { Text: 'Cambiar' },
+                HasDelete: true
+            }).then(r => {
+                if(!r) return;
+                if(r.HasDeleteConf) return Ctrl.deleteComment(C);
+                var f = Rs.prepFields(r.Fields);
+                C = angular.extend(C, {
+                    Comentario: 'Se registró una: Acción '+f.Tipo,
+                    Op2: f['Tipo'],
+                    Op4: f['Link']
+                });
+                Ctrl.ComentariosCRUD.update(C).then(() => {
+                    Ctrl.getComentarios();
+                });
+            });
+        };
+
+        Ctrl.deleteComment = (C) => {
+            Rs.confirmDelete({
+                Title: '¿Eliminar el comentario?'
+            }).then(r => {
+                if(!r) return;
+                Ctrl.ComentariosCRUD.delete(C);
+            });
+        };
+
         Ctrl.seeExternal = (Link) => {
             window.open(Link,'popup','width=1220,height=700');
         }
@@ -4556,19 +4621,6 @@ angular.module('Indicadores_MejoramientoDiagCtrl', [])
 		Ctrl.Comentarios = Comentarios;
 		Ctrl.seeExternal = seeExternal;
 
-	}
-]);
-angular.module('FuncionesCtrl', [])
-.controller('FuncionesCtrl', ['$scope', '$rootScope', '$injector', '$filter',
-	function($scope, $rootScope, $injector, $filter) {
-
-		console.info('FuncionesCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.FuncionSel = null;
-		Ctrl.FuncionesNav = true;
-		Rs.mainTheme = 'Snow_White';
-		
 	}
 ]);
 angular.module('IngresarDatosCtrl', [])
@@ -5086,6 +5138,55 @@ angular.module('MiProcesoCtrl', [])
 
 	}
 ]);
+angular.module('MisIndicadoresCtrl', [])
+.controller('MisIndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter',
+	function($scope, $rootScope, $injector, $filter) {
+
+		console.info('MisIndicadoresCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Rs.mainTheme = 'Black';
+
+		Ctrl.ProcesoSel = false;
+		Ctrl.Anio  = angular.copy(Rs.AnioActual);
+		Ctrl.Mes   = angular.copy(Rs.MesActual);
+		Ctrl.filterIndicadoresText = '';
+		Ctrl.Loading = true;
+
+		var Indicadores = [];
+		Ctrl.anioAdd = (num) => {Ctrl.Anio = Ctrl.Anio + num; Ctrl.getIndicadores(); };
+
+		Ctrl.getIndicadores = () => {
+			Ctrl.Loading = true;
+			Ctrl.hasEdited = false;
+			Rs.http('api/Indicadores/get-usuario', { Usuario: Rs.Usuario, Anio: Ctrl.Anio }).then((r) => {
+				Indicadores = r;
+				Ctrl.filterIndicadores();
+			});
+		};
+
+		Ctrl.getIndicadores();
+
+		Ctrl.filteredIndicadores = [];
+		Ctrl.filterIndicadores = () => {
+			var Vars = angular.copy(Indicadores);
+			
+			if(Ctrl.ProcesoSel){ 
+				Vars = $filter('filter')(Vars, { proceso_id: Ctrl.ProcesoSel }, true);
+			}
+
+			if(Ctrl.filterIndicadoresText.trim() !== ''){
+				Vars = $filter('filter')(Vars, Ctrl.filterIndicadoresText);
+			}
+
+			Ctrl.filteredIndicadores = Vars;
+			Ctrl.Loading = false;
+		}
+
+
+		
+	}
+]);
 angular.module('ProcesosCtrl', [])
 .controller('ProcesosCtrl', ['$scope', '$rootScope', '$injector', '$filter',
 	function($scope, $rootScope, $injector, $filter) {
@@ -5263,55 +5364,772 @@ angular.module('Procesos_MapaNodosDiagCtrl', [])
 		}
 	}
 ]);
-angular.module('MisIndicadoresCtrl', [])
-.controller('MisIndicadoresCtrl', ['$scope', '$rootScope', '$injector', '$filter',
-	function($scope, $rootScope, $injector, $filter) {
+angular.module('ScorecardsCtrl', [])
+.controller('ScorecardsCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$timeout', '$mdDialog', 
+	function($scope, $rootScope, $injector, $filter, $timeout, $mdDialog) {
 
-		console.info('MisIndicadoresCtrl');
+		console.info('ScorecardsCtrl');
 		var Ctrl = $scope;
 		var Rs = $rootScope;
-		Rs.mainTheme = 'Black';
+		Ctrl.ScoSel = null;
+		Ctrl.ScorecardsNav = true;
+		Ctrl.ScorecardOpsNav = true;
+		Rs.mainTheme = 'Snow_White';
+		Ctrl.ScorecardsCRUD  = $injector.get('CRUD').config({ base_url: '/api/Scorecards' });
+		Ctrl.NodosCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/nodos', query_call_arr: [['getElementos',null],['getRutas',null]] });
+		Ctrl.IndicadoresCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores' });
+		Ctrl.VariablesCRUD 	 = $injector.get('CRUD').config({ base_url: '/api/Variables' });
+		Ctrl.NodosSelected = [];
+		Ctrl.newNodoName = '';
 
-		Ctrl.ProcesoSel = false;
-		Ctrl.Anio  = angular.copy(Rs.AnioActual);
-		Ctrl.Mes   = angular.copy(Rs.MesActual);
-		Ctrl.filterIndicadoresText = '';
-		Ctrl.Loading = true;
-
-		var Indicadores = [];
-		Ctrl.anioAdd = (num) => {Ctrl.Anio = Ctrl.Anio + num; Ctrl.getIndicadores(); };
-
-		Ctrl.getIndicadores = () => {
-			Ctrl.Loading = true;
-			Ctrl.hasEdited = false;
-			Rs.http('api/Indicadores/get-usuario', { Usuario: Rs.Usuario, Anio: Ctrl.Anio }).then((r) => {
-				Indicadores = r;
-				Ctrl.filterIndicadores();
+		Ctrl.getScorecards = () => {
+			Ctrl.ScorecardsCRUD.get().then(() => {
+				
+				if(Rs.Storage.ScorecardSel){
+					var scorecard_sel_id = Rs.getIndex(Ctrl.ScorecardsCRUD.rows, Rs.Storage.ScorecardSel);
+					Ctrl.openScorecard(Ctrl.ScorecardsCRUD.rows[scorecard_sel_id]);
+				}else if(Ctrl.ScorecardsCRUD.rows.length > 0){
+					Ctrl.openScorecard(Ctrl.ScorecardsCRUD.rows[0]);
+				};
+				//Ctrl.getFs();
 			});
 		};
 
-		Ctrl.getIndicadores();
+		Ctrl.getFs = () => {
+			Ctrl.filterScorecards = "";
 
-		Ctrl.filteredIndicadores = [];
-		Ctrl.filterIndicadores = () => {
-			var Vars = angular.copy(Indicadores);
+			let Nodos = angular.copy(Ctrl.NodosCRUD.rows).filter(N => N.tipo == 'Nodo');
+			let NodoPrincipal = Nodos.find(N => N.padre_id == null);
+
+			angular.forEach(Nodos, N => {
+				if(N.padre_id == null){ N.Ruta = NodoPrincipal.Nodo }
+				else{ N.Ruta = NodoPrincipal.Nodo +"\\"+ N.Ruta; }
+			});
+
+			Ctrl.NodosFS = Rs.FsGet(Nodos,'Ruta','Nodo',false,true,false);
+			angular.forEach(Ctrl.NodosFS, (F) => {
+				if(F.type == 'folder'){
+					F.file = Nodos.find(N => { return (N.Ruta.trim() == F.route.trim()) });
+					//F.file = Ctrl.NodosCRUD.rows.filter(N => { return ( N.tipo == 'Nodo' && N.Ruta == F.route ) })[0];
+				};
+			});
+		};
+
+		Ctrl.addNodo = (NodoPadre) => {
+			var Nodos = Ctrl.NodosCRUD.rows.filter(N => { return N.tipo == 'Nodo' });
+			Rs.BasicDialog({
+				Title: 'Crear Nodo', Flex: 50,
+				Fields: [
+					{ Nombre: 'Nombre',  Value: '',   			Required: true, flex: 60 },
+					{ Nombre: 'Peso',    Value: 1,    			Required: true, flex: 10, Type: 'number' },
+					{ Nombre: 'Padre',   Value: NodoPadre.id, 	Required: true, flex: 30, Type: 'list', List: Nodos, Item_Val: 'id', Item_Show: 'Nodo' },
+				],
+			}).then((r) => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				Ctrl.NodosCRUD.add({
+					scorecard_id: Ctrl.ScoSel.id, Nodo: f.Nombre, padre_id: f.Padre, Indice: Ctrl.NodoSel.subnodos.length, tipo: 'Nodo', peso: f.Peso 
+				}).then(() => {
+					Ctrl.openNodo(Ctrl.NodoSel);
+				});
+			});
+		};
+
+		Ctrl.addNewNodo = () => {
+			if(Ctrl.newNodoName.trim() == '') return;
+			Ctrl.NodosCRUD.add({
+				scorecard_id: Ctrl.ScoSel.id, Nodo: Ctrl.newNodoName, padre_id: Ctrl.NodoSel.id, Indice: (Ctrl.NodoSel.subnodos.length + 1), tipo: 'Nodo', peso: 1 
+			}).then(() => {
+				Ctrl.getFs();
+				Ctrl.openNodo(Ctrl.NodoSel);
+			});
+		}
+
+		Ctrl.deleteScorecardNodo = () => {
+			if(Ctrl.NodoSel.indicadores.length > 0 || Ctrl.NodoSel.subnodos.length > 0 ) return Rs.showToast('Solo se pueden eliminar nodos vacíos', 'Error');
+			Ctrl.NodosCRUD.delete(Ctrl.NodoSel).then(() => {
+				Ctrl.openScorecard(Ctrl.ScoSel);
+			});
+		}
+
+		Ctrl.openNodo = (Nodo) => {
 			
-			if(Ctrl.ProcesoSel){ 
-				Vars = $filter('filter')(Vars, { proceso_id: Ctrl.ProcesoSel }, true);
+			Ctrl.NodoSel = Nodo;
+			Ctrl.NodoSel.indicadores = $filter('orderBy')(Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo !== 'Nodo' && N.padre_id == Nodo.id) }), 'Indice');
+			Ctrl.NodoSel.subnodos    = Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo ==  'Nodo'      && N.padre_id == Nodo.id) });
+			Ctrl.NodosSelected = [];
+			Ctrl.newNodoName = '';
+			//Rs.viewScorecardDiag(Ctrl.ScoSel.id); //FIX
+
+		};
+
+		Ctrl.addIndicador = () => {
+
+			var indicadores_ids = Ctrl.NodosCRUD.rows.filter(n => n.tipo == 'Indicador').map(n => n.elemento_id);
+			var Indicadores = Ctrl.IndicadoresCRUD.rows.filter(i => !Rs.inArray(i.id, indicadores_ids) );
+
+			//return console.log(indicadores_ids);
+
+			Rs.TableDialog(Indicadores, {
+				Title: 'Seleccionar Indicadores', Flex: 60, 
+				Columns: [
+					{ Nombre: 'proceso.Proceso',  Desc: 'Nodo',       numeric: false, orderBy: 'Ruta' },
+					{ Nombre: 'Indicador', 	 	  Desc: 'Indicador',  numeric: false, orderBy: 'Indicador' },
+					{ Nombre: 'proceso.Tipo',     Desc: 'Tipo Nodo',  numeric: false, orderBy: false },
+					{ Nombre: 'updated_at',       Desc: 'Actualizado',  numeric: false, orderBy: 'updated_at' },
+				],
+				orderBy: 'Ruta', select: 'Row.id'
+			}).then(Selected => {
+				if(!Selected || Selected.length == 0 ) return;
+				var Indice = Ctrl.NodoSel.indicadores.length + 1;
+				Selected = Selected.map(indicador_id => {
+					return {
+						scorecard_id: Ctrl.ScoSel.id, 
+						Nodo: null, padre_id: Ctrl.NodoSel.id, 
+						Indice: Indice++, tipo: 'Indicador', elemento_id: indicador_id, peso: 1 
+					}
+				});
+
+				Ctrl.NodosCRUD.addMultiple(Selected).then(() => {
+					Ctrl.openNodo(Ctrl.NodoSel);
+				});
+			});
+		};
+
+		Ctrl.addVariable = () => {
+			Rs.BasicDialog({
+				Title: 'Agregar Variable', Flex: 50,
+				Fields: [
+					{ Nombre: 'Variable', Value:null, Required: true, flex: 90, Type: 'autocomplete', 
+					opts: {
+						itemsFn: (text) => { return $filter('filter')(Ctrl.VariablesCRUD.rows, { Variable: text }); },
+						itemDisplay: (item) => { return item.Variable }, itemText: 'Variable',
+						minLength: 0, delay: 300, itemVal: false
+					}},
+					{ Nombre: 'Peso',    Value: 1,    			Required: true, flex: 10, Type: 'number' }
+				],
+			}).then(r => {
+				if(!r) return;
+
+				var f = Rs.prepFields(r.Fields);
+				var Indice = Ctrl.NodoSel.indicadores.length;
+				Ctrl.NodosCRUD.add({
+					scorecard_id: Ctrl.ScoSel.id, Nodo: null, padre_id: Ctrl.NodoSel.id, Indice: Indice, tipo: 'Variable', elemento_id: f.Variable.id, peso: f.Peso 
+				}).then(() => {
+					Ctrl.openNodo(Ctrl.NodoSel);
+					Ctrl.getFs();
+				});
+			});
+		};
+
+		Ctrl.searchScorecard = () => {
+			if(Ctrl.filterScorecards == ""){
+				Ctrl.getFs();
+			}else{
+				Ctrl.ScorecardsFS = Rs.FsGet($filter('filter')(Ctrl.ScorecardsCRUD.rows, Ctrl.filterScorecards),'Ruta','Scorecard',true);
+			};
+		};
+
+		Ctrl.addScorecard = () => {
+			Rs.BasicDialog({
+				Title: 'Crear Scorecard', Flex: 50,
+				Fields: [
+					{ Nombre: 'Titulo',  		Value: '', Required: true },
+					{ Nombre: 'Primer Nodo',    Value: '', Required: true },
+				],
+			}).then((r) => {
+				if(!r) return;
+				var f = Rs.prepFields(r.Fields);
+				console.log(f);
+				Ctrl.ScorecardsCRUD.add({ Titulo: f.Titulo, Secciones: [] }).then(r => {
+					Ctrl.NodosCRUD.add({ scorecard_id: r.id, Nodo: r.Titulo, tipo: 'Nodo' }).then(n => {
+						Ctrl.NodosCRUD.add({ scorecard_id: r.id, Nodo: f['Primer Nodo'], tipo: 'Nodo', padre_id: n.id }).then(() => {
+							Rs.showToast('Scorecard Creado');
+						});
+					});
+				});
+			});
+		};
+
+		Ctrl.openScorecard = (V, Nodo) => {
+			Ctrl.ScoSel = V;
+			Rs.Storage.ScorecardSel = V.id;
+			Ctrl.NodoSel = Rs.def(Nodo, null);
+			Ctrl.NodosCRUD.setScope('scorecard', Ctrl.ScoSel.id).get().then(() => {
+				if(!Nodo) Nodo = Ctrl.NodosCRUD.rows[0];
+				Ctrl.openNodo(Nodo);
+				Ctrl.getFs();
+
+				//Ctrl.copyUrlDatos() //FIX
+				//Ctrl.recalcCache(); //FIX
+				//Ctrl.actualizarVariables();
+			});
+		};
+
+		Ctrl.updateScorecard = () => {
+
+			if(Ctrl.ScoSel.changed){  
+				Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel); 
+				Rs.showToast('Scorecard Actualizado', 'Success');
+				Ctrl.ScoSel.changed = false;
 			}
 
-			if(Ctrl.filterIndicadoresText.trim() !== ''){
-				Vars = $filter('filter')(Vars, Ctrl.filterIndicadoresText);
+			if(Ctrl.NodoSel.changed){ 
+				Ctrl.NodosCRUD.update(Ctrl.NodoSel).then(() => { Ctrl.openScorecard(Ctrl.ScoSel, Ctrl.NodoSel); }); 
+				Rs.showToast('Nodo Actualizado', 'Success');
+				Ctrl.NodoSel.changed = false; 
 			}
 
-			Ctrl.filteredIndicadores = Vars;
-			Ctrl.Loading = false;
+			var IndicadoresChanged = Ctrl.NodoSel.indicadores.filter(i => { return (i.changed == true); });
+			var SubnodosChanged    = Ctrl.NodoSel.subnodos.filter(i => {    return (i.changed == true); });
+			var Changed = IndicadoresChanged.concat(SubnodosChanged);
+			if(Changed.length > 0){
+				Ctrl.NodosCRUD.updateMultiple(Changed).then(() => {
+					Rs.showToast('Indicadores Actualizados', 'Success');
+					angular.forEach(Ctrl.NodoSel.indicadores, I => {
+						I.changed = false;
+					});
+
+					angular.forEach(Ctrl.NodoSel.subnodos, I => {
+						I.changed = false;
+					});
+				});
+			}
+
+			
+			/*Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel).then(() => {
+				Rs.showToast('Scorecard Actualizada', 'Success');
+				Ctrl.saveCards();
+			});*/
+		};
+
+
+		Ctrl.deleteScorecard = () => {
+			Rs.confirmDelete({
+				Title: `¿Eliminar el Tablero: "${Ctrl.ScoSel.Titulo}"?`,
+				Detail: '',
+			}).then(r => {
+				Rs.http('api/Scorecards/delete-scorecard', { id: Ctrl.ScoSel.id }).then(r => {
+					Rs.showToast('Tablero eliminado');
+					Ctrl.ScoSel = null;
+					Rs.Storage.ScorecardSel = null;
+					Ctrl.getScorecards();
+				});
+			});
 		}
 
 
+		Ctrl.delIndicador = (I) => {
+			Ctrl.NodosCRUD.delete(I).then(() => {
+				Ctrl.openNodo(Ctrl.NodoSel);
+			});
+
+		}
+
+		//Nuevo multiple delete
+		Ctrl.deleteNodosInd = () => {
+			if(Ctrl.NodosSelected.length == 0) return;
+			return Rs.confirmDelete({
+				Title: '¿Eliminar estos '+Ctrl.NodosSelected.length+' Indicadores/Variables ?',
+			}).then(d => {
+				if(!d) return;
+				Ctrl.NodosCRUD.ops.selected = angular.copy(Ctrl.NodosSelected);
+				Ctrl.NodosCRUD.deleteMultiple().then(() => {
+					return Ctrl.reindexarNodo(Ctrl.NodoSel);
+				});
+			})
+		}
+
+		Ctrl.reindexarNodo = (Nodo) => {
+			return Rs.http('api/Scorecards/reindexar', { Nodo: Nodo }).then(() => {
+				Ctrl.openScorecard(Ctrl.ScoSel, Ctrl.NodoSel);
+			});
+		}
+
+		Ctrl.moveNodosInd = () => {
+			return $mdDialog.show({
+				controller: 'Scorecards_NodoSelectorCtrl',
+				templateUrl: 'Frag/Scorecards.Scorecards_NodoSelector',
+				locals: { NodosFS: angular.copy(Ctrl.NodosFS) },
+				clickOutsideToClose: true,
+				fullscreen: true,
+				multiple: true,
+			}).then(N => {
+				if(!N) return;
+				Rs.http('api/Scorecards/move-inds', { Inds: Ctrl.NodosSelected, nodo_destino_id: N.id }).then(() => {
+					Ctrl.openScorecard(Ctrl.ScoSel, Ctrl.NodoSel);
+				});
+
+				//console.log(N);
+			});
+		}
+
+		Ctrl.eraseCacheNodosInd = () => {
+			Rs.http('api/Scorecards/erase-cache', { Inds: Ctrl.NodosSelected }).then(() => {
+				//Ctrl.openScorecard(Ctrl.ScoSel, Ctrl.NodoSel);
+				Rs.showToast('Caché Borrada', 'Success');
+			});
+		}
+
+
+		Ctrl.getProcesos = () => {
+			return Rs.http('api/Procesos', {}, Ctrl, 'Procesos');
+		};
+
+
+		Promise.all([Ctrl.IndicadoresCRUD.get(), Ctrl.VariablesCRUD.get(), Ctrl.getProcesos()]).then(values => { 
+			Ctrl.getScorecards();
+		});
 		
+
+		//Reordenar Indicadores
+		Ctrl.dragListener2 = {
+			accept: function (sourceItemHandleScope, destSortableScope) { return true; },
+			orderChanged: () => {
+				angular.forEach(Ctrl.NodoSel.indicadores, (C,index) => {
+					if(C.Indice !== index){
+						C.Indice = index;
+						C.changed = true;
+					};
+				});
+			}
+		};
+
+
+
+		//URL de Datos
+		Ctrl.copyUrlDatos = async () => {
+
+			if(Ctrl.ScoSel.config.data_code == ''){
+				Ctrl.ScoSel.config.data_code = Rs.makeUid(5);
+				await Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel);
+			}
+
+			let Url = Rs.Usuario.url + 'scorecard_data/' + Ctrl.ScoSel.config.data_code + '/' + Rs.AnioActual;
+
+			let Res = await Rs.Confirm({
+				Titulo: 'Url para acceder a los datos en formato JSON',
+				Detail: Url,
+				hasCancel: false,
+				Buttons: [
+					{ Text: 'Cambiar Código', Class: 'md-raised', Value: 'CHANGE_CODE' },
+					{ Text: 'Ok', Class: 'md-raised md-primary', Value: true }
+				],
+			});
+
+			if(Res == 'CHANGE_CODE'){
+				Ctrl.ScoSel.config.data_code = Rs.makeUid(5);
+				await Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel);
+				Ctrl.copyUrlDatos();
+			}
+		}
+
+		Ctrl.checkFrecuenciaAnalisis = () => {
+			if(Ctrl.ScoSel.config.default_frecuencia_analisis.includes('-1')) Ctrl.ScoSel.config.default_frecuencia_analisis = ['-1'];
+			Ctrl.ScoSel.changed = true;
+		}
+
+		Ctrl.recalcCache = () => {
+			return $mdDialog.show({
+				controller: 'Scorecards_RecalcCacheDiagCtrl',
+				templateUrl: 'Frag/Scorecards.Scorecards_RecalcCacheDiag',
+				locals: { ScoSel: Ctrl.ScoSel },
+				clickOutsideToClose: false,
+				fullscreen: false,
+				multiple: true,
+			})
+		}
+
+		Ctrl.actualizarVariables = () => {
+			Rs.http('api/Scorecards/get-variables-ids', { id: Ctrl.ScoSel.id }).then(r => {
+				Rs.getVariableData(r, null, null);
+			});
+		};
+
 	}
 ]);
+angular.module('Scorecards_NodoSelectorCtrl', [])
+.controller('Scorecards_NodoSelectorCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'NodosFS', 
+	function($scope, $rootScope, $mdDialog, $filter, NodosFS) {
+
+		console.info('Scorecards_NodoSelectorCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.Cancel = () => { $mdDialog.cancel(); }
+		Ctrl.NodosFS = NodosFS;
+		Ctrl.FsOpenFolder = Rs.FsOpenFolder;
+
+		Ctrl.selectNodo = (N) => { Ctrl.NodoSel = N; }
+
+		Ctrl.submitNodo = () => {
+			$mdDialog.hide(Ctrl.NodoSel)
+		}
+
+	}
+]);
+
+angular.module('Scorecards_RecalcCacheDiagCtrl', [])
+.controller('Scorecards_RecalcCacheDiagCtrl', ['$scope', '$rootScope', '$http', '$injector', '$mdDialog', 'ScoSel',
+	function($scope, $rootScope, $http, $injector, $mdDialog, ScoSel) {
+
+		console.info('Scorecards_RecalcCacheDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+		Ctrl.Cancel = () => { $mdDialog.cancel(); }
+		Ctrl.ScoSel = ScoSel;
+
+		Ctrl.Anio = angular.copy(Rs.AnioActual);
+		Ctrl.Anios = [Ctrl.Anio-3,Ctrl.Anio-2,Ctrl.Anio-1,Ctrl.Anio,Ctrl.Anio+1];
+
+		Ctrl.selectedRow = [];
+		Ctrl.Status = 'Iddle';
+
+		Rs.http('api/Scorecards/get-elements', { id: ScoSel.id, Tipo: 'Indicador' }, Ctrl, 'Nodos').then(() => {
+			angular.forEach(Ctrl.Nodos, (N) => {
+				let ruta_arr = N.ruta.split('\\');
+				ruta_arr.shift();
+				ruta_arr.pop();
+				N.ruta_fixed = ruta_arr.join('\\');
+			});
+		});
+
+		Ctrl.startRefresh = () => {
+			if(Ctrl.selectedRow.length == 0){
+				Ctrl.CurrIndex = 0;
+				angular.forEach(Ctrl.Nodos, (N) => {
+					N.done = false;
+				});
+			}else{
+				Ctrl.CurrIndex = Rs.getIndex(Ctrl.Nodos, Ctrl.selectedRow[0].id);
+			}
+			
+			Ctrl.Status = 'Running';
+			Ctrl.StepRefresh();
+		};
+
+		Ctrl.StepRefresh = () => {
+			let Indicador = Ctrl.Nodos[Ctrl.CurrIndex];
+			if(!Indicador || Ctrl.Status !== 'Running'){
+				return Ctrl.Status = 'Iddle';
+			}
+
+			Ctrl.selectedRow = [Indicador];
+
+			Rs.http('api/Indicadores/get', { Anio: Ctrl.Anio, id: Indicador.elemento.id, modoComparativo: false }).then(() => {
+				Indicador.done = true;
+				Ctrl.CurrIndex++;
+				Ctrl.StepRefresh();
+			});
+		};
+
+		Ctrl.stopRefresh = () => {
+			Ctrl.Status = 'Iddle';
+		}
+
+	}
+]);
+angular.module('Scorecards_ScorecardDiagCtrl', [])
+.controller('Scorecards_ScorecardDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', '$localStorage',
+	function($scope, $rootScope, $mdDialog, $filter, $timeout, $localStorage) {
+
+		console.info('Scorecards_ScorecardDiagCtrl');
+		var Ctrl = $scope;
+		var Rs = $rootScope;
+
+		Ctrl.Cancel = () => { $mdDialog.cancel(); }
+
+		Ctrl.Meses = Rs.Meses;
+		Ctrl.inArray = Rs.inArray;
+        Ctrl.viewVariableDiag = Rs.viewVariableDiag;
+        Ctrl.viewIndicadorDiag = Rs.viewIndicadorDiag;
+        Ctrl.Sentidos = Rs.Sentidos;
+        Ctrl.periodDateLocale = Rs.periodDateLocale;
+        Ctrl.Loading = true;
+        Ctrl.Procesos = null;
+        Ctrl.FsOpenFolder = Rs.FsOpenFolder;
+        Ctrl.Frecuencias = Rs.Frecuencias;
+        Ctrl.BlockModo = true;
+
+        //Sidenav
+        Ctrl.sidenavSel = null; //FIX
+        Ctrl.SidenavIcons = [
+			['fa-filter', 	     					'Filtros'		,false],
+			['fa-sign-in-alt fa-rotate-90 fa-lg', 	'Descargar'		,false],
+		];
+		Ctrl.openSidenavElm = (S) => {
+			Ctrl.sidenavSel = (S[1] == Ctrl.sidenavSel) ? null : S[1];
+		};
+
+		//Filtros
+        Ctrl.filters = {
+        	proceso_ruta: false,
+        	cumplimiento: false,
+        	frecuencia_analisis: ['-1'],
+        	analisis: '',
+        	see: 'Res'
+        };
+
+        Ctrl.filtrosCumplimiento = [
+			[ 'green',    'Verde', 	        '#40d802' ],
+			[ 'yellow',   'Amarillo',       '#ffac00' ],
+			[ 'red',      'Rojo',           '#ff2626' ],
+			[ 'no_value', 'Sin Valor/Meta', '#797979' ],
+        ];
+
+		//Ctrl.Anio  = angular.copy(Rs.AnioActual);
+		//Ctrl.Mes   = angular.copy(Rs.MesActual);
+		//if(!$localStorage['ScorecardModo']) $localStorage['ScorecardModo'] = 'Año';
+		//Ctrl.Modo  = $localStorage['ScorecardModo'];
+		Ctrl.Modos = {
+			'Mes': ['Vista Mensual', 'md-calendar-event', 'Mes'],
+			'Año': ['Vista Anual', 'md-calendar', 'Anio'],
+		};
+		Ctrl.changeModo = (Modo = false) => {
+			if(Ctrl.BlockModo) return;
+			if(Modo) return Ctrl.Modo = Modo;
+			Ctrl.Modo = (Ctrl.Modo == "Mes") ? 'Año' : 'Mes';
+			//$localStorage['ScorecardModo'] = Ctrl.Modo;
+		};
+
+		//Periodo
+        Ctrl.PeriodoDate = moment(((Rs.AnioActual*100)+Rs.MesActual), 'YYYYMM').toDate();
+        //Ctrl.PeriodoDate = moment('2020-01-01').toDate();
+        Ctrl.MaxDate = moment().add(1, 'year').endOf("year").toDate();
+        Ctrl.parsePeriodo = Rs.parsePeriodo;
+        Ctrl.formatPeriodo = Rs.formatPeriodo;
+        Ctrl.getPeriodoParts = () => {
+        	var m = moment(Ctrl.PeriodoDate);
+        	console.log(m);
+
+        	let newAnio = Ctrl.PeriodoDate.getFullYear();
+
+        	Ctrl.Periodo = m.format('YYYYMM');
+        	Ctrl.Mes     = m.format('MM');
+        	
+        	if(Ctrl.Anio === undefined) Ctrl.Anio = newAnio;
+
+        	if(newAnio !== Ctrl.Anio){
+        		Ctrl.Anio = newAnio;
+        		Ctrl.getScorecard(Ctrl.Sco.id);
+        	};
+        	
+        }
+        Ctrl.getPeriodoParts();
+
+
+		Ctrl.periodoAdd = (num) => {
+			Ctrl.PeriodoDate = moment(Ctrl.PeriodoDate).add(num, 'month').toDate();
+			Ctrl.getPeriodoParts();
+		};
+
+		Ctrl.anioAdd = (num) => {
+			Ctrl.PeriodoDate = moment(Ctrl.PeriodoDate).add(num, 'year').toDate();
+			Ctrl.getPeriodoParts();
+			Ctrl.getScorecard(Ctrl.Sco.id);
+		};
+
+
+
+        Ctrl.Secciones = [];
+        
+
+        Ctrl.getProcesos =  (scorecard_id, Config) => {
+        	return Rs.http('api/Scorecards/get-procesos', { id: scorecard_id }, Ctrl, 'Procesos').then(() => {
+        		
+        		Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos, 'Ruta','Proceso', false, true);
+
+        		if('proceso_id' in Config){
+					if(Config.proceso_id !== null){
+						Ctrl.ProcesoSel = Ctrl.Procesos.find( p => p.id == Config.proceso_id );
+						if(Ctrl.ProcesoSel){
+							Ctrl.filters.proceso_ruta = Ctrl.ProcesoSel.Ruta;
+						}
+					}
+				}
+
+        		//return Ctrl.getScorecard(scorecard_id, Config);
+        	});
+        };
+
+		Ctrl.getScorecard = async (scorecard_id, Config) => {
+			if(!scorecard_id) return;
+			Ctrl.Loading = true;
+			Ctrl.ProcesoSelName = '';
+
+			if(!Ctrl.Procesos) await Ctrl.getProcesos(scorecard_id, Config);
+
+			if(!Ctrl.Sco){
+				await Rs.http('api/Scorecards/get-head', { id: scorecard_id }, Ctrl, 'Sco');
+
+				//Prep Vista 
+				Ctrl.Modo = Ctrl.Sco.config.default_view.substring(0, 3);
+				Ctrl.BlockModo = Ctrl.Sco.config.default_view.includes('Solo');
+
+				//Prep filters
+				Ctrl.filters.frecuencia_analisis = angular.copy(Ctrl.Sco.config.default_frecuencia_analisis);
+				Ctrl.filters.see = angular.copy(Ctrl.Sco.config.default_see);
+				Ctrl.filters.order_by = angular.copy(Ctrl.Sco.config.default_orderby);
+			}
+
+			Ctrl.filters.Periodo = Ctrl.Periodo;
+
+			Rs.http('api/Scorecards/get', { id: scorecard_id, Anio: Ctrl.Anio, filters: Ctrl.filters }, Ctrl, 'Sco').then(() => {
+            	Ctrl.Loading = false;
+            	Ctrl.SidenavIcons[0][2] = (typeof  Ctrl.filters.proceso_ruta === 'string');
+            	
+            	if(Ctrl.filters.proceso_ruta){
+            		Ctrl.ProcesoSel = Ctrl.Procesos.find( p => p.Ruta == Ctrl.filters.proceso_ruta )
+            		Ctrl.ProcesoSelName = Ctrl.filters.proceso_ruta.split('\\').pop();
+            	}
+
+            	Ctrl.Sco.nodos_flat_show = Ctrl.Sco.nodos_flat.filter(N => N.show);
+            	//Ctrl.downloadIndicadores();
+
+            });
+		};
+
+		Ctrl.openFlatLevel = (N, ev) => {
+			ev.stopPropagation();
+			if(N.tipo !== 'Nodo') return Ctrl.decideAction(N);
+
+			N.open = !N.open;
+
+			//var cont = true;
+			angular.forEach(Ctrl.Sco.nodos_flat, (nodo) => {
+
+				var hijo = nodo.ruta.startsWith(N.ruta) && nodo.depth > N.depth;
+
+				if(hijo){
+					if(nodo.depth == N.depth + 1){ nodo.show = N.open; nodo.open = false; }
+					else{
+						nodo.show = nodo.open = false;
+					}
+				}
+			});
+
+			Ctrl.Sco.nodos_flat_show = Ctrl.Sco.nodos_flat.filter(N => N.show);
+		}
+
+		Ctrl.decideAction = (N) => {
+			if(N.tipo == 'Indicador'){
+				Rs.viewIndicadorDiag(N.elemento.id, { Anio: Ctrl.Anio });
+			}else if(N.tipo == 'Variable'){
+				Rs.viewVariableDiag(N.elemento.id, { Anio: Ctrl.Anio });
+			}
+		};
+
+		//Filtros
+		Ctrl.lookupProceso = (F) => {
+			Ctrl.filters.proceso_ruta = F.route;
+		}
+
+		Ctrl.clearCache = () => {
+			var nodos_ids = [];
+			angular.forEach(Ctrl.Sco.nodos_flat, N => {
+				if(N.tipo != 'Nodo') nodos_ids.push(N);
+			});
+
+			Rs.http('api/Scorecards/erase-cache', { Inds: nodos_ids }).then(() => {
+				//Ctrl.openScorecard(Ctrl.ScoSel, Ctrl.NodoSel);
+				Rs.showToast('Caché Borrada', 'Success');
+			});
+		}
+
+		Ctrl.checkFrecuenciaAnalisis = () => {
+			if(Ctrl.filters.frecuencia_analisis.includes('-1')) Ctrl.filters.frecuencia_analisis = ['-1'];
+		}
+
+
+		//Descarga de Datos
+		function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;        
+        }
+
+        function excelColName(n) {
+			var ordA = 'a'.charCodeAt(0);
+			var ordZ = 'z'.charCodeAt(0);
+			var len = ordZ - ordA + 1;
+
+			var s = "";
+			while(n >= 0) {
+				s = String.fromCharCode(n % len + ordA).toUpperCase() + s;
+				n = Math.floor(n / len) - 1;
+			}
+			return s;
+		}
+
+		Ctrl.downloadIndicadores = () => {
+
+	        var SheetData = [
+	        	['Indicador', 'Proceso', 'Sentido', 'Periodo', 'Meta', 'Real', 'Cumplimiento', 'Peso']
+	        ];
+
+	        var Niveles = 0;
+	        angular.forEach(Ctrl.Sco.nodos_flat, N => {
+	        	if(N.tipo !== 'Nodo'){
+	        		let RutaArr = N.ruta.split("\\");
+	        		RutaArr.pop();
+
+	        		N.ruta_arr = RutaArr;
+
+	        		Niveles = Math.max(Niveles, RutaArr.length);
+	        	}
+	        });
+
+	        //Agregar niveles a cabecera
+	        for (var i = 1; i <= Niveles; i++) {
+	        	SheetData[0].push('Nivel_'+i);
+	        }
+
+
+	        angular.forEach(Ctrl.Sco.nodos_flat, N => {
+	        	if(N.tipo !== 'Nodo'){
+
+	        		angular.forEach(N.valores, P => {
+						let Fila = [
+							N.Nodo,
+							N.elemento.proceso.Proceso,
+							N.elemento.Sentido,
+							P.Periodo,
+							P.meta_Valor,
+							P.Valor,
+							P.cump_porc,
+							N.peso
+						];
+
+						angular.forEach(N.ruta_arr, RA => {
+							Fila.push(RA);
+						});
+
+						SheetData.push(Fila);
+	        		});
+	        	}
+	        });
+
+			var wb = XLSX.utils.book_new();
+	        wb.Props = {
+                Title: "Datos Tablero de Mando "+ Ctrl.Sco.Titulo,
+                CreatedDate: new Date()
+	        };
+
+			var ws = XLSX.utils.aoa_to_sheet(SheetData);
+			var last_cell = excelColName(SheetData[0].length - 1) + (SheetData.length);
+			ws['!autofilter'] = { ref: ('A1:'+last_cell) };
+	        
+	        XLSX.utils.book_append_sheet(wb, ws, "Datos");
+	        var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+	     
+	        saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), Ctrl.Sco.Titulo + '_Datos.xlsx');
+		}
+
+        //Ctrl.getScorecard();
+	}
+]);
+
 angular.module('UsuariosCtrl', [])
 .controller('UsuariosCtrl', ['$scope', '$rootScope', '$http', '$injector', '$mdDialog', 
 	function($scope, $rootScope, $http, $injector, $mdDialog) {
@@ -5563,736 +6381,6 @@ angular.module('UsuariosCtrl', [])
 
 	}
 ]);
-angular.module('ScorecardsCtrl', [])
-.controller('ScorecardsCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$timeout', '$mdDialog', 
-	function($scope, $rootScope, $injector, $filter, $timeout, $mdDialog) {
-
-		console.info('ScorecardsCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.ScoSel = null;
-		Ctrl.ScorecardsNav = true;
-		Ctrl.ScorecardOpsNav = true;
-		Rs.mainTheme = 'Snow_White';
-		Ctrl.ScorecardsCRUD  = $injector.get('CRUD').config({ base_url: '/api/Scorecards' });
-		Ctrl.NodosCRUD 		 = $injector.get('CRUD').config({ base_url: '/api/Scorecards/nodos', query_call_arr: [['getElementos',null],['getRutas',null]] });
-		Ctrl.IndicadoresCRUD = $injector.get('CRUD').config({ base_url: '/api/Indicadores' });
-		Ctrl.VariablesCRUD 	 = $injector.get('CRUD').config({ base_url: '/api/Variables' });
-		Ctrl.NodosSelected = [];
-		Ctrl.newNodoName = '';
-
-		Ctrl.getScorecards = () => {
-			Ctrl.ScorecardsCRUD.get().then(() => {
-				
-				if(Rs.Storage.ScorecardSel){
-					var scorecard_sel_id = Rs.getIndex(Ctrl.ScorecardsCRUD.rows, Rs.Storage.ScorecardSel);
-					Ctrl.openScorecard(Ctrl.ScorecardsCRUD.rows[scorecard_sel_id]);
-				};
-				//Ctrl.getFs();
-			});
-		};
-
-		Ctrl.getFs = () => {
-			Ctrl.filterScorecards = "";
-
-			let Nodos = angular.copy(Ctrl.NodosCRUD.rows).filter(N => N.tipo == 'Nodo');
-			let NodoPrincipal = Nodos.find(N => N.padre_id == null);
-
-			angular.forEach(Nodos, N => {
-				if(N.padre_id == null){ N.Ruta = NodoPrincipal.Nodo }
-				else{ N.Ruta = NodoPrincipal.Nodo +"\\"+ N.Ruta; }
-			});
-
-			Ctrl.NodosFS = Rs.FsGet(Nodos,'Ruta','Nodo',false,true,false);
-			angular.forEach(Ctrl.NodosFS, (F) => {
-				if(F.type == 'folder'){
-					F.file = Nodos.find(N => { return (N.Ruta.trim() == F.route.trim()) });
-					//F.file = Ctrl.NodosCRUD.rows.filter(N => { return ( N.tipo == 'Nodo' && N.Ruta == F.route ) })[0];
-				};
-			});
-		};
-
-		Ctrl.addNodo = (NodoPadre) => {
-			var Nodos = Ctrl.NodosCRUD.rows.filter(N => { return N.tipo == 'Nodo' });
-			Rs.BasicDialog({
-				Title: 'Crear Nodo', Flex: 50,
-				Fields: [
-					{ Nombre: 'Nombre',  Value: '',   			Required: true, flex: 60 },
-					{ Nombre: 'Peso',    Value: 1,    			Required: true, flex: 10, Type: 'number' },
-					{ Nombre: 'Padre',   Value: NodoPadre.id, 	Required: true, flex: 30, Type: 'list', List: Nodos, Item_Val: 'id', Item_Show: 'Nodo' },
-				],
-			}).then((r) => {
-				if(!r) return;
-				var f = Rs.prepFields(r.Fields);
-				Ctrl.NodosCRUD.add({
-					scorecard_id: Ctrl.ScoSel.id, Nodo: f.Nombre, padre_id: f.Padre, Indice: Ctrl.NodoSel.subnodos.length, tipo: 'Nodo', peso: f.Peso 
-				}).then(() => {
-					Ctrl.openNodo(Ctrl.NodoSel);
-				});
-			});
-		};
-
-		Ctrl.addNewNodo = () => {
-			if(Ctrl.newNodoName.trim() == '') return;
-			Ctrl.NodosCRUD.add({
-				scorecard_id: Ctrl.ScoSel.id, Nodo: Ctrl.newNodoName, padre_id: Ctrl.NodoSel.id, Indice: (Ctrl.NodoSel.subnodos.length + 1), tipo: 'Nodo', peso: 1 
-			}).then(() => {
-				Ctrl.getFs();
-				Ctrl.openNodo(Ctrl.NodoSel);
-			});
-		}
-
-		Ctrl.deleteScorecardNodo = () => {
-			if(Ctrl.NodoSel.indicadores.length > 0 || Ctrl.NodoSel.subnodos.length > 0 ) return Rs.showToast('Solo se pueden eliminar nodos vacíos', 'Error');
-			Ctrl.NodosCRUD.delete(Ctrl.NodoSel).then(() => {
-				Ctrl.openScorecard(Ctrl.ScoSel);
-			});
-		}
-
-		Ctrl.openNodo = (Nodo) => {
-			
-			Ctrl.NodoSel = Nodo;
-			Ctrl.NodoSel.indicadores = $filter('orderBy')(Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo !== 'Nodo' && N.padre_id == Nodo.id) }), 'Indice');
-			Ctrl.NodoSel.subnodos    = Ctrl.NodosCRUD.rows.filter(N => { return (N.tipo ==  'Nodo'      && N.padre_id == Nodo.id) });
-			Ctrl.NodosSelected = [];
-			Ctrl.newNodoName = '';
-			//Rs.viewScorecardDiag(Ctrl.ScoSel.id); //FIX
-
-		};
-
-		Ctrl.addIndicador = () => {
-
-			var indicadores_ids = Ctrl.NodosCRUD.rows.filter(n => n.tipo == 'Indicador').map(n => n.elemento_id);
-			var Indicadores = Ctrl.IndicadoresCRUD.rows.filter(i => !Rs.inArray(i.id, indicadores_ids) );
-
-			//return console.log(indicadores_ids);
-
-			Rs.TableDialog(Indicadores, {
-				Title: 'Seleccionar Indicadores', Flex: 60, 
-				Columns: [
-					{ Nombre: 'proceso.Proceso',  Desc: 'Nodo',       numeric: false, orderBy: 'Ruta' },
-					{ Nombre: 'Indicador', 	 	  Desc: 'Indicador',  numeric: false, orderBy: 'Indicador' },
-					{ Nombre: 'proceso.Tipo',     Desc: 'Tipo Nodo',  numeric: false, orderBy: false },
-					{ Nombre: 'updated_at',       Desc: 'Actualizado',  numeric: false, orderBy: 'updated_at' },
-				],
-				orderBy: 'Ruta', select: 'Row.id'
-			}).then(Selected => {
-				if(!Selected || Selected.length == 0 ) return;
-				var Indice = Ctrl.NodoSel.indicadores.length + 1;
-				Selected = Selected.map(indicador_id => {
-					return {
-						scorecard_id: Ctrl.ScoSel.id, 
-						Nodo: null, padre_id: Ctrl.NodoSel.id, 
-						Indice: Indice++, tipo: 'Indicador', elemento_id: indicador_id, peso: 1 
-					}
-				});
-
-				Ctrl.NodosCRUD.addMultiple(Selected).then(() => {
-					Ctrl.openNodo(Ctrl.NodoSel);
-				});
-			});
-		};
-
-		Ctrl.addVariable = () => {
-			Rs.BasicDialog({
-				Title: 'Agregar Variable', Flex: 50,
-				Fields: [
-					{ Nombre: 'Variable', Value:null, Required: true, flex: 90, Type: 'autocomplete', 
-					opts: {
-						itemsFn: (text) => { return $filter('filter')(Ctrl.VariablesCRUD.rows, { Variable: text }); },
-						itemDisplay: (item) => { return item.Variable }, itemText: 'Variable',
-						minLength: 0, delay: 300, itemVal: false
-					}},
-					{ Nombre: 'Peso',    Value: 1,    			Required: true, flex: 10, Type: 'number' }
-				],
-			}).then(r => {
-				if(!r) return;
-
-				var f = Rs.prepFields(r.Fields);
-				var Indice = Ctrl.NodoSel.indicadores.length;
-				Ctrl.NodosCRUD.add({
-					scorecard_id: Ctrl.ScoSel.id, Nodo: null, padre_id: Ctrl.NodoSel.id, Indice: Indice, tipo: 'Variable', elemento_id: f.Variable.id, peso: f.Peso 
-				}).then(() => {
-					Ctrl.openNodo(Ctrl.NodoSel);
-					Ctrl.getFs();
-				});
-			});
-		};
-
-		Ctrl.searchScorecard = () => {
-			if(Ctrl.filterScorecards == ""){
-				Ctrl.getFs();
-			}else{
-				Ctrl.ScorecardsFS = Rs.FsGet($filter('filter')(Ctrl.ScorecardsCRUD.rows, Ctrl.filterScorecards),'Ruta','Scorecard',true);
-			};
-		};
-
-		Ctrl.addScorecard = () => {
-			Rs.BasicDialog({
-				Title: 'Crear Scorecard', Flex: 50,
-				Fields: [
-					{ Nombre: 'Titulo',  		Value: '', Required: true },
-					{ Nombre: 'Primer Nodo',    Value: '', Required: true },
-				],
-			}).then((r) => {
-				if(!r) return;
-				var f = Rs.prepFields(r.Fields);
-				console.log(f);
-				Ctrl.ScorecardsCRUD.add({ Titulo: f.Titulo, Secciones: [] }).then(r => {
-					Ctrl.NodosCRUD.add({ scorecard_id: r.id, Nodo: r.Titulo, tipo: 'Nodo' }).then(n => {
-						Ctrl.NodosCRUD.add({ scorecard_id: r.id, Nodo: f['Primer Nodo'], tipo: 'Nodo', padre_id: n.id }).then(() => {
-							Rs.showToast('Scorecard Creado');
-						});
-					});
-				});
-			});
-		};
-
-		Ctrl.openScorecard = (V, Nodo) => {
-			Ctrl.ScoSel = V;
-			Rs.Storage.ScorecardSel = V.id;
-			Ctrl.NodoSel = Rs.def(Nodo, null);
-			Ctrl.NodosCRUD.setScope('scorecard', Ctrl.ScoSel.id).get().then(() => {
-				if(!Nodo) Nodo = Ctrl.NodosCRUD.rows[0];
-				Ctrl.openNodo(Nodo);
-				Ctrl.getFs();
-
-				//Ctrl.copyUrlDatos() //FIX
-				//Ctrl.recalcCache(); //FIX
-			});
-		};
-
-		Ctrl.updateScorecard = () => {
-
-			if(Ctrl.ScoSel.changed){  
-				Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel); 
-				Rs.showToast('Scorecard Actualizado', 'Success');
-				Ctrl.ScoSel.changed = false;
-			}
-
-			if(Ctrl.NodoSel.changed){ 
-				Ctrl.NodosCRUD.update(Ctrl.NodoSel).then(() => { Ctrl.openScorecard(Ctrl.ScoSel, Ctrl.NodoSel); }); 
-				Rs.showToast('Nodo Actualizado', 'Success');
-				Ctrl.NodoSel.changed = false; 
-			}
-
-			var IndicadoresChanged = Ctrl.NodoSel.indicadores.filter(i => { return (i.changed == true); });
-			var SubnodosChanged    = Ctrl.NodoSel.subnodos.filter(i => {    return (i.changed == true); });
-			var Changed = IndicadoresChanged.concat(SubnodosChanged);
-			if(Changed.length > 0){
-				Ctrl.NodosCRUD.updateMultiple(Changed).then(() => {
-					Rs.showToast('Indicadores Actualizados', 'Success');
-					angular.forEach(Ctrl.NodoSel.indicadores, I => {
-						I.changed = false;
-					});
-
-					angular.forEach(Ctrl.NodoSel.subnodos, I => {
-						I.changed = false;
-					});
-				});
-			}
-
-			
-			/*Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel).then(() => {
-				Rs.showToast('Scorecard Actualizada', 'Success');
-				Ctrl.saveCards();
-			});*/
-		};
-
-		Ctrl.delIndicador = (I) => {
-			Ctrl.NodosCRUD.delete(I).then(() => {
-				Ctrl.openNodo(Ctrl.NodoSel);
-			});
-
-		}
-
-		//Nuevo multiple delete
-		Ctrl.deleteNodosInd = () => {
-			if(Ctrl.NodosSelected.length == 0) return;
-			return Rs.confirmDelete({
-				Title: '¿Eliminar estos '+Ctrl.NodosSelected.length+' Indicadores/Variables ?',
-			}).then(d => {
-				if(!d) return;
-				Ctrl.NodosCRUD.ops.selected = angular.copy(Ctrl.NodosSelected);
-				Ctrl.NodosCRUD.deleteMultiple().then(() => {
-					return Ctrl.reindexarNodo(Ctrl.NodoSel);
-				});
-			})
-		}
-
-		Ctrl.reindexarNodo = (Nodo) => {
-			return Rs.http('api/Scorecards/reindexar', { Nodo: Nodo }).then(() => {
-				Ctrl.openScorecard(Ctrl.ScoSel, Ctrl.NodoSel);
-			});
-		}
-
-		Ctrl.moveNodosInd = () => {
-			return $mdDialog.show({
-				controller: 'Scorecards_NodoSelectorCtrl',
-				templateUrl: 'Frag/Scorecards.Scorecards_NodoSelector',
-				locals: { NodosFS: angular.copy(Ctrl.NodosFS) },
-				clickOutsideToClose: true,
-				fullscreen: true,
-				multiple: true,
-			}).then(N => {
-				if(!N) return;
-				Rs.http('api/Scorecards/move-inds', { Inds: Ctrl.NodosSelected, nodo_destino_id: N.id }).then(() => {
-					Ctrl.openScorecard(Ctrl.ScoSel, Ctrl.NodoSel);
-				});
-
-				//console.log(N);
-			});
-		}
-
-		Ctrl.eraseCacheNodosInd = () => {
-			Rs.http('api/Scorecards/erase-cache', { Inds: Ctrl.NodosSelected }).then(() => {
-				//Ctrl.openScorecard(Ctrl.ScoSel, Ctrl.NodoSel);
-				Rs.showToast('Caché Borrada', 'Success');
-			});
-		}
-
-
-		Ctrl.getProcesos = () => {
-			return Rs.http('api/Procesos', {}, Ctrl, 'Procesos');
-		};
-
-
-		Promise.all([Ctrl.IndicadoresCRUD.get(), Ctrl.VariablesCRUD.get(), Ctrl.getProcesos()]).then(values => { 
-			Ctrl.getScorecards();
-		});
-		
-
-		//Reordenar Indicadores
-		Ctrl.dragListener2 = {
-			accept: function (sourceItemHandleScope, destSortableScope) { return true; },
-			orderChanged: () => {
-				angular.forEach(Ctrl.NodoSel.indicadores, (C,index) => {
-					if(C.Indice !== index){
-						C.Indice = index;
-						C.changed = true;
-					};
-				});
-			}
-		};
-
-
-
-		//URL de Datos
-		Ctrl.copyUrlDatos = async () => {
-
-			if(Ctrl.ScoSel.config.data_code == ''){
-				Ctrl.ScoSel.config.data_code = Rs.makeUid(5);
-				await Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel);
-			}
-
-			let Url = Rs.Usuario.url + 'scorecard_data/' + Ctrl.ScoSel.config.data_code + '/' + Rs.AnioActual;
-
-			let Res = await Rs.Confirm({
-				Titulo: 'Url para acceder a los datos en formato JSON',
-				Detail: Url,
-				hasCancel: false,
-				Buttons: [
-					{ Text: 'Cambiar Código', Class: 'md-raised', Value: 'CHANGE_CODE' },
-					{ Text: 'Ok', Class: 'md-raised md-primary', Value: true }
-				],
-			});
-
-			if(Res == 'CHANGE_CODE'){
-				Ctrl.ScoSel.config.data_code = Rs.makeUid(5);
-				await Ctrl.ScorecardsCRUD.update(Ctrl.ScoSel);
-				Ctrl.copyUrlDatos();
-			}
-		}
-
-		Ctrl.checkFrecuenciaAnalisis = () => {
-			if(Ctrl.ScoSel.config.default_frecuencia_analisis.includes('-1')) Ctrl.ScoSel.config.default_frecuencia_analisis = ['-1'];
-			Ctrl.ScoSel.changed = true;
-		}
-
-		Ctrl.recalcCache = () => {
-			return $mdDialog.show({
-				controller: 'Scorecards_RecalcCacheDiagCtrl',
-				templateUrl: 'Frag/Scorecards.Scorecards_RecalcCacheDiag',
-				locals: { ScoSel: Ctrl.ScoSel },
-				clickOutsideToClose: false,
-				fullscreen: false,
-				multiple: true,
-			})
-		}
-
-	}
-]);
-angular.module('Scorecards_NodoSelectorCtrl', [])
-.controller('Scorecards_NodoSelectorCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', 'NodosFS', 
-	function($scope, $rootScope, $mdDialog, $filter, NodosFS) {
-
-		console.info('Scorecards_NodoSelectorCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		Ctrl.Cancel = () => { $mdDialog.cancel(); }
-		Ctrl.NodosFS = NodosFS;
-		Ctrl.FsOpenFolder = Rs.FsOpenFolder;
-
-		Ctrl.selectNodo = (N) => { Ctrl.NodoSel = N; }
-
-		Ctrl.submitNodo = () => {
-			$mdDialog.hide(Ctrl.NodoSel)
-		}
-
-	}
-]);
-
-angular.module('Scorecards_RecalcCacheDiagCtrl', [])
-.controller('Scorecards_RecalcCacheDiagCtrl', ['$scope', '$rootScope', '$http', '$injector', '$mdDialog', 'ScoSel',
-	function($scope, $rootScope, $http, $injector, $mdDialog, ScoSel) {
-
-		console.info('Scorecards_RecalcCacheDiagCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-		Ctrl.Cancel = () => { $mdDialog.cancel(); }
-		Ctrl.ScoSel = ScoSel;
-
-		Ctrl.Anio = angular.copy(Rs.AnioActual);
-		Ctrl.Anios = [Ctrl.Anio-3,Ctrl.Anio-2,Ctrl.Anio-1,Ctrl.Anio,Ctrl.Anio+1];
-
-		Ctrl.selectedRow = [];
-		Ctrl.Status = 'Iddle';
-
-		Rs.http('api/Scorecards/get-elements', { id: ScoSel.id, Tipo: 'Indicador' }, Ctrl, 'Nodos').then(() => {
-			angular.forEach(Ctrl.Nodos, (N) => {
-				let ruta_arr = N.ruta.split('\\');
-				ruta_arr.shift();
-				ruta_arr.pop();
-				N.ruta_fixed = ruta_arr.join('\\');
-			});
-		});
-
-		Ctrl.startRefresh = () => {
-			if(Ctrl.selectedRow.length == 0){
-				Ctrl.CurrIndex = 0;
-				angular.forEach(Ctrl.Nodos, (N) => {
-					N.done = false;
-				});
-			}else{
-				Ctrl.CurrIndex = Rs.getIndex(Ctrl.Nodos, Ctrl.selectedRow[0].id);
-			}
-			
-			Ctrl.Status = 'Running';
-			Ctrl.StepRefresh();
-		};
-
-		Ctrl.StepRefresh = () => {
-			let Indicador = Ctrl.Nodos[Ctrl.CurrIndex];
-			if(!Indicador || Ctrl.Status !== 'Running'){
-				return Ctrl.Status = 'Iddle';
-			}
-
-			Ctrl.selectedRow = [Indicador];
-
-			Rs.http('api/Indicadores/get', { Anio: Ctrl.Anio, id: Indicador.elemento.id, modoComparativo: false }).then(() => {
-				Indicador.done = true;
-				Ctrl.CurrIndex++;
-				Ctrl.StepRefresh();
-			});
-		};
-
-		Ctrl.stopRefresh = () => {
-			Ctrl.Status = 'Iddle';
-		}
-
-	}
-]);
-angular.module('Scorecards_ScorecardDiagCtrl', [])
-.controller('Scorecards_ScorecardDiagCtrl', ['$scope', '$rootScope', '$mdDialog', '$filter', '$timeout', '$localStorage',
-	function($scope, $rootScope, $mdDialog, $filter, $timeout, $localStorage) {
-
-		console.info('Scorecards_ScorecardDiagCtrl');
-		var Ctrl = $scope;
-		var Rs = $rootScope;
-
-		Ctrl.Cancel = () => { $mdDialog.cancel(); }
-
-		Ctrl.Meses = Rs.Meses;
-		Ctrl.inArray = Rs.inArray;
-        Ctrl.viewVariableDiag = Rs.viewVariableDiag;
-        Ctrl.viewIndicadorDiag = Rs.viewIndicadorDiag;
-        Ctrl.Sentidos = Rs.Sentidos;
-        Ctrl.periodDateLocale = Rs.periodDateLocale;
-        Ctrl.Loading = true;
-        Ctrl.Procesos = null;
-        Ctrl.FsOpenFolder = Rs.FsOpenFolder;
-        Ctrl.Frecuencias = Rs.Frecuencias;
-        Ctrl.BlockModo = true;
-
-        //Sidenav
-        Ctrl.sidenavSel = null; //FIX
-        Ctrl.SidenavIcons = [
-			['fa-filter', 	     					'Filtros'		,false],
-			['fa-sign-in-alt fa-rotate-90 fa-lg', 	'Descargar'		,false],
-		];
-		Ctrl.openSidenavElm = (S) => {
-			Ctrl.sidenavSel = (S[1] == Ctrl.sidenavSel) ? null : S[1];
-		};
-
-		//Filtros
-        Ctrl.filters = {
-        	proceso_ruta: false,
-        	cumplimiento: false,
-        	frecuencia_analisis: ['-1'],
-        	analisis: '',
-        	see: 'Res'
-        };
-
-        Ctrl.filtrosCumplimiento = [
-			[ 'green',    'Verde', 	        '#40d802' ],
-			[ 'yellow',   'Amarillo',       '#ffac00' ],
-			[ 'red',      'Rojo',           '#ff2626' ],
-			[ 'no_value', 'Sin Valor/Meta', '#797979' ],
-        ];
-
-		//Ctrl.Anio  = angular.copy(Rs.AnioActual);
-		//Ctrl.Mes   = angular.copy(Rs.MesActual);
-		//if(!$localStorage['ScorecardModo']) $localStorage['ScorecardModo'] = 'Año';
-		//Ctrl.Modo  = $localStorage['ScorecardModo'];
-		Ctrl.Modos = {
-			'Mes': ['Vista Mensual', 'md-calendar-event', 'Mes'],
-			'Año': ['Vista Anual', 'md-calendar', 'Anio'],
-		};
-		Ctrl.changeModo = () => {
-			if(Ctrl.BlockModo) return;
-			Ctrl.Modo = (Ctrl.Modo == "Mes") ? 'Año' : 'Mes';
-			//$localStorage['ScorecardModo'] = Ctrl.Modo;
-		};
-
-		//Periodo
-        Ctrl.PeriodoDate = moment(((Rs.AnioActual*100)+Rs.MesActual), 'YYYYMM').toDate();
-        //Ctrl.PeriodoDate = moment('2020-01-01').toDate();
-        Ctrl.MaxDate = moment().add(1, 'year').endOf("year").toDate();
-        Ctrl.parsePeriodo = Rs.parsePeriodo;
-        Ctrl.formatPeriodo = Rs.formatPeriodo;
-        Ctrl.getPeriodoParts = () => {
-        	var m = moment(Ctrl.PeriodoDate);
-        	console.log(m);
-        	Ctrl.Periodo = m.format('YYYYMM');
-        	Ctrl.Mes     = m.format('MM');
-        	Ctrl.Anio    = Ctrl.PeriodoDate.getFullYear();
-        }
-        Ctrl.getPeriodoParts();
-
-
-		Ctrl.periodoAdd = (num) => {
-			Ctrl.PeriodoDate = moment(Ctrl.PeriodoDate).add(num, 'month').toDate();
-			Ctrl.getPeriodoParts();
-		};
-
-		Ctrl.anioAdd = (num) => {
-			Ctrl.PeriodoDate = moment(Ctrl.PeriodoDate).add(num, 'year').toDate();
-			Ctrl.getPeriodoParts();
-			Ctrl.getScorecard(Ctrl.Sco.id);
-		};
-
-
-
-        Ctrl.Secciones = [];
-        
-
-        Ctrl.getProcesos =  (scorecard_id, Config) => {
-        	return Rs.http('api/Scorecards/get-procesos', { id: scorecard_id }, Ctrl, 'Procesos').then(() => {
-        		
-        		Ctrl.ProcesosFS = Rs.FsGet(Ctrl.Procesos, 'Ruta','Proceso', false, true);
-
-        		if('proceso_id' in Config){
-					if(Config.proceso_id !== null){
-						Ctrl.ProcesoSel = Ctrl.Procesos.find( p => p.id == Config.proceso_id );
-						if(Ctrl.ProcesoSel){
-							Ctrl.filters.proceso_ruta = Ctrl.ProcesoSel.Ruta;
-						}
-					}
-				}
-
-        		//return Ctrl.getScorecard(scorecard_id, Config);
-        	});
-        };
-
-		Ctrl.getScorecard = async (scorecard_id, Config) => {
-			if(!scorecard_id) return;
-			Ctrl.Loading = true;
-			Ctrl.ProcesoSelName = '';
-
-			if(!Ctrl.Procesos) await Ctrl.getProcesos(scorecard_id, Config);
-
-			if(!Ctrl.Sco){
-				await Rs.http('api/Scorecards/get-head', { id: scorecard_id }, Ctrl, 'Sco');
-
-				//Prep Vista 
-				Ctrl.Modo = Ctrl.Sco.config.default_view.substring(0, 3);
-				Ctrl.BlockModo = Ctrl.Sco.config.default_view.includes('Solo');
-
-				//Prep filters
-				Ctrl.filters.frecuencia_analisis = angular.copy(Ctrl.Sco.config.default_frecuencia_analisis);
-				Ctrl.filters.see = angular.copy(Ctrl.Sco.config.default_see);
-				Ctrl.filters.order_by = angular.copy(Ctrl.Sco.config.default_orderby);
-			}
-
-			Ctrl.filters.Periodo = Ctrl.Periodo;
-
-			Rs.http('api/Scorecards/get', { id: scorecard_id, Anio: Ctrl.Anio, filters: Ctrl.filters }, Ctrl, 'Sco').then(() => {
-            	Ctrl.Loading = false;
-            	Ctrl.SidenavIcons[0][2] = (typeof  Ctrl.filters.proceso_ruta === 'string');
-            	
-            	if(Ctrl.filters.proceso_ruta){
-            		Ctrl.ProcesoSel = Ctrl.Procesos.find( p => p.Ruta == Ctrl.filters.proceso_ruta )
-            		Ctrl.ProcesoSelName = Ctrl.filters.proceso_ruta.split('\\').pop();
-            	}
-
-            	Ctrl.Sco.nodos_flat_show = Ctrl.Sco.nodos_flat.filter(N => N.show);
-            	//Ctrl.downloadIndicadores();
-
-            });
-		};
-
-		Ctrl.openFlatLevel = (N, ev) => {
-			ev.stopPropagation();
-			if(N.tipo !== 'Nodo') return Ctrl.decideAction(N);
-
-			N.open = !N.open;
-
-			//var cont = true;
-			angular.forEach(Ctrl.Sco.nodos_flat, (nodo) => {
-
-				var hijo = nodo.ruta.startsWith(N.ruta) && nodo.depth > N.depth;
-
-				if(hijo){
-					if(nodo.depth == N.depth + 1){ nodo.show = N.open; nodo.open = false; }
-					else{
-						nodo.show = nodo.open = false;
-					}
-				}
-			});
-
-			Ctrl.Sco.nodos_flat_show = Ctrl.Sco.nodos_flat.filter(N => N.show);
-		}
-
-		Ctrl.decideAction = (N) => {
-			if(N.tipo == 'Indicador'){
-				Rs.viewIndicadorDiag(N.elemento.id, { Anio: Ctrl.Anio });
-			}else if(N.tipo == 'Variable'){
-				Rs.viewVariableDiag(N.elemento.id, { Anio: Ctrl.Anio });
-			}
-		};
-
-		//Filtros
-		Ctrl.lookupProceso = (F) => {
-			Ctrl.filters.proceso_ruta = F.route;
-		}
-
-		Ctrl.clearCache = () => {
-			var nodos_ids = [];
-			angular.forEach(Ctrl.Sco.nodos_flat, N => {
-				if(N.tipo != 'Nodo') nodos_ids.push(N);
-			});
-
-			Rs.http('api/Scorecards/erase-cache', { Inds: nodos_ids }).then(() => {
-				//Ctrl.openScorecard(Ctrl.ScoSel, Ctrl.NodoSel);
-				Rs.showToast('Caché Borrada', 'Success');
-			});
-		}
-
-		Ctrl.checkFrecuenciaAnalisis = () => {
-			if(Ctrl.filters.frecuencia_analisis.includes('-1')) Ctrl.filters.frecuencia_analisis = ['-1'];
-		}
-
-
-		//Descarga de Datos
-		function s2ab(s) {
-            var buf = new ArrayBuffer(s.length);
-            var view = new Uint8Array(buf);
-            for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
-            return buf;        
-        }
-
-        function excelColName(n) {
-			var ordA = 'a'.charCodeAt(0);
-			var ordZ = 'z'.charCodeAt(0);
-			var len = ordZ - ordA + 1;
-
-			var s = "";
-			while(n >= 0) {
-				s = String.fromCharCode(n % len + ordA).toUpperCase() + s;
-				n = Math.floor(n / len) - 1;
-			}
-			return s;
-		}
-
-		Ctrl.downloadIndicadores = () => {
-
-	        var SheetData = [
-	        	['Indicador', 'Proceso', 'Sentido', 'Periodo', 'Meta', 'Real', 'Cumplimiento', 'Peso']
-	        ];
-
-	        var Niveles = 0;
-	        angular.forEach(Ctrl.Sco.nodos_flat, N => {
-	        	if(N.tipo !== 'Nodo'){
-	        		let RutaArr = N.ruta.split("\\");
-	        		RutaArr.pop();
-
-	        		N.ruta_arr = RutaArr;
-
-	        		Niveles = Math.max(Niveles, RutaArr.length);
-	        	}
-	        });
-
-	        //Agregar niveles a cabecera
-	        for (var i = 1; i <= Niveles; i++) {
-	        	SheetData[0].push('Nivel_'+i);
-	        }
-
-
-	        angular.forEach(Ctrl.Sco.nodos_flat, N => {
-	        	if(N.tipo !== 'Nodo'){
-
-	        		angular.forEach(N.valores, P => {
-						let Fila = [
-							N.Nodo,
-							N.elemento.proceso.Proceso,
-							N.elemento.Sentido,
-							P.Periodo,
-							P.meta_Valor,
-							P.Valor,
-							P.cump_porc,
-							N.peso
-						];
-
-						angular.forEach(N.ruta_arr, RA => {
-							Fila.push(RA);
-						});
-
-						SheetData.push(Fila);
-	        		});
-	        	}
-	        });
-
-			var wb = XLSX.utils.book_new();
-	        wb.Props = {
-                Title: "Datos Tablero de Mando "+ Ctrl.Sco.Titulo,
-                CreatedDate: new Date()
-	        };
-
-			var ws = XLSX.utils.aoa_to_sheet(SheetData);
-			var last_cell = excelColName(SheetData[0].length - 1) + (SheetData.length);
-			ws['!autofilter'] = { ref: ('A1:'+last_cell) };
-	        
-	        XLSX.utils.book_append_sheet(wb, ws, "Datos");
-	        var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
-	     
-	        saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), Ctrl.Sco.Titulo + '_Datos.xlsx');
-		}
-
-        //Ctrl.getScorecard();
-	}
-]);
-
 angular.module('VariablesCtrl', [])
 .controller('VariablesCtrl', ['$scope', '$rootScope', '$injector', '$filter', '$mdEditDialog', '$mdDialog',
 	function($scope, $rootScope, $injector, $filter, $mdEditDialog, $mdDialog) {
@@ -6364,7 +6452,7 @@ angular.module('VariablesCtrl', [])
 			var Vars = Ctrl.VariablesCRUD.rows.filter((v) => {
 				return v.Ruta.startsWith(F.route);
 			}).map(v => v.id);
-			Rs.getVariableData(Vars, null, null);
+			Rs.getVariableData(Vars, 'Calculado de Entidad', 1);
 		};
 
 		Ctrl.searchVariable = () => {
@@ -6643,8 +6731,8 @@ angular.module('VariablesGetDataDiagCtrl', [])
 		Ctrl.downloadStatus = 'iddle';
 
 		Ctrl.periodDateLocale = Rs.periodDateLocale;
-		Ctrl.TipoVar = Tipo || 'Calculado de Entidad';
-		Ctrl.Frecuencia = Frecuencia || 1;
+		Ctrl.TipoVar = Tipo;
+		Ctrl.Frecuencia = Frecuencia;
 		Ctrl.OrderOps = [
 			[ ["Ruta","Variable"], "Por Proceso" ],
 			[ ["Variable","Ruta"], "Alfabéticamente" ],

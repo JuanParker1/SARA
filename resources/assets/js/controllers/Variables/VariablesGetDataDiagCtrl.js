@@ -19,8 +19,8 @@ angular.module('VariablesGetDataDiagCtrl', [])
 		Ctrl.downloadStatus = 'iddle';
 
 		Ctrl.periodDateLocale = Rs.periodDateLocale;
-		Ctrl.TipoVar = Tipo || 'Calculado de Entidad';
-		Ctrl.Frecuencia = Frecuencia || 1;
+		Ctrl.TipoVar = Tipo;
+		Ctrl.Frecuencia = Frecuencia;
 		Ctrl.OrderOps = [
 			[ ["Ruta","Variable"], "Por Proceso" ],
 			[ ["Variable","Ruta"], "Alfabéticamente" ],

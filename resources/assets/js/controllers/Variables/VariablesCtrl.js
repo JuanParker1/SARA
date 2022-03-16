@@ -69,7 +69,7 @@ angular.module('VariablesCtrl', [])
 			var Vars = Ctrl.VariablesCRUD.rows.filter((v) => {
 				return v.Ruta.startsWith(F.route);
 			}).map(v => v.id);
-			Rs.getVariableData(Vars, null, null);
+			Rs.getVariableData(Vars, 'Calculado de Entidad', 1);
 		};
 
 		Ctrl.searchVariable = () => {

@@ -54,8 +54,9 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
 			'Mes': ['Vista Mensual', 'md-calendar-event', 'Mes'],
 			'Año': ['Vista Anual', 'md-calendar', 'Anio'],
 		};
-		Ctrl.changeModo = () => {
+		Ctrl.changeModo = (Modo = false) => {
 			if(Ctrl.BlockModo) return;
+			if(Modo) return Ctrl.Modo = Modo;
 			Ctrl.Modo = (Ctrl.Modo == "Mes") ? 'Año' : 'Mes';
 			//$localStorage['ScorecardModo'] = Ctrl.Modo;
 		};
@@ -69,9 +70,19 @@ angular.module('Scorecards_ScorecardDiagCtrl', [])
         Ctrl.getPeriodoParts = () => {
         	var m = moment(Ctrl.PeriodoDate);
         	console.log(m);
+
+        	let newAnio = Ctrl.PeriodoDate.getFullYear();
+
         	Ctrl.Periodo = m.format('YYYYMM');
         	Ctrl.Mes     = m.format('MM');
-        	Ctrl.Anio    = Ctrl.PeriodoDate.getFullYear();
+        	
+        	if(Ctrl.Anio === undefined) Ctrl.Anio = newAnio;
+
+        	if(newAnio !== Ctrl.Anio){
+        		Ctrl.Anio = newAnio;
+        		Ctrl.getScorecard(Ctrl.Sco.id);
+        	};
+        	
         }
         Ctrl.getPeriodoParts();
 

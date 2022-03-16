@@ -102,6 +102,11 @@
 
 		</div>
 
+		<div class="md-subheader margin-top-20">Presente en los tableros:</div>
+		<div ng-repeat="T in Ind.scorecards" layout class="padding-top-5">
+			{{ T.Titulo }}
+		</div>
+
 		<div class="h50"></div>
 
 	</div>

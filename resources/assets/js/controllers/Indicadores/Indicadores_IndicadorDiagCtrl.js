@@ -41,7 +41,7 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
 
 		Ctrl.getIndicadores = () => {
 
-			Rs.http('api/Indicadores/get', { id: indicador_id, Anio: Ctrl.Anio, modoComparativo: Ctrl.modoComparativo }, Ctrl, 'Ind').then(() => {
+			Rs.http('api/Indicadores/get', { id: indicador_id, Anio: Ctrl.Anio, modoComparativo: Ctrl.modoComparativo, obtenerScorecards: true }, Ctrl, 'Ind').then(() => {
 
 				angular.forEach(Ctrl.Ind.valores, (m,k) => {
 					var i = parseInt(m.mes);
@@ -201,6 +201,58 @@ angular.module('Indicadores_IndicadorDiagCtrl', [])
                     Entidad: 'Indicador', Entidad_id: indicador_id, Grupo: 'Accion',
                     usuario_id: Rs.Usuario.id, Comentario: 'Se registró una: Acción '+f.Tipo, Op1: f.Periodo, Op2: f.Tipo, Op4: f['Link']
                 });
+            });
+        };
+
+        Ctrl.editComment = (C) => {
+            let Tipos = ['Preventiva', 'Correctiva', 'De Mejora'];
+
+            if(C.Grupo == 'Comentario') return Rs.BasicDialog({
+                Theme: 'Black', Title: 'Editar Comentario',
+                Fields: [
+                    { Nombre: 'Comentario',  Value: C.Comentario, Required: true, Type: 'textarea',    opts: { rows: 4 } }
+                ],
+                Confirm: { Text: 'Cambiar' },
+                HasDelete: true
+            }).then(r => {
+                if(!r) return;
+                if(r.HasDeleteConf) return Ctrl.deleteComment(C);
+                let NewComentario = r.Fields[0].Value;
+                C.Comentario = NewComentario;
+                Ctrl.ComentariosCRUD.update(C).then(() => {
+                    Ctrl.getComentarios();
+                });
+            });
+
+            if(C.Grupo == 'Accion') return Rs.BasicDialog({
+                Theme: 'Black', Title: 'Editar Comentario',
+                Fields: [
+                    { Nombre: 'Tipo',        Value: C.Op2,   Required: true, Type: 'simplelist',  List: Tipos },
+                    { Nombre: 'Link',        Value: C.Op4,           Required: true }
+                ],
+                Confirm: { Text: 'Cambiar' },
+                HasDelete: true
+            }).then(r => {
+                if(!r) return;
+                if(r.HasDeleteConf) return Ctrl.deleteComment(C);
+                var f = Rs.prepFields(r.Fields);
+                C = angular.extend(C, {
+                    Comentario: 'Se registró una: Acción '+f.Tipo,
+                    Op2: f['Tipo'],
+                    Op4: f['Link']
+                });
+                Ctrl.ComentariosCRUD.update(C).then(() => {
+                    Ctrl.getComentarios();
+                });
+            });
+        };
+
+        Ctrl.deleteComment = (C) => {
+            Rs.confirmDelete({
+                Title: '¿Eliminar el comentario?'
+            }).then(r => {
+                if(!r) return;
+                Ctrl.ComentariosCRUD.delete(C);
             });
         };
 

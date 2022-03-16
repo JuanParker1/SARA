@@ -43,7 +43,7 @@ class ScorecardNodo extends MyModel
 		if(!$nodo) return $q->where('tipo', '!=', 'Nodo');
 	}
 
-	public function scopeScorecard($query,$id)
+	public function scopeScorecard($query, $id)
 	{
 		return $query->where('scorecard_id', $id);
 	}

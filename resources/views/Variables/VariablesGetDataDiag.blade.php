@@ -49,6 +49,7 @@
 				<md-input-container class="margin-bottom-5">
 					<label>Tipo</label>
 					<md-select ng-model="TipoVar" aria-label=s class="md-no-underline" ng-change="getVariables()" ng-readonly="loading">
+						<md-option ng-value="null">Cualquiera</md-option>
 						<md-option ng-value="Op" ng-repeat="Op in ['Manual', 'Calculado de Entidad']">{{ Op }}</md-option>
 					</md-select>
 				</md-input-container>
@@ -56,6 +57,7 @@
 				<md-input-container class="margin-bottom-5">
 					<label>Frecuencia</label>
 					<md-select ng-model="Frecuencia" aria-label=s class="md-no-underline" ng-change="getVariables()" ng-readonly="loading">
+						<md-option ng-value="null">Cualquiera</md-option>
 						<md-option ng-value="k" ng-repeat="(k, Op) in Frecuencias">{{ Op }}</md-option>
 					</md-select>
 				</md-input-container>

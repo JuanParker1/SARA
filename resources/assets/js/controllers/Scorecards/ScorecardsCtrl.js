@@ -22,6 +22,8 @@ angular.module('ScorecardsCtrl', [])
 				if(Rs.Storage.ScorecardSel){
 					var scorecard_sel_id = Rs.getIndex(Ctrl.ScorecardsCRUD.rows, Rs.Storage.ScorecardSel);
 					Ctrl.openScorecard(Ctrl.ScorecardsCRUD.rows[scorecard_sel_id]);
+				}else if(Ctrl.ScorecardsCRUD.rows.length > 0){
+					Ctrl.openScorecard(Ctrl.ScorecardsCRUD.rows[0]);
 				};
 				//Ctrl.getFs();
 			});
@@ -194,6 +196,7 @@ angular.module('ScorecardsCtrl', [])
 
 				//Ctrl.copyUrlDatos() //FIX
 				//Ctrl.recalcCache(); //FIX
+				//Ctrl.actualizarVariables();
 			});
 		};
 
@@ -233,6 +236,22 @@ angular.module('ScorecardsCtrl', [])
 				Ctrl.saveCards();
 			});*/
 		};
+
+
+		Ctrl.deleteScorecard = () => {
+			Rs.confirmDelete({
+				Title: `¿Eliminar el Tablero: "${Ctrl.ScoSel.Titulo}"?`,
+				Detail: '',
+			}).then(r => {
+				Rs.http('api/Scorecards/delete-scorecard', { id: Ctrl.ScoSel.id }).then(r => {
+					Rs.showToast('Tablero eliminado');
+					Ctrl.ScoSel = null;
+					Rs.Storage.ScorecardSel = null;
+					Ctrl.getScorecards();
+				});
+			});
+		}
+
 
 		Ctrl.delIndicador = (I) => {
 			Ctrl.NodosCRUD.delete(I).then(() => {
@@ -354,6 +373,12 @@ angular.module('ScorecardsCtrl', [])
 				multiple: true,
 			})
 		}
+
+		Ctrl.actualizarVariables = () => {
+			Rs.http('api/Scorecards/get-variables-ids', { id: Ctrl.ScoSel.id }).then(r => {
+				Rs.getVariableData(r, null, null);
+			});
+		};
 
 	}
 ]);

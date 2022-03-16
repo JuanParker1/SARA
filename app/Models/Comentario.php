@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Core\MyModel;
+use Carbon\Carbon;
 
 class Comentario extends MyModel
 {
@@ -11,7 +12,7 @@ class Comentario extends MyModel
 	protected $hidden = [];
 	protected $primaryKey = 'id';
     protected $casts = [];
-    protected $appends = ['hace'];
+    protected $appends = ['hace', 'editable'];
 
     public function columns()
 	{
@@ -37,10 +38,7 @@ class Comentario extends MyModel
 		return $this->belongsTo('\App\Models\Usuario', 'usuario_id');
 	}
 
-	public function getHaceAttribute()
-	{
-		return $this->created_at->diffForHumans();
-	}
+	
 
 	public function scopeTipoentidad($q, $Tipoentidad)
 	{
@@ -66,4 +64,18 @@ class Comentario extends MyModel
 	{
 		return $q->where('Entidad', $Entidad[0])->where('Entidad_id', $Entidad[1]);
 	}
+
+
+
+	public function getHaceAttribute()
+	{
+		return $this->created_at->diffForHumans();
+	}
+
+	public function getEditableAttribute()
+	{
+		$Usuario = \App\Functions\Helper::getUsuario();
+		return ($this->created_at->diffInMinutes(Carbon::now()) < 1440 AND $this->usuario_id == $Usuario->id);
+	}
+
 }

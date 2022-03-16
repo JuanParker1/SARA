@@ -32,6 +32,21 @@ class ScorecardsController extends Controller
         return $CRUD->call(request()->fn, request()->ops);
     }
 
+    public function postDeleteScorecard()
+    {
+        extract(request()->all()); //$id
+        $Sco = Scorecard::where('id', $id)->first();
+
+        //Buscar el tablero en las apps
+        $AppsPages = \App\Models\AppPages::where('Tipo', 'Scorecard')->with(['daapp'])->get();
+        foreach ($AppsPages as $AP) {
+            if($AP->Config['element_id'] == $Sco->id) abort(512, "No es posible eliminar, se usa en la App: {$AP->daapp->Titulo}");
+        };
+
+        $Sco->nodos()->delete();
+        $Sco->delete();
+    }
+
     public function postCards()
     {
         $CRUD = new CRUD('App\Models\ScorecardCard');
@@ -365,6 +380,24 @@ class ScorecardsController extends Controller
         }
 
         return $NodosFlat;
+    }
+
+    public function postGetVariablesIds()
+    {
+        extract(request()->all()); //$id
+        $Sco = Scorecard::where('id', $id)->with(['nodos'])->first();
+
+        $variables_ids = [];
+
+        foreach ($Sco->nodos as $N) {
+            if($N->tipo == 'Variable')  $variables_ids[] = $N['elemento_id'];
+            if($N->tipo == 'Indicador'){
+                $Indicador = \App\Models\Indicador::find($N['elemento_id']);
+                $variables_ids = array_merge($variables_ids, $Indicador->getVariables());
+            }
+        }
+
+        return $variables_ids;
     }
 
 
