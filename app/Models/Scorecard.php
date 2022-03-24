@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Core\MyModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Scorecard extends MyModel
 {
@@ -15,6 +16,8 @@ class Scorecard extends MyModel
     	'config' => 'array',
 	];
     protected $appends = [];
+
+    use SoftDeletes;
 
     public function columns()
 	{

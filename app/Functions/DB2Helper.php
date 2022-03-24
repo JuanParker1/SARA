@@ -25,6 +25,9 @@ class DB2Helper
             ->where('TABLE_SCHEMA', $tableRoute['Database'])
             ->where('TABLE_NAME',   $tableRoute['Table'])
             ->limit(1000)->get();
+
+        array_change_key_case($Columns, CASE_UPPER);
+
         return collect($Columns)->transform(function($row){
             return array_map('utf8_encode', $row);
         });

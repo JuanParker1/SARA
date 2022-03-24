@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Core\MyModel;
 use App\Functions\Helper;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ScorecardNodo extends MyModel
 {
@@ -21,6 +22,8 @@ class ScorecardNodo extends MyModel
     	//'Nodo',
     	'children'
     ];
+
+    use SoftDeletes;
 
     public function columns()
 	{

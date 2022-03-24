@@ -23,11 +23,15 @@ class PostgreSQLHelper
 
     public function getColumns($Conn, $tableRoute)
     {
-        return $Conn->table('information_schema.columns')
+        $Columns = $Conn->table('information_schema.columns')
             ->where('table_catalog', $tableRoute['Database'])
             ->where('table_schema',  $tableRoute['Schema'])
             ->where('table_name',    $tableRoute['Table'])
             ->orderBy('ordinal_position')->limit(1000)->get();
+
+        return collect($Columns)->transform(function($row){
+            return array_change_key_case($row, CASE_UPPER);
+        });
     }
 
     public function standarizeColumns($newCampos, $Bdd, $Entidad, $Campos, $tiposCampo)

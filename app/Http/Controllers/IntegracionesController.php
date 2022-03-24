@@ -229,4 +229,92 @@ class IntegracionesController extends Controller
         return $images;
     }
 
+
+    public static function prepPostgresqlDatatype($C)
+    {
+        $TranslateType = [ //Translation, length
+            'varchar'    => ['varchar',           'CHARACTER_MAXIMUM_LENGTH', null],
+            'enum'       => ['varchar',           'CHARACTER_MAXIMUM_LENGTH', null],
+            'int'        => ['integer',           null, null],
+            'tinyint'    => ['smallint',          null, null],
+            'decimal'    => ['decimal',           'NUMERIC_PRECISION', 'NUMERIC_SCALE'],
+            'date'       => ['date',              null],
+            'datetime'   => ['timestamp',         null],
+            'timestamp'  => ['timestamp',         null],
+        ];
+
+        $TypeObj  = array_key_exists($C['DATA_TYPE'], $TranslateType) ? $TranslateType[$C['DATA_TYPE']] : [trim($C['DATA_TYPE']),null,null];
+
+        $Type = "{$TypeObj[0]}";
+
+        if(!is_null($TypeObj[1])){
+            $Type .= "(";
+            $Type .= $C[$TypeObj[1]];
+            if(!is_null($TypeObj[2])) $Type .= ",".$C[$TypeObj[2]];
+            $Type .= ")";
+        };
+
+        return $Type;
+    }
+
+    public function postExportPostgresql()
+    {
+        extract(request()->all()); //filters, Entidades
+
+        $f = "";
+
+        if($filters['DatabaseOp'] == 'drop') $f .= "DROP DATABASE IF EXISTS {$filters['Database']};";
+        if(in_array($filters['DatabaseOp'], ['create','drop'])) $f .= "\nCREATE DATABASE {$filters['Database']} WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE = 'Spanish_Colombia.1252';\n";
+
+        $f .= "\n\connect {$filters['Database']}\n\n";
+
+        $f .= "SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_table_access_method = heap;\n";
+
+        $Bdds = \App\Models\BDD::get()->keyBy('id');
+
+        foreach ($Entidades as $E) {
+            $f .= "\n-- {$E['Nombre']}";
+
+            $Bdd = $Bdds->get($E['bdd_id']);
+            $tableRoute = \App\Functions\CamposHelper::getTableRoute($Bdd, $E['Tabla']);
+            $Conn = \App\Functions\ConnHelper::getConn($Bdd);
+            $Helper = \App\Functions\CamposHelper::getHelper($Bdd);
+
+            if($E['estructura']){
+
+                $Columnas = $Helper->getColumns($Conn, $tableRoute);
+                $ColCount = count($Columnas);
+
+                $f .= "\nDROP TABLE IF EXISTS {$filters['Schema']}.{$tableRoute['Table']};\nCREATE TABLE {$filters['Schema']}.{$tableRoute['Table']} (";
+
+                foreach ($Columnas as $kC => $C) {
+                    $DataType = self::prepPostgresqlDatatype($C);
+                    
+                    $f .= "\n\t{$C['COLUMN_NAME']} $DataType";
+                    if($C['IS_NULLABLE'] == 'YES') $f .= " NOT NULL";
+                    if($kC < ($ColCount - 1)) $f .= ",";
+                }
+
+                $f .= "\n);";
+            };
+
+            $f .= "\n";
+        }
+
+
+        return [ 'sql' => $f ];
+        //return $Entidades;
+    }
+
 }

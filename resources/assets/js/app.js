@@ -115,6 +115,7 @@ angular.module('SARA', [
 		'Integraciones_RUAFCtrl',
 		'Integraciones_EnterpriseCtrl',
 		'Integraciones_IkonoCtrl',
+		'Integraciones_Export_PostgreSQLCtrl',
 
 	'BotsCtrl',
 		'Bot_LogsCtrl',

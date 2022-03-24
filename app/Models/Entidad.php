@@ -41,6 +41,11 @@ class Entidad extends MyModel
 		return $q->where('bdd_id', $bdd_id);
 	}
 
+	public function scopeTipo($q, $tipo)
+	{
+		return $q->where('Tipo', $tipo);
+	}
+
 	//Relaciones
 	public function campos()
 	{
